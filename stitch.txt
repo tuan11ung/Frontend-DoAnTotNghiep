@@ -1,0 +1,1058 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MedConnect - Nền tảng Đặt khám &amp; Y tế Trực tuyến Hàng đầu</title>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Font Awesome CDN for Medical Icons -->
+<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" referrerpolicy="no-referrer" rel="stylesheet">
+<!-- Tailwind CSS CDN with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Config -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+          },
+          colors: {
+            medblue: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#3b82f6',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              800: '#1e3a8a',
+              brand: '#0d6efd',
+            },
+            meddark: '#0f172a',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for UI Enhancements -->
+<style data-purpose="typography">
+    body {
+      font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style data-purpose="effects">
+    .hero-bg {
+      background: linear-gradient(135deg, #0d64e8 0%, #0056d6 50%, #004bbb 100%);
+    }
+    .custom-scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .card-hover-transition {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover-transition:hover {
+      transform: translateY(-4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-white overflow-x-hidden selection:bg-blue-100 selection:text-blue-700">
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+<!-- Logo MedConnect -->
+<a aria-label="MedConnect Trang chủ" class="flex items-center gap-2.5 group" href="#">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+<i class="fa-solid fa-notes-medical text-xl"></i>
+</div>
+<div class="flex flex-col">
+<span class="text-2xl font-extrabold tracking-tight text-blue-600 leading-none">
+            Med<span class="text-emerald-500">Connect</span>
+</span>
+<span class="text-[10px] tracking-wider text-slate-400 font-semibold uppercase mt-0.5">Y tế &amp; Sức khỏe</span>
+</div>
+</a>
+<!-- Desktop Nav Links -->
+<nav aria-label="Thanh điều hướng chính" class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-700">
+<!-- Đặt khám Dropdown -->
+<a class="hover:text-blue-600 transition-colors" href="javascript:switchAppointmentTab('doctor')">Đặt khám Bác sĩ</a>
+<a class="hover:text-blue-600 transition-colors" href="javascript:switchAppointmentTab('hospital')">Đặt khám Bệnh viện</a>
+
+<a class="hover:text-blue-600 transition-colors" href="#tin-y-te">Tin Y tế</a>
+
+</nav>
+<!-- Account / Action Button -->
+<div class="flex items-center space-x-3">
+<a class="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-full transition-all" href="#">
+<i class="fa-regular fa-user mr-2 text-xs"></i>
+          Đăng nhập
+        </a>
+
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow">
+<!-- BEGIN: HeroSection -->
+<section class="hero-bg relative text-white pt-16 pb-28 overflow-hidden" data-purpose="hero-search-banner">
+<!-- Background Ambient Elements -->
+<div class="absolute inset-0 opacity-10 pointer-events-none">
+<svg class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="85%" cy="30%" r="280" stroke="white" stroke-dasharray="8 8" stroke-width="2"></circle>
+<circle cx="85%" cy="30%" r="420" stroke="white" stroke-width="1.5"></circle>
+<path d="M-100 350 C 300 200, 600 500, 1100 200" stroke="white" stroke-width="1.5"></path>
+</svg>
+</div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+<!-- Text Content & Search Form -->
+<div class="lg:col-span-7 text-center lg:text-left">
+<h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-white mb-4">
+              Đặt khám bác sĩ
+            </h1>
+<p class="text-blue-100 text-sm sm:text-base lg:text-lg font-normal mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              Đặt khám với hơn 1000 bác sĩ đã kết nối chính thức với MedConnect để có số thứ tự và khung giờ khám trước
+            </p>
+<!-- Search Bar Wrapper -->
+<div class="max-w-2xl mx-auto lg:mx-0">
+<form action="#bac-si" class="bg-white p-2 rounded-full shadow-2xl flex items-center border border-white/40 focus-within:ring-4 focus-within:ring-blue-300/40 transition-all" method="get">
+<div class="pl-4 text-slate-400">
+<i class="fa-solid fa-magnifying-glass text-lg text-blue-500"></i>
+</div>
+<input aria-label="Tìm kiếm bác sĩ hoặc chuyên khoa" class="w-full px-4 py-2.5 text-sm sm:text-base text-slate-800 placeholder-slate-400 bg-transparent border-0 focus:ring-0 focus:outline-none" name="query" placeholder="Triệu chứng, bác sĩ, bệnh viện, chuyên khoa..." type="text">
+<button class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 sm:px-8 py-3 rounded-full text-sm sm:text-base flex items-center gap-2 shadow-md hover:shadow-lg transition-all flex-shrink-0" type="submit">
+<span class="">Tìm kiếm</span>
+</button>
+</form>
+<!-- Trending Suggestions -->
+<div class="flex flex-wrap items-center justify-center lg:justify-start gap-2 mt-4 text-xs text-blue-100">
+<span class="opacity-80">Gợi ý:</span>
+<a class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm transition-colors" href="javascript:switchAppointmentTab('doctor')">Nhi khoa</a>
+<a class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm transition-colors" href="javascript:switchAppointmentTab('doctor')">Da liễu</a>
+<a class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm transition-colors" href="javascript:switchAppointmentTab('doctor')">Tai Mũi Họng</a>
+<a class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm transition-colors" href="javascript:switchAppointmentTab('doctor')">Tim mạch</a>
+</div>
+</div>
+</div>
+<!-- Hero Illustration / Trust Image -->
+<div class="lg:col-span-5 flex justify-center lg:justify-end">
+<div class="relative w-72 sm:w-84 md:w-96 lg:w-[420px] aspect-square flex items-center justify-center">
+<!-- Backdrop Glow -->
+<div class="absolute inset-0 bg-blue-400/20 rounded-full blur-3xl transform scale-90"></div>
+<!-- Organic Medical Heart Mask Shaped Container -->
+<div class="relative w-full h-full rounded-[45%_55%_65%_35%/55%_45%_55%_45%] overflow-hidden border-4 border-white/30 shadow-2xl bg-gradient-to-tr from-sky-400/20 to-blue-300/30 backdrop-blur-sm flex items-center justify-center p-2">
+<img alt="Gia đình hạnh phúc, nhiều thế hệ khỏe mạnh được chăm sóc y tế toàn diện" class="w-full h-full object-cover rounded-[40%_60%_60%_40%/50%_50%_50%_50%]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa6Z1yfHO8FMDLz9Ac7FU-fwZAgunkOGf-yMCvXTHXOFZ0fcDVFmDcw849FKO4Ou-9ROTQGkKaRoJ94UukO4jdg5AihRih99NztbYO5aMMRg7JRf8enKQbqIGibKn43DizHnin63jqsMnsazeHdxe3MBRKS6J--U3EhDoQwsVedASSPZTxCUNPXYuG-G8uU-wGZ-n_F7d-0rVCy7Of6nDmwcwT1imDYr7-xg6bywn3Ck4luxKLf7xl">
+</div>
+<!-- Floating Certified Badge -->
+<div class="absolute -bottom-2 -left-4 bg-white text-slate-800 p-3 sm:p-4 rounded-2xl shadow-xl flex items-center gap-3 border border-slate-100">
+<div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
+<i class="fa-solid fa-shield-heart"></i>
+</div>
+<div>
+<div class="text-xs font-bold text-slate-900 leading-tight">100% Bác sĩ</div>
+<div class="text-[11px] text-slate-500">Xác thực chứng chỉ Bộ Y Tế</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: QuickNavigationTabs (3 Tabs: Bác sĩ, Bệnh viện, Phòng khám) -->
+<section class="bg-white border-b border-slate-200 relative -mt-8 mx-4 sm:mx-6 lg:mx-auto max-w-7xl rounded-2xl shadow-lg z-20" data-purpose="quick-appointment-category-tabs" id="sub-nav-tabs">
+<div class="px-3 sm:px-6">
+<nav aria-label="Loại hình đặt khám" class="flex items-center justify-center sm:justify-start sm:gap-6 overflow-x-auto custom-scrollbar-hide">
+<button class="flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-bold text-sm text-blue-600 border-b-2 border-blue-600 transition-colors" id="tab-btn-doctor" onclick="switchAppointmentTab('doctor')" type="button">
+<i class="fa-solid fa-stethoscope text-base text-blue-600"></i>
+<span class="">Đặt khám Bác sĩ</span>
+</button>
+<button class="flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-semibold text-sm text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-slate-300 transition-colors" id="tab-btn-hospital" onclick="switchAppointmentTab('hospital')" type="button">
+<i class="fa-solid fa-hospital text-base text-slate-400"></i>
+<span class="">Đặt khám Bệnh viện</span>
+</button>
+
+</nav>
+</div>
+</section>
+<!-- END: QuickNavigationTabs -->
+<!-- BEGIN: TabPane 1 - FeaturedDoctorsSection -->
+<section class="py-14 bg-white" data-purpose="featured-doctors-carousel" id="view-doctor">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Header with Title & Action Button -->
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Đặt khám bác sĩ</h2>
+<p class="text-xs sm:text-sm text-slate-500 mt-1">Lựa chọn chuyên gia đầu ngành phù hợp theo tình trạng bệnh của bạn</p>
+</div>
+<a class="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-full shadow-sm hover:shadow transition-all" href="#">
+<span class="">Xem tất cả</span>
+<i class="fa-solid fa-chevron-right text-[11px]"></i>
+</a>
+</div>
+<!-- Doctors Grid Container -->
+<div class="relative">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Doctor Card 1 -->
+<article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-xl card-hover-transition flex flex-col justify-between" data-purpose="doctor-profile-card">
+<div class="flex flex-col items-center text-center">
+<div class="w-28 h-28 rounded-full overflow-hidden bg-slate-100 p-1 ring-4 ring-blue-50 mb-4">
+<img alt="PGS. TS. BS Trần Quang Nam - Trưởng khoa Nội tiết" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcr3lnsPFgivCg2ClOBs6CEi_AdWMmeiIczUGlymA3UKoamGo8iKjGxQe2AI-cu5iJs5w5qTLUeJKhfI16XQPZgxq7fYJG7QNvvaAlW5hgYOQztdtRWFuvHMWJYiq2QATsAlGdsWDA2TzY5fbLXuW0C2xwqBPgSoQfO0FXG-zHOBaA2Kk_ODPKoGASZsEL-eA66TT24jhYuG_QMfeG77xBeopBTO4uI2Ae9wxDf3FzpJuvmsxvrqmJ">
+</div>
+<h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 leading-snug">
+                  PGS. TS. BS Trần Quang Nam
+                </h3>
+<p class="text-xs font-semibold text-slate-500 mt-1 mb-4">
+                  Nội tiết
+                </p>
+</div>
+<div class="pt-3 border-t border-slate-100">
+<a class="w-full inline-flex items-center justify-between text-xs font-bold text-slate-700 hover:text-blue-600 py-1 transition-colors" href="#dat-lich">
+<span class="">Đặt lịch ngay</span>
+<i class="fa-solid fa-angle-right text-slate-400"></i>
+</a>
+</div>
+</article>
+<!-- Doctor Card 2 -->
+<article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-xl card-hover-transition flex flex-col justify-between" data-purpose="doctor-profile-card">
+<div class="flex flex-col items-center text-center">
+<div class="w-28 h-28 rounded-full overflow-hidden bg-emerald-50 p-1 ring-4 ring-emerald-50 mb-4">
+<img alt="BS. CKII Lê Thị Minh Hồng - Chuyên gia Nhi khoa" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzqBp7URNhLFD_cBdaDUWxSIbRiPjkfsZKD_2LRIONQjLaq5ahQH57M_ZB6JPaLO84gP2a0BqDkjNPm0-MglkrxZFnjUUnfWzBiJ-o0lnyOYxuBdpwajqMwGOATEiRmBezrLJuLBXYwazHUhSfMtJDgDbFG2h1RvNvkA54HIO0QDl0hu_cMQHrqeIwmcukml6SO9Plgl7Xe86xVAmtNOUpTsQGi3i47wMskVGSKFFLitlntrWw85sM">
+</div>
+<h3 class="text-base font-bold text-slate-900 leading-snug">
+                  BS. CKII Lê Thị Minh Hồng
+                </h3>
+<p class="text-xs font-semibold text-slate-500 mt-1 mb-4">
+                  Nhi khoa
+                </p>
+</div>
+<div class="pt-3 border-t border-slate-100">
+<a class="w-full inline-flex items-center justify-between text-xs font-bold text-slate-700 hover:text-blue-600 py-1 transition-colors" href="#dat-lich">
+<span class="">Đặt lịch ngay</span>
+<i class="fa-solid fa-angle-right text-slate-400"></i>
+</a>
+</div>
+</article>
+<!-- Doctor Card 3 -->
+<article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-xl card-hover-transition flex flex-col justify-between" data-purpose="doctor-profile-card">
+<div class="flex flex-col items-center text-center">
+<div class="w-28 h-28 rounded-full overflow-hidden bg-sky-50 p-1 ring-4 ring-sky-50 mb-4">
+<img alt="PGS. TS. BS Lâm Việt Trung - Chuyên khoa Tiêu hoá Ngoại tiết niệu" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8cr2uZIOPxmTN2VViUBhBbAp5mrbtGCXzMqd_HgbnQUHM0iRtl2po8d07RTks7xqGLOP-7MZtQccWnPuHwgeUDqk1HaFKjyWcKzQyApYqVTiAyoyn8cVuJhq4TQm4V_QNG44vgRhzTEJneKOpZ0fRM6APYoMIDeR0F8e0WGfJhTNpYfzl4FHwmAnndP1ZEYIPPpmGuA1nDaLfOgq96P8lBALxCyV7M3yskT2H4q-X05Ickul56B_9">
+</div>
+<h3 class="text-base font-bold text-slate-900 leading-snug">
+                  PGS. TS. BS Lâm Việt Trung
+                </h3>
+<p class="text-xs font-semibold text-slate-500 mt-1 mb-4">
+                  Tiêu hoá • Ngoại tiết niệu
+                </p>
+</div>
+<div class="pt-3 border-t border-slate-100">
+<a class="w-full inline-flex items-center justify-between text-xs font-bold text-slate-700 hover:text-blue-600 py-1 transition-colors" href="#dat-lich">
+<span class="">Đặt lịch ngay</span>
+<i class="fa-solid fa-angle-right text-slate-400"></i>
+</a>
+</div>
+</article>
+<!-- Doctor Card 4 -->
+<article class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs hover:shadow-xl card-hover-transition flex flex-col justify-between" data-purpose="doctor-profile-card">
+<div class="flex flex-col items-center text-center">
+<div class="w-28 h-28 rounded-full overflow-hidden bg-rose-50 p-1 ring-4 ring-rose-50 mb-4">
+<img alt="BS. CKII Nguyễn Thị Thu Hà - Chuyên khoa Nhi khoa" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg3YSHJcKUUmwQSAXmvpu5o9dfmdTef_-n2osyzjwxUob5-phvdl_jaRkONBC8roM49KTkpvQJ6cv4rJ_bZvJTWcaUvAy4QrhL8Layr6YJmFYVSAAMkiwwVrZdbSAFOkoQ0mVm_5zuLXagL30Kv1rvxQzHenaUNaViLdO4_Q2n0BhrRGkc7L31nLAiVNm_Z3DCIASPrVosY1O8tAuZVoX_fxzoKjfco8qv0BV1QlN8G8mcqNavI6fi">
+</div>
+<h3 class="text-base font-bold text-slate-900 leading-snug">
+                  BS. CKII Nguyễn Thị Thu Hà
+                </h3>
+<p class="text-xs font-semibold text-slate-500 mt-1 mb-4">
+                  Nhi khoa
+                </p>
+</div>
+<div class="pt-3 border-t border-slate-100">
+<a class="w-full inline-flex items-center justify-between text-xs font-bold text-slate-700 hover:text-blue-600 py-1 transition-colors" href="#dat-lich">
+<span class="">Đặt lịch ngay</span>
+<i class="fa-solid fa-angle-right text-slate-400"></i>
+</a>
+</div>
+</article>
+</div>
+<button aria-label="Xem thêm bác sĩ tiếp theo" class="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-slate-200 rounded-full items-center justify-center text-slate-700 shadow-lg hover:bg-slate-50 hover:text-blue-600 transition-colors z-10" type="button">
+<i class="fa-solid fa-chevron-right text-sm"></i>
+</button>
+</div>
+</div>
+</section>
+<!-- END: TabPane 1 - FeaturedDoctorsSection -->
+<!-- BEGIN: TabPane 2 - HospitalSection -->
+<section class="py-12 bg-white hidden" data-purpose="hospital-booking-list" id="view-hospital">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="text-center max-w-2xl mx-auto mb-8">
+<h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Đặt khám trực tuyến với các Bệnh viện</h2>
+<p class="text-slate-500 text-sm sm:text-base mt-2">Chủ động chọn lịch hẹn - Đi khám không đợi chờ</p>
+</div>
+<div class="bg-slate-50/80 border border-slate-200 rounded-2xl p-4 sm:p-5 mb-8 shadow-xs">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+<div class="md:col-span-5 relative flex items-center">
+<i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-sm"></i>
+<input class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tìm tên bệnh viện (VD: Nhi đồng 2, Ung Bướu)" type="text">
+</div>
+<div class="md:col-span-3">
+<select class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+<option>Tất cả Quận / Huyện</option>
+<option>Quận 1</option>
+<option>Quận 3</option>
+<option>Quận 5</option>
+<option>Quận 10</option>
+<option>Bình Thạnh</option>
+<option>TP. Thủ Đức</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<select class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+<option>Tất cả Tuyến</option>
+<option>Tuyến Trung ương</option>
+<option>Tuyến Thành phố</option>
+<option>Tuyến Quận / Huyện</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm transition-all" type="button">
+<i class="fa-solid fa-magnifying-glass text-xs"></i>
+<span class="">Tìm kiếm</span>
+</button>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-slate-200/80 text-xs text-slate-500">
+<span class="font-semibold text-slate-700">Phổ biến:</span>
+<button class="px-3 py-1 bg-white border border-slate-200 rounded-full hover:border-blue-500 hover:text-blue-600 transition-colors" type="button">Đa khoa</button>
+<button class="px-3 py-1 bg-white border border-slate-200 rounded-full hover:border-blue-500 hover:text-blue-600 transition-colors" type="button">Nhi khoa</button>
+<button class="px-3 py-1 bg-white border border-slate-200 rounded-full hover:border-blue-500 hover:text-blue-600 transition-colors" type="button">Răng Hàm Mặt</button>
+<button class="px-3 py-1 bg-white border border-slate-200 rounded-full hover:border-blue-500 hover:text-blue-600 transition-colors" type="button">Y học cổ truyền</button>
+<button class="px-3 py-1 bg-white border border-slate-200 rounded-full hover:border-blue-500 hover:text-blue-600 transition-colors" type="button">Ung Bướu</button>
+<button class="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-200 rounded-full font-medium" type="button">Khám có BHYT</button>
+</div>
+</div>
+<!-- Hospital List -->
+<div class="border-t border-slate-200 divide-y divide-slate-100">
+<!-- Hospital Item 1 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-emerald-500 text-emerald-600 flex items-center justify-center text-xl font-bold bg-emerald-50">
+<i class="fa-solid fa-hospital"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Nhi đồng 2</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 rounded">Tuyến TP</span>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>14 Lý Tự Trọng, Phường Sài Gòn, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 2 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-amber-600 text-amber-700 flex items-center justify-center text-xl font-bold bg-amber-50">
+<i class="fa-solid fa-notes-medical"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Y Học Cổ Truyền TP.HCM</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>179 -187 Nam Kỳ Khởi Nghĩa, Phường Xuân Hoà, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 3 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-red-500 text-red-600 flex items-center justify-center text-xl font-bold bg-red-50">
+<i class="fa-solid fa-heart-pulse"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Lê Văn Thịnh</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 rounded">Tuyến Huyện</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>Số 130 Lê Văn Thịnh, Phường Bình Trưng, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 4 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-rose-500 text-rose-600 flex items-center justify-center text-xl font-bold bg-rose-50">
+<i class="fa-solid fa-tooth"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Răng Hàm Mặt TP.HCM</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 rounded">Tuyến TP</span>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>263-265 Trần Hưng Đạo, Phường Cầu Ông Lãnh, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 5 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-cyan-600 text-cyan-600 flex items-center justify-center text-xl font-bold bg-cyan-50">
+<i class="fa-solid fa-hospital-user"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Đa Khoa Khánh Hội</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>63-65 Bến Vân Đồn, Phường Xóm Chiếu, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 6 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-indigo-600 text-indigo-600 flex items-center justify-center text-xl font-bold bg-indigo-50">
+<i class="fa-solid fa-hospital"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Đa Khoa Nguyễn Thị Thập</h3>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>101 Nguyễn Thị Thập, Phường Tân Mỹ, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 7 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-teal-600 text-teal-600 flex items-center justify-center text-xl font-bold bg-teal-50">
+<i class="fa-solid fa-square-plus"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Đa Khoa Phú Nhuận</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>274 Nguyễn Trọng Tuyển, Phường Phú Nhuận, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 8 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-blue-600 text-blue-600 flex items-center justify-center text-xl font-bold bg-blue-50">
+<i class="fa-solid fa-tooth"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Răng Hàm Mặt Trung ương Tp.HCM</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-50 text-indigo-600 rounded">Tuyến T.Ư</span>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>201A Nguyễn Chí Thanh, Phường Chợ Lớn, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 9 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-purple-600 text-purple-600 flex items-center justify-center text-xl font-bold bg-purple-50">
+<i class="fa-solid fa-ribbon"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Ung Bướu TPHCM</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 rounded">Tuyến TP</span>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded">Có BHYT</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>47 Nguyễn Huy Lượng, Phường Bình Thạnh, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+<!-- Hospital Item 10 -->
+<div class="py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-slate-50/50 px-2 rounded-xl transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-full border border-slate-200 p-1 flex items-center justify-center bg-white shadow-xs flex-shrink-0">
+<div class="w-full h-full rounded-full border-2 border-slate-600 text-slate-600 flex items-center justify-center text-xl font-bold bg-slate-100">
+<i class="fa-solid fa-hospital"></i>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="text-base font-bold text-slate-900 hover:text-blue-600 cursor-pointer">Bệnh viện Đa khoa Bình Tân</h3>
+<span class="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-600 rounded">Tuyến Huyện</span>
+</div>
+<p class="text-xs text-slate-500 mt-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-400"></i>809 Hương Lộ 2, Phường Bình Trị Đông, TP. Hồ Chí Minh</p>
+</div>
+</div>
+<div class="flex items-center gap-2.5 flex-shrink-0">
+<button class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-lg transition-colors">Xem lịch khoa phòng</button>
+<button class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-xs transition-colors">Đặt khám ngay</button>
+</div>
+</div>
+</div>
+<!-- Hospital Pagination -->
+<div class="flex items-center justify-center gap-2 mt-8">
+<button class="w-9 h-9 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">1</button>
+<button class="w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-colors">2</button>
+<button class="w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-colors">3</button>
+<button class="w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-colors">4</button>
+<button aria-label="Trang tiếp theo" class="w-9 h-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs flex items-center justify-center transition-colors">
+<i class="fa-solid fa-chevron-right text-[10px]"></i>
+</button>
+</div>
+</div>
+</section>
+<!-- END: TabPane 2 - HospitalSection -->
+<!-- BEGIN: TabPane 3 - ClinicListSection -->
+
+<!-- END: TabPane 3 - ClinicListSection -->
+<!-- BEGIN: 3 Feature Guarantees (hiển thị khi ở tab Bệnh viện hoặc Phòng khám) -->
+<section class="pb-12 bg-white hidden" id="guarantees-sub-bar">
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="pt-8 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+<div class="flex items-center justify-center gap-3">
+<i class="fa-solid fa-ticket text-xl text-blue-600"></i>
+<span class="text-xs font-bold text-slate-700">Lấy số khám trực tuyến</span>
+</div>
+<div class="flex items-center justify-center gap-3">
+<i class="fa-solid fa-shield-halved text-xl text-emerald-600"></i>
+<span class="text-xs font-bold text-slate-700">Áp dụng BHYT &amp; Bảo lãnh viện phí</span>
+</div>
+<div class="flex items-center justify-center gap-3">
+<i class="fa-regular fa-clock text-xl text-amber-500"></i>
+<span class="text-xs font-bold text-slate-700">Nhắc lịch tự động</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: 3 Feature Guarantees -->
+<!-- BEGIN: MedicalSpecialtiesSection (hiển thị khi ở tab Bác sĩ) -->
+<section class="py-16 bg-slate-50/60 border-t border-slate-100" data-purpose="comprehensive-medical-specialties" id="chuyen-khoa">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Section Header -->
+<div class="text-center max-w-3xl mx-auto mb-12">
+<h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+            Đa dạng chuyên khoa khám
+          </h2>
+<p class="text-slate-500 text-sm sm:text-base mt-2">
+            Đặt khám dễ dàng và tiện lợi hơn với đầy đủ các chuyên khoa
+          </p>
+</div>
+<!-- Grid of 24 Specialties -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+<!-- Specialty Item 1 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-sky-50 text-sky-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-baby"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Nhi khoa</span>
+</a>
+<!-- Specialty Item 2 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-person-pregnant"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Sản phụ khoa</span>
+</a>
+<!-- Specialty Item 3 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-hand-dots"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Da liễu</span>
+</a>
+<!-- Specialty Item 4 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-apple-whole"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Tiêu hoá</span>
+</a>
+<!-- Specialty Item 5 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-bone"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Cơ xương khớp</span>
+</a>
+<!-- Specialty Item 6 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-shield-virus"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Dị ứng - miễn dịch</span>
+</a>
+<!-- Specialty Item 7 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-mask-ventilator"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Gây mê hồi sức</span>
+</a>
+<!-- Specialty Item 8 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-pink-50 text-pink-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-head-side-cough"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Tai - mũi - họng</span>
+</a>
+<!-- Specialty Item 9 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-ribbon"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Ung bướu</span>
+</a>
+<!-- Specialty Item 10 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-red-50 text-red-500 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-heart-pulse"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Tim mạch</span>
+</a>
+<!-- Specialty Item 11 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-person-cane"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Lão khoa</span>
+</a>
+<!-- Specialty Item 12 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-crutch"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Chấn thương chỉnh hình</span>
+</a>
+<!-- Specialty Item 13 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-truck-medical"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Hồi sức cấp cứu</span>
+</a>
+<!-- Specialty Item 14 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-syringe"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Ngoại tổng quát</span>
+</a>
+<!-- Specialty Item 15 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-tooth"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Răng - Hàm - Mặt</span>
+</a>
+<!-- Specialty Item 16 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-virus"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Truyền nhiễm</span>
+</a>
+<!-- Specialty Item 17 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-disease"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Nội thận</span>
+</a>
+<!-- Specialty Item 18 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-capsules"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Nội tiết</span>
+</a>
+<!-- Specialty Item 19 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-brain"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Tâm thần &amp; Thần kinh</span>
+</a>
+<!-- Specialty Item 20 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-lungs"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Hô hấp</span>
+</a>
+<!-- Specialty Item 21 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-microscope"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Xét nghiệm</span>
+</a>
+<!-- Specialty Item 22 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-droplet"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Huyết học</span>
+</a>
+<!-- Specialty Item 23 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-head-side-virus"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Tâm lý</span>
+</a>
+<!-- Specialty Item 24 -->
+<a class="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center" href="#">
+<div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform">
+<i class="fa-solid fa-eye"></i>
+</div>
+<span class="text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-blue-600">Nhãn khoa</span>
+</a>
+</div>
+<!-- View more specialties button -->
+<div class="mt-10 text-center">
+<button class="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-white border border-blue-200 px-6 py-2.5 rounded-full shadow-xs hover:shadow transition-all" type="button">
+<span class="">Xem thêm 20+ chuyên khoa khác</span>
+<i class="fa-solid fa-chevron-down text-xs"></i>
+</button>
+</div>
+</div>
+</section>
+<!-- END: MedicalSpecialtiesSection -->
+<!-- BEGIN: TrustAndValuesSection -->
+<section class="py-20 bg-white" data-purpose="core-value-trust-section">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Header -->
+<div class="text-center max-w-2xl mx-auto mb-14">
+<h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight">
+            An tâm tìm và đặt bác sĩ
+          </h2>
+<p class="text-slate-500 text-sm sm:text-base mt-2">
+            Hơn 600 bác sĩ liên kết chính thức với MedConnect
+          </p>
+</div>
+<!-- Two Columns Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+<!-- Column 1: Realistic Doctor Team Presentation Card -->
+<div class="lg:col-span-6 relative flex justify-center">
+<div class="relative w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl border border-slate-100 bg-gradient-to-tr from-blue-50 to-white p-4 sm:p-6">
+<!-- Background Graphic -->
+<div class="absolute -top-10 -right-10 w-44 h-44 bg-blue-100 rounded-full filter blur-2xl opacity-60"></div>
+<!-- Main Doctors Image -->
+<div class="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-md">
+<img alt="Đội ngũ bác sĩ MedConnect tư vấn chuyên sâu" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8GjtEUGuKY7nOKTXHPY4PSGoz15drSzxv1DtDMMOSyfgFkJ6lThjxp3aw-fJM_UB-BGzlsTbjBYEUJkPPHu5ejVdpTIp1hoxbxXZAGu3a9zp44hl887L6nTrGKZPWESc7q91xnyVpva8mylUt4KTYVGQBbfzduOjuvNZbcapzxH8Mbj3GlmEdodC3_wn6E_0nKWixQqGW1tNGfoGW1q5JW6wzJPCLQrpgtFCdzP8CUnuqLPaZK-6S">
+<!-- Chat Bubble Badge -->
+<div class="absolute top-4 left-4 bg-blue-600 text-white w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg">
+<i class="fa-solid fa-comment-dots text-lg"></i>
+</div>
+</div>
+<!-- Floating Interactive Doctors List Overlay Card -->
+<div class="absolute bottom-6 right-6 sm:right-8 bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-slate-100 w-52 sm:w-60">
+<div class="text-xs font-bold text-slate-900 mb-2.5">Các bác sĩ đầu ngành:</div>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
+<i class="fa-solid fa-user-doctor"></i>
+</div>
+<div class="flex-1 min-w-0">
+<div class="h-2 bg-slate-200 rounded-full w-4/5"></div>
+<div class="h-1.5 bg-slate-100 rounded-full w-1/2 mt-1"></div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">
+<i class="fa-solid fa-stethoscope"></i>
+</div>
+<div class="flex-1 min-w-0">
+<div class="h-2 bg-slate-200 rounded-full w-3/4"></div>
+<div class="h-1.5 bg-slate-100 rounded-full w-2/3 mt-1"></div>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-2 border-t border-slate-100">
+<span class="inline-block w-full text-center py-1.5 bg-rose-500 hover:bg-rose-600 text-white text-[11px] font-extrabold rounded-lg shadow-sm">
+                    200+ Bác sĩ trực tuyến
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 2: Guarantees & Features List -->
+<div class="lg:col-span-6 space-y-6">
+<!-- Feature 1: Official Doctor Network -->
+<div class="p-6 rounded-2xl bg-white border border-slate-100 shadow-xs hover:border-slate-200 transition-all">
+<h3 class="text-lg sm:text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
+<i class="fa-solid fa-user-check text-blue-600 text-base"></i>
+                Đội ngũ bác sĩ
+              </h3>
+<p class="text-slate-600 text-sm leading-relaxed">
+                Tất cả các bác sĩ đều có liên kết chính thức với MedConnect để bảo đảm lịch đặt khám của bạn được xác nhận và ưu tiên xếp số tại phòng khám.
+              </p>
+</div>
+<!-- Feature 2: Active / Highlighted Fast Booking Guarantee -->
+<div class="p-6 rounded-2xl bg-blue-50/50 border-l-4 border-blue-600 border-y border-r border-slate-100 shadow-sm transition-all">
+<h3 class="text-lg sm:text-xl font-bold text-blue-900 mb-2 flex items-center gap-2">
+<i class="fa-solid fa-bolt-lightning text-blue-600 text-base"></i>
+                Đặt khám dễ dàng, nhanh chóng, chủ động
+              </h3>
+<p class="text-slate-700 text-sm leading-relaxed mb-4">
+                Chỉ với 1 phút, bạn có thể đặt khám thành công với bác sĩ. Phiếu khám bao gồm số thứ tự và khung thời gian dự kiến, giúp bạn không phải chờ đợi hàng giờ tại cơ sở y tế.
+              </p>
+<div class="flex items-center gap-4 text-xs font-semibold text-blue-700">
+<span class="flex items-center gap-1.5">
+<i class="fa-regular fa-clock"></i> Khung giờ chính xác
+                </span>
+<span class="flex items-center gap-1.5">
+<i class="fa-solid fa-ticket"></i> Có sẵn số thứ tự
+                </span>
+<span class="flex items-center gap-1.5">
+<i class="fa-solid fa-shield-halved"></i> Bảo mật HIPAA
+                </span>
+</div>
+</div>
+<!-- CTA Button -->
+<div class="pt-2">
+<a class="inline-flex items-center gap-3 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg shadow-blue-500/25 transition-all text-sm" href="javascript:switchAppointmentTab('doctor')">
+<span class="">Trải nghiệm đặt khám ngay</span>
+<i class="fa-solid fa-arrow-right text-xs"></i>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: TrustAndValuesSection -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800" data-purpose="site-main-footer">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-slate-800">
+<!-- Brand & Contact Col -->
+<div class="lg:col-span-4">
+<div class="flex items-center gap-2.5 mb-4">
+<div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
+<i class="fa-solid fa-notes-medical text-lg"></i>
+</div>
+<span class="text-2xl font-extrabold text-white">
+              Med<span class="text-emerald-400">Connect</span>
+</span>
+</div>
+<p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">Nền tảng công nghệ y tế kết nối người bệnh với mạng lưới bác sĩ và bệnh viện uy tín hàng đầu trên toàn quốc.</p>
+<div class="space-y-2 text-xs text-slate-300">
+<p class="flex items-center gap-2">
+<i class="fa-solid fa-phone text-blue-400"></i> Hotline: <span class="font-bold text-white">(028) 3822-5555</span> (24/7)
+            </p>
+<p class="flex items-center gap-2">
+<i class="fa-solid fa-envelope text-blue-400"></i> Hỗ trợ: <span class="text-white">hotro@medconnect.vn</span>
+</p>
+<p class="flex items-center gap-2">
+<i class="fa-solid fa-location-dot text-blue-400"></i> Tòa nhà MedConnect, Quận 1, TP. Hồ Chí Minh
+            </p>
+</div>
+</div>
+<!-- Links Col 1 -->
+<div class="lg:col-span-3">
+<h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Dịch vụ y tế</h4>
+<ul class="space-y-2.5 text-xs text-slate-400">
+<li class=""><a class="hover:text-white transition-colors" href="javascript:switchAppointmentTab('doctor')">Đặt khám Bác sĩ Chuyên khoa</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="javascript:switchAppointmentTab('hospital')">Đặt khám Bệnh viện Công &amp; Tư</a></li>
+
+<li class=""></li>
+</ul>
+</div>
+<!-- Links Col 2 -->
+<div class="lg:col-span-2">
+<h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Về MedConnect</h4>
+<ul class="space-y-2.5 text-xs text-slate-400">
+<li class=""><a class="hover:text-white transition-colors" href="#">Giới thiệu về chúng tôi</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="#">Đội ngũ cố vấn y khoa</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="#">Tuyển dụng nhân tài</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="#">Chính sách bảo mật dữ liệu</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="#">Điều khoản sử dụng</a></li>
+</ul>
+</div>
+<!-- App & Certifications -->
+<div class="lg:col-span-3">
+<h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Tải ứng dụng MedConnect</h4>
+<p class="text-xs text-slate-400 mb-3">Chủ động theo dõi số khám và kết quả xét nghiệm ngay trên điện thoại</p>
+<div class="flex flex-col sm:flex-row gap-2.5 mb-5">
+<button class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl flex items-center gap-2 border border-slate-700 transition-colors">
+<i class="fa-brands fa-apple text-xl"></i>
+<div class="text-left leading-tight">
+<span class="block text-[9px] text-slate-400">Tải về trên</span>
+<span class="font-bold text-xs">App Store</span>
+</div>
+</button>
+<button class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl flex items-center gap-2 border border-slate-700 transition-colors">
+<i class="fa-brands fa-google-play text-lg text-emerald-400"></i>
+<div class="text-left leading-tight">
+<span class="block text-[9px] text-slate-400">Tải về trên</span>
+<span class="font-bold text-xs">Google Play</span>
+</div>
+</button>
+</div>
+<div class="flex items-center gap-2 text-[11px] text-emerald-400">
+<i class="fa-solid fa-certificate"></i>
+<span class="">Chứng nhận Bộ Y Tế &amp; Tiêu chuẩn HIPAA</span>
+</div>
+</div>
+</div>
+<!-- Copyright Bottom Bar -->
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+<p class="">© 2025 MedConnect Medical Services JSC. Tất cả các quyền được bảo lưu.</p>
+<div class="flex items-center space-x-4">
+<a class="hover:text-slate-400 transition-colors" href="#">Chính sách quyền riêng tư</a>
+<span class="">•</span>
+<a class="hover:text-slate-400 transition-colors" href="#">Quy chế hoạt động sàn TMĐT y tế</a>
+<span class="">•</span>
+<a class="hover:text-slate-400 transition-colors" href="#">Giải quyết khiếu nại</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+<!-- BEGIN: Interactive Tab Switching Script -->
+<script id="tab-switch-script">
+function switchAppointmentTab(type) {
+  var btnDoctor = document.getElementById('tab-btn-doctor');
+  var btnHospital = document.getElementById('tab-btn-hospital');
+  var btnClinic = document.getElementById('tab-btn-clinic');
+
+  var viewDoctor = document.getElementById('view-doctor');
+  var viewHospital = document.getElementById('view-hospital');
+  var viewClinic = document.getElementById('view-clinic');
+  var specialties = document.getElementById('chuyen-khoa');
+  var guarantees = document.getElementById('guarantees-sub-bar');
+
+  var inactiveClass = 'flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-semibold text-sm text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-slate-300 transition-colors';
+  var activeClass = 'flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-bold text-sm text-blue-600 border-b-2 border-blue-600 transition-colors';
+
+  // Reset tabs
+  if (btnDoctor) {
+    btnDoctor.className = inactiveClass;
+    var iconDoc = btnDoctor.querySelector('i');
+    if (iconDoc) iconDoc.className = 'fa-solid fa-stethoscope text-base text-slate-400';
+  }
+  if (btnHospital) {
+    btnHospital.className = inactiveClass;
+    var iconHosp = btnHospital.querySelector('i');
+    if (iconHosp) iconHosp.className = 'fa-solid fa-hospital text-base text-slate-400';
+  }
+  if (btnClinic) {
+    btnClinic.className = inactiveClass;
+    var iconClinic = btnClinic.querySelector('i');
+    if (iconClinic) iconClinic.className = 'fa-solid fa-briefcase-medical text-base text-slate-400';
+  }
+
+  // Hide all panes
+  if (viewDoctor) viewDoctor.classList.add('hidden');
+  if (viewHospital) viewHospital.classList.add('hidden');
+  if (viewClinic) viewClinic.classList.add('hidden');
+  if (specialties) specialties.classList.add('hidden');
+  if (guarantees) guarantees.classList.add('hidden');
+
+  // Activate selected pane
+  if (type === 'doctor') {
+    if (btnDoctor) {
+      btnDoctor.className = activeClass;
+      var iconDocActive = btnDoctor.querySelector('i');
+      if (iconDocActive) iconDocActive.className = 'fa-solid fa-stethoscope text-base text-blue-600';
+    }
+    if (viewDoctor) viewDoctor.classList.remove('hidden');
+    if (specialties) specialties.classList.remove('hidden');
+  } else if (type === 'hospital') {
+    if (btnHospital) {
+      btnHospital.className = activeClass;
+      var iconHospActive = btnHospital.querySelector('i');
+      if (iconHospActive) iconHospActive.className = 'fa-solid fa-hospital text-base text-blue-600';
+    }
+    if (viewHospital) viewHospital.classList.remove('hidden');
+    if (guarantees) guarantees.classList.remove('hidden');
+  } else if (type === 'clinic') {
+    if (btnClinic) {
+      btnClinic.className = activeClass;
+      var iconClinicActive = btnClinic.querySelector('i');
+      if (iconClinicActive) iconClinicActive.className = 'fa-solid fa-briefcase-medical text-base text-blue-600';
+    }
+    if (viewClinic) viewClinic.classList.remove('hidden');
+    if (guarantees) guarantees.classList.remove('hidden');
+  }
+}
+
+// Mặc định mở trang hiển thị Tab 1 "Đặt khám Bác sĩ"
+switchAppointmentTab('doctor');
+</script>
+<!-- END: Interactive Tab Switching Script -->
+
+
+
+
+
+
+</body></html>
+
+
+[frontend](file;file:///d%3A/Workspace/NextJS/PAI/frontend) 
