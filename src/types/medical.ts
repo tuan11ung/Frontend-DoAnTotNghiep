@@ -1,4 +1,4 @@
-export type AppointmentTabType = 'doctor' | 'hospital' | 'clinic';
+export type AppointmentTabType = 'doctor' | 'hospital';
 
 export interface DoctorProps {
   id: string;

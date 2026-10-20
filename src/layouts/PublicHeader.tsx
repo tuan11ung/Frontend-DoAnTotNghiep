@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { Activity, User, Menu, X, Stethoscope, Building2, Newspaper } from 'lucide-react';
 import { AppointmentTabType } from '@/src/types/medical';
 
@@ -9,19 +10,147 @@ interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
 }
 
-export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+interface NavLinksProps {
+  onSelectTab?: (tab: AppointmentTabType) => void;
+  mobile?: boolean;
+  onCloseMobile?: () => void;
+}
+
+function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLinksProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const isSearchPage = pathname === '/search';
+  const currentType = searchParams.get('type');
+
+  // Active state logic:
+  // When on /search:
+  // - If URL has type=doctor -> Doctor is active
+  // - If URL has type=hospital (or default on /search without type) -> Hospital is active
+  const isDoctorActive = isSearchPage && currentType === 'doctor';
+  const isHospitalActive = isSearchPage && (currentType === 'hospital' || !currentType);
 
   const handleTabClick = (tab: AppointmentTabType) => {
-    if (onSelectTab) {
+    onCloseMobile?.();
+    if (pathname === '/' && onSelectTab) {
       onSelectTab(tab);
+      const element = document.getElementById('sub-nav-tabs');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
     }
-    setMobileMenuOpen(false);
-    const element = document.getElementById('sub-nav-tabs');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    router.push(`/search?type=${tab}`);
   };
+
+  if (mobile) {
+    return (
+      <div className="space-y-2">
+        <button
+          onClick={() => handleTabClick('doctor')}
+          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            isDoctorActive
+              ? 'bg-blue-600 text-white font-bold shadow-sm'
+              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
+          }`}
+          type="button"
+        >
+          <Stethoscope className={`w-4 h-4 ${isDoctorActive ? 'text-white' : 'text-blue-600'}`} />
+          <span>Đặt khám Bác sĩ</span>
+        </button>
+        <button
+          onClick={() => handleTabClick('hospital')}
+          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            isHospitalActive
+              ? 'bg-blue-600 text-white font-bold shadow-sm'
+              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
+          }`}
+          type="button"
+        >
+          <Building2 className={`w-4 h-4 ${isHospitalActive ? 'text-white' : 'text-slate-400'}`} />
+          <span>Đặt khám Bệnh viện</span>
+        </button>
+        <Link
+          href="#tin-y-te"
+          onClick={onCloseMobile}
+          className="w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2 transition-all"
+        >
+          <Newspaper className="w-4 h-4 text-slate-400" />
+          <span>Tin Y tế</span>
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
+      <button
+        onClick={() => handleTabClick('doctor')}
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+          isDoctorActive
+            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+        }`}
+        type="button"
+      >
+        <Stethoscope className={`w-4 h-4 ${isDoctorActive ? 'text-white' : 'text-blue-600'}`} />
+        <span>Đặt khám Bác sĩ</span>
+      </button>
+
+      <button
+        onClick={() => handleTabClick('hospital')}
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+          isHospitalActive
+            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+        }`}
+        type="button"
+      >
+        <Building2 className={`w-4 h-4 ${isHospitalActive ? 'text-white' : 'text-slate-400'}`} />
+        <span>Đặt khám Bệnh viện</span>
+      </button>
+
+      <Link
+        className="hover:text-blue-600 text-slate-700 transition-colors flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-slate-50"
+        href="#tin-y-te"
+      >
+        <Newspaper className="w-4 h-4 text-slate-400" />
+        <span>Tin Y tế</span>
+      </Link>
+    </nav>
+  );
+}
+
+function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
+  if (mobile) {
+    return (
+      <div className="space-y-2">
+        <div className="h-10 bg-slate-50 rounded-xl"></div>
+        <div className="h-10 bg-slate-50 rounded-xl"></div>
+      </div>
+    );
+  }
+  return (
+    <nav className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
+      <div className="px-3.5 py-2 text-slate-700 flex items-center gap-1.5">
+        <Stethoscope className="w-4 h-4 text-blue-600" />
+        <span>Đặt khám Bác sĩ</span>
+      </div>
+      <div className="px-3.5 py-2 text-slate-700 flex items-center gap-1.5">
+        <Building2 className="w-4 h-4 text-slate-400" />
+        <span>Đặt khám Bệnh viện</span>
+      </div>
+      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
+        <Newspaper className="w-4 h-4 text-slate-400" />
+        <span>Tin Y tế</span>
+      </div>
+    </nav>
+  );
+}
+
+export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
@@ -42,28 +171,9 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-700">
-          <button
-            onClick={() => handleTabClick('doctor')}
-            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer"
-            type="button"
-          >
-            <Stethoscope className="w-4 h-4 text-blue-600" />
-            <span>Đặt khám Bác sĩ</span>
-          </button>
-          <button
-            onClick={() => handleTabClick('hospital')}
-            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer"
-            type="button"
-          >
-            <Building2 className="w-4 h-4 text-slate-400 hover:text-blue-600" />
-            <span>Đặt khám Bệnh viện</span>
-          </button>
-          <Link className="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="#tin-y-te">
-            <Newspaper className="w-4 h-4 text-slate-400" />
-            <span>Tin Y tế</span>
-          </Link>
-        </nav>
+        <Suspense fallback={<NavLinksFallback />}>
+          <NavLinksContent onSelectTab={onSelectTab} />
+        </Suspense>
 
         {/* Account / Action Button */}
         <div className="flex items-center space-x-3">
@@ -90,35 +200,14 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-3">
-          <button
-            onClick={() => handleTabClick('doctor')}
-            className="w-full text-left py-2 px-3 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2"
-          >
-            <Stethoscope className="w-4 h-4 text-blue-600" />
-            <span>Đặt khám Bác sĩ</span>
-          </button>
-          <button
-            onClick={() => handleTabClick('hospital')}
-            className="w-full text-left py-2 px-3 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2"
-          >
-            <Building2 className="w-4 h-4 text-blue-600" />
-            <span>Đặt khám Bệnh viện</span>
-          </button>
-          <button
-            onClick={() => handleTabClick('clinic')}
-            className="w-full text-left py-2 px-3 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2"
-          >
-            <Activity className="w-4 h-4 text-blue-600" />
-            <span>Đặt khám Phòng khám</span>
-          </button>
-          <Link
-            href="#tin-y-te"
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-left py-2 px-3 rounded-lg text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2"
-          >
-            <Newspaper className="w-4 h-4 text-blue-600" />
-            <span>Tin Y tế</span>
-          </Link>
+          <Suspense fallback={<NavLinksFallback mobile />}>
+            <NavLinksContent
+              onSelectTab={onSelectTab}
+              mobile
+              onCloseMobile={() => setMobileMenuOpen(false)}
+            />
+          </Suspense>
+
           <div className="pt-2">
             <Link
               className="w-full inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-all"

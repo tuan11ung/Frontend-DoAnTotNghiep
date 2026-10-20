@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Search, ShieldCheck } from 'lucide-react';
 import { AppointmentTabType } from '@/src/types/medical';
 
@@ -11,23 +12,24 @@ interface HeroSectionProps {
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectTab, onSearch }) => {
+  const router = useRouter();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const query = formData.get('query') as string;
+    const query = ((formData.get('query') as string) || '').trim();
     if (onSearch) {
       onSearch(query);
+    }
+    if (query) {
+      router.push(`/search?keyword=${encodeURIComponent(query)}`);
+    } else {
+      router.push('/search');
     }
   };
 
   const handleSuggestionClick = (specialty: string) => {
-    if (onSelectTab) {
-      onSelectTab('doctor');
-    }
-    const element = document.getElementById('view-doctor');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+    router.push(`/search?specialty=${encodeURIComponent(specialty)}`);
   };
 
   return (

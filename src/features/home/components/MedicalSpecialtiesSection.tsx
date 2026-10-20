@@ -105,7 +105,7 @@ export const MedicalSpecialtiesSection: React.FC<MedicalSpecialtiesSectionProps>
             <Link
               key={spec.id}
               className="group bg-white p-4 rounded-2xl border border-slate-100 hover:border-blue-200 shadow-xs hover:shadow-md card-hover-transition flex flex-col items-center text-center cursor-pointer"
-              href={spec.linkUrl || '#chuyen-khoa'}
+              href={`/search?specialty=${encodeURIComponent(spec.name)}`}
             >
               <div
                 className={`w-14 h-14 rounded-2xl ${spec.iconBgClass} ${spec.iconColorClass} flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition-transform`}
@@ -121,13 +121,13 @@ export const MedicalSpecialtiesSection: React.FC<MedicalSpecialtiesSectionProps>
 
         {/* View more specialties button */}
         <div className="mt-10 text-center">
-          <button
+          <Link
             className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-white border border-blue-200 px-6 py-2.5 rounded-full shadow-xs hover:shadow transition-all cursor-pointer"
-            type="button"
+            href="/search"
           >
             <span>Xem thêm 20+ chuyên khoa khác</span>
             <ChevronDown className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>
