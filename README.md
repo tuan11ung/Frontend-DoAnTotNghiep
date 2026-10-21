@@ -5,6 +5,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 2. `npm run dev` hoặc `pnpm dev`
 3. Mở `http://localhost:3000` để xem giao diện sau khi khởi chạy
 
+## Quy tắc phát triển
+- [Quy tắc phát triển module frontend](docs/frontend-module-guidelines.md)
 
 Phần dưới là README.md tự động tạo
 ## Getting Started
