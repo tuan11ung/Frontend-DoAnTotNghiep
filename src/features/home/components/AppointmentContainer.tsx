@@ -5,7 +5,6 @@ import { AppointmentTabType } from '@/src/types/medical';
 import { AppointmentTabs } from './AppointmentTabs';
 import { FeaturedDoctorsSection } from './FeaturedDoctorsSection';
 import { HospitalSection } from './HospitalSection';
-import { ClinicListSection } from './ClinicListSection';
 import { MedicalSpecialtiesSection } from './MedicalSpecialtiesSection';
 import { FeatureGuarantees } from './FeatureGuarantees';
 
@@ -20,7 +19,7 @@ export const AppointmentContainer: React.FC<AppointmentContainerProps> = ({
   currentTab,
   onTabChange,
 }) => {
-  const [internalTab, setInternalTab] = useState<'doctor' | 'hospital' | 'clinic'>(initialTab);
+  const [internalTab, setInternalTab] = useState<AppointmentTabType>(initialTab);
   const activeTab = currentTab ?? internalTab;
 
   const handleTabChange = (tab: AppointmentTabType) => {
@@ -46,13 +45,6 @@ export const AppointmentContainer: React.FC<AppointmentContainerProps> = ({
       {activeTab === 'hospital' && (
         <>
           <HospitalSection />
-          <FeatureGuarantees />
-        </>
-      )}
-
-      {activeTab === 'clinic' && (
-        <>
-          <ClinicListSection />
           <FeatureGuarantees />
         </>
       )}

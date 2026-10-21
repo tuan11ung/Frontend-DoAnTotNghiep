@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Activity, Phone, Mail, MapPin, Award, Smartphone } from 'lucide-react';
 import { AppointmentTabType } from '@/src/types/medical';
 
@@ -10,6 +11,14 @@ interface PublicFooterProps {
 }
 
 export const PublicFooter: React.FC<PublicFooterProps> = ({ onSelectTab }) => {
+  const router = useRouter();
+
+  const handleServiceClick = (tab: AppointmentTabType) => {
+    if (onSelectTab) {
+      onSelectTab(tab);
+    }
+    router.push(`/search?type=${tab}`);
+  };
   return (
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800" data-purpose="site-main-footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +62,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onSelectTab }) => {
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>
                 <button
-                  onClick={() => onSelectTab?.('doctor')}
+                  onClick={() => handleServiceClick('doctor')}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                   type="button"
                 >
@@ -62,20 +71,11 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onSelectTab }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onSelectTab?.('hospital')}
+                  onClick={() => handleServiceClick('hospital')}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                   type="button"
                 >
                   Đặt khám Bệnh viện Công &amp; Tư
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onSelectTab?.('clinic')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                  type="button"
-                >
-                  Đặt khám Phòng khám Kỹ thuật cao
                 </button>
               </li>
               <li>
