@@ -1,15 +1,26 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
+import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { Activity, User, Menu, X, Stethoscope, Building2, Newspaper } from 'lucide-react';
 import { AppointmentTabType } from '@/src/types/medical';
+import { hasStoredPatientSession } from '@/src/features/auth/auth-storage';
 
 interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
 }
 
+export const PublicHeader: ({onSelectTab}: { onSelectTab: any }) => void = ({ onSelectTab }) => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const syncAuthentication = () => setIsAuthenticated(hasStoredPatientSession());
+    syncAuthentication();
+    window.addEventListener('storage', syncAuthentication);
+    return () => window.removeEventListener('storage', syncAuthentication);
+  }, []);
 interface NavLinksProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
   mobile?: boolean;
@@ -174,16 +185,48 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
         <Suspense fallback={<NavLinksFallback />}>
           <NavLinksContent onSelectTab={onSelectTab} />
         </Suspense>
+        <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-700">
+          <button
+            onClick={() => handleTabClick('doctor')}
+            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer"
+            type="button"
+          >
+            {/* <Stethoscope className="w-4 h-4 text-blue-600" /> */}
+            <span>Đặt khám Bác sĩ</span>
+          </button>
+          <button
+            onClick={() => handleTabClick('hospital')}
+            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer"
+            type="button"
+          >
+            {/* <Building2 className="w-4 h-4 text-slate-400 hover:text-blue-600" /> */}
+            <span>Đặt khám Bệnh viện</span>
+          </button>
+          <Link className="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="#tin-y-te">
+            {/* <Newspaper className="w-4 h-4 text-slate-400" /> */}
+            <span>Tin Y tế</span>
+          </Link>
+        </nav>
 
         {/* Account / Action Button */}
         <div className="flex items-center space-x-3">
-          <Link
-            className="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-full transition-all"
-            href="#dang-nhap"
-          >
-            <User className="w-4 h-4 mr-2" />
-            <span>Đăng nhập</span>
-          </Link>
+          {isAuthenticated ? (
+            <span
+              aria-label="Đã đăng nhập"
+              className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700"
+              title="Tài khoản bệnh nhân"
+            >
+              <CircleUserRound aria-hidden="true" className="h-6 w-6" />
+            </span>
+          ) : (
+            <Link
+              className="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-lg transition-all"
+              href="/patient/login"
+            >
+              <User className="w-4 h-4 mr-2" />
+              <span>Đăng nhập</span>
+            </Link>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -209,14 +252,25 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
           </Suspense>
 
           <div className="pt-2">
-            <Link
-              className="w-full inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-full transition-all"
-              href="#dang-nhap"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <User className="w-4 h-4 mr-2" />
-              <span>Đăng nhập</span>
-            </Link>
+            {isAuthenticated ? (
+              <div
+                aria-label="Đã đăng nhập"
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-blue-700"
+                title="Tài khoản bệnh nhân"
+              >
+                <CircleUserRound aria-hidden="true" className="h-5 w-5" />
+                <span>Tài khoản bệnh nhân</span>
+              </div>
+            ) : (
+              <Link
+                className="w-full inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all"
+                href="/patient/login"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <User className="w-4 h-4 mr-2" />
+                <span>Đăng nhập</span>
+              </Link>
+            )}
           </div>
         </div>
       )}
