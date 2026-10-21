@@ -11,16 +11,6 @@ interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
 }
 
-export const PublicHeader: ({onSelectTab}: { onSelectTab: any }) => void = ({ onSelectTab }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const syncAuthentication = () => setIsAuthenticated(hasStoredPatientSession());
-    syncAuthentication();
-    window.addEventListener('storage', syncAuthentication);
-    return () => window.removeEventListener('storage', syncAuthentication);
-  }, []);
 interface NavLinksProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
   mobile?: boolean;
@@ -162,6 +152,14 @@ function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
 
 export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const syncAuthentication = () => setIsAuthenticated(hasStoredPatientSession());
+    syncAuthentication();
+    window.addEventListener('storage', syncAuthentication);
+    return () => window.removeEventListener('storage', syncAuthentication);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
@@ -185,28 +183,6 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
         <Suspense fallback={<NavLinksFallback />}>
           <NavLinksContent onSelectTab={onSelectTab} />
         </Suspense>
-        <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-700">
-          <button
-            onClick={() => handleTabClick('doctor')}
-            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer"
-            type="button"
-          >
-            {/* <Stethoscope className="w-4 h-4 text-blue-600" /> */}
-            <span>Đặt khám Bác sĩ</span>
-          </button>
-          <button
-            onClick={() => handleTabClick('hospital')}
-            className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer"
-            type="button"
-          >
-            {/* <Building2 className="w-4 h-4 text-slate-400 hover:text-blue-600" /> */}
-            <span>Đặt khám Bệnh viện</span>
-          </button>
-          <Link className="hover:text-blue-600 transition-colors flex items-center gap-1.5" href="#tin-y-te">
-            {/* <Newspaper className="w-4 h-4 text-slate-400" /> */}
-            <span>Tin Y tế</span>
-          </Link>
-        </nav>
 
         {/* Account / Action Button */}
         <div className="flex items-center space-x-3">
