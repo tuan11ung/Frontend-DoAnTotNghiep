@@ -38,7 +38,7 @@ export function LoginScreen() {
               Chưa có tài khoản?
               <Link
                 className="inline-flex items-center gap-1 font-bold text-blue-700 transition-colors hover:text-blue-800"
-                href="#patient-registration"
+                href="/patient/register"
               >
                 Đăng ký ngay
                 <ArrowRight aria-hidden="true" className="h-4 w-4" />
