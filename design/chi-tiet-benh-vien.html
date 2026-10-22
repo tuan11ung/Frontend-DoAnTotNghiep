@@ -1,18 +1,26 @@
-﻿<!DOCTYPE html><html class="scroll-smooth" lang="vi" style=""><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>MedConnect - Nền tảng Đặt khám &amp; Y tế Trực tuyến Hàng đầu</title>
-<!-- Google Fonts: Manrope -->
-<link href="https://fonts.googleapis.com" rel="preconnect">
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<!-- Font Awesome CDN for Medical Icons -->
-<link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" referrerpolicy="no-referrer" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<!-- Tailwind CSS CDN with forms and container queries -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<!-- Tailwind Custom Config -->
-<script id="tailwind-config">
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="vi" style="">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>MedConnect - Nền tảng Đặt khám &amp; Y tế Trực tuyến Hàng đầu</title>
+  <!-- Google Fonts: Manrope -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+    rel="stylesheet">
+  <!-- Font Awesome CDN for Medical Icons -->
+  <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    referrerpolicy="no-referrer" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <!-- Tailwind CSS CDN with forms and container queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Tailwind Custom Config -->
+  <script id="tailwind-config">
     tailwind.config = {
       theme: {
         extend: {
@@ -36,8 +44,8 @@
       }
     }
   </script>
-<!-- Custom Styles for UI Enhancements -->
-<style data-purpose="typography">
+  <!-- Custom Styles for UI Enhancements -->
+  <style data-purpose="typography">
     body {
       font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: #1e293b;
@@ -45,874 +53,1083 @@
       -webkit-font-smoothing: antialiased;
     }
   </style>
-<style data-purpose="effects">
+  <style data-purpose="effects">
     .hero-bg {
       background: linear-gradient(135deg, #0d64e8 0%, #0056d6 50%, #004bbb 100%);
     }
+
     .custom-scrollbar-hide::-webkit-scrollbar {
       display: none;
     }
+
     .custom-scrollbar-hide {
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
     .card-hover-transition {
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     .card-hover-transition:hover {
       transform: translateY(-4px);
     }
   </style>
-<meta content="web_standard" name="shell-type"></head>
+  <meta content="web_standard" name="shell-type">
+</head>
+
 <body class="min-h-screen flex flex-col bg-white overflow-x-hidden selection:bg-blue-100 selection:text-blue-700">
-<!-- BEGIN: MainHeader -->
-<header class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-<!-- Logo MedConnect -->
-<a aria-label="MedConnect Trang chủ" class="flex items-center gap-2.5 group" href="#">
-<div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-<i class="fa-solid fa-notes-medical text-xl"></i>
-</div>
-<div class="flex flex-col">
-<span class="text-2xl font-extrabold tracking-tight text-blue-600 leading-none">
+  <!-- BEGIN: MainHeader -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo MedConnect -->
+      <a aria-label="MedConnect Trang chủ" class="flex items-center gap-2.5 group" href="#">
+        <div
+          class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-notes-medical text-xl"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-2xl font-extrabold tracking-tight text-blue-600 leading-none">
             Med<span class="text-emerald-500">Connect</span>
-</span>
-<span class="text-[10px] tracking-wider text-slate-400 font-semibold uppercase mt-0.5">Y tế &amp; Sức khỏe</span>
-</div>
-</a>
-<!-- Desktop Nav Links -->
-<nav aria-label="Thanh điều hướng chính" class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-700"><a class="hover:text-blue-600 transition-colors" href="#">Đặt khám Bác sĩ</a><a class="hover:text-blue-600 transition-colors text-blue-600" href="#">Đặt khám Bệnh viện</a><a class="hover:text-blue-600 transition-colors" href="#tin-y-te">Tin Y tế</a></nav>
-<!-- Account / Action Button -->
-<div class="flex items-center space-x-3">
-<a class="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-full transition-all" href="#">
-<i class="fa-regular fa-user mr-2 text-xs"></i>
+          </span>
+          <span class="text-[10px] tracking-wider text-slate-400 font-semibold uppercase mt-0.5">Y tế &amp; Sức
+            khỏe</span>
+        </div>
+      </a>
+      <!-- Desktop Nav Links -->
+      <nav aria-label="Thanh điều hướng chính"
+        class="hidden lg:flex items-center space-x-7 text-sm font-semibold text-slate-700"><a
+          class="hover:text-blue-600 transition-colors" href="#">Đặt khám Bác sĩ</a><a
+          class="hover:text-blue-600 transition-colors text-blue-600" href="#">Đặt khám Bệnh viện</a><a
+          class="hover:text-blue-600 transition-colors" href="#tin-y-te">Tin Y tế</a></nav>
+      <!-- Account / Action Button -->
+      <div class="flex items-center space-x-3">
+        <a class="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-full transition-all"
+          href="#">
+          <i class="fa-regular fa-user mr-2 text-xs"></i>
           Đăng nhập
         </a>
 
-</div>
-</div>
-</header>
-<!-- END: MainHeader -->
-<main class="flex-grow"><div class="flex flex-col w-full">
-<!-- Subtle Header Separator / Ambient glow -->
-<div class="w-full bg-gradient-to-b from-surface-container-high/40 to-transparent">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-<!-- 1. Breadcrumbs -->
-<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-label-md font-label-md text-on-surface-variant">
-<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
-<span class="material-symbols-outlined text-body-md">home</span>
-          Trang chủ
-        </a>
-<span class="text-outline-variant font-body-sm">/</span>
-<a class="hover:text-primary transition-colors" href="#">Bệnh viện</a>
-<span class="text-outline-variant font-body-sm">/</span>
-<span class="text-on-surface font-semibold text-label-md">Bệnh viện Nhi đồng 2</span>
-</nav>
-</div>
-</div>
-<!-- Main Body Content Container -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">
-<!-- 2. Hospital Profile Header Card -->
-<section class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-7 mb-6 relative overflow-hidden">
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-<!-- Left: Logo & Identity -->
-<div class="flex items-start sm:items-center gap-4 sm:gap-6">
-<!-- Hospital Emblem SVG Badge -->
-<div class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-secondary/10 via-secondary-container/20 to-surface-container flex items-center justify-center p-1.5 shadow-sm flex-shrink-0">
-<svg class="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-<circle cx="50" cy="50" fill="#f0fdf4" r="46" stroke="#059669" stroke-width="4"></circle>
-<circle cx="50" cy="50" fill="#ffffff" r="38"></circle>
-<!-- Pediatrics stylization icon: Caring figures & cross -->
-<path d="M50 22C46.6863 22 44 24.6863 44 28C44 31.3137 46.6863 34 50 34C53.3137 34 56 31.3137 56 28C56 24.6863 53.3137 22 50 22Z" fill="#006c4a"></path>
-<path d="M38 42C38 37.5817 41.5817 34 46 34H54C58.4183 34 62 37.5817 62 42V56H56V74C56 75.1046 55.1046 76 54 76H52C50.8954 76 50 75.1046 50 74V58H50V74C50 75.1046 49.1046 76 48 76H46C44.8954 76 44 75.1046 44 74V56H38V42Z" fill="#059669"></path>
-<circle cx="34" cy="46" fill="#f59e0b" r="5"></circle>
-<path d="M26 62C26 56.5 29.5 53 34 53C38.5 53 42 56.5 42 62V72H26V62Z" fill="#d97706"></path>
-<path d="M50 82C67.6731 82 82 67.6731 82 50" stroke="#10b981" stroke-linecap="round" stroke-width="3"></path>
-<path d="M18 50C18 67.6731 32.3269 82 50 82" stroke="#10b981" stroke-linecap="round" stroke-width="3"></path>
-</svg>
-<span class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center text-[10px] font-bold shadow-sm" title="Hạng 1 TP.HCM">1</span>
-</div>
-<!-- Titles & Slogan -->
-<div class="space-y-1.5">
-<div class="flex flex-wrap items-center gap-2.5">
-<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Bệnh viện Nhi đồng 2</h1>
-<span class="bg-secondary/10 text-secondary font-label-sm text-label-sm px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
-<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">verified</span>
-                Bệnh viện Tuyến 1
-              </span>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant italic">
-              “Thân thiện như chính ngôi nhà của bạn”
-            </p>
-<div class="flex items-center gap-4 text-body-sm text-outline pt-1">
+      </div>
+    </div>
+  </header>
+  <!-- END: MainHeader -->
+  <main class="flex-grow">
+    <div class="flex flex-col w-full">
+      <!-- Subtle Header Separator / Ambient glow -->
+      <div class="w-full bg-gradient-to-b from-surface-container-high/40 to-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <!-- 1. Breadcrumbs -->
+          <nav aria-label="Breadcrumb"
+            class="flex items-center gap-2 text-label-md font-label-md text-on-surface-variant">
+            <a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+              <span class="material-symbols-outlined text-body-md">home</span>
+              Trang chủ
+            </a>
+            <span class="text-outline-variant font-body-sm">/</span>
+            <a class="hover:text-primary transition-colors" href="#">Bệnh viện</a>
+            <span class="text-outline-variant font-body-sm">/</span>
+            <span class="text-on-surface font-semibold text-label-md">Bệnh viện Nhi đồng 2</span>
+          </nav>
+        </div>
+      </div>
+      <!-- Main Body Content Container -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">
+        <!-- 2. Hospital Profile Header Card -->
+        <section class="bg-surface-container-lowest rounded-xl shadow-sm p-5 sm:p-7 mb-6 relative overflow-hidden">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <!-- Left: Logo & Identity -->
+            <div class="flex items-start sm:items-center gap-4 sm:gap-6">
+              <!-- Hospital Emblem SVG Badge -->
+              <div
+                class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-secondary/10 via-secondary-container/20 to-surface-container flex items-center justify-center p-1.5 shadow-sm flex-shrink-0">
+                <svg class="w-full h-full" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" fill="#f0fdf4" r="46" stroke="#059669" stroke-width="4"></circle>
+                  <circle cx="50" cy="50" fill="#ffffff" r="38"></circle>
+                  <!-- Pediatrics stylization icon: Caring figures & cross -->
+                  <path
+                    d="M50 22C46.6863 22 44 24.6863 44 28C44 31.3137 46.6863 34 50 34C53.3137 34 56 31.3137 56 28C56 24.6863 53.3137 22 50 22Z"
+                    fill="#006c4a"></path>
+                  <path
+                    d="M38 42C38 37.5817 41.5817 34 46 34H54C58.4183 34 62 37.5817 62 42V56H56V74C56 75.1046 55.1046 76 54 76H52C50.8954 76 50 75.1046 50 74V58H50V74C50 75.1046 49.1046 76 48 76H46C44.8954 76 44 75.1046 44 74V56H38V42Z"
+                    fill="#059669"></path>
+                  <circle cx="34" cy="46" fill="#f59e0b" r="5"></circle>
+                  <path d="M26 62C26 56.5 29.5 53 34 53C38.5 53 42 56.5 42 62V72H26V62Z" fill="#d97706"></path>
+                  <path d="M50 82C67.6731 82 82 67.6731 82 50" stroke="#10b981" stroke-linecap="round" stroke-width="3">
+                  </path>
+                  <path d="M18 50C18 67.6731 32.3269 82 50 82" stroke="#10b981" stroke-linecap="round" stroke-width="3">
+                  </path>
+                </svg>
+                <span
+                  class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center text-[10px] font-bold shadow-sm"
+                  title="Hạng 1 TP.HCM">1</span>
+              </div>
+              <!-- Titles & Slogan -->
+              <div class="space-y-1.5">
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Bệnh viện Nhi đồng 2</h1>
+                  <span
+                    class="bg-secondary/10 text-secondary font-label-sm text-label-sm px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[13px]"
+                      style="font-variation-settings: 'FILL' 1;">verified</span>
+                    Bệnh viện Tuyến 1
+                  </span>
+                </div>
+                <p class="font-body-md text-body-md text-on-surface-variant italic">
+                  “Thân thiện như chính ngôi nhà của bạn”
+                </p>
+                <div class="flex items-center gap-4 text-body-sm text-outline pt-1">
 
 
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-body-md text-secondary">domain</span>
-                1.400 Giường bệnh
-              </span>
-</div>
-</div>
-</div>
-<!-- Right: Action Buttons Group -->
-<div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 self-start md:self-center"><button type="button" onclick="openBookingModal()" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-headline-sm text-headline-sm shadow-md shadow-blue-500/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"><span class="material-symbols-outlined text-headline-sm">calendar_month</span><span class="">Đặt khám ngay</span></button>
-<!-- Button Địa chỉ -->
-<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md shadow-sm transition-all duration-150" onclick="scrollToMap()" type="button">
-<span class="material-symbols-outlined text-primary text-body-lg">location_on</span>
-            Địa chỉ
-          </button>
-<!-- Button Zalo đặt khám -->
-
-<!-- Button Yêu thích -->
-
-</div>
-</div>
-<!-- 3. In-page Sub Navigation Tabs -->
-<div class="mt-8 pt-2 flex items-center gap-8 overflow-x-auto">
-<button class="pb-3 px-1 font-headline-sm text-headline-sm text-primary relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary flex items-center gap-2" id="tab-info-btn" onclick="switchHospitalTab('info')" type="button">
-<span class="material-symbols-outlined text-body-lg">info</span>
-          Thông tin
-        </button>
-<button class="pb-3 px-1 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent flex items-center gap-2 transition-all" id="tab-services-btn" onclick="switchHospitalTab('services')" type="button">
-<span class="material-symbols-outlined text-body-lg">medical_services</span>
-          Chuyên khám &amp; Dịch vụ
-        </button>
-</div>
-</section>
-<!-- 4. Photo Gallery Grid Section (Asymmetric Bento Mosaic) -->
-<section class="mb-10">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
-<!-- Primary Large Image: Outpatient Department Entrance -->
-<div class="lg:col-span-7 h-full relative rounded-xl overflow-hidden shadow-sm group h-56 sm:h-[420px]">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Modern spacious reception and outpatient hall of Children Hospital 2 in Ho Chi Minh City with pediatric information counter, family members and young kids, bright clean clinical lighting with welcoming blue and green interior cues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe5qqt8VtHZNepstT19tLFAQ-dEf3gwVqMjZDxkKNfgFa62Mox6FC7kYx09cMDW8uK8NeOSlzEoxFwTQsET_DO0SWt8UOsEuBm6yzf8wJ3d0-7rkE_llbWdi_HprYlnslWPZXdA5F1ZPaPX_5aZU_W2s3vEpiavYedtDtdqSbZ8j9WK-TQX1ye4AM7leH5gVSFOw4Bm08MAp9_K3WGwtLOR5s4v4cDyrd2Z-_dQk2aAjP7hFxs0jC6">
-<div class="absolute inset-0 bg-gradient-to-t from-on-surface/70 via-transparent to-transparent pointer-events-none"></div>
-<div class="absolute bottom-4 left-4 right-4 text-surface-container-lowest">
-<span class="inline-block bg-primary text-on-primary text-label-sm font-label-sm px-2 py-0.5 rounded-full mb-1">Khu vực chính</span>
-<h3 class="font-headline-sm text-headline-sm text-white">Khoa Khám Bệnh - Sảnh Tiếp Đón Trung Tâm</h3>
-<p class="font-body-sm text-body-sm text-surface-container-high opacity-90 line-clamp-1">Khu lễ tân hướng dẫn đăng ký khám tập trung, điều phối dòng bệnh nhi chuyên nghiệp</p>
-</div>
-</div>
-<!-- Right Side: Secondary Images Stacked -->
-<div class="hidden sm:grid lg:col-span-5 grid-cols-2 lg:grid-rows-2 gap-3.5 h-full sm:h-[420px]">
-<!-- Sub-photo 1: Hospital Modern Block Exterior -->
-<div class="relative rounded-xl overflow-hidden shadow-sm group">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Modern multi-story building exterior of Children's Hospital 2 showing glass facade, wide entrance plaza with ambulances, shaded park trees and peaceful urban greenery in District 1 Saigon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKA1o_k7ryUEViSKp71wyNmHjX9U4OQWbEMgQIYYcNl0Xo3836P-8myYQLaSg67jp6RhloZPBzKoWu3OAl248cU_pfHvSTFwniT2Nky9jo6oiH4s1tcKxtLXuWAW_B5IdsRlHgWmMGxz3fFS_pRhzi4k7V76Tfyfghg3eIUexwFNkNFnCF_yzIU9A31E_aCVgP7VnWNMr5a4HFIe_m2cUYMObjVyJbWpcnA7b8NX28sr0zy0GY_EST">
-<div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 to-transparent pointer-events-none"></div>
-<span class="absolute bottom-2.5 left-2.5 text-white font-label-sm text-label-sm bg-on-surface/60 px-2 py-0.5 rounded backdrop-blur-sm">Tòa nhà điều trị kỹ thuật cao</span>
-</div>
-<!-- Sub-photo 2: Shaded French Colonial Historical Heritage Yard -->
-<div class="relative rounded-xl overflow-hidden shadow-sm group">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Lush green botanical courtyard at Children's Hospital 2 with ancient canopy trees, French colonial arcade balcony hospital architecture, pedestrian walkways, and sunlit peaceful garden." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1Zx5jpYdT9at8XFiaFLWd76f36NDhhq-MgZu9A6INrqL_rXyl8N5OLExrx3mrHwodXqjQxQe7Oto24n-J9y8wJFP2LYCBCzBwWDIncxoOEhHllRFntWP36XsBGCP3UpvbX1NhQk9vlQEwn6sgXLuUaFmoWheekCCoUWnZK9wZy-em4LQ4lkYLHnt0emDIMmFEgHjihMwdfIroqDM_QEGDliQeXVxu6vuJl6j6VHSejsEWDYCybe6r">
-<div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 to-transparent pointer-events-none"></div>
-<span class="absolute bottom-2.5 left-2.5 text-white font-label-sm text-label-sm bg-on-surface/60 px-2 py-0.5 rounded backdrop-blur-sm">Khuôn viên di sản 8,6 hecta</span>
-</div>
-<!-- Sub-photo 3: Clinical Diagnostic Pediatric Center with Counter badge -->
-<div class="relative rounded-xl overflow-hidden shadow-sm col-span-2 group">
-<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="Pediatric vaccination and specialty consultation ward room inside Children Hospital 2 with friendly pediatricians examining child patients in bright sterile clinic room." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASAggKOaEVcC9KqoAn_sT21jgJ9dh9mODWoAlAu_rm7jyXQ53GPUTR7_6CbRpZzwdDhvM-JlkQX4_v4vHzRXdnU3sKJRuC39531Fqg2zMewEWbNQf6zq6_uL9hXV8Ot6d5EsJ31qcrVGkEYrSL7eeMYRQuUslGPLe4DrXQL9r4vVpe9W_xYYGEPA1B5i7MeqM6Wg3LOG-MYReZqeSWtZW0cUOrt75J9uHihaBHALWycWi8fEDwD71i">
-<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 to-transparent pointer-events-none"></div>
-<div class="absolute bottom-3 left-3 text-white font-label-sm text-label-sm bg-on-surface/60 px-2.5 py-1 rounded backdrop-blur-sm">
-              Khoa Khám Yêu Cầu &amp; Tiêm Chủng
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-body-md text-secondary">domain</span>
+                    1.400 Giường bệnh
+                  </span>
+                </div>
+              </div>
             </div>
-<!-- Gallery Counter Badge (Inspired by reference '📷 3') -->
-<button class="absolute bottom-3 right-3 bg-on-surface/85 hover:bg-on-surface text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-label-sm font-label-sm shadow-md backdrop-blur-md transition-all" type="button">
-<span class="material-symbols-outlined text-body-md">photo_camera</span>
-<span class="">8 ảnh cơ sở vật chất</span>
-</button>
-</div>
-</div>
-</div>
-</section>
-<!-- 5. Primary Call To Action (Booking Button) -->
+            <!-- Right: Action Buttons Group -->
+            <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 self-start md:self-center"><button
+                type="button" onclick="openBookingModal()"
+                class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-headline-sm text-headline-sm shadow-md shadow-blue-500/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"><span
+                  class="material-symbols-outlined text-headline-sm">calendar_month</span><span class="">Đặt khám
+                  ngay</span></button>
+              <!-- Button Địa chỉ -->
+              <button
+                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md shadow-sm transition-all duration-150"
+                onclick="scrollToMap()" type="button">
+                <span class="material-symbols-outlined text-primary text-body-lg">location_on</span>
+                Địa chỉ
+              </button>
+              <!-- Button Zalo đặt khám -->
 
-<!-- MAIN TWO-COLUMN CONTENT GRID: Tab Info View -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-8" id="view-info-container">
-<!-- LEFT COLUMN: Giới thiệu & Chuyên khoa (Span 7) -->
-<div class="lg:col-span-7 space-y-8">
-<!-- 6. About Section -->
-<article class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm">
-<div class="flex items-center justify-between mb-4">
-<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2.5">
-<span class="w-2.5 h-6 rounded-full bg-primary inline-block"></span>
-              Giới thiệu
-            </h2>
-<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/30 text-on-surface"><span class="material-symbols-outlined text-primary text-body-md">payments</span><div class="flex items-center gap-1.5 text-body-sm font-medium"><span class="text-on-surface-variant">Phí khám tham khảo:</span><span class="font-code-sm font-bold text-primary">150.000đ - 500.000đ</span></div><span class="text-outline-variant">•</span><a class="text-primary hover:underline font-label-sm text-label-sm font-semibold" href="#bang-gia-modal" onclick="alert('Bảng giá công khai theo thông tư Bộ Y Tế: Khám thường: 42.100đ | Khám chuyên khoa hẹn giờ: 150.000đ | Khám theo yêu cầu VIP: 300.000đ - 500.000đ'); return false;">Xem chi tiết</a></div>
-</div>
-<!-- Description text with read more collapse -->
-<div class="space-y-3.5 font-body-md text-body-md text-on-surface-variant leading-relaxed">
-<p class="text-on-surface font-medium">
-<strong>Bệnh viện Nhi Đồng 2</strong> tọa lạc trên một khu đất cao với diện tích <strong>8,6 hecta</strong>, giáp 4 mặt tiền đường: <em>Lý Tự Trọng, Chu Mạnh Trinh, Nguyễn Du và Hai Bà Trưng (Quận 1)</em>. Bệnh viện có vị trí đẹp và gắn liền với quá trình phát triển lịch sử của thành phố.
-            </p>
-<p class="">
-              Được thành lập từ ngày <strong>01/06/1978</strong>; Bệnh viện Nhi đồng 2 là bệnh viện chuyên khoa Nhi – hạng 1, trực thuộc Sở Y tế TP.HCM. Đồng thời, cũng là một trong 4 bệnh viện Nhi hàng đầu tại Việt Nam phụ trách công tác khám, chữa bệnh cho các bé từ 0 đến dưới 16 tuổi. Bệnh viện có quy mô <strong>1.400 giường bệnh</strong>, được xây dựng trong khuôn viên xanh mát, nhiều cây cổ thụ bóng râm thoáng đãng, sân chơi rộng rãi, đặc biệt thân thiện với trẻ em.
-            </p>
-<!-- Expandable Content -->
-<div class="space-y-3 pt-1 hidden" id="more-intro">
-<p class="">
-                Hệ thống trang thiết bị y tế hiện đại (hệ thống chụp MRI 1.5 Tesla, CT-Scanner đa lát cắt, phòng mổ nội soi tích hợp chuẩn quốc tế, máy ECMO can thiệp tuần hoàn ngoài cơ thể) cùng với đội ngũ các bác sĩ giỏi chuyên môn, giàu y đức đã đáp ứng tốt nhu cầu chăm sóc, can thiệp phẫu thuật ghép gan, ghép thận và các bệnh lý nhi sơ sinh phức tạp.
+              <!-- Button Yêu thích -->
+
+            </div>
+          </div>
+          <!-- 3. In-page Sub Navigation Tabs -->
+          <div class="mt-8 pt-2 flex items-center gap-8 overflow-x-auto">
+            <button
+              class="pb-3 px-1 font-headline-sm text-headline-sm text-primary relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary flex items-center gap-2"
+              id="tab-info-btn" onclick="switchHospitalTab('info')" type="button">
+              <span class="material-symbols-outlined text-body-lg">info</span>
+              Thông tin
+            </button>
+            <button
+              class="pb-3 px-1 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent flex items-center gap-2 transition-all"
+              id="tab-services-btn" onclick="switchHospitalTab('services')" type="button">
+              <span class="material-symbols-outlined text-body-lg">medical_services</span>
+              Chuyên khám &amp; Dịch vụ
+            </button>
+          </div>
+        </section>
+        <!-- 4. Photo Gallery Grid Section (Asymmetric Bento Mosaic) -->
+        <section class="mb-10">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
+            <!-- Primary Large Image: Outpatient Department Entrance -->
+            <div class="lg:col-span-7 h-full relative rounded-xl overflow-hidden shadow-sm group h-56 sm:h-[420px]">
+              <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                data-alt="Modern spacious reception and outpatient hall of Children Hospital 2 in Ho Chi Minh City with pediatric information counter, family members and young kids, bright clean clinical lighting with welcoming blue and green interior cues."
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe5qqt8VtHZNepstT19tLFAQ-dEf3gwVqMjZDxkKNfgFa62Mox6FC7kYx09cMDW8uK8NeOSlzEoxFwTQsET_DO0SWt8UOsEuBm6yzf8wJ3d0-7rkE_llbWdi_HprYlnslWPZXdA5F1ZPaPX_5aZU_W2s3vEpiavYedtDtdqSbZ8j9WK-TQX1ye4AM7leH5gVSFOw4Bm08MAp9_K3WGwtLOR5s4v4cDyrd2Z-_dQk2aAjP7hFxs0jC6">
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-on-surface/70 via-transparent to-transparent pointer-events-none">
+              </div>
+              <div class="absolute bottom-4 left-4 right-4 text-surface-container-lowest">
+                <span
+                  class="inline-block bg-primary text-on-primary text-label-sm font-label-sm px-2 py-0.5 rounded-full mb-1">Khu
+                  vực chính</span>
+                <h3 class="font-headline-sm text-headline-sm text-white">Khoa Khám Bệnh - Sảnh Tiếp Đón Trung Tâm</h3>
+                <p class="font-body-sm text-body-sm text-surface-container-high opacity-90 line-clamp-1">Khu lễ tân
+                  hướng dẫn đăng ký khám tập trung, điều phối dòng bệnh nhi chuyên nghiệp</p>
+              </div>
+            </div>
+            <!-- Right Side: Secondary Images Stacked -->
+            <div class="hidden sm:grid lg:col-span-5 grid-cols-2 lg:grid-rows-2 gap-3.5 h-full sm:h-[420px]">
+              <!-- Sub-photo 1: Hospital Modern Block Exterior -->
+              <div class="relative rounded-xl overflow-hidden shadow-sm group">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  data-alt="Modern multi-story building exterior of Children's Hospital 2 showing glass facade, wide entrance plaza with ambulances, shaded park trees and peaceful urban greenery in District 1 Saigon."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKA1o_k7ryUEViSKp71wyNmHjX9U4OQWbEMgQIYYcNl0Xo3836P-8myYQLaSg67jp6RhloZPBzKoWu3OAl248cU_pfHvSTFwniT2Nky9jo6oiH4s1tcKxtLXuWAW_B5IdsRlHgWmMGxz3fFS_pRhzi4k7V76Tfyfghg3eIUexwFNkNFnCF_yzIU9A31E_aCVgP7VnWNMr5a4HFIe_m2cUYMObjVyJbWpcnA7b8NX28sr0zy0GY_EST">
+                <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 to-transparent pointer-events-none">
+                </div>
+                <span
+                  class="absolute bottom-2.5 left-2.5 text-white font-label-sm text-label-sm bg-on-surface/60 px-2 py-0.5 rounded backdrop-blur-sm">Tòa
+                  nhà điều trị kỹ thuật cao</span>
+              </div>
+              <!-- Sub-photo 2: Shaded French Colonial Historical Heritage Yard -->
+              <div class="relative rounded-xl overflow-hidden shadow-sm group">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  data-alt="Lush green botanical courtyard at Children's Hospital 2 with ancient canopy trees, French colonial arcade balcony hospital architecture, pedestrian walkways, and sunlit peaceful garden."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1Zx5jpYdT9at8XFiaFLWd76f36NDhhq-MgZu9A6INrqL_rXyl8N5OLExrx3mrHwodXqjQxQe7Oto24n-J9y8wJFP2LYCBCzBwWDIncxoOEhHllRFntWP36XsBGCP3UpvbX1NhQk9vlQEwn6sgXLuUaFmoWheekCCoUWnZK9wZy-em4LQ4lkYLHnt0emDIMmFEgHjihMwdfIroqDM_QEGDliQeXVxu6vuJl6j6VHSejsEWDYCybe6r">
+                <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 to-transparent pointer-events-none">
+                </div>
+                <span
+                  class="absolute bottom-2.5 left-2.5 text-white font-label-sm text-label-sm bg-on-surface/60 px-2 py-0.5 rounded backdrop-blur-sm">Khuôn
+                  viên di sản 8,6 hecta</span>
+              </div>
+              <!-- Sub-photo 3: Clinical Diagnostic Pediatric Center with Counter badge -->
+              <div class="relative rounded-xl overflow-hidden shadow-sm col-span-2 group">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  data-alt="Pediatric vaccination and specialty consultation ward room inside Children Hospital 2 with friendly pediatricians examining child patients in bright sterile clinic room."
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuASAggKOaEVcC9KqoAn_sT21jgJ9dh9mODWoAlAu_rm7jyXQ53GPUTR7_6CbRpZzwdDhvM-JlkQX4_v4vHzRXdnU3sKJRuC39531Fqg2zMewEWbNQf6zq6_uL9hXV8Ot6d5EsJ31qcrVGkEYrSL7eeMYRQuUslGPLe4DrXQL9r4vVpe9W_xYYGEPA1B5i7MeqM6Wg3LOG-MYReZqeSWtZW0cUOrt75J9uHihaBHALWycWi8fEDwD71i">
+                <div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 to-transparent pointer-events-none">
+                </div>
+                <div
+                  class="absolute bottom-3 left-3 text-white font-label-sm text-label-sm bg-on-surface/60 px-2.5 py-1 rounded backdrop-blur-sm">
+                  Khoa Khám Yêu Cầu &amp; Tiêm Chủng
+                </div>
+                <!-- Gallery Counter Badge (Inspired by reference '📷 3') -->
+                <button
+                  class="absolute bottom-3 right-3 bg-on-surface/85 hover:bg-on-surface text-white px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-label-sm font-label-sm shadow-md backdrop-blur-md transition-all"
+                  type="button">
+                  <span class="material-symbols-outlined text-body-md">photo_camera</span>
+                  <span class="">8 ảnh cơ sở vật chất</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- 5. Primary Call To Action (Booking Button) -->
+
+        <!-- MAIN TWO-COLUMN CONTENT GRID: Tab Info View -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-8" id="view-info-container">
+          <!-- LEFT COLUMN: Giới thiệu & Chuyên khoa (Span 7) -->
+          <div class="lg:col-span-7 space-y-8">
+            <!-- 6. About Section -->
+            <article class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2.5">
+                  <span class="w-2.5 h-6 rounded-full bg-primary inline-block"></span>
+                  Giới thiệu
+                </h2>
+                <div
+                  class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-outline-variant/30 text-on-surface">
+                  <span class="material-symbols-outlined text-primary text-body-md">payments</span>
+                  <div class="flex items-center gap-1.5 text-body-sm font-medium"><span
+                      class="text-on-surface-variant">Phí khám tham khảo:</span><span
+                      class="font-code-sm font-bold text-primary">150.000đ - 500.000đ</span></div><span
+                    class="text-outline-variant">•</span><a
+                    class="text-primary hover:underline font-label-sm text-label-sm font-semibold"
+                    href="#bang-gia-modal"
+                    onclick="alert('Bảng giá công khai theo thông tư Bộ Y Tế: Khám thường: 42.100đ | Khám chuyên khoa hẹn giờ: 150.000đ | Khám theo yêu cầu VIP: 300.000đ - 500.000đ'); return false;">Xem
+                    chi tiết</a>
+                </div>
+              </div>
+              <!-- Description text with read more collapse -->
+              <div class="space-y-3.5 font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                <p class="text-on-surface font-medium">
+                  <strong>Bệnh viện Nhi Đồng 2</strong> tọa lạc trên một khu đất cao với diện tích <strong>8,6
+                    hecta</strong>, giáp 4 mặt tiền đường: <em>Lý Tự Trọng, Chu Mạnh Trinh, Nguyễn Du và Hai Bà Trưng
+                    (Quận 1)</em>. Bệnh viện có vị trí đẹp và gắn liền với quá trình phát triển lịch sử của thành phố.
+                </p>
+                <p class="">
+                  Được thành lập từ ngày <strong>01/06/1978</strong>; Bệnh viện Nhi đồng 2 là bệnh viện chuyên khoa Nhi
+                  – hạng 1, trực thuộc Sở Y tế TP.HCM. Đồng thời, cũng là một trong 4 bệnh viện Nhi hàng đầu tại Việt
+                  Nam phụ trách công tác khám, chữa bệnh cho các bé từ 0 đến dưới 16 tuổi. Bệnh viện có quy mô
+                  <strong>1.400 giường bệnh</strong>, được xây dựng trong khuôn viên xanh mát, nhiều cây cổ thụ bóng râm
+                  thoáng đãng, sân chơi rộng rãi, đặc biệt thân thiện với trẻ em.
+                </p>
+                <!-- Expandable Content -->
+                <div class="space-y-3 pt-1 hidden" id="more-intro">
+                  <p class="">
+                    Hệ thống trang thiết bị y tế hiện đại (hệ thống chụp MRI 1.5 Tesla, CT-Scanner đa lát cắt, phòng mổ
+                    nội soi tích hợp chuẩn quốc tế, máy ECMO can thiệp tuần hoàn ngoài cơ thể) cùng với đội ngũ các bác
+                    sĩ giỏi chuyên môn, giàu y đức đã đáp ứng tốt nhu cầu chăm sóc, can thiệp phẫu thuật ghép gan, ghép
+                    thận và các bệnh lý nhi sơ sinh phức tạp.
+                  </p>
+                  <p class="">
+                    Bệnh viện triển khai đồng bộ hóa quy trình tiếp đón và liên kết trực tiếp nền tảng MedConnect nhằm
+                    giảm thiểu thời gian chờ đợi tại quầy làm thủ tục cho quý phụ huynh.
+                  </p>
+                </div>
+                <!-- Toggle Button -->
+                <button
+                  class="text-primary hover:text-primary-container font-headline-sm text-label-md pt-1 inline-flex items-center gap-1 transition-colors"
+                  id="btn-toggle-intro" onclick="toggleReadMore()" type="button">
+                  <span id="read-more-text" class="">...Xem thêm</span>
+                  <span class="material-symbols-outlined text-body-sm" id="read-more-icon">expand_more</span>
+                </button>
+              </div>
+            </article>
+            <!-- 9. Chuyên khoa & Chuyên khám (Tags & Specialties) -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm space-y-6">
+              <div>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-body-lg">category</span>
+                  Chuyên khoa
+                </h3>
+                <div class="flex flex-wrap gap-2.5">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Nhi khoa Tổng quát
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Ngoại Nhi &amp; Phẫu thuật Nhi
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    Hồi sức Cấp cứu Sơ sinh (NICU)
+                  </span>
+                </div>
+              </div>
+              <div class="pt-2">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-body-lg">clinical_notes</span>
+                  Chuyên khám nổi bật
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div
+                    class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="">Khám Bệnh Thường Gặp</span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="">Khám Dinh Dưỡng &amp; Vi chất</span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="">Tiêm chủng mở rộng &amp; Dịch vụ</span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="">Khám Theo Yêu Cầu Chất Lượng Cao</span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="">Hô hấp &amp; Dị ứng Miễn dịch</span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
+                    <span class="material-symbols-outlined text-secondary text-body-md"
+                      style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    <span class="">Tâm lý &amp; Trẻ chậm phát triển ngôn ngữ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Location Map preview container -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm" id="hospital-map-section">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-body-lg">pin_drop</span>
+                  Vị trí &amp; Bản đồ chỉ đường
+                </h3>
+                <span class="font-code-sm text-code-sm text-outline">Q.1, TP. Hồ Chí Minh</span>
+              </div>
+              <div
+                class="w-full h-56 bg-cover bg-center rounded-lg relative overflow-hidden flex items-end p-4 shadow-inner"
+                data-location="Bệnh viện Nhi Đồng 2, 14 Lý Tự Trọng, Bến Nghé, Quận 1, TP Hồ Chí Minh"
+                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDOIJbyH-mXPHbe4svJDPIH5sIqDAmb9S_ymVVoOmg0bmDg9O_9Dc9ayZ_rIovss1ubLtyyvNpG4PwNQ0wUZZP__OEZz1qRSpi8AIkPD_P0fiZAqcoWnUNTDPBC_dlXdJqBCcTRDShga2FEksmWzzKTvdwqDVaeN_xIBsPiQaZlEalW6ZTqAOtEG4GR9uDMIR31ci4ljTD5DZczzHIYR39hWtgIPldrl_pcwdWGCZJG9uQooGfsYmqa')">
+                <div class="bg-surface-container-lowest/95 backdrop-blur-sm p-3 rounded-lg shadow-md max-w-sm">
+                  <p class="font-headline-sm text-label-md text-on-surface">Cổng chính: 14 Lý Tự Trọng, P. Bến Nghé,
+                    Quận 1</p>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">Cổng số 2: Đường Chu Mạnh Trinh (Cổng xe
+                    cấp cứu)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- RIGHT COLUMN: Giờ làm việc, Tổng đài & Hỗ trợ (Span 5) -->
+          <div class="lg:col-span-5 space-y-6">
+            <!-- 7. Giờ làm việc (Working Hours Card) -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm">
+              <div class="flex items-center justify-between mb-5">
+                <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary text-headline-md">schedule</span>
+                  Giờ làm việc
+                </h2>
+                <span
+                  class="bg-secondary/10 text-secondary text-label-sm font-label-sm px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+                  Đang tiếp nhận khám
+                </span>
+              </div>
+              <div class="space-y-3 text-body-md font-body-md">
+                <!-- Row: T2 - T6 Sáng -->
+                <div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-outline text-body-lg">wb_sunny</span>
+                    <span class="text-on-surface font-medium">Thứ 2 đến Thứ 6, Buổi sáng</span>
+                  </div>
+                  <span
+                    class="font-code-sm text-code-sm font-semibold text-primary px-2.5 py-1 rounded bg-surface-container-lowest shadow-sm">
+                    7h00 - 11h00
+                  </span>
+                </div>
+                <!-- Row: T2 - T6 Chiều -->
+                <div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-outline text-body-lg">wb_twilight</span>
+                    <span class="text-on-surface font-medium">Thứ 2 đến Thứ 6, Buổi chiều</span>
+                  </div>
+                  <span
+                    class="font-code-sm text-code-sm font-semibold text-primary px-2.5 py-1 rounded bg-surface-container-lowest shadow-sm">
+                    13h00 - 16h00
+                  </span>
+                </div>
+                <!-- Row: T7 & CN Khám ngoài giờ -->
+                <div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-outline text-body-lg">weekend</span>
+                    <div>
+                      <span class="text-on-surface font-medium block">Thứ 7 và Chủ nhật</span>
+                      <span class="text-on-surface-variant font-body-sm text-body-sm">(Khám ngoài giờ / Dịch vụ)</span>
+                    </div>
+                  </div>
+                  <span
+                    class="font-code-sm text-code-sm font-semibold text-primary px-2.5 py-1 rounded bg-surface-container-lowest shadow-sm">
+                    7h00 - 19h00
+                  </span>
+                </div>
+                <!-- Row: Cấp cứu 24/7 -->
+                <div class="p-3.5 rounded-lg bg-error-container/40 flex items-center justify-between gap-3">
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-error text-body-lg">emergency</span>
+                    <span class="text-on-surface font-bold">Khoa Cấp Cứu</span>
+                  </div>
+                  <span
+                    class="font-label-md text-label-md font-bold text-on-error-container bg-error-container px-3 py-1 rounded-full uppercase tracking-wider">
+                    24 / 7
+                  </span>
+                </div>
+              </div>
+              <p class="mt-4 text-body-sm font-body-sm text-outline flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px]">info</span>
+                Phụ huynh nên đặt lịch trước ít nhất 12 tiếng để nhận đúng số thứ tự mong muốn.
               </p>
-<p class="">
-                Bệnh viện triển khai đồng bộ hóa quy trình tiếp đón và liên kết trực tiếp nền tảng MedConnect nhằm giảm thiểu thời gian chờ đợi tại quầy làm thủ tục cho quý phụ huynh.
+              <div
+                class="mt-3 p-2.5 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-between text-body-sm">
+                <div class="flex items-center gap-2 text-secondary font-medium"><span
+                    class="material-symbols-outlined text-body-md">free_cancellation</span><span class="">Chính sách Hủy
+                    lịch:</span><span class="font-bold text-on-surface">Hủy miễn phí trước 24h</span></div><span
+                  class="material-symbols-outlined text-secondary text-body-sm"
+                  style="font-variation-settings: 'FILL' 1;">verified</span>
+              </div>
+            </div>
+            <!-- 8. Khối Tổng đài hỗ trợ (Support Hotline Card) -->
+            <div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm">
+              <h2 class="font-headline-md text-headline-md text-on-surface mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-headline-md">headset_mic</span>
+                Tổng đài hỗ trợ
+              </h2>
+              <p class="font-body-sm text-body-sm text-on-surface-variant mb-5 leading-relaxed">
+                Trong trường hợp bạn cần hỗ trợ thêm thông tin hoặc giải đáp quy trình tiếp nhận, vui lòng liên hệ hệ
+                thống hotline bên dưới:
               </p>
-</div>
-<!-- Toggle Button -->
-<button class="text-primary hover:text-primary-container font-headline-sm text-label-md pt-1 inline-flex items-center gap-1 transition-colors" id="btn-toggle-intro" onclick="toggleReadMore()" type="button">
-<span id="read-more-text" class="">...Xem thêm</span>
-<span class="material-symbols-outlined text-body-sm" id="read-more-icon">expand_more</span>
-</button>
-</div>
-</article>
-<!-- 9. Chuyên khoa & Chuyên khám (Tags & Specialties) -->
-<div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm space-y-6">
-<div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-body-lg">category</span>
-              Chuyên khoa
-            </h3>
-<div class="flex flex-wrap gap-2.5">
-<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                Nhi khoa Tổng quát
-              </span>
-<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                Ngoại Nhi &amp; Phẫu thuật Nhi
-              </span>
-<span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                Hồi sức Cấp cứu Sơ sinh (NICU)
-              </span>
-</div>
-</div>
-<div class="pt-2">
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-3 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-body-lg">clinical_notes</span>
-              Chuyên khám nổi bật
-            </h3>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-<div class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="">Khám Bệnh Thường Gặp</span>
-</div>
-<div class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="">Khám Dinh Dưỡng &amp; Vi chất</span>
-</div>
-<div class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="">Tiêm chủng mở rộng &amp; Dịch vụ</span>
-</div>
-<div class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="">Khám Theo Yêu Cầu Chất Lượng Cao</span>
-</div>
-<div class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="">Hô hấp &amp; Dị ứng Miễn dịch</span>
-</div>
-<div class="flex items-center gap-2 p-3 rounded-lg bg-surface-container-low text-on-surface text-body-md font-medium">
-<span class="material-symbols-outlined text-secondary text-body-md" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-<span class="">Tâm lý &amp; Trẻ chậm phát triển ngôn ngữ</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Location Map preview container -->
-<div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm" id="hospital-map-section">
-<div class="flex items-center justify-between mb-4">
-<h3 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-body-lg">pin_drop</span>
-              Vị trí &amp; Bản đồ chỉ đường
-            </h3>
-<span class="font-code-sm text-code-sm text-outline">Q.1, TP. Hồ Chí Minh</span>
-</div>
-<div class="w-full h-56 bg-cover bg-center rounded-lg relative overflow-hidden flex items-end p-4 shadow-inner" data-location="Bệnh viện Nhi Đồng 2, 14 Lý Tự Trọng, Bến Nghé, Quận 1, TP Hồ Chí Minh" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDOIJbyH-mXPHbe4svJDPIH5sIqDAmb9S_ymVVoOmg0bmDg9O_9Dc9ayZ_rIovss1ubLtyyvNpG4PwNQ0wUZZP__OEZz1qRSpi8AIkPD_P0fiZAqcoWnUNTDPBC_dlXdJqBCcTRDShga2FEksmWzzKTvdwqDVaeN_xIBsPiQaZlEalW6ZTqAOtEG4GR9uDMIR31ci4ljTD5DZczzHIYR39hWtgIPldrl_pcwdWGCZJG9uQooGfsYmqa')">
-<div class="bg-surface-container-lowest/95 backdrop-blur-sm p-3 rounded-lg shadow-md max-w-sm">
-<p class="font-headline-sm text-label-md text-on-surface">Cổng chính: 14 Lý Tự Trọng, P. Bến Nghé, Quận 1</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">Cổng số 2: Đường Chu Mạnh Trinh (Cổng xe cấp cứu)</p>
-</div>
-</div>
-</div>
-</div>
-<!-- RIGHT COLUMN: Giờ làm việc, Tổng đài & Hỗ trợ (Span 5) -->
-<div class="lg:col-span-5 space-y-6">
-<!-- 7. Giờ làm việc (Working Hours Card) -->
-<div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm">
-<div class="flex items-center justify-between mb-5">
-<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-headline-md">schedule</span>
-              Giờ làm việc
-            </h2>
-<span class="bg-secondary/10 text-secondary text-label-sm font-label-sm px-2.5 py-1 rounded-full flex items-center gap-1">
-<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-              Đang tiếp nhận khám
-            </span>
-</div>
-<div class="space-y-3 text-body-md font-body-md">
-<!-- Row: T2 - T6 Sáng -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
-<div class="flex items-center gap-2.5">
-<span class="material-symbols-outlined text-outline text-body-lg">wb_sunny</span>
-<span class="text-on-surface font-medium">Thứ 2 đến Thứ 6, Buổi sáng</span>
-</div>
-<span class="font-code-sm text-code-sm font-semibold text-primary px-2.5 py-1 rounded bg-surface-container-lowest shadow-sm">
-                7h00 - 11h00
-              </span>
-</div>
-<!-- Row: T2 - T6 Chiều -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
-<div class="flex items-center gap-2.5">
-<span class="material-symbols-outlined text-outline text-body-lg">wb_twilight</span>
-<span class="text-on-surface font-medium">Thứ 2 đến Thứ 6, Buổi chiều</span>
-</div>
-<span class="font-code-sm text-code-sm font-semibold text-primary px-2.5 py-1 rounded bg-surface-container-lowest shadow-sm">
-                13h00 - 16h00
-              </span>
-</div>
-<!-- Row: T7 & CN Khám ngoài giờ -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between gap-3">
-<div class="flex items-center gap-2.5">
-<span class="material-symbols-outlined text-outline text-body-lg">weekend</span>
-<div>
-<span class="text-on-surface font-medium block">Thứ 7 và Chủ nhật</span>
-<span class="text-on-surface-variant font-body-sm text-body-sm">(Khám ngoài giờ / Dịch vụ)</span>
-</div>
-</div>
-<span class="font-code-sm text-code-sm font-semibold text-primary px-2.5 py-1 rounded bg-surface-container-lowest shadow-sm">
-                7h00 - 19h00
-              </span>
-</div>
-<!-- Row: Cấp cứu 24/7 -->
-<div class="p-3.5 rounded-lg bg-error-container/40 flex items-center justify-between gap-3">
-<div class="flex items-center gap-2.5">
-<span class="material-symbols-outlined text-error text-body-lg">emergency</span>
-<span class="text-on-surface font-bold">Khoa Cấp Cứu</span>
-</div>
-<span class="font-label-md text-label-md font-bold text-on-error-container bg-error-container px-3 py-1 rounded-full uppercase tracking-wider">
-                24 / 7
-              </span>
-</div>
-</div>
-<p class="mt-4 text-body-sm font-body-sm text-outline flex items-center gap-1.5">
-<span class="material-symbols-outlined text-[15px]">info</span>
-            Phụ huynh nên đặt lịch trước ít nhất 12 tiếng để nhận đúng số thứ tự mong muốn.
-          </p><div class="mt-3 p-2.5 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-between text-body-sm"><div class="flex items-center gap-2 text-secondary font-medium"><span class="material-symbols-outlined text-body-md">free_cancellation</span><span class="">Chính sách Hủy lịch:</span><span class="font-bold text-on-surface">Hủy miễn phí trước 24h</span></div><span class="material-symbols-outlined text-secondary text-body-sm" style="font-variation-settings: 'FILL' 1;">verified</span></div>
-</div>
-<!-- 8. Khối Tổng đài hỗ trợ (Support Hotline Card) -->
-<div class="bg-surface-container-lowest rounded-xl p-6 sm:p-7 shadow-sm">
-<h2 class="font-headline-md text-headline-md text-on-surface mb-2 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-headline-md">headset_mic</span>
-            Tổng đài hỗ trợ
-          </h2>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-5 leading-relaxed">
-            Trong trường hợp bạn cần hỗ trợ thêm thông tin hoặc giải đáp quy trình tiếp nhận, vui lòng liên hệ hệ thống hotline bên dưới:
-          </p>
-<div class="space-y-3">
-<!-- Link: Zalo đặt khám -->
+              <div class="space-y-3">
+                <!-- Link: Zalo đặt khám -->
 
-<!-- Link: Lịch khám bệnh -->
-<a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors group" href="#lich-kham" onclick="showScheduleQuickAlert(); return false;">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
-<span class="material-symbols-outlined text-body-lg">event_available</span>
-</div>
-<span class="font-headline-sm text-body-md text-on-surface group-hover:text-secondary transition-colors">Tra cứu lịch khám theo chuyên gia</span>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform text-body-md">arrow_forward</span>
-</a>
-<!-- Hotline: 19001215 -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center">
-<span class="material-symbols-outlined text-body-lg">phone_in_talk</span>
-</div>
-<div>
-<span class="font-body-sm text-body-sm text-on-surface-variant block">Tổng đài Bệnh viện</span>
-<a class="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors" href="tel:19001215">1900 1215</a>
-</div>
-</div>
-<a class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-primary text-label-sm font-label-sm shadow-sm hover:bg-primary hover:text-on-primary transition-all" href="tel:19001215">Gọi ngay</a>
-</div>
-<!-- Hotline: 19002805 MedConnect -->
-<div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-body-lg">support_agent</span>
-</div>
-<div>
-<span class="font-body-sm text-body-sm text-on-surface-variant block">Tổng đài hỗ trợ đặt khám MedConnect</span>
-<a class="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors" href="tel:19002805">1900 2805</a>
-</div>
-</div>
-<a class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-primary text-label-sm font-label-sm shadow-sm hover:bg-primary hover:text-on-primary transition-all" href="tel:19002805">Gọi ngay</a>
-</div>
-</div>
-</div>
-<!-- Safe Intake & Insurance Card -->
-<div class="bg-secondary/5 rounded-xl p-5 shadow-sm space-y-3">
-<div class="flex items-center gap-2.5 text-secondary">
-<span class="material-symbols-outlined text-headline-md" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
-<span class="font-headline-sm text-headline-sm">Chính sách BHYT &amp; Bảo lãnh viện phí</span>
-</div>
-<p class="font-body-sm text-body-sm text-on-surface-variant">
-            Bệnh viện Nhi Đồng 2 tiếp nhận thanh toán BHYT đúng tuyến &amp; trái tuyến theo quy định. Hỗ trợ liên kết thẻ bảo lãnh từ 25+ công ty bảo hiểm nhân thọ và tư nhân lớn tại Việt Nam.
-          </p>
-<div class="flex flex-wrap gap-2 pt-1 font-label-sm text-label-sm text-secondary">
-<span class="bg-surface-container-lowest px-2 py-0.5 rounded shadow-sm">✓ BHYT Toàn Quốc</span>
-<span class="bg-surface-container-lowest px-2 py-0.5 rounded shadow-sm">✓ Thẻ bảo hiểm Bảo Việt, AIA, Prudential, Manulife</span>
-</div>
-</div>
-</div>
-</div>
-<!-- TAB 2 VIEW: CHUYÊN KHÁM & DỊCH VỤ CHI TIẾT (Hidden by default, toggled via JS) -->
-<div class="hidden space-y-6" id="view-services-container">
-<div class="bg-surface-container-lowest rounded-xl p-6 sm:p-8 shadow-sm">
-<div class="flex items-center justify-between mb-6">
-<div>
-<h2 class="font-headline-md text-headline-md text-on-surface">Danh mục Chuyên khoa &amp; Phòng khám Bệnh viện Nhi Đồng 2</h2>
-<p class="font-body-md text-body-md text-on-surface-variant mt-1">Chọn gói khám hoặc chuyên khoa phù hợp để lấy số thứ tự trực tuyến</p>
-</div>
-<button class="text-primary hover:underline font-label-md text-label-md flex items-center gap-1" onclick="switchHospitalTab('info')" type="button">
-<span class="material-symbols-outlined text-body-md">arrow_back</span>
-            Quay lại thông tin chung
-          </button>
-</div>
-<!-- Clinical Service Cards Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-<!-- Card 1 -->
-<div class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-headline-sm">child_care</span>
-</span>
-<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-semibold">Tầng 1 - Khu A</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Bệnh Thường Gặp &amp; Cảm sốt</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Khám ho, sốt, sổ mũi, viêm tai giữa, phát ban và các bệnh nhiễm khuẩn đường ruột trẻ em.</p>
-</div>
-<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-<span class="font-code-sm text-code-sm text-primary font-bold">Từ 42.100đ</span>
-<button class="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors" onclick="openBookingModal('Khám Bệnh Thường Gặp')" type="button">Đặt lịch</button>
-</div>
-</div>
-<!-- Card 2 -->
-<div class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
-<span class="material-symbols-outlined text-headline-sm">vaccines</span>
-</span>
-<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-secondary/10 text-secondary font-semibold">Khu Tiêm Chủng</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Tiêm Chủng Mở Rộng &amp; Dịch Vụ</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Đầy đủ các loại vaccine 6in1, phế cầu, rota virus, viêm não Nhật Bản, cúm mùa với quy trình khám sàng lọc khắt khe.</p>
-</div>
-<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-<span class="font-code-sm text-code-sm text-secondary font-bold">Theo loại Vaccine</span>
-<button class="px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors" onclick="openBookingModal('Tiêm Chủng Trẻ Em')" type="button">Đặt lịch</button>
-</div>
-</div>
-<!-- Card 3 -->
-<div class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="w-10 h-10 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center">
-<span class="material-symbols-outlined text-headline-sm">nutrition</span>
-</span>
-<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-tertiary/10 text-tertiary font-semibold">Tầng 2 - Khu B</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Dinh Dưỡng &amp; Phát Triển Thể Chất</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Đo vi chất, tư vấn biếng ăn, suy dinh dưỡng, thừa cân béo phì cùng các chuyên gia dinh dưỡng đầu ngành.</p>
-</div>
-<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-<span class="font-code-sm text-code-sm text-tertiary font-bold">Từ 150.000đ</span>
-<button class="px-3.5 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-label-md text-label-md hover:bg-tertiary-container transition-colors" onclick="openBookingModal('Khám Dinh Dưỡng')" type="button">Đặt lịch</button>
-</div>
-</div>
-<!-- Card 4 -->
-<div class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-<span class="material-symbols-outlined text-headline-sm">hotel_class</span>
-</span>
-<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold">Khu Khám Chất Lượng Cao</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Theo Yêu Cầu Chất Lượng Cao (VIP)</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Khám chuyên gia TS.BS đầu ngành, phòng chờ riêng có máy lạnh, ưu tiên xét nghiệm nhanh trong ngày.</p>
-</div>
-<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-<span class="font-code-sm text-code-sm text-primary font-bold">Từ 300.000đ</span>
-<button class="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors" onclick="openBookingModal('Khám Theo Yêu Cầu VIP')" type="button">Đặt lịch</button>
-</div>
-</div>
-<!-- Card 5 -->
-<div class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
-<span class="material-symbols-outlined text-headline-sm">psychology</span>
-</span>
-<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-semibold">Tầng 3 - Khoa TL</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Tâm Lý &amp; Âm Ngữ Trị Liệu Trẻ Em</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Sàng lọc sớm chậm phát triển, tự kỷ, tăng động giảm chú ý (ADHD), can thiệp rối loạn phát âm ngôn ngữ.</p>
-</div>
-<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-<span class="font-code-sm text-code-sm text-secondary font-bold">Từ 200.000đ</span>
-<button class="px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors" onclick="openBookingModal('Tâm Lý &amp; Âm Ngữ Trị Liệu')" type="button">Đặt lịch</button>
-</div>
-</div>
-<!-- Card 6 -->
-<div class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
-<div>
-<div class="flex items-center justify-between mb-3">
-<span class="w-10 h-10 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center">
-<span class="material-symbols-outlined text-headline-sm">medical_services</span>
-</span>
-<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-tertiary/10 text-tertiary font-semibold">Khu Ngoại Nhi</span>
-</div>
-<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Ngoại Khoa &amp; Dị Tật Bẩm Sinh</h3>
-<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Tư vấn thoát vị bẹn, tinh hoàn ẩn, dị tật tay chân, dính thắng lưỡi, lỗ tiểu lệch thấp ở trẻ nhỏ.</p>
-</div>
-<div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
-<span class="font-code-sm text-code-sm text-tertiary font-bold">Từ 150.000đ</span>
-<button class="px-3.5 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-label-md text-label-md hover:bg-tertiary-container transition-colors" onclick="openBookingModal('Khám Ngoại Khoa Nhi')" type="button">Đặt lịch</button>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- BOOKING MODAL POPUP DIALOG -->
-<dialog class="rounded-xl shadow-2xl p-0 backdrop:bg-on-surface/50 max-w-lg w-full m-auto overflow-hidden" id="booking-modal">
-<div class="bg-surface-container-lowest flex flex-col">
-<!-- Modal Header -->
-<div class="p-5 bg-gradient-to-r from-primary to-primary-container text-white flex items-center justify-between">
-<div class="flex items-center gap-2.5">
-<span class="material-symbols-outlined text-headline-md">local_hospital</span>
-<div>
-<h3 class="font-headline-sm text-headline-sm text-white">Đặt khám - Bệnh viện Nhi Đồng 2</h3>
-<p class="font-body-sm text-body-sm text-on-primary-container">Chọn ngày &amp; thông tin bé</p>
-</div>
-</div>
-<button class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white" onclick="closeBookingModal()" type="button">
-<span class="material-symbols-outlined text-body-md">close</span>
-</button>
-</div>
-<!-- Modal Body Form -->
-<form class="p-6 space-y-4" method="dialog">
-<div>
-<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="patient-name">Họ và tên bệnh nhi (*)</label>
-<input class="w-full h-10 px-3.5 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" id="patient-name" placeholder="Ví dụ: Nguyễn Văn An" required="" type="text">
-</div>
-<div class="grid grid-cols-2 gap-3">
-<div>
-<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="patient-dob">Năm sinh / Ngày sinh (*)</label>
-<input class="w-full h-10 px-3 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" id="patient-dob" required="" type="date">
-</div>
-<div>
-<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="booking-date">Ngày muốn khám (*)</label>
-<input class="w-full h-10 px-3 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" id="booking-date" required="" type="date">
-</div>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="service-select">Dịch vụ / Chuyên khoa khám</label>
-<select class="w-full h-10 px-3.5 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary" id="service-select">
-<option value="Khám Bệnh Thường Gặp">Khám Bệnh Thường Gặp</option>
-<option value="Tiêm chủng mở rộng &amp; Dịch vụ">Tiêm chủng mở rộng &amp; Dịch vụ</option>
-<option value="Khám Dinh Dưỡng">Khám Dinh Dưỡng</option>
-<option value="Khám Theo Yêu Cầu Chất Lượng Cao">Khám Theo Yêu Cầu Chất Lượng Cao</option>
-<option value="Khám Ngoại Khoa Nhi">Khám Ngoại Khoa Nhi</option>
-</select>
-</div>
-<div>
-<label class="block font-label-md text-label-md text-on-surface mb-1.5" for="parent-phone">Số điện thoại phụ huynh nhận SMS (*)</label>
-<input class="w-full h-10 px-3.5 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary font-code-sm" id="parent-phone" placeholder="09xx xxx xxx" required="" type="tel">
-</div>
-<div class="pt-2 flex items-center justify-end gap-3">
-<button class="px-4 py-2 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container" onclick="closeBookingModal()" type="button">Hủy</button>
-<button class="px-5 py-2 rounded-lg bg-primary text-on-primary font-headline-sm text-headline-sm hover:bg-primary-container shadow-sm" onclick="confirmBooking()" type="button">Xác nhận đặt khám</button>
-</div>
-</form>
-</div>
-</dialog>
-</div>
-<!-- Page Interactive Script -->
-<script>
-  // Tab Switching between "Thông tin" and "Chuyên khám"
-  function switchHospitalTab(tabName) {
-    const btnInfo = document.getElementById('tab-info-btn');
-    const btnServices = document.getElementById('tab-services-btn');
-    const viewInfo = document.getElementById('view-info-container');
-    const viewServices = document.getElementById('view-services-container');
+                <!-- Link: Lịch khám bệnh -->
+                <a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors group"
+                  href="#lich-kham" onclick="showScheduleQuickAlert(); return false;">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-secondary/10 text-secondary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-body-lg">event_available</span>
+                    </div>
+                    <span
+                      class="font-headline-sm text-body-md text-on-surface group-hover:text-secondary transition-colors">Tra
+                      cứu lịch khám theo chuyên gia</span>
+                  </div>
+                  <span
+                    class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform text-body-md">arrow_forward</span>
+                </a>
+                <!-- Hotline: 19001215 -->
+                <div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-body-lg">phone_in_talk</span>
+                    </div>
+                    <div>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant block">Tổng đài Bệnh viện</span>
+                      <a class="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors"
+                        href="tel:19001215">1900 1215</a>
+                    </div>
+                  </div>
+                  <a class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-primary text-label-sm font-label-sm shadow-sm hover:bg-primary hover:text-on-primary transition-all"
+                    href="tel:19001215">Gọi ngay</a>
+                </div>
+                <!-- Hotline: 19002805 MedConnect -->
+                <div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-body-lg">support_agent</span>
+                    </div>
+                    <div>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant block">Tổng đài hỗ trợ đặt khám
+                        MedConnect</span>
+                      <a class="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors"
+                        href="tel:19002805">1900 2805</a>
+                    </div>
+                  </div>
+                  <a class="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-primary text-label-sm font-label-sm shadow-sm hover:bg-primary hover:text-on-primary transition-all"
+                    href="tel:19002805">Gọi ngay</a>
+                </div>
+              </div>
+            </div>
+            <!-- Safe Intake & Insurance Card -->
+            <div class="bg-secondary/5 rounded-xl p-5 shadow-sm space-y-3">
+              <div class="flex items-center gap-2.5 text-secondary">
+                <span class="material-symbols-outlined text-headline-md"
+                  style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+                <span class="font-headline-sm text-headline-sm">Chính sách BHYT &amp; Bảo lãnh viện phí</span>
+              </div>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">
+                Bệnh viện Nhi Đồng 2 tiếp nhận thanh toán BHYT đúng tuyến &amp; trái tuyến theo quy định. Hỗ trợ liên
+                kết thẻ bảo lãnh từ 25+ công ty bảo hiểm nhân thọ và tư nhân lớn tại Việt Nam.
+              </p>
+              <div class="flex flex-wrap gap-2 pt-1 font-label-sm text-label-sm text-secondary">
+                <span class="bg-surface-container-lowest px-2 py-0.5 rounded shadow-sm">✓ BHYT Toàn Quốc</span>
+                <span class="bg-surface-container-lowest px-2 py-0.5 rounded shadow-sm">✓ Thẻ bảo hiểm Bảo Việt, AIA,
+                  Prudential, Manulife</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- TAB 2 VIEW: CHUYÊN KHÁM & DỊCH VỤ CHI TIẾT (Hidden by default, toggled via JS) -->
+        <div class="hidden space-y-6" id="view-services-container">
+          <div class="bg-surface-container-lowest rounded-xl p-6 sm:p-8 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Danh mục Chuyên khoa &amp; Phòng khám Bệnh
+                  viện Nhi Đồng 2</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">Chọn gói khám hoặc chuyên khoa phù hợp
+                  để lấy số thứ tự trực tuyến</p>
+              </div>
+              <button class="text-primary hover:underline font-label-md text-label-md flex items-center gap-1"
+                onclick="switchHospitalTab('info')" type="button">
+                <span class="material-symbols-outlined text-body-md">arrow_back</span>
+                Quay lại thông tin chung
+              </button>
+            </div>
+            <!-- Clinical Service Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <!-- Card 1 -->
+              <div
+                class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-headline-sm">child_care</span>
+                    </span>
+                    <span
+                      class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-semibold">Tầng
+                      1 - Khu A</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Bệnh Thường Gặp &amp; Cảm
+                    sốt</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Khám ho, sốt, sổ mũi, viêm tai giữa,
+                    phát ban và các bệnh nhiễm khuẩn đường ruột trẻ em.</p>
+                </div>
+                <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+                  <span class="font-code-sm text-code-sm text-primary font-bold">Từ 42.100đ</span>
+                  <button
+                    class="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors"
+                    onclick="openBookingModal('Khám Bệnh Thường Gặp')" type="button">Đặt lịch</button>
+                </div>
+              </div>
+              <!-- Card 2 -->
+              <div
+                class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-headline-sm">vaccines</span>
+                    </span>
+                    <span
+                      class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-secondary/10 text-secondary font-semibold">Khu
+                      Tiêm Chủng</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Tiêm Chủng Mở Rộng &amp; Dịch Vụ
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Đầy đủ các loại vaccine 6in1, phế
+                    cầu, rota virus, viêm não Nhật Bản, cúm mùa với quy trình khám sàng lọc khắt khe.</p>
+                </div>
+                <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+                  <span class="font-code-sm text-code-sm text-secondary font-bold">Theo loại Vaccine</span>
+                  <button
+                    class="px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors"
+                    onclick="openBookingModal('Tiêm Chủng Trẻ Em')" type="button">Đặt lịch</button>
+                </div>
+              </div>
+              <!-- Card 3 -->
+              <div
+                class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="w-10 h-10 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-headline-sm">nutrition</span>
+                    </span>
+                    <span
+                      class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-tertiary/10 text-tertiary font-semibold">Tầng
+                      2 - Khu B</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Dinh Dưỡng &amp; Phát Triển
+                    Thể Chất</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Đo vi chất, tư vấn biếng ăn, suy
+                    dinh dưỡng, thừa cân béo phì cùng các chuyên gia dinh dưỡng đầu ngành.</p>
+                </div>
+                <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+                  <span class="font-code-sm text-code-sm text-tertiary font-bold">Từ 150.000đ</span>
+                  <button
+                    class="px-3.5 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-label-md text-label-md hover:bg-tertiary-container transition-colors"
+                    onclick="openBookingModal('Khám Dinh Dưỡng')" type="button">Đặt lịch</button>
+                </div>
+              </div>
+              <!-- Card 4 -->
+              <div
+                class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-headline-sm">hotel_class</span>
+                    </span>
+                    <span
+                      class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold">Khu
+                      Khám Chất Lượng Cao</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Theo Yêu Cầu Chất Lượng Cao
+                    (VIP)</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Khám chuyên gia TS.BS đầu ngành,
+                    phòng chờ riêng có máy lạnh, ưu tiên xét nghiệm nhanh trong ngày.</p>
+                </div>
+                <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+                  <span class="font-code-sm text-code-sm text-primary font-bold">Từ 300.000đ</span>
+                  <button
+                    class="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors"
+                    onclick="openBookingModal('Khám Theo Yêu Cầu VIP')" type="button">Đặt lịch</button>
+                </div>
+              </div>
+              <!-- Card 5 -->
+              <div
+                class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="w-10 h-10 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-headline-sm">psychology</span>
+                    </span>
+                    <span
+                      class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-semibold">Tầng
+                      3 - Khoa TL</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Tâm Lý &amp; Âm Ngữ Trị Liệu Trẻ
+                    Em</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Sàng lọc sớm chậm phát triển, tự kỷ,
+                    tăng động giảm chú ý (ADHD), can thiệp rối loạn phát âm ngôn ngữ.</p>
+                </div>
+                <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+                  <span class="font-code-sm text-code-sm text-secondary font-bold">Từ 200.000đ</span>
+                  <button
+                    class="px-3.5 py-1.5 rounded-lg bg-secondary text-on-secondary font-label-md text-label-md hover:bg-on-secondary-container transition-colors"
+                    onclick="openBookingModal('Tâm Lý &amp; Âm Ngữ Trị Liệu')" type="button">Đặt lịch</button>
+                </div>
+              </div>
+              <!-- Card 6 -->
+              <div
+                class="p-5 rounded-xl bg-surface-container-low hover:shadow-md transition-shadow flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="w-10 h-10 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center">
+                      <span class="material-symbols-outlined text-headline-sm">medical_services</span>
+                    </span>
+                    <span
+                      class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-tertiary/10 text-tertiary font-semibold">Khu
+                      Ngoại Nhi</span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-1.5">Khám Ngoại Khoa &amp; Dị Tật Bẩm
+                    Sinh</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Tư vấn thoát vị bẹn, tinh hoàn ẩn,
+                    dị tật tay chân, dính thắng lưỡi, lỗ tiểu lệch thấp ở trẻ nhỏ.</p>
+                </div>
+                <div class="pt-3 border-t border-outline-variant/30 flex items-center justify-between">
+                  <span class="font-code-sm text-code-sm text-tertiary font-bold">Từ 150.000đ</span>
+                  <button
+                    class="px-3.5 py-1.5 rounded-lg bg-tertiary text-on-tertiary font-label-md text-label-md hover:bg-tertiary-container transition-colors"
+                    onclick="openBookingModal('Khám Ngoại Khoa Nhi')" type="button">Đặt lịch</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- BOOKING MODAL POPUP DIALOG -->
+      <dialog class="rounded-xl shadow-2xl p-0 backdrop:bg-on-surface/50 max-w-lg w-full m-auto overflow-hidden"
+        id="booking-modal">
+        <div class="bg-surface-container-lowest flex flex-col">
+          <!-- Modal Header -->
+          <div
+            class="p-5 bg-gradient-to-r from-primary to-primary-container text-white flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-headline-md">local_hospital</span>
+              <div>
+                <h3 class="font-headline-sm text-headline-sm text-white">Đặt khám - Bệnh viện Nhi Đồng 2</h3>
+                <p class="font-body-sm text-body-sm text-on-primary-container">Chọn ngày &amp; thông tin bé</p>
+              </div>
+            </div>
+            <button
+              class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+              onclick="closeBookingModal()" type="button">
+              <span class="material-symbols-outlined text-body-md">close</span>
+            </button>
+          </div>
+          <!-- Modal Body Form -->
+          <form class="p-6 space-y-4" method="dialog">
+            <div>
+              <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="patient-name">Họ và tên bệnh
+                nhi (*)</label>
+              <input
+                class="w-full h-10 px-3.5 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary"
+                id="patient-name" placeholder="Ví dụ: Nguyễn Văn An" required="" type="text">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="patient-dob">Năm sinh /
+                  Ngày sinh (*)</label>
+                <input
+                  class="w-full h-10 px-3 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary"
+                  id="patient-dob" required="" type="date">
+              </div>
+              <div>
+                <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="booking-date">Ngày muốn
+                  khám (*)</label>
+                <input
+                  class="w-full h-10 px-3 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary"
+                  id="booking-date" required="" type="date">
+              </div>
+            </div>
+            <div>
+              <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="service-select">Dịch vụ /
+                Chuyên khoa khám</label>
+              <select
+                class="w-full h-10 px-3.5 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary"
+                id="service-select">
+                <option value="Khám Bệnh Thường Gặp">Khám Bệnh Thường Gặp</option>
+                <option value="Tiêm chủng mở rộng &amp; Dịch vụ">Tiêm chủng mở rộng &amp; Dịch vụ</option>
+                <option value="Khám Dinh Dưỡng">Khám Dinh Dưỡng</option>
+                <option value="Khám Theo Yêu Cầu Chất Lượng Cao">Khám Theo Yêu Cầu Chất Lượng Cao</option>
+                <option value="Khám Ngoại Khoa Nhi">Khám Ngoại Khoa Nhi</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-label-md text-label-md text-on-surface mb-1.5" for="parent-phone">Số điện thoại
+                phụ huynh nhận SMS (*)</label>
+              <input
+                class="w-full h-10 px-3.5 rounded-lg border-0 bg-surface-container-low text-on-surface text-body-md focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary font-code-sm"
+                id="parent-phone" placeholder="09xx xxx xxx" required="" type="tel">
+            </div>
+            <div class="pt-2 flex items-center justify-end gap-3">
+              <button
+                class="px-4 py-2 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container"
+                onclick="closeBookingModal()" type="button">Hủy</button>
+              <button
+                class="px-5 py-2 rounded-lg bg-primary text-on-primary font-headline-sm text-headline-sm hover:bg-primary-container shadow-sm"
+                onclick="confirmBooking()" type="button">Xác nhận đặt khám</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+    </div>
+    <!-- Page Interactive Script -->
+    <script>
+      // Tab Switching between "Thông tin" and "Chuyên khám"
+      function switchHospitalTab(tabName) {
+        const btnInfo = document.getElementById('tab-info-btn');
+        const btnServices = document.getElementById('tab-services-btn');
+        const viewInfo = document.getElementById('view-info-container');
+        const viewServices = document.getElementById('view-services-container');
 
-    if (tabName === 'info') {
-      viewInfo.classList.remove('hidden');
-      viewServices.classList.add('hidden');
+        if (tabName === 'info') {
+          viewInfo.classList.remove('hidden');
+          viewServices.classList.add('hidden');
 
-      btnInfo.className = "pb-3 px-1 font-headline-sm text-headline-sm text-primary relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary flex items-center gap-2";
-      btnServices.className = "pb-3 px-1 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent flex items-center gap-2 transition-all";
-    } else {
-      viewInfo.classList.add('hidden');
-      viewServices.classList.remove('hidden');
+          btnInfo.className = "pb-3 px-1 font-headline-sm text-headline-sm text-primary relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary flex items-center gap-2";
+          btnServices.className = "pb-3 px-1 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent flex items-center gap-2 transition-all";
+        } else {
+          viewInfo.classList.add('hidden');
+          viewServices.classList.remove('hidden');
 
-      btnServices.className = "pb-3 px-1 font-headline-sm text-headline-sm text-primary relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary flex items-center gap-2";
-      btnInfo.className = "pb-3 px-1 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent flex items-center gap-2 transition-all";
-    }
-  }
-
-  // Read More Toggle in Giới Thiệu
-  function toggleReadMore() {
-    const moreContent = document.getElementById('more-intro');
-    const btnText = document.getElementById('read-more-text');
-    const btnIcon = document.getElementById('read-more-icon');
-
-    if (moreContent.classList.contains('hidden')) {
-      moreContent.classList.remove('hidden');
-      btnText.textContent = 'Thu gọn';
-      btnIcon.textContent = 'expand_less';
-    } else {
-      moreContent.classList.add('hidden');
-      btnText.textContent = '...Xem thêm';
-      btnIcon.textContent = 'expand_more';
-    }
-  }
-
-  // Favorite Button Toggle
-  let isFavorite = false;
-  function toggleFavorite() {
-    isFavorite = !isFavorite;
-    const favIcon = document.getElementById('fav-icon');
-    const favText = document.getElementById('fav-text');
-    const favBtn = document.getElementById('favorite-btn');
-
-    if (isFavorite) {
-      favIcon.style.fontVariationSettings = "'FILL' 1";
-      favIcon.classList.remove('text-outline');
-      favIcon.classList.add('text-primary');
-      favText.textContent = 'Đã lưu';
-      favBtn.classList.add('bg-primary/10', 'text-primary');
-    } else {
-      favIcon.style.fontVariationSettings = "'FILL' 0";
-      favIcon.classList.remove('text-primary');
-      favIcon.classList.add('text-outline');
-      favText.textContent = 'Yêu thích';
-      favBtn.classList.remove('bg-primary/10', 'text-primary');
-    }
-  }
-
-  // Modal Controls
-  function openBookingModal(serviceName) {
-    const modal = document.getElementById('booking-modal');
-    if (serviceName) {
-      const select = document.getElementById('service-select');
-      for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].text.includes(serviceName) || select.options[i].value === serviceName) {
-          select.selectedIndex = i;
-          break;
+          btnServices.className = "pb-3 px-1 font-headline-sm text-headline-sm text-primary relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary flex items-center gap-2";
+          btnInfo.className = "pb-3 px-1 font-headline-sm text-headline-sm text-on-surface-variant hover:text-on-surface relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-transparent flex items-center gap-2 transition-all";
         }
       }
-    }
-    // Set default tomorrow date
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateStr = tomorrow.toISOString().split('T')[0];
-    const bookingInput = document.getElementById('booking-date');
-    if (bookingInput && !bookingInput.value) {
-      bookingInput.value = dateStr;
-    }
 
-    modal.showModal();
-  }
+      // Read More Toggle in Giới Thiệu
+      function toggleReadMore() {
+        const moreContent = document.getElementById('more-intro');
+        const btnText = document.getElementById('read-more-text');
+        const btnIcon = document.getElementById('read-more-icon');
 
-  function closeBookingModal() {
-    const modal = document.getElementById('booking-modal');
-    modal.close();
-  }
+        if (moreContent.classList.contains('hidden')) {
+          moreContent.classList.remove('hidden');
+          btnText.textContent = 'Thu gọn';
+          btnIcon.textContent = 'expand_less';
+        } else {
+          moreContent.classList.add('hidden');
+          btnText.textContent = '...Xem thêm';
+          btnIcon.textContent = 'expand_more';
+        }
+      }
 
-  function confirmBooking() {
-    const name = document.getElementById('patient-name').value;
-    const phone = document.getElementById('parent-phone').value;
-    if (!name || !phone) {
-      alert('Vui lòng điền họ tên bệnh nhi và số điện thoại liên hệ!');
-      return;
-    }
-    alert('Đăng ký khám thành công cho bé: ' + name + '!\nMã số phiếu khám điện tử đã được gửi tới SĐT: ' + phone + '. Vui lòng kiểm tra tin nhắn SMS.');
-    closeBookingModal();
-  }
+      // Favorite Button Toggle
+      let isFavorite = false;
+      function toggleFavorite() {
+        isFavorite = !isFavorite;
+        const favIcon = document.getElementById('fav-icon');
+        const favText = document.getElementById('fav-text');
+        const favBtn = document.getElementById('favorite-btn');
 
-  function scrollToMap() {
-    const mapSection = document.getElementById('hospital-map-section');
-    if (mapSection) {
-      mapSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
+        if (isFavorite) {
+          favIcon.style.fontVariationSettings = "'FILL' 1";
+          favIcon.classList.remove('text-outline');
+          favIcon.classList.add('text-primary');
+          favText.textContent = 'Đã lưu';
+          favBtn.classList.add('bg-primary/10', 'text-primary');
+        } else {
+          favIcon.style.fontVariationSettings = "'FILL' 0";
+          favIcon.classList.remove('text-primary');
+          favIcon.classList.add('text-outline');
+          favText.textContent = 'Yêu thích';
+          favBtn.classList.remove('bg-primary/10', 'text-primary');
+        }
+      }
 
-  function showScheduleQuickAlert() {
-    alert('Lịch bác sĩ Bệnh viện Nhi Đồng 2 trực tuần này đã cập nhật! Đã sẵn sàng các chuyên gia Khoa Hô hấp, Sơ sinh và Dinh dưỡng.');
-  }
-</script></main>
-<!-- BEGIN: MainFooter -->
-<footer class="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800" data-purpose="site-main-footer">
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-slate-800">
-<!-- Brand & Contact Col -->
-<div class="lg:col-span-4">
-<div class="flex items-center gap-2.5 mb-4">
-<div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
-<i class="fa-solid fa-notes-medical text-lg"></i>
-</div>
-<span class="text-2xl font-extrabold text-white">
+      // Modal Controls
+      function openBookingModal(serviceName) {
+        const modal = document.getElementById('booking-modal');
+        if (serviceName) {
+          const select = document.getElementById('service-select');
+          for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].text.includes(serviceName) || select.options[i].value === serviceName) {
+              select.selectedIndex = i;
+              break;
+            }
+          }
+        }
+        // Set default tomorrow date
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateStr = tomorrow.toISOString().split('T')[0];
+        const bookingInput = document.getElementById('booking-date');
+        if (bookingInput && !bookingInput.value) {
+          bookingInput.value = dateStr;
+        }
+
+        modal.showModal();
+      }
+
+      function closeBookingModal() {
+        const modal = document.getElementById('booking-modal');
+        modal.close();
+      }
+
+      function confirmBooking() {
+        const name = document.getElementById('patient-name').value;
+        const phone = document.getElementById('parent-phone').value;
+        if (!name || !phone) {
+          alert('Vui lòng điền họ tên bệnh nhi và số điện thoại liên hệ!');
+          return;
+        }
+        alert('Đăng ký khám thành công cho bé: ' + name + '!\nMã số phiếu khám điện tử đã được gửi tới SĐT: ' + phone + '. Vui lòng kiểm tra tin nhắn SMS.');
+        closeBookingModal();
+      }
+
+      function scrollToMap() {
+        const mapSection = document.getElementById('hospital-map-section');
+        if (mapSection) {
+          mapSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      function showScheduleQuickAlert() {
+        alert('Lịch bác sĩ Bệnh viện Nhi Đồng 2 trực tuần này đã cập nhật! Đã sẵn sàng các chuyên gia Khoa Hô hấp, Sơ sinh và Dinh dưỡng.');
+      }
+    </script>
+  </main>
+  <!-- BEGIN: MainFooter -->
+  <footer class="bg-slate-900 text-slate-300 pt-16 pb-12 border-t border-slate-800" data-purpose="site-main-footer">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-slate-800">
+        <!-- Brand & Contact Col -->
+        <div class="lg:col-span-4">
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white">
+              <i class="fa-solid fa-notes-medical text-lg"></i>
+            </div>
+            <span class="text-2xl font-extrabold text-white">
               Med<span class="text-emerald-400">Connect</span>
-</span>
-</div>
-<p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">Nền tảng công nghệ y tế kết nối người bệnh với mạng lưới bác sĩ và bệnh viện uy tín hàng đầu trên toàn quốc.</p>
-<div class="space-y-2 text-xs text-slate-300">
-<p class="flex items-center gap-2">
-<i class="fa-solid fa-phone text-blue-400"></i> Hotline: <span class="font-bold text-white">(028) 3822-5555</span> (24/7)
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">Nền tảng công nghệ y tế kết nối người bệnh
+            với mạng lưới bác sĩ và bệnh viện uy tín hàng đầu trên toàn quốc.</p>
+          <div class="space-y-2 text-xs text-slate-300">
+            <p class="flex items-center gap-2">
+              <i class="fa-solid fa-phone text-blue-400"></i> Hotline: <span class="font-bold text-white">(028)
+                3822-5555</span> (24/7)
             </p>
-<p class="flex items-center gap-2">
-<i class="fa-solid fa-envelope text-blue-400"></i> Hỗ trợ: <span class="text-white">hotro@medconnect.vn</span>
-</p>
-<p class="flex items-center gap-2">
-<i class="fa-solid fa-location-dot text-blue-400"></i> Tòa nhà MedConnect, Quận 1, TP. Hồ Chí Minh
+            <p class="flex items-center gap-2">
+              <i class="fa-solid fa-envelope text-blue-400"></i> Hỗ trợ: <span
+                class="text-white">hotro@medconnect.vn</span>
             </p>
-</div>
-</div>
-<!-- Links Col 1 -->
-<div class="lg:col-span-3">
-<h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Dịch vụ y tế</h4>
-<ul class="space-y-2.5 text-xs text-slate-400">
-<li class=""><a class="hover:text-white transition-colors" href="javascript:switchAppointmentTab('doctor')">Đặt khám Bác sĩ Chuyên khoa</a></li>
-<li class=""><a class="hover:text-white transition-colors" href="javascript:switchAppointmentTab('hospital')">Đặt khám Bệnh viện Công &amp; Tư</a></li>
+            <p class="flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-blue-400"></i> Tòa nhà MedConnect, Quận 1, TP. Hồ Chí Minh
+            </p>
+          </div>
+        </div>
+        <!-- Links Col 1 -->
+        <div class="lg:col-span-3">
+          <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Dịch vụ y tế</h4>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li class=""><a class="hover:text-white transition-colors"
+                href="javascript:switchAppointmentTab('doctor')">Đặt khám Bác sĩ Chuyên khoa</a></li>
+            <li class=""><a class="hover:text-white transition-colors"
+                href="javascript:switchAppointmentTab('hospital')">Đặt khám Bệnh viện Công &amp; Tư</a></li>
 
-<li class=""><a class="hover:text-white transition-colors" href="#tu-van">Tư vấn sức khỏe trực tuyến từ xa</a></li>
-</ul>
-</div>
-<!-- Links Col 2 -->
-<div class="lg:col-span-2">
-<h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Về MedConnect</h4>
-<ul class="space-y-2.5 text-xs text-slate-400">
-<li class=""><a class="hover:text-white transition-colors" href="#">Giới thiệu về chúng tôi</a></li>
-<li class=""><a class="hover:text-white transition-colors" href="#">Đội ngũ cố vấn y khoa</a></li>
-<li class=""><a class="hover:text-white transition-colors" href="#">Tuyển dụng nhân tài</a></li>
-<li class=""><a class="hover:text-white transition-colors" href="#">Chính sách bảo mật dữ liệu</a></li>
-<li class=""><a class="hover:text-white transition-colors" href="#">Điều khoản sử dụng</a></li>
-</ul>
-</div>
-<!-- App & Certifications -->
-<div class="lg:col-span-3">
-<h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Tải ứng dụng MedConnect</h4>
-<p class="text-xs text-slate-400 mb-3">Chủ động theo dõi số khám và kết quả xét nghiệm ngay trên điện thoại</p>
-<div class="flex flex-col sm:flex-row gap-2.5 mb-5">
-<button class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl flex items-center gap-2 border border-slate-700 transition-colors">
-<i class="fa-brands fa-apple text-xl"></i>
-<div class="text-left leading-tight">
-<span class="block text-[9px] text-slate-400">Tải về trên</span>
-<span class="font-bold text-xs">App Store</span>
-</div>
-</button>
-<button class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl flex items-center gap-2 border border-slate-700 transition-colors">
-<i class="fa-brands fa-google-play text-lg text-emerald-400"></i>
-<div class="text-left leading-tight">
-<span class="block text-[9px] text-slate-400">Tải về trên</span>
-<span class="font-bold text-xs">Google Play</span>
-</div>
-</button>
-</div>
-<div class="flex items-center gap-2 text-[11px] text-emerald-400">
-<i class="fa-solid fa-certificate"></i>
-<span class="">Chứng nhận Bộ Y Tế &amp; Tiêu chuẩn HIPAA</span>
-</div>
-</div>
-</div>
-<!-- Copyright Bottom Bar -->
-<div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-<p class="">© 2025 MedConnect Medical Services JSC. Tất cả các quyền được bảo lưu.</p>
-<div class="flex items-center space-x-4">
-<a class="hover:text-slate-400 transition-colors" href="#">Chính sách quyền riêng tư</a>
-<span class="">•</span>
-<a class="hover:text-slate-400 transition-colors" href="#">Quy chế hoạt động sàn TMĐT y tế</a>
-<span class="">•</span>
-<a class="hover:text-slate-400 transition-colors" href="#">Giải quyết khiếu nại</a>
-</div>
-</div>
-</div>
-</footer>
-<!-- END: MainFooter -->
-<!-- BEGIN: Interactive Tab Switching Script -->
-<script id="tab-switch-script">
-function switchAppointmentTab(type) {
-  var btnDoctor = document.getElementById('tab-btn-doctor');
-  var btnHospital = document.getElementById('tab-btn-hospital');
-  var btnClinic = document.getElementById('tab-btn-clinic');
+            <li class=""><a class="hover:text-white transition-colors" href="#tu-van">Tư vấn sức khỏe trực tuyến từ
+                xa</a></li>
+          </ul>
+        </div>
+        <!-- Links Col 2 -->
+        <div class="lg:col-span-2">
+          <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Về MedConnect</h4>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li class=""><a class="hover:text-white transition-colors" href="#">Giới thiệu về chúng tôi</a></li>
+            <li class=""><a class="hover:text-white transition-colors" href="#">Đội ngũ cố vấn y khoa</a></li>
+            <li class=""><a class="hover:text-white transition-colors" href="#">Tuyển dụng nhân tài</a></li>
+            <li class=""><a class="hover:text-white transition-colors" href="#">Chính sách bảo mật dữ liệu</a></li>
+            <li class=""><a class="hover:text-white transition-colors" href="#">Điều khoản sử dụng</a></li>
+          </ul>
+        </div>
+        <!-- App & Certifications -->
+        <div class="lg:col-span-3">
+          <h4 class="text-sm font-bold text-white uppercase tracking-wider mb-4">Tải ứng dụng MedConnect</h4>
+          <p class="text-xs text-slate-400 mb-3">Chủ động theo dõi số khám và kết quả xét nghiệm ngay trên điện thoại
+          </p>
+          <div class="flex flex-col sm:flex-row gap-2.5 mb-5">
+            <button
+              class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl flex items-center gap-2 border border-slate-700 transition-colors">
+              <i class="fa-brands fa-apple text-xl"></i>
+              <div class="text-left leading-tight">
+                <span class="block text-[9px] text-slate-400">Tải về trên</span>
+                <span class="font-bold text-xs">App Store</span>
+              </div>
+            </button>
+            <button
+              class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl flex items-center gap-2 border border-slate-700 transition-colors">
+              <i class="fa-brands fa-google-play text-lg text-emerald-400"></i>
+              <div class="text-left leading-tight">
+                <span class="block text-[9px] text-slate-400">Tải về trên</span>
+                <span class="font-bold text-xs">Google Play</span>
+              </div>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] text-emerald-400">
+            <i class="fa-solid fa-certificate"></i>
+            <span class="">Chứng nhận Bộ Y Tế &amp; Tiêu chuẩn HIPAA</span>
+          </div>
+        </div>
+      </div>
+      <!-- Copyright Bottom Bar -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <p class="">© 2025 MedConnect Medical Services JSC. Tất cả các quyền được bảo lưu.</p>
+        <div class="flex items-center space-x-4">
+          <a class="hover:text-slate-400 transition-colors" href="#">Chính sách quyền riêng tư</a>
+          <span class="">•</span>
+          <a class="hover:text-slate-400 transition-colors" href="#">Quy chế hoạt động sàn TMĐT y tế</a>
+          <span class="">•</span>
+          <a class="hover:text-slate-400 transition-colors" href="#">Giải quyết khiếu nại</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- END: MainFooter -->
+  <!-- BEGIN: Interactive Tab Switching Script -->
+  <script id="tab-switch-script">
+    function switchAppointmentTab(type) {
+      var btnDoctor = document.getElementById('tab-btn-doctor');
+      var btnHospital = document.getElementById('tab-btn-hospital');
+      var btnClinic = document.getElementById('tab-btn-clinic');
 
-  var viewDoctor = document.getElementById('view-doctor');
-  var viewHospital = document.getElementById('view-hospital');
-  var viewClinic = document.getElementById('view-clinic');
-  var specialties = document.getElementById('chuyen-khoa');
-  var guarantees = document.getElementById('guarantees-sub-bar');
+      var viewDoctor = document.getElementById('view-doctor');
+      var viewHospital = document.getElementById('view-hospital');
+      var viewClinic = document.getElementById('view-clinic');
+      var specialties = document.getElementById('chuyen-khoa');
+      var guarantees = document.getElementById('guarantees-sub-bar');
 
-  var inactiveClass = 'flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-semibold text-sm text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-slate-300 transition-colors';
-  var activeClass = 'flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-bold text-sm text-blue-600 border-b-2 border-blue-600 transition-colors';
+      var inactiveClass = 'flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-semibold text-sm text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-slate-300 transition-colors';
+      var activeClass = 'flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 font-bold text-sm text-blue-600 border-b-2 border-blue-600 transition-colors';
 
-  // Reset tabs
-  if (btnDoctor) {
-    btnDoctor.className = inactiveClass;
-    var iconDoc = btnDoctor.querySelector('i');
-    if (iconDoc) iconDoc.className = 'fa-solid fa-stethoscope text-base text-slate-400';
-  }
-  if (btnHospital) {
-    btnHospital.className = inactiveClass;
-    var iconHosp = btnHospital.querySelector('i');
-    if (iconHosp) iconHosp.className = 'fa-solid fa-hospital text-base text-slate-400';
-  }
-  if (btnClinic) {
-    btnClinic.className = inactiveClass;
-    var iconClinic = btnClinic.querySelector('i');
-    if (iconClinic) iconClinic.className = 'fa-solid fa-briefcase-medical text-base text-slate-400';
-  }
+      // Reset tabs
+      if (btnDoctor) {
+        btnDoctor.className = inactiveClass;
+        var iconDoc = btnDoctor.querySelector('i');
+        if (iconDoc) iconDoc.className = 'fa-solid fa-stethoscope text-base text-slate-400';
+      }
+      if (btnHospital) {
+        btnHospital.className = inactiveClass;
+        var iconHosp = btnHospital.querySelector('i');
+        if (iconHosp) iconHosp.className = 'fa-solid fa-hospital text-base text-slate-400';
+      }
+      if (btnClinic) {
+        btnClinic.className = inactiveClass;
+        var iconClinic = btnClinic.querySelector('i');
+        if (iconClinic) iconClinic.className = 'fa-solid fa-briefcase-medical text-base text-slate-400';
+      }
 
-  // Hide all panes
-  if (viewDoctor) viewDoctor.classList.add('hidden');
-  if (viewHospital) viewHospital.classList.add('hidden');
-  if (viewClinic) viewClinic.classList.add('hidden');
-  if (specialties) specialties.classList.add('hidden');
-  if (guarantees) guarantees.classList.add('hidden');
+      // Hide all panes
+      if (viewDoctor) viewDoctor.classList.add('hidden');
+      if (viewHospital) viewHospital.classList.add('hidden');
+      if (viewClinic) viewClinic.classList.add('hidden');
+      if (specialties) specialties.classList.add('hidden');
+      if (guarantees) guarantees.classList.add('hidden');
 
-  // Activate selected pane
-  if (type === 'doctor') {
-    if (btnDoctor) {
-      btnDoctor.className = activeClass;
-      var iconDocActive = btnDoctor.querySelector('i');
-      if (iconDocActive) iconDocActive.className = 'fa-solid fa-stethoscope text-base text-blue-600';
+      // Activate selected pane
+      if (type === 'doctor') {
+        if (btnDoctor) {
+          btnDoctor.className = activeClass;
+          var iconDocActive = btnDoctor.querySelector('i');
+          if (iconDocActive) iconDocActive.className = 'fa-solid fa-stethoscope text-base text-blue-600';
+        }
+        if (viewDoctor) viewDoctor.classList.remove('hidden');
+        if (specialties) specialties.classList.remove('hidden');
+      } else if (type === 'hospital') {
+        if (btnHospital) {
+          btnHospital.className = activeClass;
+          var iconHospActive = btnHospital.querySelector('i');
+          if (iconHospActive) iconHospActive.className = 'fa-solid fa-hospital text-base text-blue-600';
+        }
+        if (viewHospital) viewHospital.classList.remove('hidden');
+        if (guarantees) guarantees.classList.remove('hidden');
+      } else if (type === 'clinic') {
+        if (btnClinic) {
+          btnClinic.className = activeClass;
+          var iconClinicActive = btnClinic.querySelector('i');
+          if (iconClinicActive) iconClinicActive.className = 'fa-solid fa-briefcase-medical text-base text-blue-600';
+        }
+        if (viewClinic) viewClinic.classList.remove('hidden');
+        if (guarantees) guarantees.classList.remove('hidden');
+      }
     }
-    if (viewDoctor) viewDoctor.classList.remove('hidden');
-    if (specialties) specialties.classList.remove('hidden');
-  } else if (type === 'hospital') {
-    if (btnHospital) {
-      btnHospital.className = activeClass;
-      var iconHospActive = btnHospital.querySelector('i');
-      if (iconHospActive) iconHospActive.className = 'fa-solid fa-hospital text-base text-blue-600';
-    }
-    if (viewHospital) viewHospital.classList.remove('hidden');
-    if (guarantees) guarantees.classList.remove('hidden');
-  } else if (type === 'clinic') {
-    if (btnClinic) {
-      btnClinic.className = activeClass;
-      var iconClinicActive = btnClinic.querySelector('i');
-      if (iconClinicActive) iconClinicActive.className = 'fa-solid fa-briefcase-medical text-base text-blue-600';
-    }
-    if (viewClinic) viewClinic.classList.remove('hidden');
-    if (guarantees) guarantees.classList.remove('hidden');
-  }
-}
 
-// Mặc định mở trang hiển thị Tab 1 "Đặt khám Bác sĩ"
-switchAppointmentTab('doctor');
-</script>
-<!-- END: Interactive Tab Switching Script -->
+    // Mặc định mở trang hiển thị Tab 1 "Đặt khám Bác sĩ"
+    switchAppointmentTab('doctor');
+  </script>
+  <!-- END: Interactive Tab Switching Script -->
 
 
 
@@ -923,4 +1140,6 @@ switchAppointmentTab('doctor');
 
 
 
-</body></html>
+</body>
+
+</html>

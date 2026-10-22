@@ -1,0 +1,652 @@
+﻿<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>MedConnect - Bước 2: Chọn cơ sở &amp; Hình thức tiếp đón chuyên sâu</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#002114", "surface": "#faf8ff", "on-secondary": "#ffffff", "surface-container-lowest": "#ffffff", "on-primary-fixed": "#00174b", "on-tertiary-container": "#ffede1", "secondary": "#006c4a", "primary-fixed-dim": "#b4c5ff", "on-tertiary": "#ffffff", "on-surface-variant": "#434655", "on-tertiary-fixed": "#2f1500", "on-background": "#131b2e", "primary-fixed": "#dbe1ff", "surface-dim": "#d2d9f4", "on-surface": "#131b2e", "secondary-fixed": "#85f8c4", "on-error": "#ffffff", "surface-container-highest": "#dae2fd", "tertiary": "#824500", "on-primary": "#ffffff", "inverse-surface": "#283044", "primary": "#004ac6", "inverse-on-surface": "#eef0ff", "outline-variant": "#c3c6d7", "error-container": "#ffdad6", "surface-tint": "#0053db", "surface-container-low": "#f2f3ff", "secondary-container": "#82f5c1", "error": "#ba1a1a", "on-primary-fixed-variant": "#003ea8", "secondary-fixed-dim": "#68dba9", "primary-container": "#2563eb", "tertiary-container": "#a65900", "tertiary-fixed": "#ffdcc3", "on-error-container": "#93000a", "inverse-primary": "#b4c5ff", "background": "#faf8ff", "surface-container-high": "#e2e7ff", "surface-variant": "#dae2fd", "on-secondary-fixed-variant": "#005137", "surface-container": "#eaedff", "on-secondary-container": "#00714e", "on-primary-container": "#eeefff", "surface-bright": "#faf8ff", "outline": "#737686", "tertiary-fixed-dim": "#ffb77d", "on-tertiary-fixed-variant": "#6e3900" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-desktop": "2rem", "gutter": "1rem", "space-lg": "1.25rem", "space-xs": "0.25rem", "margin": "1rem", "gutter-desktop": "1.5rem", "space-md": "0.75rem", "space-sm": "0.5rem", "space-xl": "2rem" }, fontFamily: { "body-sm": ["Manrope"], "label-sm": ["Manrope"], "body-lg": ["Manrope"], "headline-xl-mobile": ["Manrope"], "headline-lg": ["Manrope"], "headline-sm": ["Manrope"], "headline-xl": ["Manrope"], "label-md": ["Manrope"], "body-md": ["Manrope"], "headline-md": ["Manrope"], "code-sm": ["JetBrains Mono"] }, fontSize: { "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }], "headline-xl-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "600" }], "headline-sm": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }], "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "code-sm": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "500" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen overflow-y-auto"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-xl"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">local_hospital</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-none tracking-tight">MedConnect</span><span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">Patient Portal</span></div></div><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-on-surface font-headline-sm rounded-lg"><a aria-current="page" class="px-space-md py-space-sm transition-colors bg-surface-container-high text-on-surface font-headline-sm rounded-lg" data-path="book-appointment" href="#">Book Appointment</a><a class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md" data-path="my-appointments" href="#">My Appointments</a><a class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md" data-path="doctors-directory" href="#">Doctors Directory</a><a class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md" data-path="records-and-intake" href="#">Records &amp; Intake</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs bg-surface-container-low text-on-surface-variant rounded-full px-space-md py-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.02)]"><span class="material-symbols-outlined text-[18px] text-primary">account_circle</span><span class="font-label-md text-label-md font-semibold text-on-surface">Nguyễn Duy Tuấn Hưng</span><span class="font-code-sm text-code-sm text-on-surface-variant ml-1 font-medium">#BN-2026-08291</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface min-h-[calc(100vh-14rem)] overflow-y-auto"><div class="flex flex-col w-full min-h-screen overflow-y-auto">
+<!-- Subtle decorative ambient elements -->
+<div class="relative w-full max-w-4xl mx-auto px-gutter sm:px-gutter-desktop py-space-xl pb-32">
+<!-- Breadcrumbs & Status Badge -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+        Trang chủ
+      </a>
+<span class="text-outline-variant">/</span>
+<a class="hover:text-primary transition-colors" href="#">Đặt khám trực tuyến</a>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface font-semibold">Bước 2: Cơ sở &amp; Hình thức khám</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-high px-space-md py-1 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold uppercase tracking-wider">Hệ thống tiếp nhận 24/7</span>
+<span class="text-outline-variant">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Phân luồng điện tử</span>
+</div>
+</div>
+<!-- Page Title & Header -->
+
+<!-- Stepper Indicator -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm p-4 sm:p-6 mb-space-xl border border-surface-container-high"><div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center"><!-- Step 1: Hoàn thành --><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold text-headline-sm shadow-sm ring-4 ring-secondary-fixed/50 shrink-0"><span class="material-symbols-outlined text-[22px]">check</span></div><div class="min-w-0"><span class="text-label-sm font-label-sm text-secondary uppercase font-bold tracking-wider block">Bước 1</span><span class="font-headline-sm text-headline-sm text-on-surface font-bold block truncate">Hình thức khám</span></div></div><!-- Step 2: Đang thực hiện (Active) --><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-headline-sm shadow-md ring-4 ring-primary-fixed/50 shrink-0">2</div><div class="min-w-0"><span class="text-label-sm font-label-sm text-primary uppercase font-bold tracking-wider block">Bước 2 (Hiện tại)</span><span class="font-headline-sm text-headline-sm text-on-surface font-bold block truncate">Cơ sở &amp; Chuyên môn</span></div></div><!-- Step 3: Chờ --><div class="flex items-center gap-3 opacity-60"><div class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold text-headline-sm shrink-0">3</div><div class="min-w-0"><span class="text-label-sm font-label-sm text-on-surface-variant uppercase font-semibold tracking-wider block">Bước 3</span><span class="font-body-md text-body-md text-on-surface-variant font-medium block truncate">Lịch khám</span></div></div><!-- Step 4: Chờ --><div class="flex items-center gap-3 opacity-60"><div class="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center font-bold text-headline-sm shrink-0">4</div><div class="min-w-0"><span class="text-label-sm font-label-sm text-on-surface-variant uppercase font-semibold tracking-wider block">Bước 4</span><span class="font-body-md text-body-md text-on-surface-variant font-medium block truncate">Xác nhận &amp; Cấp số</span></div></div></div></div>
+<!-- MAIN WORKFLOW: BƯỚC 2 HOÀN CHỈNH & ĐỘC LẬP -->
+<div class="space-y-space-lg">
+<!-- BƯỚC 2: CHỌN CƠ SỞ & HÌNH THỨC CHUYÊN SÂU -->
+<section class="bg-surface-container-lowest rounded-2xl shadow-sm p-space-lg md:p-space-xl border border-surface-container-high space-y-space-lg" id="section-step2-main">
+<!-- Section Header -->
+<div class="flex items-center justify-between pb-space-md border-b border-surface-container-high">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-primary-fixed text-primary flex items-center justify-center font-bold shadow-xs">
+<span class="material-symbols-outlined text-[22px]">tune</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">Bước 2: Chọn cơ sở khám &amp; Hình thức tiếp đón chuyên sâu</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chọn bệnh viện tiếp đón trước, sau đó xác định hình thức phân luồng chi tiết</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary bg-primary-fixed px-3 py-1 rounded-full font-semibold">Bắt buộc</span>
+</div>
+<!-- Phần 1: Chọn bệnh viện tiếp đón -->
+<div class="space-y-1.5">
+<label class="block font-label-md text-label-md text-on-surface font-semibold flex items-center justify-between">
+<span class="">Bệnh viện tiếp đón <span class="text-error">*</span></span>
+<span class="font-body-sm text-body-sm text-primary hover:underline cursor-pointer flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">swap_horiz</span> Đổi cơ sở khác
+</span>
+</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-primary">
+<span class="material-symbols-outlined text-[22px]">domain</span>
+</div>
+<select class="w-full h-12 pl-11 pr-10 bg-surface-container-lowest rounded-xl font-body-md text-body-md text-on-surface font-medium shadow-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all appearance-none cursor-pointer border border-surface-container-high"><option class="" selected="" value="HOSP-BM-01">Bệnh viện Bạch Mai - Hà Nội (78 Giải Phóng, Phương Mai, Đống Đa, Hà Nội)</option><option class="" value="HOSP-DHY-02">Bệnh viện Đại học Y Hà Nội (Số 1 Tôn Thất Tùng, Đống Đa, Hà Nội)</option><option class="" value="HOSP-VD-03">Bệnh viện Hữu nghị Việt Đức (40 Tràng Thi, Hoàn Kiếm, Hà Nội)</option><option class="" value="HOSP-CR-04">Bệnh viện Chợ Rẫy (201B Nguyễn Chí Thanh, Q.5, TP.HCM)</option></select>
+</div>
+</div>
+<!-- Phần 2: Chọn 1 trong 2 hình thức chuyên sâu (2 cột) -->
+<div class="space-y-3 pt-2">
+<div class="flex items-center justify-between">
+<label class="block font-label-md text-label-md text-on-surface font-semibold">Chọn 1 trong 2 hình thức chuyên sâu: <span class="text-error">*</span></label>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Bấm vào từng thẻ để đổi phương thức tiếp đón</span>
+</div>
+<div class="grid grid-cols-1 gap-4 grid-cols-2" id="cards-3col-container"><div class="group p-5 rounded-2xl border-2 border-primary bg-primary-fixed/15 cursor-pointer transition-all flex flex-col justify-between shadow-md" id="box-card-specialty" onclick="openSelectionModal('specialty')"><div><div class="flex items-start justify-between mb-3"><div class="w-11 h-11 rounded-xl bg-primary-fixed/40 text-primary flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">stethoscope</span></div><div class="w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-surface-container-lowest" id="check-icon-specialty"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span></div></div><h3 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-1.5 group-hover:text-primary transition-colors">Theo chuyên khoa</h3></div><div class="mt-5 pt-3 border-t border-surface-container-high flex items-center justify-between text-primary font-label-sm font-semibold"><span class="truncate" id="selected-specialty-label">Khoa Nội Tiêu Hóa &amp; Gan Mật</span><span class="material-symbols-outlined text-[18px]">chevron_right</span></div></div><div class="group p-5 rounded-2xl border-2 border-surface-container-high hover:border-primary/50 bg-surface hover:bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between shadow-xs" id="box-card-doctor" onclick="openSelectionModal('doctor')"><div><div class="flex items-start justify-between mb-3"><div class="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[24px]">person_check</span></div><div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center bg-surface-container-lowest" id="check-icon-doctor"><span class="w-2.5 h-2.5 rounded-full bg-transparent"></span></div></div><div class="flex items-center justify-between mb-1.5"><h3 class="font-headline-sm text-headline-sm text-on-surface font-bold text-primary">Theo bác sĩ</h3></div></div><div class="mt-5 pt-3 border-t border-primary/20 flex items-center justify-between text-primary font-label-sm font-semibold"><span class="truncate" id="selected-doctor-label">BSCK II DƯƠNG THỊ HẰNG</span><span class="material-symbols-outlined text-[18px]">swap_horiz</span></div></div></div>
+</div>
+<!-- Profile chi tiết lựa chọn đã chọn (Active Selection Summary) -->
+<div class="p-4 sm:p-5 rounded-2xl bg-surface-container-low border border-surface-container-high flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs" id="active-selection-summary"><div class="flex items-center gap-3.5"><img alt="Dương Thị Hằng" class="w-14 h-14 rounded-full object-cover shadow-sm ring-2 ring-primary/20 shrink-0 hidden" id="summary-avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbDz-byBd9HH8nSu8LxjmGf2LqBMjFqW2aOB-mJrhHTF9yuVbKB85mEc8GQJReeYjvU2J2nGBi33KGLdM4PjNp-rJSfYsT7GaWeW1glXN4S3KR_6tKvOG1qbP7XCuM-ZSEUfnzZjokylHLr2ZYM9Le-XVHay3uLZZhaBvNYBcYOLBWg1OiAPFlycLYy_3bOeVhfJTa6b73zbyoF4y5Hf2q9P663gY3xW7gcEaBjzXFFLlXg-h4volb"><div><div class="flex items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface font-bold" id="summary-name">Khoa Nội Tiêu Hóa &amp; Gan Mật</span></div><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5" id="summary-desc">Chẩn đoán và điều trị bệnh lý ống tiêu hóa, gan tụy, nội soi gây mê an toàn.</p></div></div><button class="bg-surface-container-lowest hover:bg-surface-container text-primary border border-surface-container-high px-4 py-2.5 rounded-xl font-label-md text-label-md font-semibold flex items-center gap-1.5 shadow-xs transition-colors shrink-0" onclick="openSelectionModal(currentSelection.type)" type="button"><span class="material-symbols-outlined text-[18px]">edit</span><span class="">Đổi lựa chọn</span></button></div>
+</section>
+<!-- THÔNG TIN BỆNH NHÂN RÚT GỌN -->
+<div class="bg-surface-container-lowest p-4 sm:p-5 rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md border border-surface-container-high"><div class="flex items-center gap-3.5"><div class="w-10 h-10 rounded-xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold shadow-xs shrink-0"><span class="material-symbols-outlined text-[22px]">badge</span></div><div><div class="flex flex-wrap items-center gap-2"><span class="font-headline-sm text-headline-sm text-on-surface font-bold">Bệnh nhân: Nguyễn Duy Tuấn Hưng</span><span class="text-outline-variant font-light hidden sm:inline">|</span><span class="font-code-sm text-code-sm text-on-surface-variant font-semibold bg-surface-container-high px-2 py-0.5 rounded">Mã BN: BN-2026-08291</span><span class="text-outline-variant font-light hidden sm:inline">|</span><span class="font-body-sm text-body-sm text-secondary font-medium bg-secondary-fixed/40 px-2 py-0.5 rounded">BHYT: DN40129849281</span><span class="text-outline-variant font-light hidden sm:inline">|</span><span class="font-code-sm text-code-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">CCCD: 001098***432</span></div><p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Cơ sở ĐK KCB ban đầu: Bệnh viện Bạch Mai - Hà Nội (Mã ĐKKCB: 01-006) • Hiệu lực BHYT: Đang hoạt động</p></div></div><button class="text-primary hover:underline font-label-md text-label-md font-semibold flex items-center gap-1 shrink-0" type="button"><span class="material-symbols-outlined text-[16px]">edit</span>Thay đổi hồ sơ</button></div>
+</div>
+<!-- MODAL: DANH SÁCH CHỌN TRỰC QUAN (CHUYÊN KHOA / BÁC SĨ) -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="selection-modal">
+<div class="bg-surface-container-lowest max-w-2xl w-full rounded-2xl shadow-2xl p-6 animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[85vh]">
+<!-- Modal Header -->
+<div class="flex items-center justify-between pb-3 border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shadow-xs"><span class="material-symbols-outlined text-[22px]" id="modal-icon">person_search</span></div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold" id="modal-title">Chọn Bác sĩ tiếp nhận</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant" id="modal-subtitle">Bệnh viện Bạch Mai - Hà Nội</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded-lg hover:bg-surface-container transition-colors" onclick="closeSelectionModal()" type="button">
+<span class="material-symbols-outlined text-[22px]">close</span>
+</button>
+</div>
+<!-- Search Box inside Modal -->
+<div class="my-4 relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full h-11 pl-11 pr-4 bg-surface-container-low rounded-xl font-body-md text-body-md text-on-surface shadow-inner focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all border border-surface-container-high" id="modal-search-input" onkeyup="filterModalItems()" placeholder="Tìm kiếm bác sĩ... (VD: &quot;Phạm Thị Uyên&quot;, &quot;Da Liễu&quot;)" type="text">
+</div>
+<!-- Modal Content Dynamic List -->
+<div class="overflow-y-auto space-y-2.5 pr-1 flex-1" id="modal-items-container"><div class="p-4 rounded-xl border border-outline-variant/60 hover:border-primary/50 bg-surface-container-lowest flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all shadow-xs">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <img alt="THS. BS PHẠM THỊ UYÊN" class="w-14 h-14 rounded-full object-cover shrink-0 shadow-xs ring-1 ring-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRauYepKS78butLwWb9imjigEyl3-bxxTSN594wi9eQHqNGCAZ-rTjG0ziCA584Yu3qI0xDWKaPJI2_OsttpzbzkiPKsuv4tIqAdJFqgICrR6UCSNifcfmwRCAQxqN913M2fE6WWncOtbZFE_ALk47XPksYl8lMaZwGJ7Hg-EAvYh2Hl0ozYgDcPM8YCpR9UR1AIMBWUrxtHy56famDDgVmhG1j9rUGPSi3HCVGkjmRbZgitpTWXNk">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-tight">THS. BS PHẠM THỊ UYÊN</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-body-sm text-body-sm text-primary font-semibold">Y học Cổ Truyền</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/40 px-2 py-0.5 rounded cursor-help border border-primary/20" title="Học vị: Thạc sĩ Bác sĩ Y khoa">ThS. BS</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">Phục hồi chức năng, Châm cứu bấm huyệt, Cơ xương khớp</p>
+              </div>
+            </div>
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+              <div class="text-left sm:text-right">
+                <span class="font-label-sm text-label-sm text-outline block uppercase tracking-wider font-semibold text-[11px]">PHÍ KHÁM</span>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">400.000 VNĐ</span>
+              </div>
+              
+                <button type="button" class="px-5 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center shadow-xs transition-all bg-primary-fixed/40 hover:bg-primary text-primary hover:text-on-primary">
+                  Chọn
+                </button>
+              
+            </div>
+          </div><div class="p-4 rounded-xl border border-outline-variant/60 hover:border-primary/50 bg-surface-container-lowest flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all shadow-xs">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <img alt="BSCK II TRẦN THỊ KIỀU PHƯƠNG" class="w-14 h-14 rounded-full object-cover shrink-0 shadow-xs ring-1 ring-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnLA7oA9phscc4RLH7iD8NCdlGre-qAx-IGOckTPjbv-A4luAva2kTZyldwcVSBQhJnf_jfeoFWhFS7kspXx2-IQfVxgglNe_m9q56FJ_DfkxPx68iX4sL-KOIjq1zqPj83HEPFHVA1HU1jctgW0uM-DWUfioohdTtTacrih2aniQJ_U1C95JxlXSgMMMgb6D0kqL21yAGKiN6vNlq-BKe7-H9HjsSnkZoLJ5sZ9a2B58xFo5gIjVP">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-tight">BSCK II TRẦN THỊ KIỀU PHƯƠNG</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-body-sm text-body-sm text-primary font-semibold">Nội - Thận Tiết Niệu</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/40 px-2 py-0.5 rounded cursor-help border border-primary/20" title="Học vị: Bác sĩ Chuyên khoa II">BSCK II</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">Bệnh lý cầu thận, Suy thận mạn, Nhiễm trùng tiết niệu</p>
+              </div>
+            </div>
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+              <div class="text-left sm:text-right">
+                <span class="font-label-sm text-label-sm text-outline block uppercase tracking-wider font-semibold text-[11px]">PHÍ KHÁM</span>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">450.000 VNĐ</span>
+              </div>
+              
+                <button type="button" class="px-5 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center shadow-xs transition-all bg-primary-fixed/40 hover:bg-primary text-primary hover:text-on-primary">
+                  Chọn
+                </button>
+              
+            </div>
+          </div><div class="p-4 rounded-xl border-2 border-primary bg-surface-container-lowest shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <img alt="BSCK II DƯƠNG THỊ HẰNG" class="w-14 h-14 rounded-full object-cover shrink-0 shadow-xs ring-2 ring-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbDz-byBd9HH8nSu8LxjmGf2LqBMjFqW2aOB-mJrhHTF9yuVbKB85mEc8GQJReeYjvU2J2nGBi33KGLdM4PjNp-rJSfYsT7GaWeW1glXN4S3KR_6tKvOG1qbP7XCuM-ZSEUfnzZjokylHLr2ZYM9Le-XVHay3uLZZhaBvNYBcYOLBWg1OiAPFlycLYy_3bOeVhfJTa6b73zbyoF4y5Hf2q9P663gY3xW7gcEaBjzXFFLlXg-h4volb">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-tight">BSCK II DƯƠNG THỊ HẰNG</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-body-sm text-body-sm text-primary font-semibold">Da Liễu</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/40 px-2 py-0.5 rounded cursor-help border border-primary/20" title="Học vị: Bác sĩ Chuyên khoa II">BSCK II</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">Viêm da cơ địa, Vảy nến, Trị liệu laser chuyên sâu</p>
+              </div>
+            </div>
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+              <div class="text-left sm:text-right">
+                <span class="font-label-sm text-label-sm text-outline block uppercase tracking-wider font-semibold text-[11px]">PHÍ KHÁM</span>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">350.000 VNĐ</span>
+              </div>
+              
+                <button type="button" class="px-4 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center gap-1 shadow-xs transition-all bg-primary text-on-primary ring-2 ring-primary/20">
+                  <span class="material-symbols-outlined text-[16px]">check</span>Đang chọn
+                </button>
+              
+            </div>
+          </div><div class="p-4 rounded-xl border border-outline-variant/60 hover:border-primary/50 bg-surface-container-lowest flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all shadow-xs">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <img alt="THS. BS NGUYỄN VĂN CƯỜNG" class="w-14 h-14 rounded-full object-cover shrink-0 shadow-xs ring-1 ring-outline-variant/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6SSpDXSKCEpLqdkioNLGEorj3kJPq9cM0_ojwQ347CoRanhHKVZ5yDh2iIvL9sxJOMh7yUDLL8FEpp_T60diWIDxsuvsmMdi_qU9jSNPmx7HJCJWxYdcURIvAMVOuPrm0x4zg2t3S8un8i30D7bQqJmsGSsSU7nmh5BvMq5qmtrQ3Yz7dd0rCqh6sZmC_e0tikugrHfSO6_xajGWDe6-9LyxqFsTMHLVUXb6lRClUaOlOKuzykX5L">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-tight">THS. BS NGUYỄN VĂN CƯỜNG</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-body-sm text-body-sm text-primary font-semibold">Ngoại - Thần Kinh</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/40 px-2 py-0.5 rounded cursor-help border border-primary/20" title="Học vị: Thạc sĩ Bác sĩ Y khoa">ThS. BS</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">Chấn thương sọ não, Thoát vị đĩa đệm, Phẫu thuật thần kinh</p>
+              </div>
+            </div>
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+              <div class="text-left sm:text-right">
+                <span class="font-label-sm text-label-sm text-outline block uppercase tracking-wider font-semibold text-[11px]">PHÍ KHÁM</span>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">450.000 VNĐ</span>
+              </div>
+              
+                <button type="button" class="px-5 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center shadow-xs transition-all bg-primary-fixed/40 hover:bg-primary text-primary hover:text-on-primary">
+                  Chọn
+                </button>
+              
+            </div>
+          </div><div class="p-4 rounded-xl border border-outline-variant/60 hover:border-primary/50 bg-surface-container-lowest flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all shadow-xs">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <img alt="THS. BS NGUYỄN THANH TÚ" class="w-14 h-14 rounded-full object-cover shrink-0 shadow-xs ring-1 ring-outline-variant/30" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&amp;fit=crop&amp;w=256&amp;q=80">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-tight">THS. BS NGUYỄN THANH TÚ</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-body-sm text-body-sm text-primary font-semibold">Khám nội tổng quát</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/40 px-2 py-0.5 rounded cursor-help border border-primary/20" title="Học vị: Thạc sĩ Bác sĩ Y khoa">ThS. BS</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">Tầm soát bệnh lý nội khoa, Quản lý sức khỏe định kỳ</p>
+              </div>
+            </div>
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+              <div class="text-left sm:text-right">
+                <span class="font-label-sm text-label-sm text-outline block uppercase tracking-wider font-semibold text-[11px]">PHÍ KHÁM</span>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">300.000 VNĐ</span>
+              </div>
+              
+                <button type="button" class="px-5 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center shadow-xs transition-all bg-primary-fixed/40 hover:bg-primary text-primary hover:text-on-primary">
+                  Chọn
+                </button>
+              
+            </div>
+          </div></div>
+<!-- Cụm phân trang (Pagination) chuẩn UI/UX động cho từng popup -->
+<div class="pt-3 pb-1 border-t border-surface-container-high mt-3 flex flex-col sm:flex-row items-center justify-between gap-3" id="modal-pagination-container">
+        <span class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+          Hiển thị <span class="font-semibold text-on-surface">1 - 5</span> trong số <span class="font-semibold text-on-surface">28</span> bác sĩ
+        </span>
+        <div class="flex items-center gap-1">
+          <button type="button" disabled="" class="px-2.5 py-1.5 rounded-lg border border-surface-container-high text-outline-variant cursor-not-allowed flex items-center gap-0.5 text-label-sm font-semibold opacity-60">
+            <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+            <span>Trước</span>
+          </button>
+          <button type="button" class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md font-bold text-center flex items-center justify-center shadow-xs">1</button>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">2</button>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">3</button>
+          <span class="w-6 text-center text-outline text-label-md">...</span>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">6</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high flex items-center gap-0.5 text-label-sm font-semibold transition-colors">
+            <span>Sau</span>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+        </div>
+      </div>
+<!-- Modal Footer (Only 'Đóng' button as requested) -->
+<div class="pt-3 border-t border-surface-container-high flex items-center justify-end gap-3">
+<button class="px-5 py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md font-semibold transition-colors" onclick="closeSelectionModal()" type="button">
+Đóng
+</button>
+</div>
+</div>
+</div>
+<script>
+    let activeType = 'doctor';
+    let currentSelection = {
+      type: 'doctor',
+      doctor: {
+        name: 'BSCK II DƯƠNG THỊ HẰNG',
+        role: 'Da Liễu',
+        degree: 'BSCK II',
+        desc: 'Viêm da cơ địa, Vảy nến, Trị liệu laser chuyên sâu',
+        price: '350.000 VNĐ',
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDbDz-byBd9HH8nSu8LxjmGf2LqBMjFqW2aOB-mJrhHTF9yuVbKB85mEc8GQJReeYjvU2J2nGBi33KGLdM4PjNp-rJSfYsT7GaWeW1glXN4S3KR_6tKvOG1qbP7XCuM-ZSEUfnzZjokylHLr2ZYM9Le-XVHay3uLZZhaBvNYBcYOLBWg1OiAPFlycLYy_3bOeVhfJTa6b73zbyoF4y5Hf2q9P663gY3xW7gcEaBjzXFFLlXg-h4volb'
+      },
+      specialty: {
+        name: 'Khoa Nội Tiêu Hóa & Gan Mật',
+        desc: 'Chẩn đoán và điều trị bệnh lý ống tiêu hóa, gan tụy, nội soi gây mê an toàn.',
+        price: '300.000 VNĐ',
+        img: ''
+      }
+    };
+
+    const doctorsData = [
+      {
+        id: 'dr1',
+        name: 'THS. BS PHẠM THỊ UYÊN',
+        role: 'Y học Cổ Truyền',
+        degree: 'ThS. BS',
+        degreeTitle: 'Học vị: Thạc sĩ Bác sĩ Y khoa',
+        desc: 'Phục hồi chức năng, Châm cứu bấm huyệt, Cơ xương khớp',
+        price: '400.000 VNĐ',
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRauYepKS78butLwWb9imjigEyl3-bxxTSN594wi9eQHqNGCAZ-rTjG0ziCA584Yu3qI0xDWKaPJI2_OsttpzbzkiPKsuv4tIqAdJFqgICrR6UCSNifcfmwRCAQxqN913M2fE6WWncOtbZFE_ALk47XPksYl8lMaZwGJ7Hg-EAvYh2Hl0ozYgDcPM8YCpR9UR1AIMBWUrxtHy56famDDgVmhG1j9rUGPSi3HCVGkjmRbZgitpTWXNk'
+      },
+      {
+        id: 'dr2',
+        name: 'BSCK II TRẦN THỊ KIỀU PHƯƠNG',
+        role: 'Nội - Thận Tiết Niệu',
+        degree: 'BSCK II',
+        degreeTitle: 'Học vị: Bác sĩ Chuyên khoa II',
+        desc: 'Bệnh lý cầu thận, Suy thận mạn, Nhiễm trùng tiết niệu',
+        price: '450.000 VNĐ',
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnLA7oA9phscc4RLH7iD8NCdlGre-qAx-IGOckTPjbv-A4luAva2kTZyldwcVSBQhJnf_jfeoFWhFS7kspXx2-IQfVxgglNe_m9q56FJ_DfkxPx68iX4sL-KOIjq1zqPj83HEPFHVA1HU1jctgW0uM-DWUfioohdTtTacrih2aniQJ_U1C95JxlXSgMMMgb6D0kqL21yAGKiN6vNlq-BKe7-H9HjsSnkZoLJ5sZ9a2B58xFo5gIjVP'
+      },
+      {
+        id: 'dr3',
+        name: 'BSCK II DƯƠNG THỊ HẰNG',
+        role: 'Da Liễu',
+        degree: 'BSCK II',
+        degreeTitle: 'Học vị: Bác sĩ Chuyên khoa II',
+        desc: 'Viêm da cơ địa, Vảy nến, Trị liệu laser chuyên sâu',
+        price: '350.000 VNĐ',
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDbDz-byBd9HH8nSu8LxjmGf2LqBMjFqW2aOB-mJrhHTF9yuVbKB85mEc8GQJReeYjvU2J2nGBi33KGLdM4PjNp-rJSfYsT7GaWeW1glXN4S3KR_6tKvOG1qbP7XCuM-ZSEUfnzZjokylHLr2ZYM9Le-XVHay3uLZZhaBvNYBcYOLBWg1OiAPFlycLYy_3bOeVhfJTa6b73zbyoF4y5Hf2q9P663gY3xW7gcEaBjzXFFLlXg-h4volb'
+      },
+      {
+        id: 'dr4',
+        name: 'THS. BS NGUYỄN VĂN CƯỜNG',
+        role: 'Ngoại - Thần Kinh',
+        degree: 'ThS. BS',
+        degreeTitle: 'Học vị: Thạc sĩ Bác sĩ Y khoa',
+        desc: 'Chấn thương sọ não, Thoát vị đĩa đệm, Phẫu thuật thần kinh',
+        price: '450.000 VNĐ',
+        img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB6SSpDXSKCEpLqdkioNLGEorj3kJPq9cM0_ojwQ347CoRanhHKVZ5yDh2iIvL9sxJOMh7yUDLL8FEpp_T60diWIDxsuvsmMdi_qU9jSNPmx7HJCJWxYdcURIvAMVOuPrm0x4zg2t3S8un8i30D7bQqJmsGSsSU7nmh5BvMq5qmtrQ3Yz7dd0rCqh6sZmC_e0tikugrHfSO6_xajGWDe6-9LyxqFsTMHLVUXb6lRClUaOlOKuzykX5L'
+      },
+      {
+        id: 'dr5',
+        name: 'THS. BS NGUYỄN THANH TÚ',
+        role: 'Khám nội tổng quát',
+        degree: 'ThS. BS',
+        degreeTitle: 'Học vị: Thạc sĩ Bác sĩ Y khoa',
+        desc: 'Tầm soát bệnh lý nội khoa, Quản lý sức khỏe định kỳ',
+        price: '300.000 VNĐ',
+        img: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80'
+      }
+    ];
+
+    const specialtyData = [
+      { id: 'sp1', name: 'Khoa Nội Tiêu Hóa & Gan Mật', desc: 'Chẩn đoán và điều trị bệnh lý ống tiêu hóa, gan tụy, nội soi gây mê an toàn.', price: '300.000 VNĐ' },
+      { id: 'sp2', name: 'Khoa Tim Mạch Can Thiệp', desc: 'Tầm soát mạch vành, rối loạn nhịp tim, siêu âm doppler tim kỹ thuật số.', price: '350.000 VNĐ' },
+      { id: 'sp3', name: 'Khoa Thần Kinh & Cột Sống', desc: 'Điều trị đau đầu mãn tính, đau dây thần kinh, thoái hóa thoát vị đĩa đệm.', price: '350.000 VNĐ' },
+      { id: 'sp4', name: 'Khoa Nội Tiết - Chuyển Hóa', desc: 'Quản lý Đái tháo đường, bệnh tuyến giáp và rối loạn lipid máu toàn diện.', price: '300.000 VNĐ' },
+      { id: 'sp5', name: 'Khoa Cơ Xương Khớp', desc: 'Thoái hóa khớp, viêm khớp dạng thấp, tiêm huyết tương giàu tiểu cầu (PRP).', price: '300.000 VNĐ' }
+    ];
+
+    function updateCardStyles() {
+      const cardSpec = document.getElementById('box-card-specialty');
+      const cardDoc = document.getElementById('box-card-doctor');
+
+      const checkSpec = document.getElementById('check-icon-specialty');
+      checkDoc = document.getElementById('check-icon-doctor');
+
+      [cardSpec, cardDoc].forEach(c => {
+        c.className = 'group p-5 rounded-2xl border-2 border-surface-container-high hover:border-primary/50 bg-surface hover:bg-surface-container-low cursor-pointer transition-all flex flex-col justify-between shadow-xs';
+      });
+
+      checkSpec.className = 'w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center bg-surface-container-lowest';
+      checkSpec.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-transparent"></span>';
+
+      checkDoc.className = 'w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center bg-surface-container-lowest';
+      checkDoc.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-transparent"></span>';
+
+      if (currentSelection.type === 'specialty') {
+        cardSpec.className = 'group p-5 rounded-2xl border-2 border-primary bg-primary-fixed/15 cursor-pointer transition-all flex flex-col justify-between shadow-md';
+        checkSpec.className = 'w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-surface-container-lowest';
+        checkSpec.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>';
+      } else if (currentSelection.type === 'doctor') {
+        cardDoc.className = 'group p-5 rounded-2xl border-2 border-primary bg-primary-fixed/15 cursor-pointer transition-all flex flex-col justify-between shadow-md';
+        checkDoc.className = 'w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center bg-surface-container-lowest';
+        checkDoc.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>';
+      }
+      updateActiveSummaryBanner();
+    }
+
+    function updateActiveSummaryBanner() {
+      const summaryAvatar = document.getElementById('summary-avatar');
+      const summaryName = document.getElementById('summary-name');
+      const summaryDesc = document.getElementById('summary-desc');
+      const bottomBarText = document.getElementById('bottom-bar-detail');
+
+      if (currentSelection.type === 'doctor') {
+        const d = currentSelection.doctor;
+        summaryAvatar.classList.remove('hidden');
+        summaryAvatar.src = d.img;
+        summaryName.textContent = d.name;
+        summaryDesc.textContent = `${d.role} • ${d.desc}`;
+        bottomBarText.innerHTML = `<span class="material-symbols-outlined text-[16px]">check_circle</span> Đang chọn: ${d.name} (Phí khám: ${d.price})`;
+      } else if (currentSelection.type === 'specialty') {
+        const s = currentSelection.specialty;
+        summaryAvatar.classList.add('hidden');
+        summaryName.textContent = s.name;
+        summaryDesc.textContent = s.desc;
+        bottomBarText.innerHTML = `<span class="material-symbols-outlined text-[16px]">check_circle</span> Đang chọn: ${s.name} (Phí khám: ${s.price})`;
+      }
+    }
+
+    function openSelectionModal(type) {
+      activeType = type;
+      const modal = document.getElementById('selection-modal');
+      const searchInput = document.getElementById('modal-search-input');
+      searchInput.value = '';
+      if (type === 'doctor') {
+        searchInput.placeholder = 'Tìm kiếm bác sĩ... (VD: "Phạm Thị Uyên", "Da Liễu")';
+      } else {
+        searchInput.placeholder = 'Tìm kiếm chuyên khoa... (VD: "Tiêu Hóa", "Tim Mạch")';
+      }
+
+      modal.classList.remove('hidden');
+      renderModalList();
+    }
+
+    function selectDoctorItem(doc) {
+      currentSelection.type = 'doctor';
+      currentSelection.doctor = {
+        name: doc.name,
+        role: doc.role,
+        degree: doc.degree,
+        desc: doc.desc,
+        price: doc.price,
+        img: doc.img
+      };
+      document.getElementById('selected-doctor-label').textContent = doc.name;
+      updateCardStyles();
+      closeSelectionModal();
+    }
+
+    function selectSpecialtyItem(spec) {
+      currentSelection.type = 'specialty';
+      currentSelection.specialty = {
+        name: spec.name,
+        desc: spec.desc,
+        price: spec.price,
+        img: ''
+      };
+      document.getElementById('selected-specialty-label').textContent = spec.name;
+      updateCardStyles();
+      closeSelectionModal();
+    }
+
+    function renderDoctorList() {
+      const container = document.getElementById('modal-items-container');
+      const paginationContainer = document.getElementById('modal-pagination-container');
+      const filter = (document.getElementById('modal-search-input').value || '').toLowerCase();
+      container.innerHTML = '';
+
+      const filteredDocs = doctorsData.filter(d => 
+        d.name.toLowerCase().includes(filter) || 
+        d.desc.toLowerCase().includes(filter) || 
+        d.role.toLowerCase().includes(filter) ||
+        d.degree.toLowerCase().includes(filter)
+      );
+
+      if (filteredDocs.length === 0) {
+        container.innerHTML = `
+          <div class="py-12 text-center text-on-surface-variant space-y-2">
+            <span class="material-symbols-outlined text-4xl text-outline-variant">person_off</span>
+            <p class="font-body-md">Không tìm thấy bác sĩ phù hợp với từ khóa "${document.getElementById('modal-search-input').value}".</p>
+          </div>
+        `;
+      } else {
+        filteredDocs.forEach(doc => {
+          const isSelected = currentSelection.type === 'doctor' && currentSelection.doctor.name === doc.name;
+          const cardDiv = document.createElement('div');
+          
+          if (isSelected) {
+            cardDiv.className = 'p-4 rounded-xl border-2 border-primary bg-surface-container-lowest shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all';
+          } else {
+            cardDiv.className = 'p-4 rounded-xl border border-outline-variant/60 hover:border-primary/50 bg-surface-container-lowest flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all shadow-xs';
+          }
+          
+          cardDiv.onclick = () => selectDoctorItem(doc);
+
+          cardDiv.innerHTML = `
+            <div class="flex items-center gap-3.5 min-w-0">
+              <img alt="${doc.name}" class="w-14 h-14 rounded-full object-cover shrink-0 shadow-xs ${isSelected ? 'ring-2 ring-primary' : 'ring-1 ring-outline-variant/30'}" src="${doc.img}">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-bold uppercase tracking-tight">${doc.name}</span>
+                </div>
+                <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span class="font-body-sm text-body-sm text-primary font-semibold">${doc.role}</span>
+                  <span class="font-label-sm text-label-sm text-primary font-semibold bg-primary-fixed/40 px-2 py-0.5 rounded cursor-help border border-primary/20" title="${doc.degreeTitle}">${doc.degree}</span>
+                </div>
+                <p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">${doc.desc}</p>
+              </div>
+            </div>
+            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+              <div class="text-left sm:text-right">
+                <span class="font-label-sm text-label-sm text-outline block uppercase tracking-wider font-semibold text-[11px]">PHÍ KHÁM</span>
+                <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">${doc.price}</span>
+              </div>
+              ${isSelected ? `
+                <button type="button" class="px-4 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center gap-1 shadow-xs transition-all bg-primary text-on-primary ring-2 ring-primary/20">
+                  <span class="material-symbols-outlined text-[16px]">check</span>Đang chọn
+                </button>
+              ` : `
+                <button type="button" class="px-5 py-1.5 rounded-lg text-label-md font-semibold flex items-center justify-center shadow-xs transition-all bg-primary-fixed/40 hover:bg-primary text-primary hover:text-on-primary">
+                  Chọn
+                </button>
+              `}
+            </div>
+          `;
+          container.appendChild(cardDiv);
+        });
+      }
+
+      // Pagination cho danh sách bác sĩ
+      paginationContainer.innerHTML = `
+        <span class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+          Hiển thị <span class="font-semibold text-on-surface">1 - 5</span> trong số <span class="font-semibold text-on-surface">28</span> bác sĩ
+        </span>
+        <div class="flex items-center gap-1">
+          <button type="button" disabled class="px-2.5 py-1.5 rounded-lg border border-surface-container-high text-outline-variant cursor-not-allowed flex items-center gap-0.5 text-label-sm font-semibold opacity-60">
+            <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+            <span>Trước</span>
+          </button>
+          <button type="button" class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md font-bold text-center flex items-center justify-center shadow-xs">1</button>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">2</button>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">3</button>
+          <span class="w-6 text-center text-outline text-label-md">...</span>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">6</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high flex items-center gap-0.5 text-label-sm font-semibold transition-colors">
+            <span>Sau</span>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderSpecialtyList() {
+      const container = document.getElementById('modal-items-container');
+      const paginationContainer = document.getElementById('modal-pagination-container');
+      const filter = (document.getElementById('modal-search-input').value || '').toLowerCase();
+      container.innerHTML = '';
+
+      const filteredSpecs = specialtyData.filter(s => s.name.toLowerCase().includes(filter) || s.desc.toLowerCase().includes(filter));
+      filteredSpecs.forEach(spec => {
+        const isSelected = currentSelection.type === 'specialty' && currentSelection.specialty.name === spec.name;
+        const div = document.createElement('div');
+        div.className = `p-4 rounded-xl border-2 ${isSelected ? 'border-primary bg-primary-fixed/20 shadow-xs' : 'border-surface-container-high hover:border-primary/40 bg-surface'} flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer transition-all`;
+        div.onclick = (e) => {
+          selectSpecialtyItem(spec);
+        };
+        div.innerHTML = `
+          <div class="space-y-1 min-w-0 pr-2">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-headline-sm text-headline-sm text-on-surface font-bold">${spec.name}</span>
+            </div>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">${spec.desc}</p>
+          </div>
+          <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-1.5 shrink-0 pl-2 sm:border-l border-surface-container-high">
+            <div class="text-left sm:text-right">
+              <span class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider font-semibold">Phí khám</span>
+              <span class="font-headline-sm text-headline-sm font-bold text-primary block leading-tight">${spec.price}</span>
+            </div>
+            <button type="button" class="px-4 py-2 rounded-xl text-label-md font-bold flex items-center gap-1 shadow-sm transition-all ${isSelected ? 'bg-primary text-on-primary ring-2 ring-primary/30' : 'bg-primary-fixed hover:bg-primary text-primary hover:text-on-primary'}">
+              ${isSelected ? '<span class="material-symbols-outlined text-[16px]">check</span>Đang chọn' : 'Chọn'}
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      // Pagination cho popup Chuyên khoa
+      paginationContainer.innerHTML = `
+        <span class="font-body-sm text-body-sm text-on-surface-variant font-medium">
+          Hiển thị <span class="font-semibold text-on-surface">1 - 5</span> trong số <span class="font-semibold text-on-surface">18</span> chuyên khoa
+        </span>
+        <div class="flex items-center gap-1">
+          <button type="button" disabled class="px-2.5 py-1.5 rounded-lg border border-surface-container-high text-outline-variant cursor-not-allowed flex items-center gap-0.5 text-label-sm font-semibold opacity-60">
+            <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+            <span>Trước</span>
+          </button>
+          <button type="button" class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-md font-bold text-center flex items-center justify-center shadow-xs">1</button>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">2</button>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">3</button>
+          <span class="w-6 text-center text-outline text-label-md">...</span>
+          <button type="button" class="w-8 h-8 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high font-label-md font-medium text-center flex items-center justify-center transition-colors">4</button>
+          <button type="button" class="px-2.5 py-1.5 rounded-lg border border-surface-container-high text-on-surface hover:bg-surface-container-high flex items-center gap-0.5 text-label-sm font-semibold transition-colors">
+            <span>Sau</span>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function renderModalList() {
+      const title = document.getElementById('modal-title');
+      const icon = document.getElementById('modal-icon');
+
+      if (activeType === 'doctor') {
+        title.textContent = 'Chọn Bác sĩ tiếp nhận';
+        icon.textContent = 'person_search';
+        renderDoctorList();
+      } else if (activeType === 'specialty') {
+        title.textContent = 'Chọn Chuyên khoa tiếp nhận';
+        icon.textContent = 'stethoscope';
+        renderSpecialtyList();
+      }
+    }
+
+    function filterModalItems() {
+      renderModalList();
+    }
+
+    function closeSelectionModal() {
+      const modal = document.getElementById('selection-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // Khởi tạo popup ban đầu mở ở chế độ bác sĩ
+    window.addEventListener('DOMContentLoaded', () => {
+      openSelectionModal('doctor');
+    });
+  </script>
+</div>
+<!-- STICKY FLOATING ACTION BAR -->
+<div class="sticky bottom-4 z-40 w-full max-w-4xl mx-auto px-gutter sm:px-gutter-desktop mt-4">
+<div class="bg-surface-container-lowest/95 backdrop-blur-xl border border-surface-container-high py-space-md px-space-lg rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Left side: Status & Selection breakdown -->
+<div class="w-full sm:w-auto text-left">
+<div class="flex items-baseline gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Hình thức đang chọn:</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight" id="summary-mode-title">Khám theo yêu cầu (Chuyên sâu)</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary flex items-center gap-1 mt-0.5 font-semibold" id="bottom-bar-detail"><span class="material-symbols-outlined text-[16px]">check_circle</span> Đang chọn: BSCK II DƯƠNG THỊ HẰNG (Phí khám: 350.000 VNĐ)</p>
+</div>
+<!-- Right side: Back & Continue CTA -->
+<div class="w-full sm:w-auto flex items-center gap-space-sm justify-end">
+<button class="inline-flex px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors items-center gap-1 font-semibold" onclick="alert('Quay lại Bước 1: Chọn hình thức khám')" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="">Quay lại</span>
+</button>
+<button class="w-full sm:w-auto bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-headline-sm text-headline-sm font-semibold px-7 py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all transform active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" onclick="document.getElementById('step3-confirm-modal').classList.remove('hidden')" type="button">
+<span class="">Tiếp tục</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Modal xác nhận chuyển bước 3 -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="step3-confirm-modal">
+<div class="bg-surface-container-lowest max-w-md w-full rounded-2xl shadow-2xl p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+<div class="w-14 h-14 bg-primary-fixed/40 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+<span class="material-symbols-outlined text-[32px]">calendar_month</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface font-bold mb-2">Chuyển sang Bước 3: Chọn thời gian khám</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+Thông tin tiếp nhận cơ sở và chuyên môn đã được lưu thành công. Bạn muốn chuyển sang bảng chọn ngày giờ khám?
+</p>
+<div class="bg-surface-container-low p-4 rounded-xl mb-6 text-left space-y-2 border border-surface-container-high"><div class="flex justify-between text-body-sm font-body-sm"><span class="text-on-surface-variant">Cơ sở tiếp nhận:</span><span class="font-semibold text-on-surface">Bệnh viện Bạch Mai - Hà Nội</span></div><div class="flex justify-between text-body-sm font-body-sm"><span class="text-on-surface-variant">Bác sĩ phụ trách:</span><span class="font-semibold text-on-surface">BSCK II DƯƠNG THỊ HẰNG</span></div><div class="flex justify-between text-body-sm font-body-sm"><span class="text-on-surface-variant">Chuyên khoa / Phòng:</span><span class="font-semibold text-on-surface">Da Liễu</span></div><div class="flex justify-between text-body-sm font-body-sm"><span class="text-on-surface-variant">Giá khám (service_price):</span><span class="font-bold text-primary">350.000 VNĐ</span></div></div>
+<div class="grid grid-cols-2 gap-3">
+<button class="w-full bg-surface-container hover:bg-surface-container-high text-on-surface py-2.5 px-4 rounded-xl font-label-md text-label-md font-semibold transition-colors" onclick="document.getElementById('step3-confirm-modal').classList.add('hidden')" type="button">
+Ở lại xem lại
+</button>
+<button class="w-full bg-primary text-on-primary py-2.5 px-4 rounded-xl font-label-md text-label-md font-bold hover:bg-on-primary-fixed-variant transition-colors shadow-sm flex items-center justify-center gap-1" onclick="document.getElementById('step3-confirm-modal').classList.add('hidden'); alert('Chuyển tới Bước 3: Chọn lịch khám!');" type="button">
+<span class="">Đến Bước 3</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)]"><div class="w-full px-margin-desktop py-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop pb-space-xl"><div class="space-y-space-sm"><div class="flex items-center gap-space-sm"><div class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[18px]">local_hospital</span></div><span class="font-headline-sm text-headline-sm text-on-surface font-bold">MedConnect Portal</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Accredited digital healthcare intake and scheduling platform providing streamlined hospital admission, clinical triage, and outpatient coordination.</p></div><div class="space-y-space-xs"><span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">24/7 Clinical Support</span><div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant"><p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span><span class="">Hospital Hotline: (028) 3822-5555</span></p><p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-error">emergency</span><span class="">Emergency Desk: Ext 115</span></p><p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-secondary">mail</span><span class="">care@medconnect-hospital.vn</span></p></div></div><div class="space-y-space-xs"><span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">Facility Info</span><div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant"><p class="">Central Hospital Campus</p><p class="">Gate 3, 201 Nguyen Thi Minh Khai, District 1</p><p class="">Ho Chi Minh City, Vietnam</p><p class="text-secondary font-medium">Working Hours: 06:30 - 20:00 Daily</p></div></div><div class="space-y-space-xs"><span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">Intake Compliance</span><div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant"><p class="">BHYT / National Insurance Verified</p><p class="">HIPAA &amp; MOH Privacy Compliant</p><p class="">Instant SMS &amp; Email Appointment Pass</p></div></div></div><div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm"><p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 MedConnect Clinical Services. All rights reserved.</p><div class="flex items-center gap-space-lg"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy Policy</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Terms of Intake</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Patient Rights</a></div></div></div></footer>
+
+</body></html>

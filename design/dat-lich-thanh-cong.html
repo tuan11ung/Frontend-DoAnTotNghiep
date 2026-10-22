@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" style="">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="web_standard" name="shell-type">
+  <title>MedConnect - Patient Booking Portal</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <style>
+    @layer base {
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        overscroll-behavior: none;
+      }
+
+      main>:first-child {
+        margin-top: 0 !important;
+      }
+
+      main>:last-child {
+        margin-bottom: 0 !important;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script
+    id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#002114", "surface": "#faf8ff", "on-secondary": "#ffffff", "surface-container-lowest": "#ffffff", "on-primary-fixed": "#00174b", "on-tertiary-container": "#ffede1", "secondary": "#006c4a", "primary-fixed-dim": "#b4c5ff", "on-tertiary": "#ffffff", "on-surface-variant": "#434655", "on-tertiary-fixed": "#2f1500", "on-background": "#131b2e", "primary-fixed": "#dbe1ff", "surface-dim": "#d2d9f4", "on-surface": "#131b2e", "secondary-fixed": "#85f8c4", "on-error": "#ffffff", "surface-container-highest": "#dae2fd", "tertiary": "#824500", "on-primary": "#ffffff", "inverse-surface": "#283044", "primary": "#004ac6", "inverse-on-surface": "#eef0ff", "outline-variant": "#c3c6d7", "error-container": "#ffdad6", "surface-tint": "#0053db", "surface-container-low": "#f2f3ff", "secondary-container": "#82f5c1", "error": "#ba1a1a", "on-primary-fixed-variant": "#003ea8", "secondary-fixed-dim": "#68dba9", "primary-container": "#2563eb", "tertiary-container": "#a65900", "tertiary-fixed": "#ffdcc3", "on-error-container": "#93000a", "inverse-primary": "#b4c5ff", "background": "#faf8ff", "surface-container-high": "#e2e7ff", "surface-variant": "#dae2fd", "on-secondary-fixed-variant": "#005137", "surface-container": "#eaedff", "on-secondary-container": "#00714e", "on-primary-container": "#eeefff", "surface-bright": "#faf8ff", "outline": "#737686", "tertiary-fixed-dim": "#ffb77d", "on-tertiary-fixed-variant": "#6e3900" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-desktop": "2rem", "gutter": "1rem", "space-lg": "1.25rem", "space-xs": "0.25rem", "margin": "1rem", "gutter-desktop": "1.5rem", "space-md": "0.75rem", "space-sm": "0.5rem", "space-xl": "2rem" }, fontFamily: { "body-sm": ["Manrope"], "label-sm": ["Manrope"], "body-lg": ["Manrope"], "headline-xl-mobile": ["Manrope"], "headline-lg": ["Manrope"], "headline-sm": ["Manrope"], "headline-xl": ["Manrope"], "label-md": ["Manrope"], "body-md": ["Manrope"], "headline-md": ["Manrope"], "code-sm": ["JetBrains Mono"] }, fontSize: { "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }], "headline-xl-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "600" }], "headline-sm": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }], "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "code-sm": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "500" }] } } } };</script>
+</head>
+
+<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen overflow-y-auto">
+  <header
+    class="fixed top-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="h-16 w-full px-margin-desktop flex items-center justify-between">
+      <div class="flex items-center gap-space-xl">
+        <div class="flex items-center gap-space-sm">
+          <div
+            class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm">
+            <span class="material-symbols-outlined text-[22px]">local_hospital</span></div>
+          <div class="flex flex-col"><span
+              class="font-headline-sm text-headline-sm text-on-surface font-bold leading-none tracking-tight">MedConnect</span><span
+              class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">Patient
+              Portal</span></div>
+        </div>
+        <nav class="hidden md:flex items-center gap-space-xs"
+          data-active-classes="bg-surface-container-high text-on-surface font-headline-sm rounded-lg"><a
+            aria-current="page"
+            class="px-space-md py-space-sm transition-colors bg-surface-container-high text-on-surface font-headline-sm rounded-lg"
+            data-path="book-appointment" href="#">Book Appointment</a><a
+            class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md"
+            data-path="my-appointments" href="#">My Appointments</a><a
+            class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md"
+            data-path="doctors-directory" href="#">Doctors Directory</a><a
+            class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md"
+            data-path="records-and-intake" href="#">Records &amp; Intake</a></nav>
+      </div>
+      <div class="flex items-center gap-space-md">
+        <div
+          class="hidden sm:flex items-center gap-space-xs bg-surface-container-low text-on-surface-variant rounded-full px-space-md py-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.02)]">
+          <span class="material-symbols-outlined text-[18px] text-primary">account_circle</span><span
+            class="font-label-md text-label-md font-semibold text-on-surface">Nguyễn Duy Tuấn Hưng</span><span
+            class="font-code-sm text-code-sm text-on-surface-variant ml-1 font-medium">#PT-8291</span></div>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span
+            class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+      </div>
+    </div>
+  </header>
+  <main class="w-full pt-16 bg-surface min-h-[calc(100vh-14rem)] overflow-y-auto">
+    <div class="flex flex-col w-full">
+      <!-- Subtle Clinical Background Ambient Glow -->
+      <div class="relative w-full max-w-xl mx-auto py-10 px-4">
+        <div
+          class="absolute -top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-secondary-container/30 rounded-full blur-3xl pointer-events-none -z-10">
+        </div>
+        <div
+          class="absolute top-1/3 -right-20 w-72 h-72 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none -z-10">
+        </div>
+        <!-- Main Success Pass Card -->
+        <div class="bg-surface-container-lowest shadow-xl rounded-3xl p-8 text-center relative overflow-hidden"
+          id="appointment-ticket">
+          <!-- Top Subtle Green Accent Bar -->
+          <div
+            class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-secondary-fixed via-secondary to-secondary-container">
+          </div>
+          <!-- Corner Watermark Monogram -->
+          <div class="absolute -right-6 -bottom-6 w-32 h-32 opacity-5 pointer-events-none text-on-surface">
+            <span class="material-symbols-outlined text-[120px]">local_hospital</span>
+          </div>
+          <!-- Large Emerald Green Check-Circle Icon -->
+          <div
+            class="w-16 h-16 text-secondary bg-secondary-fixed/50 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+            <span class="material-symbols-outlined text-[36px]"
+              style="font-variation-settings: 'FILL' 1;">check_circle</span>
+          </div>
+          <!-- Title & Subtitle -->
+          <h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">
+            Đã đặt lịch thành công!
+          </h1>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-1.5 max-w-md mx-auto">
+            Cảm ơn bạn đã tin tưởng dịch vụ khám chữa bệnh tại MedConnect.
+          </p>
+          <!-- Highlighted Appointment Code Box -->
+          <div
+            class="bg-surface-container-high/60 rounded-2xl py-3 px-6 my-5 inline-flex flex-col items-center justify-center shadow-sm">
+            <span class="font-label-sm text-label-sm tracking-wider font-semibold text-primary uppercase">
+              MÃ LỊCH HẸN TRỰC TUYẾN
+            </span>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="font-code-sm text-headline-md font-bold text-primary tracking-wider"
+                id="ticket-code">LH-20261015-81252</span>
+              <button
+                class="material-symbols-outlined text-[18px] text-primary hover:text-on-primary-fixed-variant transition-colors cursor-pointer"
+                onclick="navigator.clipboard.writeText('LH-20261015-81252'); this.innerText='done'; setTimeout(()=&gt;this.innerText='content_copy', 1800);"
+                title="Sao chép mã" type="button">
+                content_copy
+              </button>
+            </div>
+          </div>
+          <!-- QR Code Section -->
+          <div class="my-4 flex flex-col items-center">
+            <div
+              class="w-52 h-52 mx-auto bg-surface-container-lowest rounded-2xl p-3 flex flex-col items-center justify-center shadow-md relative group">
+              <!-- Ambient subtle corner brackets indicating scan area -->
+              <div class="absolute top-2 left-2 w-3.5 h-3.5 rounded-tl-sm bg-primary/20"></div>
+              <div class="absolute top-2 right-2 w-3.5 h-3.5 rounded-tr-sm bg-primary/20"></div>
+              <div class="absolute bottom-2 left-2 w-3.5 h-3.5 rounded-bl-sm bg-primary/20"></div>
+              <div class="absolute bottom-2 right-2 w-3.5 h-3.5 rounded-br-sm bg-primary/20"></div>
+              <!-- Crisp SVG QR Code Representation -->
+              <div class="relative w-44 h-44 flex items-center justify-center">
+                <svg class="w-full h-full text-on-surface" fill="none" viewBox="0 0 100 100"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <!-- Top-Left Finder Pattern -->
+                  <rect fill="currentColor" height="24" rx="3" width="24" x="6" y="6"></rect>
+                  <rect fill="white" height="16" rx="2" width="16" x="10" y="10"></rect>
+                  <rect fill="currentColor" height="8" rx="1" width="8" x="14" y="14"></rect>
+                  <!-- Top-Right Finder Pattern -->
+                  <rect fill="currentColor" height="24" rx="3" width="24" x="70" y="6"></rect>
+                  <rect fill="white" height="16" rx="2" width="16" x="74" y="10"></rect>
+                  <rect fill="currentColor" height="8" rx="1" width="8" x="78" y="14"></rect>
+                  <!-- Bottom-Left Finder Pattern -->
+                  <rect fill="currentColor" height="24" rx="3" width="24" x="6" y="70"></rect>
+                  <rect fill="white" height="16" rx="2" width="16" x="10" y="74"></rect>
+                  <rect fill="currentColor" height="8" rx="1" width="8" x="14" y="78"></rect>
+                  <!-- Data Matrix Pixels (Synthesized Hospital ID pattern) -->
+                  <!-- Timing Lines -->
+                  <rect fill="currentColor" height="4" width="4" x="34" y="16"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="42" y="16"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="50" y="16"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="58" y="16"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="16" y="34"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="16" y="42"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="16" y="50"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="16" y="58"></rect>
+                  <!-- Dense Module Nodes -->
+                  <rect fill="currentColor" height="4" width="4" x="34" y="6"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="42" y="10"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="58" y="6"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="54" y="10"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="6" y="34"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="10" y="42"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="6" y="58"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="34" y="34"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="38" y="38"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="58" y="34"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="62" y="38"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="70" y="34"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="78" y="38"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="86" y="34"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="90" y="42"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="34" y="62"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="42" y="66"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="58" y="62"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="62" y="66"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="34" y="74"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="38" y="82"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="42" y="90"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="50" y="78"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="58" y="86"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="62" y="74"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="70" y="54"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="78" y="58"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="86" y="54"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="74" y="66"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="82" y="74"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="90" y="70"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="70" y="86"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="78" y="90"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="86" y="82"></rect>
+                  <rect fill="currentColor" height="4" width="4" x="90" y="90"></rect>
+                  <!-- Central MedConnect Medical Cross Badge -->
+                  <rect fill="white" height="18" rx="4" width="18" x="41" y="41"></rect>
+                  <rect fill="#2563eb" height="14" rx="3" width="14" x="43" y="43"></rect>
+                  <path d="M50 46V54M46 50H54" stroke="white" stroke-linecap="round" stroke-width="2.5"></path>
+                </svg>
+              </div>
+            </div>
+            <!-- Scan Badge Under QR -->
+            <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full">
+              <span class="material-symbols-outlined text-[14px] text-primary">qr_code_scanner</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">
+                Quét để check-in tại Kiosk tự động
+              </span>
+            </div>
+          </div>
+          <!-- Informative Help Box -->
+          <div
+            class="font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low rounded-xl p-3.5 mb-6 text-left flex items-start gap-3">
+            <span class="material-symbols-outlined text-[20px] text-primary shrink-0 mt-0.5">info</span>
+            <p class="leading-relaxed">
+              Vui lòng tải hoặc chụp màn hình mã QR này để xuất trình tại quầy lễ tân hoặc Kiosk tiếp đón thông minh.
+            </p>
+          </div>
+          <!-- Appointment Details Summary Table (Clean 2-Column Key-Value Grid) -->
+          <div class="bg-surface-container-low rounded-2xl p-5 text-left mb-6 space-y-3.5">
+            <div class="flex items-center justify-between pb-2 border-b-0"><span
+                class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Thông
+                tin chi tiết</span><span
+                class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-label-sm font-label-sm font-semibold bg-surface-container-high text-primary"><span
+                  class="w-1.5 h-1.5 rounded-full bg-primary"></span>Đã xác thực</span></div><!-- Row: Patient Name -->
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Bệnh nhân</span><span
+                class="font-headline-sm text-body-md font-semibold text-on-surface text-left sm:text-right">Nguyễn Duy
+                Tuấn Hưng</span></div><!-- Row: Facility -->
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Cơ sở y tế</span><span
+                class="font-headline-sm text-body-md font-semibold text-on-surface text-left sm:text-right">BỆNH VIỆN
+                BẠCH MAI - HÀ NỘI</span></div><!-- Row: Specialty & Room -->
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Chuyên khoa / Phòng</span>
+              <div class="text-left sm:text-right"><span
+                  class="font-headline-sm text-body-md font-semibold text-on-surface block">Thần Kinh &amp; Cột
+                  Sống</span><span class="font-body-sm text-body-sm text-primary font-medium">PK Thần Kinh (P.205 Nhà
+                  K2)</span></div>
+            </div><!-- Row: Doctor in charge -->
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Bác sĩ phụ trách</span><span
+                class="font-headline-sm text-body-md font-semibold text-on-surface text-left sm:text-right">Phòng khám
+                phân công</span></div><!-- Row: Appointment Time -->
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Thời gian khám</span>
+              <div class="text-left sm:text-right"><span
+                  class="font-code-sm text-body-md font-bold text-on-surface">15:30 - 16:00</span><span
+                  class="font-body-sm text-body-sm text-on-surface-variant block">Thứ 6, 23/10/2026</span></div>
+            </div><!-- Row: Type & Fee -->
+            <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Hình thức &amp; phí khám</span>
+              <div class="text-left sm:text-right">
+                <div class="font-body-sm text-body-sm font-medium text-on-surface">Khám BHYT • Đúng tuyến</div>
+                <div class="font-headline-sm sm:text-headline-md font-bold text-primary tracking-tight mt-0.5">7.740 VNĐ
+                </div>
+                <div class="font-label-sm text-label-sm text-on-surface-variant font-medium mt-0.5">(BHYT chi trả:
+                  30.960 VNĐ)</div>
+              </div>
+            </div><!-- Row: Payment Status -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-1"><span
+                class="font-body-sm text-body-sm text-on-surface-variant">Thanh toán</span><span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high font-label-sm text-label-sm text-tertiary font-semibold"><span
+                  class="w-2 h-2 rounded-full bg-tertiary"></span>Chờ thanh toán tại quầy lễ tân</span></div>
+          </div>
+          <!-- Action Buttons Area -->
+          <div class="flex flex-col sm:flex-row items-center gap-3 justify-center">
+            <!-- Button 1: Download Image Pass -->
+            <button
+              class="w-full sm:w-auto bg-surface-container-low hover:bg-surface-container text-on-surface px-5 py-3 rounded-xl font-label-md text-label-md font-semibold shadow-sm flex items-center justify-center gap-2 transition-all"
+              onclick="triggerDownloadFeedback(this)" type="button">
+              <span class="material-symbols-outlined text-[18px] text-primary">download</span>
+              <span class="">Tải ảnh phiếu hẹn</span>
+            </button>
+            <!-- Button 2: Return to Home -->
+            <a class="w-full sm:w-auto bg-primary-container hover:bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md text-label-md font-semibold shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all"
+              data-path="book-appointment" href="#">
+              <span class="material-symbols-outlined text-[18px]">home</span>
+              <span class="">Về trang chủ</span>
+            </a>
+          </div>
+          <!-- Additional Micro Quick Action Link -->
+          <div class="mt-5 pt-3">
+            <a class="inline-flex items-center gap-1.5 font-label-sm text-label-sm text-primary hover:text-on-primary-fixed-variant transition-colors"
+              data-path="my-appointments" href="#">
+              <span class="">Xem trong danh sách Lịch hẹn của tôi</span>
+              <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+        <!-- Security & Privacy Accreditation Sub-Note -->
+        <div class="mt-6 text-center space-y-1">
+          <div class="inline-flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+            <span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span>
+            <span class="">Hệ thống lưu trữ tuân thủ tiêu chuẩn an toàn dữ liệu y tế MOH &amp; HIPAA</span>
+          </div>
+          <p class="font-body-sm text-body-sm text-outline">
+            Cần hỗ trợ đổi giờ hẹn? Vui lòng liên hệ Hotline: <strong class="text-on-surface-variant">(028)
+              3822-5555</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      function triggerDownloadFeedback(button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">sync</span><span>Đang tạo ảnh phiếu hẹn...</span>';
+        button.disabled = true;
+
+        setTimeout(() => {
+          button.innerHTML = '<span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span><span>Đã lưu thành công!</span>';
+          setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+          }, 2500);
+        }, 1200);
+      }
+    </script>
+  </main>
+  <footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)]">
+    <div class="w-full px-margin-desktop py-space-xl">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop pb-space-xl">
+        <div class="space-y-space-sm">
+          <div class="flex items-center gap-space-sm">
+            <div class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-on-primary"><span
+                class="material-symbols-outlined text-[18px]">local_hospital</span></div><span
+              class="font-headline-sm text-headline-sm text-on-surface font-bold">MedConnect Portal</span>
+          </div>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">Accredited digital healthcare intake and
+            scheduling platform providing streamlined hospital admission, clinical triage, and outpatient coordination.
+          </p>
+        </div>
+        <div class="space-y-space-xs"><span
+            class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">24/7
+            Clinical Support</span>
+          <div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant">
+            <p class="flex items-center gap-2"><span
+                class="material-symbols-outlined text-[16px] text-primary">call</span><span class="">Hospital Hotline:
+                (028) 3822-5555</span></p>
+            <p class="flex items-center gap-2"><span
+                class="material-symbols-outlined text-[16px] text-error">emergency</span><span class="">Emergency Desk:
+                Ext 115</span></p>
+            <p class="flex items-center gap-2"><span
+                class="material-symbols-outlined text-[16px] text-secondary">mail</span><span
+                class="">care@medconnect-hospital.vn</span></p>
+          </div>
+        </div>
+        <div class="space-y-space-xs"><span
+            class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">Facility
+            Info</span>
+          <div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant">
+            <p class="">Central Hospital Campus</p>
+            <p class="">Gate 3, 201 Nguyen Thi Minh Khai, District 1</p>
+            <p class="">Ho Chi Minh City, Vietnam</p>
+            <p class="text-secondary font-medium">Working Hours: 06:30 - 20:00 Daily</p>
+          </div>
+        </div>
+        <div class="space-y-space-xs"><span
+            class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">Intake
+            Compliance</span>
+          <div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant">
+            <p class="">BHYT / National Insurance Verified</p>
+            <p class="">HIPAA &amp; MOH Privacy Compliant</p>
+            <p class="">Instant SMS &amp; Email Appointment Pass</p>
+          </div>
+        </div>
+      </div>
+      <div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+        <p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 MedConnect Clinical Services. All rights
+          reserved.</p>
+        <div class="flex items-center gap-space-lg"><a
+            class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+            href="#">Privacy Policy</a><a
+            class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+            href="#">Terms of Intake</a><a
+            class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors"
+            href="#">Patient Rights</a></div>
+      </div>
+    </div>
+  </footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

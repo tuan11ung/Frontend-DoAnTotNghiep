@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><title>MedConnect - Chọn hình thức khám</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed": "#002114", "surface": "#faf8ff", "on-secondary": "#ffffff", "surface-container-lowest": "#ffffff", "on-primary-fixed": "#00174b", "on-tertiary-container": "#ffede1", "secondary": "#006c4a", "primary-fixed-dim": "#b4c5ff", "on-tertiary": "#ffffff", "on-surface-variant": "#434655", "on-tertiary-fixed": "#2f1500", "on-background": "#131b2e", "primary-fixed": "#dbe1ff", "surface-dim": "#d2d9f4", "on-surface": "#131b2e", "secondary-fixed": "#85f8c4", "on-error": "#ffffff", "surface-container-highest": "#dae2fd", "tertiary": "#824500", "on-primary": "#ffffff", "inverse-surface": "#283044", "primary": "#004ac6", "inverse-on-surface": "#eef0ff", "outline-variant": "#c3c6d7", "error-container": "#ffdad6", "surface-tint": "#0053db", "surface-container-low": "#f2f3ff", "secondary-container": "#82f5c1", "error": "#ba1a1a", "on-primary-fixed-variant": "#003ea8", "secondary-fixed-dim": "#68dba9", "primary-container": "#2563eb", "tertiary-container": "#a65900", "tertiary-fixed": "#ffdcc3", "on-error-container": "#93000a", "inverse-primary": "#b4c5ff", "background": "#faf8ff", "surface-container-high": "#e2e7ff", "surface-variant": "#dae2fd", "on-secondary-fixed-variant": "#005137", "surface-container": "#eaedff", "on-secondary-container": "#00714e", "on-primary-container": "#eeefff", "surface-bright": "#faf8ff", "outline": "#737686", "tertiary-fixed-dim": "#ffb77d", "on-tertiary-fixed-variant": "#6e3900" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-desktop": "2rem", "gutter": "1rem", "space-lg": "1.25rem", "space-xs": "0.25rem", "margin": "1rem", "gutter-desktop": "1.5rem", "space-md": "0.75rem", "space-sm": "0.5rem", "space-xl": "2rem" }, fontFamily: { "body-sm": ["Manrope"], "label-sm": ["Manrope"], "body-lg": ["Manrope"], "headline-xl-mobile": ["Manrope"], "headline-lg": ["Manrope"], "headline-sm": ["Manrope"], "headline-xl": ["Manrope"], "label-md": ["Manrope"], "body-md": ["Manrope"], "headline-md": ["Manrope"], "code-sm": ["JetBrains Mono"] }, fontSize: { "body-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.01em", fontWeight: "400" }], "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }], "headline-xl-mobile": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.015em", fontWeight: "600" }], "headline-sm": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }], "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }], "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.02em", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "code-sm": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "500" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen flex flex-col"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-xl"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-lg bg-primary-container flex items-center justify-center text-on-primary shadow-sm"><span class="material-symbols-outlined text-[22px]">local_hospital</span></div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-none tracking-tight">MedConnect</span><span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">Patient Portal</span></div></div><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-on-surface font-headline-sm rounded-lg"><a aria-current="page" class="px-space-md py-space-sm transition-colors bg-surface-container-high text-on-surface font-headline-sm rounded-lg" data-path="book-appointment" href="#">Book Appointment</a><a class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md" data-path="my-appointments" href="#">My Appointments</a><a class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md" data-path="doctors-directory" href="#">Doctors Directory</a><a class="px-space-md py-space-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors rounded-lg font-label-md text-label-md" data-path="records-and-intake" href="#">Records &amp; Intake</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs bg-surface-container-low text-on-surface-variant rounded-full px-space-md py-1.5 shadow-[0_1px_4px_rgba(0,0,0,0.02)]"><span class="material-symbols-outlined text-[18px] text-primary">account_circle</span><span class="font-label-md text-label-md font-semibold text-on-surface">Nguyễn Văn X</span><span class="font-code-sm text-code-sm text-on-surface-variant ml-1 font-medium">#PT-8291</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface flex-1"><div class="flex flex-col w-full">
+<!-- Focus Hero Container -->
+<div class="relative w-full max-w-5xl mx-auto px-gutter sm:px-gutter-desktop py-space-xl pb-16">
+<!-- Breadcrumbs & Status Badge -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+        Trang chủ
+      </a>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface font-semibold">Đặt khám trực tuyến</span>
+</div>
+<div class="flex items-center gap-2 bg-surface-container-high px-space-md py-1 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold uppercase tracking-wider">Hệ thống tiếp nhận 24/7</span>
+<span class="text-outline-variant">•</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Phân luồng điện tử</span>
+</div>
+</div>
+<!-- Page Title & Header -->
+
+<!-- Stepper Indicator (Bước 1 Đang chọn - Active, các bước 2, 3, 4 Chưa chọn) -->
+
+<!-- PHƯƠNG ÁN 1: Focus Card Hero Layout - BƯỚC 1 DUY NHẤT CHỌN HÌNH THỨC KHÁM -->
+<section class="bg-surface-container-lowest rounded-3xl shadow-sm p-6 sm:p-8 md:p-10 border border-surface-container-high">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 mb-8 border-b border-surface-container-high gap-3">
+<div>
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[24px]">splitscreen</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Chọn hình thức tiếp nhận khám</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Lựa chọn chế độ quyền lợi phù hợp để hệ thống phân bổ luồng thủ tục tiếp đón tối ưu nhất</p>
+</div>
+<span class="self-start sm:self-auto font-label-sm text-label-sm text-primary bg-primary-fixed px-3 py-1.5 rounded-full font-bold uppercase tracking-wide">Bắt buộc</span>
+</div>
+<!-- 2 Large Hero Option Cards (Symmetrical 2-Column Grid) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Thẻ A: Khám theo BHYT -->
+<div class="group relative p-6 sm:p-7 rounded-2xl border-2 border-secondary bg-secondary-fixed/20 cursor-pointer transition-all shadow-md hover:shadow-lg flex flex-col justify-between" id="card-mode-bhyt" onclick="selectBookingMode('bhyt')">
+<div>
+<!-- Card Top Badge & Radio -->
+<div class="flex items-start justify-between mb-5">
+<div class="w-14 h-14 rounded-2xl bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[32px]">shield</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full font-bold">Tiết kiệm chi phí</span>
+<div class="w-6 h-6 rounded-full border-2 border-secondary flex items-center justify-center bg-surface-container-lowest transition-all" id="radio-indicator-bhyt"><span class="w-3 h-3 rounded-full bg-secondary"></span></div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-2">1. Khám theo BHYT</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+Chế độ tiếp nhận bảo hiểm y tế nhà nước đúng tuyến hoặc thông tuyến. Hưởng tối đa quyền lợi chi trả danh mục KCB theo quy định của Bộ Y tế.
+</p>
+<!-- Feature list with clear bullet points -->
+<div class="space-y-3 pt-4 border-t border-surface-container-high">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">verified</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Hỗ trợ đúng tuyến &amp; thông tuyến toàn quốc</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">payments</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Giảm thiểu tối đa chi phí y tế &amp; thuốc kê đơn</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">contactless</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Áp dụng thẻ BHYT &amp; CCCD gắn chip (VssID / VNeID)</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-surface-container-high/60 flex items-center justify-between text-secondary font-label-md font-semibold">
+<span class="inline-flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">info</span>
+Quy trình viện công chuẩn
+</span>
+<span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</div>
+</div>
+<!-- Thẻ B: Khám theo yêu cầu (ACTIVE BY DEFAULT) -->
+<div class="group relative p-6 sm:p-7 rounded-2xl border-2 border-surface-container-high hover:border-primary/60 bg-surface cursor-pointer transition-all hover:shadow-lg flex flex-col justify-between" id="card-mode-demand" onclick="selectBookingMode('demand')">
+<div>
+<!-- Card Top Badge & Radio -->
+<div class="flex items-start justify-between mb-5">
+<div class="w-14 h-14 rounded-2xl bg-primary text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-[32px]">workspace_premium</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-label-md text-label-md bg-primary text-on-primary px-3 py-1 rounded-full font-bold shadow-xs">Dịch vụ chất lượng cao</span>
+<div class="w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center bg-surface-container-lowest transition-all" id="radio-indicator-demand"><span class="w-3 h-3 rounded-full bg-transparent"></span></div>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold mb-2">2. Khám theo yêu cầu</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+Dịch vụ y tế cao cấp, cơ sở vật chất tiện nghi hiện đại và giảm thiểu tối đa thời gian chờ đợi tại viện. Trải nghiệm y tế toàn diện, nhanh chóng.
+</p>
+<!-- Feature list with clear bullet points -->
+<div class="space-y-3 pt-4 border-t border-surface-container-high">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">stars</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Ưu tiên tiếp đón &amp; số thứ tự VIP không phải chờ</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">person_search</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Tự do chọn Chuyên khoa, Bác sĩ giỏi hoặc Phòng khám theo ý muốn</span>
+</div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">schedule</span>
+<span class="font-body-md text-body-md text-on-surface font-medium">Chủ động chọn khung giờ khám chính xác</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-surface-container-high/60 flex items-center justify-between text-primary font-label-md font-semibold">
+<span class="inline-flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+Ưu tiên tiếp đón &amp; Khám chuyên sâu
+</span>
+<span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Informational banner -->
+<div class="mt-8 p-4 rounded-xl bg-surface-container-low border border-surface-container-high flex items-start gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[22px] shrink-0 mt-0.5">lightbulb</span>
+<p class="font-body-sm text-body-sm leading-relaxed">
+<strong>Mẹo chọn:</strong> Nếu bạn có giấy chuyển tuyến hoặc muốn tối ưu chi phí điều trị bảo trợ, hãy chọn <em>Khám theo BHYT</em>. Nếu bạn cần tiết kiệm thời gian, khám ngoài giờ hoặc đích danh chuyên gia đầu ngành, hãy chọn <em>Khám theo yêu cầu</em>.
+</p>
+</div>
+</section>
+</div>
+<!-- STICKY FLOATING ACTION BAR -->
+<div class="sticky bottom-4 z-40 w-full max-w-5xl mx-auto px-gutter sm:px-gutter-desktop mt-4 mb-8">
+<div class="bg-surface-container-lowest/95 backdrop-blur-xl border border-surface-container-high py-space-md px-space-lg rounded-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Left side: Back to home -->
+<div class="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-4">
+<button class="inline-flex items-center gap-2 px-4 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" onclick="location.href='#'" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="">Trang chủ</span>
+</button>
+<div class="hidden md:flex flex-col text-left border-l border-surface-container-high pl-4">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Phương thức đã chọn:</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight" id="action-summary-mode">Khám theo BHYT (Đúng tuyến / Thông tuyến)</span>
+</div>
+</div>
+<!-- Right side: Next CTA -->
+<div class="w-full sm:w-auto flex flex-col sm:items-end gap-1">
+<button class="w-full sm:w-auto bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-headline-sm text-headline-sm font-semibold px-8 py-3.5 rounded-xl shadow-md flex items-center justify-center gap-2 transition-all transform active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2" id="continue-step2-btn" type="button">
+<span class="">Tiếp tục</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+
+</div>
+</div>
+</div>
+<script>
+  let currentSelectedMode = 'demand';
+
+  function selectBookingMode(mode) {
+    currentSelectedMode = mode;
+    const cardBhyt = document.getElementById('card-mode-bhyt');
+    const cardDemand = document.getElementById('card-mode-demand');
+    const indBhyt = document.getElementById('radio-indicator-bhyt');
+    const indDemand = document.getElementById('radio-indicator-demand');
+    const summaryText = document.getElementById('action-summary-mode');
+
+    if (mode === 'bhyt') {
+      // BHYT active
+      cardBhyt.className = 'group relative p-6 sm:p-7 rounded-2xl border-2 border-secondary bg-secondary-fixed/20 cursor-pointer transition-all shadow-md hover:shadow-lg flex flex-col justify-between';
+      indBhyt.className = 'w-6 h-6 rounded-full border-2 border-secondary flex items-center justify-center bg-surface-container-lowest transition-all';
+      indBhyt.innerHTML = '<span class="w-3 h-3 rounded-full bg-secondary"></span>';
+
+      // Demand inactive
+      cardDemand.className = 'group relative p-6 sm:p-7 rounded-2xl border-2 border-surface-container-high hover:border-primary/60 bg-surface cursor-pointer transition-all hover:shadow-lg flex flex-col justify-between';
+      indDemand.className = 'w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center bg-surface-container-lowest transition-all';
+      indDemand.innerHTML = '<span class="w-3 h-3 rounded-full bg-transparent"></span>';
+
+      if (summaryText) summaryText.textContent = 'Khám theo BHYT (Đúng tuyến / Thông tuyến)';
+    } else {
+      // Demand active
+      cardDemand.className = 'group relative p-6 sm:p-7 rounded-2xl border-2 border-primary bg-primary-fixed/15 cursor-pointer transition-all shadow-md hover:shadow-lg flex flex-col justify-between';
+      indDemand.className = 'w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center bg-surface-container-lowest transition-all';
+      indDemand.innerHTML = '<span class="w-3 h-3 rounded-full bg-primary"></span>';
+
+      // BHYT inactive
+      cardBhyt.className = 'group relative p-6 sm:p-7 rounded-2xl border-2 border-surface-container-high hover:border-secondary/60 bg-surface cursor-pointer transition-all hover:shadow-lg flex flex-col justify-between';
+      indBhyt.className = 'w-6 h-6 rounded-full border-2 border-outline-variant flex items-center justify-center bg-surface-container-lowest transition-all';
+      indBhyt.innerHTML = '<span class="w-3 h-3 rounded-full bg-transparent"></span>';
+
+      if (summaryText) summaryText.textContent = 'Khám theo yêu cầu (Chất lượng cao)';
+    }
+  }
+
+  document.getElementById('continue-step2-btn').addEventListener('click', () => {
+    alert('Chuyển tiếp sang Bước 2: Chọn cơ sở y tế và chuyên khoa cho hình thức: ' + (currentSelectedMode === 'bhyt' ? 'Khám BHYT' : 'Khám theo yêu cầu'));
+  });
+</script>
+</div></main><footer class="w-full bg-surface-container-lowest shadow-[0_-1px_6px_rgba(0,0,0,0.02)] mt-auto"><div class="w-full px-margin-desktop py-space-xl"><div class="grid grid-cols-1 md:grid-cols-4 gap-gutter-desktop pb-space-xl"><div class="space-y-space-sm"><div class="flex items-center gap-space-sm"><div class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-on-primary"><span class="material-symbols-outlined text-[18px]">local_hospital</span></div><span class="font-headline-sm text-headline-sm text-on-surface font-bold">MedConnect Portal</span></div><p class="font-body-sm text-body-sm text-on-surface-variant">Accredited digital healthcare intake and scheduling platform providing streamlined hospital admission, clinical triage, and outpatient coordination.</p></div><div class="space-y-space-xs"><span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">24/7 Clinical Support</span><div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant"><p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">call</span><span class="">Hospital Hotline: (028) 3822-5555</span></p><p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-error">emergency</span><span class="">Emergency Desk: Ext 115</span></p><p class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-secondary">mail</span><span class="">care@medconnect-hospital.vn</span></p></div></div><div class="space-y-space-xs"><span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">Facility Info</span><div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant"><p class="">Central Hospital Campus</p><p class="">Gate 3, 201 Nguyen Thi Minh Khai, District 1</p><p class="">Ho Chi Minh City, Vietnam</p><p class="text-secondary font-medium">Working Hours: 06:30 - 20:00 Daily</p></div></div><div class="space-y-space-xs"><span class="font-label-md text-label-md text-on-surface uppercase tracking-wider font-semibold block">Intake Compliance</span><div class="space-y-1 font-body-sm text-body-sm text-on-surface-variant"><p class="">BHYT / National Insurance Verified</p><p class="">HIPAA &amp; MOH Privacy Compliant</p><p class="">Instant SMS &amp; Email Appointment Pass</p></div></div></div><div class="pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm"><p class="font-body-sm text-body-sm text-on-surface-variant">© 2025 MedConnect Clinical Services. All rights reserved.</p><div class="flex items-center gap-space-lg"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Privacy Policy</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Terms of Intake</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href="#">Patient Rights</a></div></div></div></footer>
+
+
+
+
+
+
+
+
+
+</body></html>

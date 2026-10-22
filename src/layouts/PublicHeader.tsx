@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
-import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper } from 'lucide-react';
+import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper, CalendarClock } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { AppointmentTabType } from '@/src/types/medical';
 import { hasStoredPatientSession } from '@/src/features/auth/auth-storage';
@@ -32,6 +32,8 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   const isDoctorActive = isSearchPage && currentType === 'doctor';
   const isHospitalActive = isSearchPage && (currentType === 'hospital' || !currentType);
 
+  const isBookingActive = pathname === '/booking';
+
   const handleTabClick = (tab: AppointmentTabType) => {
     onCloseMobile?.();
     if (pathname === '/' && onSelectTab) {
@@ -48,6 +50,18 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   if (mobile) {
     return (
       <div className="space-y-2">
+        <Link
+          href="/booking"
+          onClick={onCloseMobile}
+          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            isBookingActive
+              ? 'bg-blue-600 text-white font-bold shadow-sm'
+              : 'text-blue-700 bg-blue-50/80 hover:bg-blue-100 font-bold'
+          }`}
+        >
+          <CalendarClock className={`w-4 h-4 ${isBookingActive ? 'text-white' : 'text-blue-600'}`} />
+          <span>Đặt lịch khám</span>
+        </Link>
         <button
           onClick={() => handleTabClick('doctor')}
           className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
@@ -86,6 +100,18 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
 
   return (
     <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
+      <Link
+        href="/booking"
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+          isBookingActive
+            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+            : 'text-blue-700 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 font-bold'
+        }`}
+      >
+        <CalendarClock className={`w-4 h-4 ${isBookingActive ? 'text-white' : 'text-blue-600'}`} />
+        <span>Đặt lịch khám</span>
+      </Link>
+
       <button
         onClick={() => handleTabClick('doctor')}
         className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
@@ -129,11 +155,16 @@ function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
       <div className="space-y-2">
         <div className="h-10 bg-slate-50 rounded-xl"></div>
         <div className="h-10 bg-slate-50 rounded-xl"></div>
+        <div className="h-10 bg-slate-50 rounded-xl"></div>
       </div>
     );
   }
   return (
     <nav className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
+      <div className="px-3.5 py-2 text-blue-700 flex items-center gap-1.5">
+        <CalendarClock className="w-4 h-4 text-blue-600" />
+        <span>Đặt lịch khám</span>
+      </div>
       <div className="px-3.5 py-2 text-slate-700 flex items-center gap-1.5">
         <Stethoscope className="w-4 h-4 text-blue-600" />
         <span>Đặt khám Bác sĩ</span>

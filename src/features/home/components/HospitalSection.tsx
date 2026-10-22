@@ -249,9 +249,7 @@ export const HospitalSection: React.FC<HospitalSectionProps> = ({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      router.push(
-                        `/search?type=hospital&keyword=${encodeURIComponent(hospital.name)}`
-                      );
+                      router.push(`/booking?hospitalId=${encodeURIComponent(hospital.id)}`);
                     }}
                   >
                     Đặt khám ngay

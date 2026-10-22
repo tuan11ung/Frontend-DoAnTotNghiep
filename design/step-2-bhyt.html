@@ -1,0 +1,842 @@
+﻿<!DOCTYPE html><html lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MedConnect - Bước 2: Chọn Cơ sở y tế &amp; Chuyên khoa BHYT</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.preconnect.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Manrope', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+            },
+            clinical: {
+              bg: '#faf8ff',
+              card: '#ffffff',
+              border: '#e2e8f0',
+              textPrimary: '#0f172a',
+              textSecondary: '#64748b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    body {
+      background-color: #f8fafc;
+      font-family: 'Manrope', sans-serif;
+      color: #0f172a;
+    }
+    .custom-shadow {
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased text-slate-800">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm" data-purpose="site-header">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+<!-- Logo & Subtitle -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</div>
+<div>
+<div class="text-xl font-bold tracking-tight text-slate-900 leading-tight">MedConnect</div>
+<div class="text-xs font-semibold text-blue-600 tracking-wide uppercase">Cổng bệnh nhân</div>
+</div>
+</div>
+<!-- Main Navigation Menu -->
+<nav class="hidden md:flex items-center gap-1 lg:gap-2" data-purpose="navigation-menu">
+<a class="px-4 py-2 rounded-lg text-sm font-semibold bg-blue-50 text-blue-700 transition" href="#">Đặt lịch khám</a>
+<a class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition" href="#">Lịch khám của tôi</a>
+<a class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition" href="#">Danh sách bác sĩ</a>
+<a class="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition" href="#">Hồ sơ</a>
+</nav>
+<!-- User Profile Information -->
+<div class="flex items-center gap-3" data-purpose="user-badge">
+<div class="text-right hidden sm:block">
+<div class="text-sm font-bold text-slate-900">Nguyễn Duy Tuấn Hưng</div>
+<div class="text-xs text-slate-500">Mã BN: #PT-8291</div>
+</div>
+<div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-semibold shadow-inner">
+<svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8" data-purpose="booking-step-container">
+<!-- Breadcrumb & Status Pill -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+<div class="flex items-center text-xs sm:text-sm font-medium text-slate-500">
+<span class="hover:text-slate-700 cursor-pointer">Trang chủ</span>
+<svg class="w-4 h-4 mx-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="text-slate-800 font-semibold">Đặt khám trực tuyến</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        HỆ THỐNG TIẾP NHẬN 24/7 • Phân luồng điện tử
+      </div>
+</div>
+<!-- Stepper Navigation -->
+<div class="bg-white rounded-2xl p-4 sm:p-6 mb-8 border border-slate-200 shadow-sm" data-purpose="stepper">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 relative">
+<!-- Step 1: Completed -->
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm shrink-0 border border-emerald-300">
+            ✓
+          </div>
+<div class="min-w-0">
+<p class="text-xs text-slate-500 font-medium">Bước 1</p>
+<p class="text-xs sm:text-sm font-bold text-slate-800 truncate">Hình thức khám</p>
+<p class="text-[11px] text-emerald-600 font-medium truncate">Khám theo BHYT</p>
+</div>
+</div>
+<!-- Step 2: Active -->
+<div class="flex items-center gap-3 relative">
+<div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 ring-4 ring-blue-100 shadow-sm">
+            2
+          </div>
+<div class="min-w-0">
+<p class="text-xs text-blue-600 font-semibold">Bước 2</p>
+<p class="text-xs sm:text-sm font-bold text-blue-900 truncate">Cơ sở &amp; Chuyên khoa</p>
+<p class="text-[11px] text-slate-500 font-medium truncate">Đang chọn</p>
+</div>
+</div>
+<!-- Step 3: Upcoming -->
+<div class="flex items-center gap-3 opacity-60">
+<div class="w-9 h-9 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-sm shrink-0 border border-slate-200">
+            3
+          </div>
+<div class="min-w-0">
+<p class="text-xs text-slate-400 font-medium">Bước 3</p>
+<p class="text-xs sm:text-sm font-bold text-slate-700 truncate">Lịch khám</p>
+<p class="text-[11px] text-slate-400 font-medium">Chưa chọn</p>
+</div>
+</div>
+<!-- Step 4: Upcoming -->
+<div class="flex items-center gap-3 opacity-60">
+<div class="w-9 h-9 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-sm shrink-0 border border-slate-200">
+            4
+          </div>
+<div class="min-w-0">
+<p class="text-xs text-slate-400 font-medium">Bước 4</p>
+<p class="text-xs sm:text-sm font-bold text-slate-700 truncate">Xác nhận &amp; Cấp số</p>
+<p class="text-[11px] text-slate-400 font-medium">Chờ duyệt</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Container Card -->
+<div class="space-y-6">
+<!-- SECTION 1: CHỌN CƠ SỞ Y TẾ -->
+<section class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 custom-shadow" data-purpose="hospital-selection-section">
+<div class="flex items-start justify-between mb-4">
+<div>
+<h2 class="text-lg sm:text-xl font-bold text-slate-900">Chọn cơ sở y tế</h2>
+<p class="text-sm text-slate-500 mt-0.5">Chỉ hiển thị các cơ sở có liên thông tiếp nhận khám chữa bệnh BHYT.</p>
+</div>
+<span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100" id="current-hospital-badge">
+            Tuyến Trung Ương &amp; Hà Nội
+          </span>
+</div>
+<!-- Current Selected Hospital Card with Change Button -->
+<div class="relative rounded-xl p-4 sm:p-5 border-2 border-blue-600 bg-blue-50/40 transition hover:shadow-md" data-purpose="hospital-card-selected" id="main-hospital-display-card">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="space-y-1.5 flex-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<h3 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight" id="main-hospital-name">BỆNH VIỆN BẠCH MAI – HÀ NỘI</h3>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300" id="main-hospital-tag">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+                  Đúng cơ sở ĐKKCB ban đầu
+                </span>
+</div>
+<p class="text-xs sm:text-sm text-slate-600 flex flex-wrap items-center gap-1.5 pl-0 sm:pl-9">
+<svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span id="main-hospital-address" class="">78 Giải Phóng, Phương Mai, Đống Đa, Hà Nội</span>
+<span class="text-slate-300">•</span>
+<span class="font-medium text-slate-700" id="main-hospital-hotline">Hotline: 1900 888 866</span>
+<span class="text-slate-300">•</span>
+<span class="text-xs text-blue-700 font-semibold bg-blue-100/70 px-2 py-0.5 rounded">Mã ĐKKCB: 01-001</span>
+</p>
+</div>
+<div class="shrink-0 flex items-center justify-end gap-2.5">
+<button class="px-4 py-2.5 rounded-xl border border-blue-600 bg-white text-blue-600 text-xs sm:text-sm font-bold hover:bg-blue-600 hover:text-white transition shadow-sm flex items-center gap-1.5 active:scale-95" id="open-hospital-modal-btn" type="button">
+
+<span class="">Đổi cơ sở y tế</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: CHỌN CHUYÊN KHOA & TUYẾN KHÁM -->
+<section class="bg-white rounded-2xl p-6 sm:p-7 border border-slate-200 custom-shadow" data-purpose="specialty-insurance-section">
+<div class="mb-5">
+<h2 class="text-lg sm:text-xl font-bold text-slate-900">Chọn chuyên khoa</h2>
+<p class="text-sm text-slate-500 mt-0.5">Chọn xong chuyên khoa sẽ chuyển sang bước chọn ngày khám.</p>
+</div>
+<div class="space-y-4">
+<!-- Specialty Picker Row with Modal trigger -->
+<div class="rounded-xl border border-slate-200 p-4 bg-slate-50/50 hover:border-blue-400 transition flex items-center justify-between gap-4">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div>
+<div class="text-xs font-medium text-slate-500">Chuyên khoa khám</div>
+<div class="text-sm sm:text-base font-bold text-slate-900" id="main-specialty-name">Khoa Nội Tiêu Hóa &amp; Gan Mật</div>
+<div class="text-xs text-slate-500" id="main-specialty-sub">Phòng khám 204 - Tầng 2 Nhà K1 • Hỗ trợ BHYT ngoại trú</div>
+</div>
+</div>
+<button class="px-3.5 py-1.5 rounded-lg border border-blue-600 bg-white text-blue-600 text-xs sm:text-sm font-bold hover:bg-blue-600 hover:text-white transition shadow-sm active:scale-95" id="open-specialty-modal-btn" type="button">
+              Đổi chuyên khoa
+            </button>
+</div>
+<!-- BHYT Card Verification Row -->
+<div class="rounded-xl border border-slate-200 p-4 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div>
+<label class="block text-xs font-medium text-slate-500 mb-1">Thẻ BHYT</label>
+<div class="text-sm sm:text-base font-bold text-slate-800 tracking-wide font-mono">
+                DN4012345678901 <span class="text-slate-400 font-sans font-normal mx-1">•</span> <span class="text-slate-600 font-sans font-medium text-sm">Hạn 31/12/2026</span>
+</div>
+</div>
+<div>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+<svg class="w-3.5 h-3.5 mr-1 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+</svg>
+                Còn hiệu lực
+              </span>
+</div>
+</div>
+<!-- Tuyến Khám Dropdown -->
+<div>
+<label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2" for="tuyen-kham-select">
+              Tuyến khám
+            </label>
+<div class="relative">
+<select class="block w-full rounded-xl border-slate-200 bg-white py-3 px-4 text-sm font-semibold text-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition" id="tuyen-kham-select">
+<option selected="" value="dung-tuyen">Đúng tuyến</option>
+<option value="thong-tuyen">Thông tuyến khám chữa bệnh ngoại trú</option>
+<option value="chuyen-vien">Trái tuyến (Có giấy chuyển tuyến hợp lệ)</option>
+</select>
+</div>
+</div>
+<!-- Price & Coverage Estimation Box -->
+
+</div>
+</section>
+<!-- SECTION 3: BOTTOM ACTION BAR -->
+<div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4" data-purpose="bottom-action-bar">
+<!-- Back Button -->
+<button class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-slate-300 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 transition active:scale-95" type="button">
+<svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Quay lại
+        </button>
+<!-- Dynamic Selection Summary Display -->
+<div class="text-center md:text-left flex-1 md:px-6">
+<div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Đã chọn:</div>
+<div class="text-sm sm:text-base font-extrabold text-slate-900" id="bar-hospital-name">Bệnh viện Bạch Mai</div>
+<div class="text-xs text-slate-600">Chuyên khoa: <span class="font-semibold text-slate-800" id="bar-specialty-name">Khoa Nội Tiêu Hóa &amp; Gan Mật</span> <span id="bar-route-status" class="">(Đúng tuyến BHYT)</span></div>
+</div>
+<!-- Next Step Button -->
+<button class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-bold shadow-lg shadow-blue-500/25 transition active:scale-95" type="button">
+<span class="">Tiếp tục</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</button>
+</div>
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- POPUP MODAL 1: CHỌN CƠ SỞ Y TẾ NHẬN BHYT -->
+<div aria-modal="true" class="fixed inset-0 z-50 overflow-y-auto hidden" id="hospital-modal" role="dialog">
+<div class="min-h-screen px-4 text-center flex items-center justify-center">
+<!-- Backdrop -->
+<div class="fixed inset-0 modal-backdrop transition-opacity" id="hospital-modal-backdrop"></div>
+<span aria-hidden="true" class="hidden sm:inline-block sm:align-middle sm:h-screen">​</span>
+<!-- Modal Dialog Window -->
+<div class="inline-block w-full max-w-3xl my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl overflow-hidden relative border border-slate-200">
+<!-- Modal Header -->
+<div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+<div>
+<h3 class="text-lg font-bold text-slate-900">Chọn cơ sở y tế nhận BHYT</h3>
+<p class="text-xs text-slate-500 mt-0.5">Lựa chọn cơ sở y tế đúng tuyến ban đầu hoặc có tiếp nhận thông tuyến điện tử.</p>
+</div>
+<button class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition" id="close-hospital-modal-x" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+<!-- Search bar -->
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 placeholder-slate-400" id="hospital-search-input" placeholder="Tìm theo tên bệnh viện, địa chỉ, quận/huyện hoặc mã ĐKKCB..." type="text">
+</div>
+<!-- Quick filter chips -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
+<button class="px-3 py-1.5 rounded-full bg-blue-600 text-white shrink-0 hover:bg-blue-700 transition" type="button">Tất cả viện nhận BHYT (28)</button>
+<button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" type="button">Tuyến Trung ương (6)</button>
+<button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" type="button">Tuyến Tỉnh / TP (14)</button>
+<button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" type="button">Tuyến Huyện / PKĐK (8)</button>
+</div>
+<!-- Hospital List -->
+<div class="space-y-3" id="hospital-cards-list">
+<!-- Card 1: Bach Mai (Active selected) -->
+<div class="hospital-item border-2 border-blue-600 bg-blue-50/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:shadow-md transition" data-address="78 Giải Phóng, Phương Mai, Đống Đa, Hà Nội" data-badge="Tuyến Trung Ương &amp; Hà Nội" data-hotline="Hotline: 1900 888 866" data-id="hosp-bm" data-name="BỆNH VIỆN BẠCH MAI – HÀ NỘI" data-tag="Đúng cơ sở ĐKKCB ban đầu">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">BỆNH VIỆN BẠCH MAI – HÀ NỘI</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Đúng ĐKKCB ban đầu</span>
+</div>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">78 Giải Phóng, Đống Đa, Hà Nội • Hotline: 1900 888 866 • Tuyến TW</span>
+</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white select-btn">Đang chọn</span>
+</div>
+</div>
+<!-- Card 2: Viet Duc -->
+<div class="hospital-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-address="40 Tràng Thi, Hoàn Kiếm, Hà Nội" data-badge="Tuyến Trung Ương &amp; Hà Nội" data-hotline="Hotline: 024 3825 3531" data-id="hosp-vd" data-name="BỆNH VIỆN HỮU NGHỊ VIỆT ĐỨC" data-tag="BHYT Tiếp nhận">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">BỆNH VIỆN HỮU NGHỊ VIỆT ĐỨC</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">BHYT Tiếp nhận</span>
+</div>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">40 Tràng Thi, Hoàn Kiếm, Hà Nội • Hotline: 024 3825 3531 • Tuyến TW</span>
+</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+<!-- Card 3: BV Thanh Nhan -->
+<div class="hospital-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-address="42 Thanh Nhàn, Hai Bà Trưng, Hà Nội" data-badge="Tuyến Tỉnh / TP Hà Nội" data-hotline="Hotline: 091 122 4099" data-id="hosp-tn" data-name="BỆNH VIỆN THANH NHÀN – HÀ NỘI" data-tag="BHYT Tiếp nhận">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">BỆNH VIỆN THANH NHÀN – HÀ NỘI</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">BHYT Tiếp nhận</span>
+</div>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">42 Thanh Nhàn, Hai Bà Trưng, Hà Nội • Hotline: 091 122 4099 • Tuyến TP</span>
+</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+<!-- Card 4: BV Xanh Pon -->
+<div class="hospital-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-address="12 Chu Văn An, Ba Đình, Hà Nội" data-badge="Tuyến Tỉnh / TP Hà Nội" data-hotline="Hotline: 1900 6155" data-id="hosp-xp" data-name="BỆNH VIỆN ĐA KHOA XANH PÔN" data-tag="BHYT Tiếp nhận">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">BỆNH VIỆN ĐA KHOA XANH PÔN</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">BHYT Tiếp nhận</span>
+</div>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">12 Chu Văn An, Ba Đình, Hà Nội • Hotline: 1900 6155 • Tuyến TP</span>
+</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+</div>
+<!-- Hospital Pagination -->
+<div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+<span class="text-slate-500">Hiển thị 1 - 4 trên 28 cơ sở tiếp nhận</span>
+<div class="flex items-center gap-1 font-semibold">
+<button class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed" disabled="" type="button">Trước</button>
+<button class="px-3 py-1 rounded bg-blue-600 text-white font-bold" type="button">1</button>
+<button class="px-3 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">2</button>
+<button class="px-3 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">3</button>
+<button class="px-2.5 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">Sau</button>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+<span class="text-xs text-slate-500">Đã tích hợp cơ sở dữ liệu BHYT Cổng Giám định BHYT Quốc Gia</span>
+<button class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 transition" id="close-hospital-modal-btn" type="button">Đóng</button>
+</div>
+</div>
+</div>
+</div>
+<!-- POPUP MODAL 2: CHỌN CHUYÊN KHOA KHÁM BHYT -->
+<div aria-modal="true" class="fixed inset-0 z-50 overflow-y-auto hidden" id="specialty-modal" role="dialog">
+<div class="min-h-screen px-4 text-center flex items-center justify-center">
+<!-- Backdrop -->
+<div class="fixed inset-0 modal-backdrop transition-opacity" id="specialty-modal-backdrop"></div>
+<span aria-hidden="true" class="hidden sm:inline-block sm:align-middle sm:h-screen">​</span>
+<!-- Modal Dialog Window -->
+<div class="inline-block w-full max-w-3xl my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl overflow-hidden relative border border-slate-200">
+<!-- Modal Header -->
+<div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+<div>
+<h3 class="text-lg font-bold text-slate-900">Chọn chuyên khoa tiếp nhận BHYT</h3>
+<p class="text-xs text-slate-500 mt-0.5">Danh sách chuyên khoa tại <span class="font-semibold text-blue-700" id="specialty-modal-hospital-name">Bệnh viện Bạch Mai</span> có khám BHYT ngoại trú.</p>
+</div>
+<button class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition" id="close-specialty-modal-x" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+<!-- Search bar -->
+<div class="relative">
+<span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 placeholder-slate-400" id="specialty-search-input" placeholder="Tìm kiếm chuyên khoa (Nội tiêu hóa, Tim mạch, Da liễu, Mắt, Tai mũi họng...)" type="text">
+</div>
+<!-- Filter chips -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-semibold scrollbar-none">
+<button class="px-3 py-1.5 rounded-full bg-blue-600 text-white shrink-0 hover:bg-blue-700 transition" type="button">Tất cả chuyên khoa (32)</button>
+<button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" type="button">BHYT cùng chi trả (80% - 100%)</button>
+<button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" type="button">Khoa Nội tổng quát &amp; chuyên sâu</button>
+<button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 shrink-0 transition" type="button">Khoa Ngoại &amp; Chuyên khoa lẻ</button>
+</div>
+<!-- Specialty List -->
+<div class="space-y-3" id="specialty-cards-list">
+<!-- Item 1: Noi Tieu Hoa (Selected) -->
+<div class="specialty-item border-2 border-blue-600 bg-blue-50/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:shadow-md transition" data-id="spec-tieuhoa" data-name="Khoa Nội Tiêu Hóa &amp; Gan Mật" data-sub="Phòng khám 204 - Tầng 2 Nhà K1 • Hỗ trợ BHYT ngoại trú">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">Khoa Nội Tiêu Hóa &amp; Gan Mật</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">BHYT 80%</span>
+</div>
+<p class="text-xs text-slate-600">Phòng khám 204 - Tầng 2 Nhà K1 • Bác sĩ trực: PGS.TS Trần Văn Khoa</p>
+<p class="text-[11px] text-blue-700 font-medium">Bệnh nhân đồng chi trả: 7.740 VNĐ / lượt khám tiêu chuẩn</p>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<span class="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white select-btn">Đang chọn</span>
+</div>
+</div>
+<!-- Item 2: Tim Mach -->
+<div class="specialty-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-id="spec-timmach" data-name="Viện Tim Mạch Quốc Gia" data-sub="Phòng khám 101 - Khu nhà C • Khám chuyên khoa Tim mạch BHYT">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">Viện Tim Mạch Quốc Gia</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">BHYT 80%</span>
+</div>
+<p class="text-xs text-slate-600">Phòng khám 101 - Khu nhà C • Tiếp nhận khám tăng huyết áp, suy tim, mạch vành</p>
+<p class="text-[11px] text-blue-700 font-medium">Bệnh nhân đồng chi trả: 7.740 VNĐ / lượt khám</p>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+<!-- Item 3: Noi Than - Tiet Nieu -->
+<div class="specialty-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-id="spec-thannieu" data-name="Khoa Thận - Tiết Niệu &amp; Lọc Máu" data-sub="Phòng khám 302 - Tầng 3 Nhà K1 • Khám BHYT nội trú &amp; ngoại trú">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">Khoa Thận - Tiết Niệu &amp; Lọc Máu</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">BHYT 80%</span>
+</div>
+<p class="text-xs text-slate-600">Phòng khám 302 - Tầng 3 Nhà K1 • Đo chức năng thận, điều trị sỏi tiết niệu</p>
+<p class="text-[11px] text-blue-700 font-medium">Bệnh nhân đồng chi trả: 7.740 VNĐ / lượt khám</p>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+<!-- Item 4: Tai Mui Hong -->
+<div class="specialty-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-id="spec-taimuihong" data-name="Khoa Tai Mũi Họng &amp; Nội Soi" data-sub="Phòng khám 108 - Tầng 1 Khu Khám bệnh • Khám &amp; Nội soi tầm soát">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">Khoa Tai Mũi Họng &amp; Nội Soi</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">BHYT 80%</span>
+</div>
+<p class="text-xs text-slate-600">Phòng khám 108 - Tầng 1 Khu Khám bệnh • Nội soi vòm họng, thính lực</p>
+<p class="text-[11px] text-blue-700 font-medium">Bệnh nhân đồng chi trả: 7.740 VNĐ / lượt khám</p>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+<!-- Item 5: Da Lieu -->
+<div class="specialty-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition" data-id="spec-dalieu" data-name="Khoa Da Liễu &amp; Miễn Dịch Dị Ứng" data-sub="Phòng khám 215 - Tầng 2 Khu Khám bệnh • Điều trị bệnh lý da liễu BHYT">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<h4 class="font-bold text-slate-900 text-sm sm:text-base">Khoa Da Liễu &amp; Miễn Dịch Dị Ứng</h4>
+<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">BHYT 80%</span>
+</div>
+<p class="text-xs text-slate-600">Phòng khám 215 - Tầng 2 Khu Khám bệnh • Khám dị ứng thức ăn, viêm da cơ địa</p>
+<p class="text-[11px] text-blue-700 font-medium">Bệnh nhân đồng chi trả: 7.740 VNĐ / lượt khám</p>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<button class="px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition" type="button">Chọn</button>
+</div>
+</div>
+</div>
+<!-- Specialty Pagination -->
+<div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+<span class="text-slate-500">Hiển thị 1 - 5 trên 32 chuyên khoa</span>
+<div class="flex items-center gap-1 font-semibold">
+<button class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed" disabled="" type="button">Trước</button>
+<button class="px-3 py-1 rounded bg-blue-600 text-white font-bold" type="button">1</button>
+<button class="px-3 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">2</button>
+<button class="px-3 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">3</button>
+<button class="px-3 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">4</button>
+<button class="px-3 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">5</button>
+<button class="px-2.5 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50" type="button">Sau</button>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+<span class="text-xs text-slate-500">Mức hưởng được tính theo thông tư liên tịch Bộ Y tế - BHXH Việt Nam</span>
+<button class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-100 transition" id="close-specialty-modal-btn" type="button">Đóng</button>
+</div>
+</div>
+</div>
+</div>
+<!-- BEGIN: MainFooter -->
+<footer class="bg-white border-t border-slate-200 mt-16 py-12" data-purpose="site-footer">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<!-- Column 1: Hospital Identity -->
+<div class="space-y-3">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+</div>
+<span class="font-bold text-slate-900 text-base">MedConnect Portal</span>
+</div>
+<p class="text-xs text-slate-500 leading-relaxed">
+            Hệ thống đăng ký và phân luồng khám bệnh số hóa chuẩn Y tế. Hỗ trợ kết nối BHYT quốc gia và tiếp nhận nhanh chóng.
+          </p>
+</div>
+<!-- Column 2: Clinical Support -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-900 tracking-wider uppercase">Hỗ trợ lâm sàng 24/7</h4>
+<p class="text-xs text-slate-600">Tổng đài: <strong>(028) 3822-5555</strong></p>
+<p class="text-xs text-slate-600">Cấp cứu: <strong>Nhánh 115</strong></p>
+<p class="text-xs text-slate-600">Email: care@medconnect-hospital.vn</p>
+</div>
+<!-- Column 3: Facility Info -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-900 tracking-wider uppercase">Địa chỉ tiếp nhận</h4>
+<p class="text-xs text-slate-600">Khu phức hợp Bệnh viện Trung tâm</p>
+<p class="text-xs text-slate-600">Cổng 3, 201 Nguyễn Thị Minh Khai, Q.1, TP.HCM</p>
+<p class="text-xs text-slate-600">Giờ hoạt động: <strong>06:30 - 20:00 Hàng ngày</strong></p>
+</div>
+<!-- Column 4: Compliance & Security -->
+<div class="space-y-2">
+<h4 class="text-xs font-bold text-slate-900 tracking-wider uppercase">Quy chuẩn dữ liệu</h4>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+            Xác thực BHYT &amp; VssID điện tử
+          </p>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+            Bảo mật thông tin chuẩn Y tế (Bộ Y tế)
+          </p>
+<p class="text-xs text-slate-600 flex items-center gap-1.5">
+<svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+            Cấp mã số tiếp nhận tức thời qua SMS
+          </p>
+</div>
+</div>
+<!-- Footer Bottom Copyright -->
+<div class="border-t border-slate-100 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+<div class="">© 2025 MedConnect Clinical Services. All rights reserved.</div>
+<div class="flex items-center gap-4">
+<a class="hover:text-slate-600 transition" href="#">Điều khoản sử dụng</a>
+<a class="hover:text-slate-600 transition" href="#">Chính sách bảo mật</a>
+<a class="hover:text-slate-600 transition" href="#">Quyền lợi bệnh nhân</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+<!-- INTERACTIVE SCRIPTS -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // State
+    let selectedHospital = {
+      name: 'BỆNH VIỆN BẠCH MAI – HÀ NỘI',
+      shortName: 'Bệnh viện Bạch Mai',
+      address: '78 Giải Phóng, Phương Mai, Đống Đa, Hà Nội',
+      hotline: 'Hotline: 1900 888 866',
+      badge: 'Tuyến Trung Ương & Hà Nội',
+      tag: 'Đúng cơ sở ĐKKCB ban đầu'
+    };
+
+    let selectedSpecialty = {
+      name: 'Khoa Nội Tiêu Hóa & Gan Mật',
+      sub: 'Phòng khám 204 - Tầng 2 Nhà K1 • Hỗ trợ BHYT ngoại trú'
+    };
+
+    // Elements
+    const hospitalModal = document.getElementById('hospital-modal');
+    const specialtyModal = document.getElementById('specialty-modal');
+
+    const openHospitalModalBtn = document.getElementById('open-hospital-modal-btn');
+    const closeHospitalModalX = document.getElementById('close-hospital-modal-x');
+    const closeHospitalModalBtn = document.getElementById('close-hospital-modal-btn');
+    const hospitalBackdrop = document.getElementById('hospital-modal-backdrop');
+
+    const openSpecialtyModalBtn = document.getElementById('open-specialty-modal-btn');
+    const closeSpecialtyModalX = document.getElementById('close-specialty-modal-x');
+    const closeSpecialtyModalBtn = document.getElementById('close-specialty-modal-btn');
+    const specialtyBackdrop = document.getElementById('specialty-modal-backdrop');
+
+    // Display targets on form
+    const mainHospitalName = document.getElementById('main-hospital-name');
+    const mainHospitalAddress = document.getElementById('main-hospital-address');
+    const mainHospitalHotline = document.getElementById('main-hospital-hotline');
+    const mainHospitalTag = document.getElementById('main-hospital-tag');
+    const currentHospitalBadge = document.getElementById('current-hospital-badge');
+    const barHospitalName = document.getElementById('bar-hospital-name');
+
+    const mainSpecialtyName = document.getElementById('main-specialty-name');
+    const mainSpecialtySub = document.getElementById('main-specialty-sub');
+    const barSpecialtyName = document.getElementById('bar-specialty-name');
+    const specialtyModalHospitalName = document.getElementById('specialty-modal-hospital-name');
+
+    // Route Select
+    const routeSelect = document.getElementById('tuyen-kham-select');
+    const barRouteStatus = document.getElementById('bar-route-status');
+
+    routeSelect.addEventListener('change', (e) => {
+      if (e.target.value === 'dung-tuyen') {
+        barRouteStatus.textContent = '(Đúng tuyến BHYT)';
+      } else if (e.target.value === 'thong-tuyen') {
+        barRouteStatus.textContent = '(Thông tuyến ngoại trú)';
+      } else {
+        barRouteStatus.textContent = '(Có giấy chuyển viện)';
+      }
+    });
+
+    // Helper Modal Controls
+    const openModal = (modal) => {
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = (modal) => {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    };
+
+    // Hospital Modal Event Listeners
+    openHospitalModalBtn.addEventListener('click', () => openModal(hospitalModal));
+    closeHospitalModalX.addEventListener('click', () => closeModal(hospitalModal));
+    closeHospitalModalBtn.addEventListener('click', () => closeModal(hospitalModal));
+    hospitalBackdrop.addEventListener('click', () => closeModal(hospitalModal));
+
+    // Specialty Modal Event Listeners
+    openSpecialtyModalBtn.addEventListener('click', () => openModal(specialtyModal));
+    closeSpecialtyModalX.addEventListener('click', () => closeModal(specialtyModal));
+    closeSpecialtyModalBtn.addEventListener('click', () => closeModal(specialtyModal));
+    specialtyBackdrop.addEventListener('click', () => closeModal(specialtyModal));
+
+    // Handle Hospital Selection
+    const hospitalItems = document.querySelectorAll('.hospital-item');
+    hospitalItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const name = item.dataset.name;
+        const address = item.dataset.address;
+        const hotline = item.dataset.hotline;
+        const badge = item.dataset.badge;
+        const tag = item.dataset.tag;
+
+        selectedHospital = {
+          name,
+          shortName: name.split('–')[0].trim(),
+          address,
+          hotline,
+          badge,
+          tag
+        };
+
+        // Update main form display
+        mainHospitalName.textContent = selectedHospital.name;
+        mainHospitalAddress.textContent = selectedHospital.address;
+        mainHospitalHotline.textContent = selectedHospital.hotline;
+        currentHospitalBadge.textContent = selectedHospital.badge;
+        barHospitalName.textContent = selectedHospital.shortName;
+        specialtyModalHospitalName.textContent = selectedHospital.shortName;
+        
+        mainHospitalTag.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full ${tag.includes('Đúng') ? 'bg-emerald-600' : 'bg-blue-600'} mr-1.5"></span>
+          ${tag}
+        `;
+
+        // Update active card style inside modal
+        hospitalItems.forEach(el => {
+          el.className = 'hospital-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition';
+          const btn = el.querySelector('.select-btn');
+          if (btn) {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition';
+            btn.textContent = 'Chọn';
+          }
+        });
+
+        item.className = 'hospital-item border-2 border-blue-600 bg-blue-50/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:shadow-md transition';
+        const activeBtn = item.querySelector('.select-btn');
+        if (activeBtn) {
+          activeBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white select-btn';
+          activeBtn.textContent = 'Đang chọn';
+        }
+
+        setTimeout(() => closeModal(hospitalModal), 150);
+      });
+    });
+
+    // Handle Specialty Selection
+    const specialtyItems = document.querySelectorAll('.specialty-item');
+    specialtyItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const name = item.dataset.name;
+        const sub = item.dataset.sub;
+
+        selectedSpecialty = { name, sub };
+
+        // Update form display
+        mainSpecialtyName.textContent = selectedSpecialty.name;
+        mainSpecialtySub.textContent = selectedSpecialty.sub;
+        barSpecialtyName.textContent = selectedSpecialty.name;
+
+        // Update visual in modal
+        specialtyItems.forEach(el => {
+          el.className = 'specialty-item border border-slate-200 bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition';
+          const btn = el.querySelector('.select-btn');
+          if (btn) {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold border border-slate-300 hover:border-blue-600 text-slate-700 hover:text-blue-600 bg-white select-btn transition';
+            btn.textContent = 'Chọn';
+          }
+        });
+
+        item.className = 'specialty-item border-2 border-blue-600 bg-blue-50/40 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:shadow-md transition';
+        const activeBtn = item.querySelector('.select-btn');
+        if (activeBtn) {
+          activeBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 text-white select-btn';
+          activeBtn.textContent = 'Đang chọn';
+        }
+
+        setTimeout(() => closeModal(specialtyModal), 150);
+      });
+    });
+
+    // Search hospital filter
+    const hospitalSearch = document.getElementById('hospital-search-input');
+    hospitalSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      hospitalItems.forEach(card => {
+        const txt = card.textContent.toLowerCase();
+        if (txt.includes(q)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+
+    // Search specialty filter
+    const specialtySearch = document.getElementById('specialty-search-input');
+    specialtySearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      specialtyItems.forEach(card => {
+        const txt = card.textContent.toLowerCase();
+        if (txt.includes(q)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal(hospitalModal);
+        closeModal(specialtyModal);
+      }
+    });
+  });
+</script>
+
+
+</body></html>
