@@ -15,6 +15,8 @@ import {
   UserPlus,
   LoaderCircle,
   AlertCircle,
+  MapPin,
+  ShieldPlus,
 } from 'lucide-react';
 import { RegisterFormValues, RegisterFormErrors } from '../register.types';
 
@@ -42,7 +44,7 @@ export function RegisterFormStep({
   ) => {
     setValues((prev) => ({
       ...prev,
-      [field]: field === 'fullname' ? value.toUpperCase() : value,
+      [field]: value,
     }));
 
     if (errors[field]) {
@@ -50,72 +52,72 @@ export function RegisterFormStep({
     }
   };
 
-  const handleDobChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value.replace(/\D/g, '');
-    if (input.length > 8) input = input.slice(0, 8);
-
-    let formatted = input;
-    if (input.length > 4) {
-      formatted = `${input.slice(0, 2)}/${input.slice(2, 4)}/${input.slice(4)}`;
-    } else if (input.length > 2) {
-      formatted = `${input.slice(0, 2)}/${input.slice(2)}`;
-    }
-
-    handleChange('dob', formatted);
-  };
-
-  const handleCccdChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleNationalIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 12);
-    handleChange('cccd', raw);
+    handleChange('nationalId', raw);
   };
 
   const validate = (): boolean => {
     const nextErrors: RegisterFormErrors = {};
 
-    if (!values.fullname.trim()) {
-      nextErrors.fullname = 'Vui lòng nhập họ và tên.';
+    if (!values.fullName.trim()) {
+      nextErrors.fullName = 'Vui lòng nhập họ và tên.';
+    } else if (values.fullName.trim().length > 100) {
+      nextErrors.fullName = 'Họ và tên không được vượt quá 100 ký tự.';
     }
 
     if (!values.dob.trim()) {
       nextErrors.dob = 'Vui lòng nhập ngày sinh.';
     } else {
-      const parts = values.dob.split('/');
-      if (parts.length !== 3 || values.dob.length < 10) {
-        nextErrors.dob = 'Ngày sinh phải đúng định dạng ngày/tháng/năm (dd/mm/yyyy).';
+      const birthDate = new Date(`${values.dob}T00:00:00`);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (Number.isNaN(birthDate.getTime()) || birthDate >= today) {
+        nextErrors.dob = 'Ngày sinh phải là một ngày trong quá khứ.';
       }
     }
 
-    if (!values.cccd.trim()) {
-      nextErrors.cccd = 'Vui lòng nhập số CCCD / Mã định danh.';
-    } else if (values.cccd.length < 9) {
-      nextErrors.cccd = 'Số CCCD phải có tối thiểu 9-12 chữ số.';
+    if (!values.nationalId.trim()) {
+      nextErrors.nationalId = 'Vui lòng nhập số CCCD / Mã định danh.';
+    } else if (!/^\d{12}$/.test(values.nationalId)) {
+      nextErrors.nationalId = 'CCCD phải gồm đúng 12 chữ số.';
     }
 
-    const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+    const phoneRegex = /^(?:\+84|84|0)(?:3|5|7|8|9)\d{8}$/;
     const cleanPhone = values.phone.replace(/[\s.-]/g, '');
-    if (!values.phone.trim()) {
-      nextErrors.phone = 'Vui lòng nhập số điện thoại.';
-    } else if (!phoneRegex.test(cleanPhone)) {
+    if (values.phone.trim() && !phoneRegex.test(cleanPhone)) {
       nextErrors.phone = 'Số điện thoại không đúng định dạng.';
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!values.email.trim()) {
-      nextErrors.email = 'Vui lòng nhập email.';
-    } else if (!emailRegex.test(values.email.trim())) {
-      nextErrors.email = 'Email không hợp lệ.';
+    const emailRegex = /^[^\s@]+@gmail\.com$/i;
+    if (values.email.trim() && !emailRegex.test(values.email.trim())) {
+      nextErrors.email = 'Tài khoản bệnh nhân chỉ được đăng ký bằng email @gmail.com.';
+    }
+
+    if (!values.phone.trim() && !values.email.trim()) {
+      const identifierError = 'Vui lòng nhập email Gmail hoặc số điện thoại.';
+      nextErrors.email = identifierError;
+      nextErrors.phone = identifierError;
     }
 
     if (!values.password) {
       nextErrors.password = 'Vui lòng nhập mật khẩu.';
-    } else if (values.password.length < 8) {
-      nextErrors.password = 'Mật khẩu phải có tối thiểu 8 ký tự.';
+    } else if (!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(values.password)) {
+      nextErrors.password = 'Mật khẩu phải có ít nhất 8 ký tự, gồm chữ và số.';
     }
 
     if (!values.confirmPassword) {
       nextErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu.';
     } else if (values.password !== values.confirmPassword) {
       nextErrors.confirmPassword = 'Mật khẩu xác nhận không khớp.';
+    }
+
+    if (values.address.length > 300) {
+      nextErrors.address = 'Địa chỉ không được vượt quá 300 ký tự.';
+    }
+
+    if (values.insuranceNo.length > 20) {
+      nextErrors.insuranceNo = 'Số thẻ bảo hiểm không được vượt quá 20 ký tự.';
     }
 
     setErrors(nextErrors);
@@ -157,30 +159,31 @@ export function RegisterFormStep({
       <form className="mt-6 space-y-4" onSubmit={handleSubmit} noValidate>
         {/* Họ và tên */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-semibold text-slate-800 flex items-center gap-1" htmlFor="reg-fullname">
+          <label className="text-sm font-semibold text-slate-800 flex items-center gap-1" htmlFor="reg-full-name">
             <span>Họ và tên</span>
             <span className="text-rose-500 font-bold">*</span>
           </label>
           <div className="relative flex items-center">
             <UserRound className="w-5 h-5 absolute left-3.5 text-slate-400 pointer-events-none" />
             <input
-              id="reg-fullname"
-              name="fullname"
+              id="reg-full-name"
+              name="fullName"
               autoComplete="name"
-              className={`w-full h-11 pl-11 pr-3 rounded-lg bg-slate-50 border text-sm text-slate-900 uppercase font-medium outline-none transition placeholder:normal-case placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
-                errors.fullname
+              className={`w-full h-11 pl-11 pr-3 rounded-lg bg-slate-50 border text-sm text-slate-900 font-medium outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
+                errors.fullName
                   ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
                   : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
               }`}
-              placeholder="VD: NGUYỄN VĂN AN"
+              maxLength={100}
+              placeholder="VD: Nguyễn Văn An"
               required
               type="text"
-              value={values.fullname}
-              onChange={(e) => handleChange('fullname', e.target.value)}
+              value={values.fullName}
+              onChange={(e) => handleChange('fullName', e.target.value)}
             />
           </div>
-          {errors.fullname && (
-            <p className="text-xs text-rose-600 font-medium">{errors.fullname}</p>
+          {errors.fullName && (
+            <p className="text-xs text-rose-600 font-medium">{errors.fullName}</p>
           )}
         </div>
 
@@ -203,11 +206,11 @@ export function RegisterFormStep({
                     ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
                     : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
                 }`}
-                placeholder="dd/mm/yyyy"
+                max={new Date().toISOString().slice(0, 10)}
                 required
-                type="text"
+                type="date"
                 value={values.dob}
-                onChange={handleDobChange}
+                onChange={(e) => handleChange('dob', e.target.value)}
               />
             </div>
             {errors.dob && <p className="text-xs text-rose-600 font-medium">{errors.dob}</p>}
@@ -224,9 +227,9 @@ export function RegisterFormStep({
                 <input
                   type="radio"
                   name="gender"
-                  value="nam"
-                  checked={values.gender === 'nam'}
-                  onChange={() => handleChange('gender', 'nam')}
+                  value="MALE"
+                  checked={values.gender === 'MALE'}
+                  onChange={() => handleChange('gender', 'MALE')}
                   className="w-4 h-4 accent-blue-600 cursor-pointer"
                 />
                 <span>Nam</span>
@@ -235,9 +238,9 @@ export function RegisterFormStep({
                 <input
                   type="radio"
                   name="gender"
-                  value="nu"
-                  checked={values.gender === 'nu'}
-                  onChange={() => handleChange('gender', 'nu')}
+                  value="FEMALE"
+                  checked={values.gender === 'FEMALE'}
+                  onChange={() => handleChange('gender', 'FEMALE')}
                   className="w-4 h-4 accent-blue-600 cursor-pointer"
                 />
                 <span>Nữ</span>
@@ -248,17 +251,17 @@ export function RegisterFormStep({
 
         {/* Số CCCD / Mã định danh */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-semibold text-slate-800 flex items-center gap-1" htmlFor="reg-cccd">
+          <label className="text-sm font-semibold text-slate-800 flex items-center gap-1" htmlFor="reg-national-id">
             <span>Số CCCD / Mã định danh</span>
             <span className="text-rose-500 font-bold">*</span>
           </label>
           <div className="relative flex items-center">
             <CreditCard className="w-5 h-5 absolute left-3.5 text-slate-400 pointer-events-none" />
             <input
-              id="reg-cccd"
-              name="cccd"
+              id="reg-national-id"
+              name="nationalId"
               className={`w-full h-11 pl-11 pr-3 rounded-lg bg-slate-50 border text-sm font-mono text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
-                errors.cccd
+                errors.nationalId
                   ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
                   : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
               }`}
@@ -266,18 +269,19 @@ export function RegisterFormStep({
               required
               type="text"
               maxLength={12}
-              value={values.cccd}
-              onChange={handleCccdChange}
+              inputMode="numeric"
+              value={values.nationalId}
+              onChange={handleNationalIdChange}
             />
           </div>
-          {errors.cccd && <p className="text-xs text-rose-600 font-medium">{errors.cccd}</p>}
+          {errors.nationalId && <p className="text-xs text-rose-600 font-medium">{errors.nationalId}</p>}
         </div>
 
         {/* Số điện thoại */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-800 flex items-center gap-1" htmlFor="reg-phone">
             <span>Số điện thoại</span>
-            <span className="text-rose-500 font-bold">*</span>
+            <span className="text-xs font-normal text-slate-400"></span>
           </label>
           <div className="relative flex items-center">
             <Phone className="w-5 h-5 absolute left-3.5 text-slate-400 pointer-events-none" />
@@ -291,7 +295,6 @@ export function RegisterFormStep({
                   : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
               }`}
               placeholder="VD: 0912 345 678"
-              required
               type="tel"
               value={values.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
@@ -304,7 +307,7 @@ export function RegisterFormStep({
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-800 flex items-center gap-1" htmlFor="reg-email">
             <span>Email</span>
-            <span className="text-rose-500 font-bold">*</span>
+            <span className="text-xs font-normal text-slate-400"></span>
           </label>
           <div className="relative flex items-center">
             <Mail className="w-5 h-5 absolute left-3.5 text-slate-400 pointer-events-none" />
@@ -317,14 +320,65 @@ export function RegisterFormStep({
                   ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
                   : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
               }`}
-              placeholder="VD: nguyenvana@medconnect.vn"
-              required
+              placeholder="VD: patient@gmail.com"
               type="email"
               value={values.email}
               onChange={(e) => handleChange('email', e.target.value)}
             />
           </div>
           {errors.email && <p className="text-xs text-rose-600 font-medium">{errors.email}</p>}
+        </div>
+
+        {/* Địa chỉ */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-semibold text-slate-800" htmlFor="reg-address">
+            Địa chỉ <span className="text-xs font-normal text-slate-400">(không bắt buộc)</span>
+          </label>
+          <div className="relative flex items-start">
+            <MapPin className="w-5 h-5 absolute left-3.5 top-3 text-slate-400 pointer-events-none" />
+            <textarea
+              id="reg-address"
+              name="address"
+              autoComplete="street-address"
+              className={`w-full min-h-20 resize-y py-3 pl-11 pr-3 rounded-lg bg-slate-50 border text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
+                errors.address
+                  ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
+                  : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+              }`}
+              maxLength={300}
+              placeholder="VD: Quận 1, TP. Hồ Chí Minh"
+              value={values.address}
+              onChange={(e) => handleChange('address', e.target.value)}
+            />
+          </div>
+          {errors.address && <p className="text-xs text-rose-600 font-medium">{errors.address}</p>}
+        </div>
+
+        {/* Số thẻ bảo hiểm y tế */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-semibold text-slate-800" htmlFor="reg-insurance-no">
+            Số thẻ bảo hiểm y tế <span className="text-xs font-normal text-slate-400">(không bắt buộc)</span>
+          </label>
+          <div className="relative flex items-center">
+            <ShieldPlus className="w-5 h-5 absolute left-3.5 text-slate-400 pointer-events-none" />
+            <input
+              id="reg-insurance-no"
+              name="insuranceNo"
+              className={`w-full h-11 pl-11 pr-3 rounded-lg bg-slate-50 border text-sm text-slate-900 uppercase outline-none transition placeholder:normal-case placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
+                errors.insuranceNo
+                  ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
+                  : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
+              }`}
+              maxLength={20}
+              placeholder="VD: DN4010123456789"
+              type="text"
+              value={values.insuranceNo}
+              onChange={(e) => handleChange('insuranceNo', e.target.value.toUpperCase())}
+            />
+          </div>
+          {errors.insuranceNo && (
+            <p className="text-xs text-rose-600 font-medium">{errors.insuranceNo}</p>
+          )}
         </div>
 
         {/* Grid: Mật khẩu & Xác nhận mật khẩu */}

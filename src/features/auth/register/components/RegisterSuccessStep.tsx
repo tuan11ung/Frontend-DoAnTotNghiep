@@ -69,7 +69,7 @@ export function RegisterSuccessStep({ registeredData }: RegisterSuccessStepProps
             Họ và tên
           </span>
           <span className="font-semibold text-slate-900 uppercase">
-            {registeredData.fullname || 'NGUYỄN VĂN AN'}
+            {registeredData.fullName}
           </span>
         </div>
         <div className="flex items-center justify-between text-sm py-1 border-b border-slate-200/60">
@@ -78,7 +78,7 @@ export function RegisterSuccessStep({ registeredData }: RegisterSuccessStepProps
             Số điện thoại
           </span>
           <span className="font-semibold text-slate-900 font-mono">
-            {registeredData.phone || '0912 345 678'}
+            {registeredData.phone || 'Không cung cấp'}
           </span>
         </div>
         <div className="flex items-center justify-between text-sm py-1 border-b border-slate-200/60">
@@ -87,7 +87,7 @@ export function RegisterSuccessStep({ registeredData }: RegisterSuccessStepProps
             Email
           </span>
           <span className="font-semibold text-slate-900">
-            {registeredData.email || 'nguyenvana@medconnect.vn'}
+            {registeredData.email || 'Không cung cấp'}
           </span>
         </div>
         <div className="flex items-center justify-between text-sm py-1">
@@ -96,7 +96,7 @@ export function RegisterSuccessStep({ registeredData }: RegisterSuccessStepProps
             Số CCCD
           </span>
           <span className="font-semibold text-slate-900 font-mono">
-            {registeredData.cccd || '001092014829'}
+            {registeredData.nationalId}
           </span>
         </div>
       </div>

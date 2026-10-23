@@ -1,7 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RegisterStep, RegisterFormValues } from './register.types';
+import {
+  RegisterStep,
+  RegisterFormValues,
+  RegisterApiResponse,
+  RegisterRequest,
+} from './register.types';
 import { RegisterStepper } from './components/RegisterStepper';
 import { RegisterFormStep } from './components/RegisterFormStep';
 import { RegisterOtpStep } from './components/RegisterOtpStep';
@@ -9,19 +14,29 @@ import { RegisterSuccessStep } from './components/RegisterSuccessStep';
 import { ShieldCheck } from 'lucide-react';
 
 const INITIAL_FORM_VALUES: RegisterFormValues = {
-  fullname: 'NGUYỄN VĂN AN',
-  dob: '15/08/1992',
-  gender: 'nam',
-  cccd: '001092014829',
-  phone: '0912 345 678',
-  email: 'nguyenvana@medconnect.vn',
+  fullName: '',
+  dob: '',
+  gender: 'MALE',
+  nationalId: '',
+  phone: '',
+  email: '',
   password: '',
   confirmPassword: '',
+  address: '',
+  insuranceNo: '',
 };
+
+const CONNECTION_ERROR = 'Không thể kết nối đến máy chủ. Vui lòng thử lại.';
+
+async function readApiResponse(response: Response): Promise<RegisterApiResponse | null> {
+  return response.json().catch(() => null) as Promise<RegisterApiResponse | null>;
+}
 
 export function RegisterScreen() {
   const [currentStep, setCurrentStep] = useState<RegisterStep>('form');
   const [formValues, setFormValues] = useState<RegisterFormValues>(INITIAL_FORM_VALUES);
+  const [accountId, setAccountId] = useState<number | null>(null);
+  const [verificationDestination, setVerificationDestination] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,67 +46,106 @@ export function RegisterScreen() {
     setFormValues(values);
 
     try {
-      // Try calling registration API route if present, or simulate smooth transition
+      const payload: RegisterRequest = {
+        email: values.email.trim() || null,
+        phone: values.phone.replace(/[\s.-]/g, '') || null,
+        password: values.password,
+        fullName: values.fullName.trim(),
+        gender: values.gender,
+        dob: values.dob,
+        address: values.address.trim() || null,
+        insuranceNo: values.insuranceNo.trim() || null,
+        nationalId: values.nationalId,
+      };
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      }).catch(() => null);
+        body: JSON.stringify(payload),
+      });
+      const result = await readApiResponse(res);
+      const registeredAccountId = result?.data?.accountId;
 
-      if (res && !res.ok) {
-        const data = await res.json().catch(() => null);
-        if (data?.message && res.status !== 502 && res.status !== 404) {
-          setError(data.message);
-          setIsLoading(false);
-          return;
-        }
+      if (!res.ok || !result?.success || !registeredAccountId) {
+        setError(result?.message || 'Không thể đăng ký tài khoản. Vui lòng kiểm tra lại thông tin.');
+        return;
       }
 
-      // Smooth step transition to OTP verification screen
+      setAccountId(registeredAccountId);
+      setVerificationDestination(
+        result.data?.verificationDestination || values.email.trim() || values.phone.trim(),
+      );
       setCurrentStep('otp');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
-      // In case of network error, proceed to OTP verification so user can continue test flow
-      setCurrentStep('otp');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setError(CONNECTION_ERROR);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleVerifyOtp = async (_otpCode: string) => {
+  const handleVerifyOtp = async (otpCode: string) => {
+    if (!accountId) {
+      setError('Không tìm thấy thông tin tài khoản cần xác thực. Vui lòng đăng ký lại.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      // Simulate verification delay
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      const response = await fetch('/api/auth/register/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accountId, otp: otpCode }),
+      });
+      const result = await readApiResponse(response);
 
-      // Successfully verified email -> advance to standalone success screen
+      if (!response.ok || !result?.success || result.data?.status !== 'ACTIVE') {
+        setError(result?.message || 'Mã OTP không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại.');
+        return;
+      }
+
       setCurrentStep('success');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
-      setError('Mã OTP không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại.');
+      setError(CONNECTION_ERROR);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleBackToForm = () => {
-    setError(null);
-    setCurrentStep('form');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const handleResendOtp = async () => {
+    if (!accountId) {
+      setError('Không tìm thấy thông tin tài khoản cần gửi lại OTP. Vui lòng đăng ký lại.');
+      throw new Error('Missing account id');
+    }
+
+    setIsLoading(true);
+    setError(null);
+
     try {
-      await fetch('/api/auth/register/resend-otp', {
+      const response = await fetch('/api/auth/register/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formValues.email }),
-      }).catch(() => null);
+        body: JSON.stringify({ accountId }),
+      });
+      const result = await readApiResponse(response);
+
+      if (!response.ok || !result?.success) {
+        const message = result?.message || 'Không thể gửi lại mã OTP. Vui lòng thử lại.';
+        setError(message);
+        throw new Error(message);
+      }
+
+      if (result.data?.verificationDestination) {
+        setVerificationDestination(result.data.verificationDestination);
+      }
     } catch {
-      // Silent catch
+      setError((currentError) => currentError || CONNECTION_ERROR);
+      throw new Error('Unable to resend OTP');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,10 +172,9 @@ export function RegisterScreen() {
 
         {currentStep === 'otp' && (
           <RegisterOtpStep
-            email={formValues.email}
+            verificationDestination={verificationDestination}
             error={error}
             isLoading={isLoading}
-            onBack={handleBackToForm}
             onResendOtp={handleResendOtp}
             onVerify={handleVerifyOtp}
           />

@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, type ClipboardEvent, type KeyboardEvent } from 'react';
 import {
   MailCheck,
-  ArrowLeft,
   CheckCircle2,
   LoaderCircle,
   RefreshCw,
@@ -11,25 +10,22 @@ import {
 } from 'lucide-react';
 
 interface RegisterOtpStepProps {
-  email: string;
+  verificationDestination: string;
   onVerify: (otp: string) => Promise<void> | void;
-  onBack: () => void;
   onResendOtp?: () => Promise<void> | void;
   isLoading?: boolean;
   error?: string | null;
 }
 
 export function RegisterOtpStep({
-  email,
+  verificationDestination,
   onVerify,
-  onBack,
   onResendOtp,
   isLoading = false,
   error,
 }: RegisterOtpStepProps) {
   const [digits, setDigits] = useState<string[]>(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState<number>(54);
-  const [canResend, setCanResend] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(60);
   const [resendSuccessMessage, setResendSuccessMessage] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -42,10 +38,7 @@ export function RegisterOtpStep({
 
   // Countdown timer
   useEffect(() => {
-    if (timer <= 0) {
-      setCanResend(true);
-      return;
-    }
+    if (timer <= 0) return;
 
     const intervalId = window.setInterval(() => {
       setTimer((prev) => prev - 1);
@@ -53,6 +46,8 @@ export function RegisterOtpStep({
 
     return () => window.clearInterval(intervalId);
   }, [timer]);
+
+  const canResend = timer <= 0;
 
   const handleDigitChange = (index: number, value: string) => {
     // Only accept numeric digit
@@ -101,15 +96,20 @@ export function RegisterOtpStep({
 
   const handleResend = async () => {
     if (!canResend) return;
-    setCanResend(false);
-    setTimer(54);
-    setResendSuccessMessage('Mã OTP mới đã được gửi tới email của bạn!');
-    if (onResendOtp) {
-      await onResendOtp();
+    setResendSuccessMessage(null);
+
+    try {
+      if (onResendOtp) {
+        await onResendOtp();
+      }
+      setTimer(60);
+      setResendSuccessMessage('Mã OTP mới đã được gửi tới bạn!');
+      window.setTimeout(() => {
+        setResendSuccessMessage(null);
+      }, 4000);
+    } catch {
+      setTimer(0);
     }
-    setTimeout(() => {
-      setResendSuccessMessage(null);
-    }, 4000);
   };
 
   const handleVerifyClick = async () => {
@@ -142,11 +142,13 @@ export function RegisterOtpStep({
           <MailCheck className="w-8 h-8" />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-900">Xác thực mã OTP Email</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Xác thực mã OTP</h2>
         <p className="text-sm text-slate-600 mt-1.5 max-w-sm">
-          Mã xác thực 6 chữ số đã được gửi tới email của bạn:
+          Mã xác thực 6 chữ số đã được gửi tới:
           <br />
-          <span className="font-semibold text-blue-700">{email || 'email@example.com'}</span>
+          <span className="font-semibold text-blue-700">
+            {verificationDestination || 'email hoặc số điện thoại của bạn'}
+          </span>
           <br />
           Vui lòng nhập mã để hoàn tất kích hoạt tài khoản.
         </p>
@@ -200,8 +202,9 @@ export function RegisterOtpStep({
           ) : (
             <button
               type="button"
+              disabled={isLoading}
               onClick={handleResend}
-              className="inline-flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer focus:outline-none"
+              className="inline-flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Gửi lại mã OTP</span>
@@ -230,15 +233,6 @@ export function RegisterOtpStep({
             )}
           </button>
 
-          <button
-            type="button"
-            disabled={isLoading}
-            onClick={onBack}
-            className="w-full h-11 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Quay lại sửa thông tin</span>
-          </button>
         </div>
       </div>
     </div>
