@@ -13,17 +13,21 @@ import {
   Check,
   Clock,
   Sparkles,
+  Building2,
+  MapPin,
 } from 'lucide-react';
-import { BookingMode } from '../types';
+import { BookingMode, HospitalItem } from '../types';
 
 interface BookingStep1ModeProps {
   initialMode: BookingMode;
+  hospital?: HospitalItem;
   onSelectMode: (mode: BookingMode) => void;
   onContinue: () => void;
 }
 
 export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
   initialMode,
+  hospital,
   onSelectMode,
   onContinue,
 }) => {
@@ -36,6 +40,38 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Selected Facility Context Banner */}
+      {hospital && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-blue-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in duration-200">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+              <Building2 className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">
+                  Cơ sở tiếp nhận đã chọn
+                </span>
+                <span className="text-[11px] bg-blue-100/70 text-blue-800 font-semibold px-2.5 py-0.5 rounded-full border border-blue-200">
+                  {hospital.tier}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight mt-0.5">
+                {hospital.name}
+              </h3>
+              <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-0.5">
+                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{hospital.address}</span>
+              </p>
+            </div>
+          </div>
+          <div className="text-xs text-slate-600 sm:text-right bg-blue-50/50 sm:bg-transparent px-3 py-2 sm:p-0 rounded-lg">
+            <span className="text-slate-500">Phân luồng:</span>{' '}
+            <span className="font-semibold text-emerald-700">Đã kích hoạt cổng tiếp nhận</span>
+          </div>
+        </div>
+      )}
+
       {/* Step Container Card */}
       <section className="bg-white rounded-3xl shadow-sm p-6 sm:p-8 md:p-10 border border-slate-200">
         {/* Section Header */}
@@ -237,12 +273,19 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
               <span>Trang chủ</span>
             </Link>
             <div className="hidden md:flex flex-col text-left border-l border-slate-200 pl-4">
-              <span className="text-xs text-slate-500">Phương thức đã chọn:</span>
-              <span className="text-sm font-bold text-blue-600">
-                {selectedMode === 'bhyt'
-                  ? 'Khám theo BHYT (Đúng tuyến / Thông tuyến)'
-                  : 'Khám theo yêu cầu (Chất lượng cao)'}
-              </span>
+              {hospital && (
+                <span className="text-xs text-slate-500 font-medium truncate max-w-[280px]">
+                  Cơ sở: <strong className="text-slate-800">{hospital.name}</strong>
+                </span>
+              )}
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs text-slate-500">Hình thức:</span>
+                <span className="text-sm font-bold text-blue-600">
+                  {selectedMode === 'bhyt'
+                    ? 'Khám theo BHYT'
+                    : 'Khám theo yêu cầu'}
+                </span>
+              </div>
             </div>
           </div>
 

@@ -212,8 +212,7 @@ export const SearchScreen: React.FC = () => {
   }, [filteredFacilities, currentPage]);
 
   const handleBookFacility = (facility: SearchFacility) => {
-    setBookingFacility(facility);
-    setIsModalOpen(true);
+    router.push(`/booking?step=1&hospitalId=${encodeURIComponent(facility.id)}`);
   };
 
   return (

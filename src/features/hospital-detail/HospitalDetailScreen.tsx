@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getHospitalDetailById } from './data/hospital-detail-data';
 import { HospitalDetailHeader } from './components/HospitalDetailHeader';
 import { HospitalPhotoGallery } from './components/HospitalPhotoGallery';
 import { HospitalInfoTab } from './components/HospitalInfoTab';
 import { HospitalServicesTab } from './components/HospitalServicesTab';
-import { HospitalBookingModal } from './components/HospitalBookingModal';
 import { HospitalPricingModal } from './components/HospitalPricingModal';
 import { ClinicalServiceItem } from './types';
 import { BellRing, X } from 'lucide-react';
@@ -18,20 +18,18 @@ interface HospitalDetailScreenProps {
 export const HospitalDetailScreen: React.FC<HospitalDetailScreenProps> = ({
   hospitalId,
 }) => {
+  const router = useRouter();
   const hospital = getHospitalDetailById(hospitalId);
   const [activeTab, setActiveTab] = useState<'info' | 'services'>('info');
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<string | undefined>(undefined);
   const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [scheduleNotice, setScheduleNotice] = useState<string | null>(null);
 
-  const handleOpenBooking = (serviceName?: string) => {
-    setSelectedService(serviceName);
-    setIsBookingOpen(true);
+  const handleOpenBooking = (_serviceName?: string) => {
+    router.push(`/booking?step=1&hospitalId=${encodeURIComponent(hospital.id)}`);
   };
 
-  const handleBookService = (service: ClinicalServiceItem) => {
-    handleOpenBooking(service.title);
+  const handleBookService = (_service: ClinicalServiceItem) => {
+    router.push(`/booking?step=1&hospitalId=${encodeURIComponent(hospital.id)}`);
   };
 
   const handleScrollToMap = () => {
@@ -105,12 +103,6 @@ export const HospitalDetailScreen: React.FC<HospitalDetailScreenProps> = ({
       </div>
 
       {/* Modals */}
-      <HospitalBookingModal
-        isOpen={isBookingOpen}
-        onClose={() => setIsBookingOpen(false)}
-        hospital={hospital}
-        initialService={selectedService}
-      />
 
       <HospitalPricingModal
         isOpen={isPricingOpen}

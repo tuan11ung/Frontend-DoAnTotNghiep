@@ -72,6 +72,10 @@ export const BookingStep3Schedule: React.FC<BookingStep3ScheduleProps> = ({
   const activeDoctorName = doctor ? doctor.name : MOCK_DOCTORS[0].name;
   const activeRoom = doctor?.room || specialty.room;
 
+  const displayDoctors = doctor
+    ? [doctor, ...MOCK_DOCTORS.filter((d) => d.id !== doctor.id).slice(0, 1)]
+    : MOCK_DOCTORS.slice(0, 2);
+
   return (
     <div className="space-y-6">
       {/* Khối tóm tắt thông tin khám */}
@@ -314,7 +318,7 @@ export const BookingStep3Schedule: React.FC<BookingStep3ScheduleProps> = ({
         ) : (
           /* LUỒNG THEO YÊU CẦU: Hiển thị theo bác sĩ & phòng khám */
           <div className="space-y-6">
-            {MOCK_DOCTORS.slice(0, 2).map((dr, drIdx) => (
+            {displayDoctors.map((dr, drIdx) => (
               <div key={dr.id} className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-4">
                 <div className="flex items-center gap-2 flex-wrap">
                   <Building2 className="w-5 h-5 text-blue-600" />

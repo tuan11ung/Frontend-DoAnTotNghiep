@@ -19,6 +19,9 @@ import {
   MOCK_DOCTORS,
   MOCK_PATIENT,
   MOCK_DATE_OPTIONS,
+  findHospitalById,
+  findDoctorById,
+  findSpecialtyById,
 } from './data/booking-mock-data';
 import { BookingStepper } from './components/BookingStepper';
 import { BookingStep1Mode } from './components/BookingStep1Mode';
@@ -38,16 +41,28 @@ export const BookingScreen: React.FC = () => {
   const paramHospitalId = searchParams.get('hospitalId');
   const paramDoctorId = searchParams.get('doctorId');
   const paramSpecialtyId = searchParams.get('specialtyId');
+  const paramDemandType = searchParams.get('demandType') as DemandSubtype | null;
 
-  const initialHospital =
-    MOCK_HOSPITALS.find((h) => h.id === paramHospitalId) || MOCK_HOSPITALS[0];
-  const initialDoctor =
-    MOCK_DOCTORS.find((d) => d.id === paramDoctorId) || MOCK_DOCTORS[0];
-  const initialSpecialty =
-    MOCK_SPECIALTIES.find((s) => s.id === paramSpecialtyId) || MOCK_SPECIALTIES[0];
+  const matchedDoctor = findDoctorById(paramDoctorId);
+  const matchedHospital =
+    findHospitalById(paramHospitalId) ||
+    (matchedDoctor?.hospitalId ? findHospitalById(matchedDoctor.hospitalId) : undefined);
+  const matchedSpecialty =
+    findSpecialtyById(paramSpecialtyId) ||
+    (matchedDoctor?.specialtyId ? findSpecialtyById(matchedDoctor.specialtyId) : undefined);
 
-  const parsedStep = paramStep ? (parseInt(paramStep, 10) as 1 | 2 | 3 | 4 | 5) : 1;
-  const initialStep = [1, 2, 3, 4, 5].includes(parsedStep) ? parsedStep : 1;
+  const initialHospital = matchedHospital || MOCK_HOSPITALS[0];
+  const initialDoctor = matchedDoctor || MOCK_DOCTORS[0];
+  const initialSpecialty = matchedSpecialty || MOCK_SPECIALTIES[0];
+
+  const parsedStep = paramStep ? (parseInt(paramStep, 10) as 1 | 2 | 3 | 4 | 5) : null;
+  const initialStep: 1 | 2 | 3 | 4 | 5 =
+    parsedStep && [1, 2, 3, 4, 5].includes(parsedStep)
+      ? parsedStep
+      : paramDoctorId
+      ? 2
+      : 1;
+
   const initialBookingMode: BookingMode =
     paramMode === 'bhyt' || paramMode === 'demand'
       ? paramMode
@@ -55,11 +70,18 @@ export const BookingScreen: React.FC = () => {
       ? 'demand'
       : 'demand';
 
+  const initialDemandType: DemandSubtype =
+    paramDemandType === 'doctor' || paramDemandType === 'specialty'
+      ? paramDemandType
+      : paramDoctorId
+      ? 'doctor'
+      : 'specialty';
+
   const [bookingState, setBookingState] = useState<BookingState>({
     step: initialStep,
     mode: initialBookingMode,
     hospital: initialHospital,
-    demandType: paramDoctorId ? 'doctor' : 'specialty',
+    demandType: initialDemandType,
     specialty: initialSpecialty,
     doctor: initialDoctor,
     selectedDate: MOCK_DATE_OPTIONS[0],
@@ -70,17 +92,97 @@ export const BookingScreen: React.FC = () => {
     appointmentCode: 'LH-20261015-81252',
   });
 
+  // Synchronize when URL search params change
+  useEffect(() => {
+    const sStep = searchParams.get('step');
+    const sMode = searchParams.get('mode') as BookingMode | null;
+    const sHospId = searchParams.get('hospitalId');
+    const sDocId = searchParams.get('doctorId');
+    const sSpecId = searchParams.get('specialtyId');
+    const sDemandType = searchParams.get('demandType') as DemandSubtype | null;
+
+    setBookingState((prev) => {
+      let doc = prev.doctor;
+      let hosp = prev.hospital;
+      let spec = prev.specialty;
+      let mode = prev.mode;
+      let step = prev.step;
+      let demandType = prev.demandType;
+
+      if (sDocId) {
+        const foundDoc = findDoctorById(sDocId);
+        if (foundDoc) {
+          doc = foundDoc;
+          demandType = 'doctor';
+          mode = 'demand';
+          if (foundDoc.hospitalId) {
+            const h = findHospitalById(foundDoc.hospitalId);
+            if (h) hosp = h;
+          }
+          if (foundDoc.specialtyId) {
+            const s = findSpecialtyById(foundDoc.specialtyId);
+            if (s) spec = s;
+          }
+        }
+      }
+
+      if (sHospId) {
+        const foundHosp = findHospitalById(sHospId);
+        if (foundHosp) hosp = foundHosp;
+      }
+
+      if (sSpecId) {
+        const foundSpec = findSpecialtyById(sSpecId);
+        if (foundSpec) spec = foundSpec;
+      }
+
+      if (sMode === 'bhyt' || sMode === 'demand') {
+        mode = sMode;
+      }
+
+      if (sDemandType === 'doctor' || sDemandType === 'specialty') {
+        demandType = sDemandType;
+      }
+
+      if (sStep) {
+        const parsed = parseInt(sStep, 10);
+        if ([1, 2, 3, 4, 5].includes(parsed)) {
+          step = parsed as 1 | 2 | 3 | 4 | 5;
+        }
+      } else if (sDocId && !sStep) {
+        step = 2;
+      }
+
+      return {
+        ...prev,
+        step,
+        mode,
+        hospital: hosp,
+        doctor: doc,
+        specialty: spec,
+        demandType,
+      };
+    });
+  }, [searchParams]);
+
   // Sync step changes with URL search params without page reload
   const navigateToStep = (newStep: 1 | 2 | 3 | 4 | 5, modeToUse = bookingState.mode) => {
-    setBookingState((prev) => ({ ...prev, step: newStep, mode: modeToUse }));
+    setBookingState((prev) => {
+      const updated = { ...prev, step: newStep, mode: modeToUse };
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('step', newStep.toString());
+      params.set('mode', modeToUse);
+      if (updated.hospital?.id) {
+        params.set('hospitalId', updated.hospital.id);
+      }
+      if (updated.doctor && modeToUse === 'demand' && updated.demandType === 'doctor') {
+        params.set('doctorId', updated.doctor.id);
+        params.set('demandType', 'doctor');
+      }
+      router.replace(`/booking?${params.toString()}`, { scroll: false });
+      return updated;
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('step', newStep.toString());
-    params.set('mode', modeToUse);
-    if (bookingState.hospital.id) params.set('hospitalId', bookingState.hospital.id);
-    if (bookingState.doctor && modeToUse === 'demand') params.set('doctorId', bookingState.doctor.id);
-    router.replace(`/booking?${params.toString()}`, { scroll: false });
   };
 
   const handleSelectMode = (newMode: BookingMode) => {
@@ -162,6 +264,7 @@ export const BookingScreen: React.FC = () => {
         {bookingState.step === 1 && (
           <BookingStep1Mode
             initialMode={bookingState.mode}
+            hospital={searchParams.get('hospitalId') ? bookingState.hospital : undefined}
             onSelectMode={handleSelectMode}
             onContinue={handleStep1Continue}
           />
@@ -191,7 +294,26 @@ export const BookingScreen: React.FC = () => {
             onUpdateHospital={(h) => setBookingState((prev) => ({ ...prev, hospital: h }))}
             onUpdateDemandType={(t) => setBookingState((prev) => ({ ...prev, demandType: t }))}
             onUpdateSpecialty={(s) => setBookingState((prev) => ({ ...prev, specialty: s }))}
-            onUpdateDoctor={(d) => setBookingState((prev) => ({ ...prev, doctor: d }))}
+            onUpdateDoctor={(d) => {
+              setBookingState((prev) => {
+                let nextHospital = prev.hospital;
+                if (d.hospitalId) {
+                  const foundHosp = findHospitalById(d.hospitalId);
+                  if (foundHosp) nextHospital = foundHosp;
+                }
+                let nextSpec = prev.specialty;
+                if (d.specialtyId) {
+                  const foundSpec = findSpecialtyById(d.specialtyId);
+                  if (foundSpec) nextSpec = foundSpec;
+                }
+                return {
+                  ...prev,
+                  doctor: d,
+                  hospital: nextHospital,
+                  specialty: nextSpec,
+                };
+              });
+            }}
             onBack={() => navigateToStep(1)}
             onContinue={handleStep2Continue}
           />

@@ -12,6 +12,7 @@ export interface HospitalItem {
   hotline: string;
   code: string;
   tier: string;
+  aliases?: string[];
 }
 
 export interface SpecialtyItem {
@@ -35,6 +36,9 @@ export interface DoctorItem {
   priceFormatted: string;
   avatar: string;
   room?: string;
+  hospitalId?: string;
+  specialtyId?: string;
+  aliases?: string[];
 }
 
 export interface TimeSlot {
