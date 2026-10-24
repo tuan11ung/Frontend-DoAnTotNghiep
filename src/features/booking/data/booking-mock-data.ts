@@ -17,6 +17,26 @@ export const MOCK_PATIENT: PatientInfo = {
 
 export const MOCK_HOSPITALS: HospitalItem[] = [
   {
+    id: 'hosp-1',
+    name: 'BỆNH VIỆN NHI ĐỒNG 2',
+    tag: 'Bệnh viện chuyên khoa Nhi hạng I',
+    address: '14 Lý Tự Trọng, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh',
+    hotline: '1900 1215',
+    code: '79-002',
+    tier: 'Tuyến 1 TP.HCM',
+    aliases: ['nhi-dong-2', 'hosp-search-2'],
+  },
+  {
+    id: 'hosp-2',
+    name: 'BỆNH VIỆN Y HỌC CỔ TRUYỀN TP.HCM',
+    tag: 'Thông tuyến BHYT toàn quốc',
+    address: '179 - 187 Nam Kỳ Khởi Nghĩa, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh',
+    hotline: '(028) 3932 6579',
+    code: '79-021',
+    tier: 'Tuyến Tỉnh / TP',
+    aliases: ['hosp-search-yhct'],
+  },
+  {
     id: 'HOSP-BM-01',
     name: 'BỆNH VIỆN BẠCH MAI – HÀ NỘI',
     tag: 'Đúng cơ sở ĐKKCB ban đầu',
@@ -24,6 +44,7 @@ export const MOCK_HOSPITALS: HospitalItem[] = [
     hotline: '1900 888 866',
     code: '01-001',
     tier: 'Tuyến Trung Ương & Hà Nội',
+    aliases: ['bach-mai', 'bm-01'],
   },
   {
     id: 'HOSP-DHY-02',
@@ -33,6 +54,7 @@ export const MOCK_HOSPITALS: HospitalItem[] = [
     hotline: '1900 6422',
     code: '01-002',
     tier: 'Tuyến Trung Ương',
+    aliases: ['hosp-search-1', 'dhy-02', 'dai-hoc-y'],
   },
   {
     id: 'HOSP-VD-03',
@@ -42,6 +64,7 @@ export const MOCK_HOSPITALS: HospitalItem[] = [
     hotline: '1900 1908',
     code: '01-003',
     tier: 'Tuyến Trung Ương',
+    aliases: ['viet-duc'],
   },
   {
     id: 'HOSP-CR-04',
@@ -51,6 +74,17 @@ export const MOCK_HOSPITALS: HospitalItem[] = [
     hotline: '(028) 3855 4137',
     code: '79-001',
     tier: 'Tuyến Trung Ương',
+    aliases: ['cho-ray', 'cr-04'],
+  },
+  {
+    id: 'hosp-3',
+    name: 'BỆNH VIỆN BÌNH DÂN',
+    tag: 'Ngoại khoa & Niệu khoa đầu ngành',
+    address: '371 Điện Biên Phủ, Phường 4, Quận 3, TP. Hồ Chí Minh',
+    hotline: '1900 7123',
+    code: '79-005',
+    tier: 'Tuyến Tỉnh / TP',
+    aliases: ['binh-dan'],
   },
   {
     id: 'HOSP-XP-05',
@@ -60,6 +94,7 @@ export const MOCK_HOSPITALS: HospitalItem[] = [
     hotline: '1900 6155',
     code: '01-012',
     tier: 'Tuyến Tỉnh / TP',
+    aliases: ['xanh-pon'],
   },
   {
     id: 'HOSP-TN-06',
@@ -69,6 +104,7 @@ export const MOCK_HOSPITALS: HospitalItem[] = [
     hotline: '(028) 3864 2142',
     code: '79-015',
     tier: 'Tuyến Trung Ương',
+    aliases: ['thong-nhat'],
   },
 ];
 
@@ -127,9 +163,102 @@ export const MOCK_SPECIALTIES: SpecialtyItem[] = [
     price: 300000,
     priceFormatted: '300.000 VNĐ',
   },
+  {
+    id: 'sp-nhi-1',
+    name: 'Khoa Nhi - Hô hấp & Sơ sinh',
+    room: 'Phòng khám 108 - Tầng 1 Khu A',
+    sub: 'Khu Khám Yêu Cầu Nhi Đồng 2 • Khám chuyên gia đầu ngành',
+    desc: 'Khám hô hấp, hen phế quản, sơ sinh, dinh dưỡng và tiêm chủng trẻ em.',
+    price: 350000,
+    priceFormatted: '350.000 VNĐ',
+  },
+  {
+    id: 'sp-rhm',
+    name: 'Khoa Răng - Hàm - Mặt',
+    room: 'Phòng khám 302 - Tầng 3 Khu K3',
+    sub: 'Phòng khám Răng Hàm Mặt Chuyên Sâu • Can thiệp thẩm mỹ ít xâm lấn',
+    desc: 'Bệnh lý nha khoa chuyên sâu, thẩm mỹ răng hàm mặt và chẩn đoán 3D.',
+    price: 500000,
+    priceFormatted: '500.000 VNĐ',
+  },
 ];
 
 export const MOCK_DOCTORS: DoctorItem[] = [
+  {
+    id: 'dr-1',
+    name: 'PGS. TS. BS TRẦN QUANG NAM',
+    role: 'Nội tiết - Đái tháo đường',
+    degree: 'PGS. TS. BS',
+    degreeTitle: 'Học vị: Phó Giáo Sư, Tiến Sĩ Bác Sĩ',
+    desc: 'Trưởng khoa Nội tiết - BV Đại Học Y Dược TP.HCM • Chuyên gia Đái tháo đường & Tuyến giáp',
+    price: 500000,
+    priceFormatted: '500.000 VNĐ',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcr3lnsPFgivCg2ClOBs6CEi_AdWMmeiIczUGlymA3UKoamGo8iKjGxQe2AI-cu5iJs5w5qTLUeJKhfI16XQPZgxq7fYJG7QNvvaAlW5hgYOQztdtRWFuvHMWJYiq2QATsAlGdsWDA2TzY5fbLXuW0C2xwqBPgSoQfO0FXG-zHOBaA2Kk_ODPKoGASZsEL-eA66TT24jhYuG_QMfeG77xBeopBTO4uI2Ae9wxDf3FzpJuvmsxvrqmJ',
+    room: 'PK Nội Tiết (Phòng khám Chuyên gia)',
+    hospitalId: 'HOSP-DHY-02',
+    specialtyId: 'sp-6',
+    aliases: ['tran-quang-nam'],
+  },
+  {
+    id: 'dr-2',
+    name: 'BS. CKII LÊ THỊ MINH HỒNG',
+    role: 'Nhi khoa - Hô hấp',
+    degree: 'BS. CKII',
+    degreeTitle: 'Học vị: Bác sĩ Chuyên khoa II',
+    desc: 'Phó Giám đốc Bệnh viện Nhi Đồng 2 • Hô hấp & Dị ứng miễn dịch nhi khoa',
+    price: 450000,
+    priceFormatted: '450.000 VNĐ',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAzqBp7URNhLFD_cBdaDUWxSIbRiPjkfsZKD_2LRIONQjLaq5ahQH57M_ZB6JPaLO84gP2a0BqDkjNPm0-MglkrxZFnjUUnfWzBiJ-o0lnyOYxuBdpwajqMwGOATEiRmBezrLJuLBXYwazHUhSfMtJDgDbFG2h1RvNvkA54HIO0QDl0hu_cMQHrqeIwmcukml6SO9Plgl7Xe86xVAmtNOUpTsQGi3i47wMskVGSKFFLitlntrWw85sM',
+    room: 'PK Hô Hấp Nhi (Khu Khám Yêu Cầu)',
+    hospitalId: 'hosp-1',
+    specialtyId: 'sp-nhi-1',
+    aliases: ['le-thi-minh-hong'],
+  },
+  {
+    id: 'dr-3',
+    name: 'PGS. TS. BS LÂM VIỆT TRUNG',
+    role: 'Tiêu hoá • Ngoại tiết niệu',
+    degree: 'PGS. TS. BS',
+    degreeTitle: 'Học vị: Phó Giáo Sư, Tiến Sĩ Bác Sĩ',
+    desc: 'Phó Giám đốc Bệnh viện Chợ Rẫy • Ngoại Tiêu hóa & Gan mật',
+    price: 500000,
+    priceFormatted: '500.000 VNĐ',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC8cr2uZIOPxmTN2VViUBhBbAp5mrbtGCXzMqd_HgbnQUHM0iRtl2po8d07RTks7xqGLOP-7MZtQccWnPuHwgeUDqk1HaFKjyWcKzQyApYqVTiAyoyn8cVuJhq4TQm4V_QNG44vgRhzTEJneKOpZ0fRM6APYoMIDeR0F8e0WGfJhTNpYfzl4FHwmAnndP1ZEYIPPpmGuA1nDaLfOgq96P8lBALxCyV7M3yskT2H4q-X05Ickul56B_9',
+    room: 'PK Tiêu Hóa Can Thiệp (Nhà C)',
+    hospitalId: 'HOSP-CR-04',
+    specialtyId: 'sp-1',
+    aliases: ['lam-viet-trung'],
+  },
+  {
+    id: 'dr-4',
+    name: 'BS. CKII NGUYỄN THỊ THU HÀ',
+    role: 'Nhi khoa - Sơ sinh',
+    degree: 'BS. CKII',
+    degreeTitle: 'Học vị: Bác sĩ Chuyên khoa II',
+    desc: 'Trưởng khoa Sơ sinh - Bệnh viện Nhi Đồng 1 • Chăm sóc trẻ sơ sinh & Dinh dưỡng',
+    price: 400000,
+    priceFormatted: '400.000 VNĐ',
+    avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBg3YSHJcKUUmwQSAXmvpu5o9dfmdTef_-n2osyzjwxUob5-phvdl_jaRkONBC8roM49KTkpvQJ6cv4rJ_bZvJTWcaUvAy4QrhL8Layr6YJmFYVSAAMkiwwVrZdbSAFOkoQ0mVm_5zuLXagL30Kv1rvxQzHenaUNaViLdO4_Q2n0BhrRGkc7L31nLAiVNm_Z3DCIASPrVosY1O8tAuZVoX_fxzoKjfco8qv0BV1QlN8G8mcqNavI6fi',
+    room: 'PK Sơ Sinh & Vi Chất (Nhà A)',
+    hospitalId: 'hosp-1',
+    specialtyId: 'sp-nhi-1',
+    aliases: ['nguyen-thi-thu-ha'],
+  },
+  {
+    id: 'dr-phong',
+    name: 'BSCK I TRỊNH QUỐC PHONG',
+    role: 'Răng - Hàm - Mặt',
+    degree: 'BSCK I',
+    degreeTitle: 'Học vị: Bác sĩ Chuyên khoa I',
+    desc: 'Bác sĩ Răng Hàm Mặt - BV Đa Khoa Tỉnh Khánh Hòa • Nha khoa chuyên sâu',
+    price: 500000,
+    priceFormatted: '500.000 VNĐ',
+    avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=600&q=80',
+    room: 'PK Răng Hàm Mặt Chuyên Sâu',
+    hospitalId: 'HOSP-CR-04',
+    specialtyId: 'sp-rhm',
+    aliases: ['trinh-quoc-phong'],
+  },
   {
     id: 'dr-hang',
     name: 'BSCK II DƯƠNG THỊ HẰNG',
@@ -141,6 +270,8 @@ export const MOCK_DOCTORS: DoctorItem[] = [
     priceFormatted: '350.000 VNĐ',
     avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=256&q=80',
     room: 'PK Da Liễu và Bỏng (P.605 Nhà K1)',
+    hospitalId: 'HOSP-BM-01',
+    specialtyId: 'sp-3',
   },
   {
     id: 'dr-linh',
@@ -153,6 +284,8 @@ export const MOCK_DOCTORS: DoctorItem[] = [
     priceFormatted: '350.000 VNĐ',
     avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=256&q=80',
     room: 'PK Da Liễu và Bỏng (P.606 Nhà K1)',
+    hospitalId: 'HOSP-BM-01',
+    specialtyId: 'sp-3',
   },
   {
     id: 'dr-uyen',
@@ -165,6 +298,8 @@ export const MOCK_DOCTORS: DoctorItem[] = [
     priceFormatted: '400.000 VNĐ',
     avatar: 'https://images.unsplash.com/photo-1594824813511-2b04758d4a51?auto=format&fit=crop&w=256&q=80',
     room: 'PK Y học Cổ Truyền (P.301 Nhà K1)',
+    hospitalId: 'hosp-2',
+    specialtyId: 'sp-5',
   },
   {
     id: 'dr-phuong',
@@ -177,6 +312,8 @@ export const MOCK_DOCTORS: DoctorItem[] = [
     priceFormatted: '450.000 VNĐ',
     avatar: 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?auto=format&fit=crop&w=256&q=80',
     room: 'PK Thận Tiết Niệu (P.208 Nhà K2)',
+    hospitalId: 'HOSP-VD-03',
+    specialtyId: 'sp-1',
   },
   {
     id: 'dr-cuong',
@@ -189,6 +326,8 @@ export const MOCK_DOCTORS: DoctorItem[] = [
     priceFormatted: '450.000 VNĐ',
     avatar: 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=256&q=80',
     room: 'PK Thần Kinh (P.205 Nhà K2)',
+    hospitalId: 'HOSP-VD-03',
+    specialtyId: 'sp-2',
   },
   {
     id: 'dr-tu',
@@ -201,8 +340,40 @@ export const MOCK_DOCTORS: DoctorItem[] = [
     priceFormatted: '300.000 VNĐ',
     avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?auto=format&fit=crop&w=256&q=80',
     room: 'PK Khám Tổng Quát (P.101 Nhà K1)',
+    hospitalId: 'HOSP-XP-05',
+    specialtyId: 'sp-1',
   },
 ];
+
+export function findHospitalById(id?: string | null): HospitalItem | undefined {
+  if (!id) return undefined;
+  const normalized = id.toLowerCase().trim();
+  return MOCK_HOSPITALS.find(
+    (h) =>
+      h.id.toLowerCase() === normalized ||
+      (h.aliases && h.aliases.some((a) => a.toLowerCase() === normalized)) ||
+      h.name.toLowerCase().includes(normalized)
+  );
+}
+
+export function findDoctorById(id?: string | null): DoctorItem | undefined {
+  if (!id) return undefined;
+  const normalized = id.toLowerCase().trim();
+  return MOCK_DOCTORS.find(
+    (d) =>
+      d.id.toLowerCase() === normalized ||
+      (d.aliases && d.aliases.some((a) => a.toLowerCase() === normalized)) ||
+      d.name.toLowerCase().includes(normalized)
+  );
+}
+
+export function findSpecialtyById(id?: string | null): SpecialtyItem | undefined {
+  if (!id) return undefined;
+  const normalized = id.toLowerCase().trim();
+  return MOCK_SPECIALTIES.find(
+    (s) => s.id.toLowerCase() === normalized || s.name.toLowerCase().includes(normalized)
+  );
+}
 
 export const MOCK_DATE_OPTIONS: DateOption[] = [
   {

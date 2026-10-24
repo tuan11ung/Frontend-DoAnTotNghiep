@@ -33,6 +33,7 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   const isHospitalActive = isSearchPage && (currentType === 'hospital' || !currentType);
 
   const isBookingActive = pathname === '/booking';
+  const isNewsActive = pathname.startsWith('/news') || pathname.startsWith('/tin-tuc');
 
   const handleTabClick = (tab: AppointmentTabType) => {
     onCloseMobile?.();
@@ -87,11 +88,15 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
           <span>Đặt khám Bệnh viện</span>
         </button>
         <Link
-          href="#tin-y-te"
+          href="/news"
           onClick={onCloseMobile}
-          className="w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-2 transition-all"
+          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            isNewsActive
+              ? 'bg-blue-600 text-white font-bold shadow-sm'
+              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
+          }`}
         >
-          <Newspaper className="w-4 h-4 text-slate-400" />
+          <Newspaper className={`w-4 h-4 ${isNewsActive ? 'text-white' : 'text-slate-400'}`} />
           <span>Tin Y tế</span>
         </Link>
       </div>
@@ -139,10 +144,14 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
       </button>
 
       <Link
-        className="hover:text-blue-600 text-slate-700 transition-colors flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-slate-50"
-        href="#tin-y-te"
+        href="/news"
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+          isNewsActive
+            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+        }`}
       >
-        <Newspaper className="w-4 h-4 text-slate-400" />
+        <Newspaper className={`w-4 h-4 ${isNewsActive ? 'text-white' : 'text-slate-400'}`} />
         <span>Tin Y tế</span>
       </Link>
     </nav>

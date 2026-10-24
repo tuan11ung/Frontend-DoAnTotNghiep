@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>MedConnect - Tin Y Tế &amp; Cẩm Nang Sức Khỏe Toàn Diện</title>
+  <!-- Font chữ Inter hỗ trợ tiếng Việt tối ưu -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <!-- Tailwind CSS v3 với plugins forms và container-queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            medblue: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- BEGIN: CustomStyles -->
+  <style data-purpose="custom-scrollbars">
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+  <style data-purpose="medical-theme-accents">
+    .gradient-blue-card {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+  </style>
+  <!-- END: CustomStyles -->
+</head>
+
+<body class="bg-[#f8fafc] text-slate-800 font-sans antialiased">
+  <!-- BEGIN: MainHeader -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm" data-purpose="site-header">
+    <!-- Top Bar: Logo & Main Navigation -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Brand Logo -->
+        <div class="flex items-center space-x-3">
+          <a class="flex items-center gap-2 group" href="#">
+            <div
+              class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:bg-blue-700 transition">
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z">
+                </path>
+              </svg>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-2xl font-bold text-blue-600 tracking-tight leading-none">MedConnect</span>
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-widest mt-0.5">Y Khoa &amp; Sức
+                Khỏe</span>
+            </div>
+          </a>
+        </div>
+        <!-- Primary Navigation Tabs -->
+        <nav class="hidden md:flex items-center space-x-1 sm:space-x-4">
+          <a class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-slate-50 font-medium text-sm transition"
+            href="#">
+            Đặt khám Bác sĩ
+          </a>
+          <a class="px-3.5 py-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-slate-50 font-medium text-sm transition"
+            href="#">
+            Đặt khám Bệnh viện
+          </a>
+          <a class="px-3.5 py-2 rounded-lg text-blue-600 font-semibold text-sm border-b-2 border-blue-600 pb-1.5 transition"
+            href="#">
+            Tin Y Tế
+          </a>
+        </nav>
+        <!-- Right Side: User Action -->
+        <div class="flex items-center gap-3">
+          <button
+            class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm shadow-blue-500/20 transition"
+            type="button">
+            Đăng nhập
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Secondary Sub-Navigation Strip (Based on screenshot sub-bar) -->
+    <nav aria-label="Chuyên mục phụ" class="bg-white border-t border-slate-100 overflow-x-auto no-scrollbar">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-6 py-2.5 text-xs sm:text-sm font-medium text-slate-600 whitespace-nowrap">
+        <a class="text-blue-600 hover:text-blue-700 flex items-center gap-1.5 py-1" href="#">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+            </path>
+          </svg>
+          <span class="sr-only">Trang chủ tin tức</span>
+        </a>
+        <a class="hover:text-blue-600 transition" href="#">Tra cứu bệnh</a>
+        <a class="hover:text-blue-600 transition" href="#">Tra cứu Thuốc &amp; Dược liệu</a>
+        <a class="hover:text-blue-600 transition" href="#">Mang thai &amp; Nuôi dạy con</a>
+        <a class="hover:text-blue-600 transition" href="#">Chủ đề được quan tâm nhiều</a>
+        <a class="hover:text-blue-600 transition" href="#">Kinh nghiệm đi khám</a>
+        <a class="hover:text-blue-600 transition" href="#">Bản tin sức khỏe</a>
+      </div>
+    </nav>
+  </header>
+  <!-- END: MainHeader -->
+  <!-- BEGIN: MainContent -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+    <!-- BEGIN: FeaturedHighlightsSection -->
+    <section data-purpose="featured-highlights">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Chuyên Mục Nổi Bật</h2>
+        <a class="inline-flex items-center px-4 py-1.5 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm"
+          href="#">
+          XEM TẤT CẢ
+        </a>
+      </div>
+      <!-- 4 Prominent Feature Cards (From IMAGE_8) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: 5 Lớp bảo vệ -->
+        <article
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-sky-400 via-sky-100 to-white border border-slate-200/80 shadow-sm hover:shadow-md transition group p-4 flex flex-col justify-between min-h-[360px]">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="badge-pill bg-white/80 text-blue-700 backdrop-blur font-bold">Chấn thương &amp; Phù nề</span>
+            </div>
+            <h3 class="text-2xl font-extrabold text-blue-900 leading-tight">
+              <span class="text-rose-600 text-3xl font-black block">5 LỚP</span> BẢO VỆ
+            </h3>
+            <p class="text-sm font-semibold text-blue-700 mt-1 uppercase tracking-wide">GIẢM SƯNG PHÙ NỀ</p>
+            <p class="text-xs text-slate-600 italic">Tự tin năng động mỗi ngày</p>
+          </div>
+          <div class="mt-4 flex flex-col items-center">
+            <img alt="5 Lớp bảo vệ giảm sưng phù nề"
+              class="rounded-xl object-cover w-full h-44 group-hover:scale-105 transition duration-300"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3tOSRnts6dV_Kjqt9doXCA_BgoI6ic2ZxDMEhonrrWLE1rXLoErgsDmmo1SHly35f4dXVG5E28zpdIULTCSP5nRCHhmHYl_lnhZLeUIzz4rF-Js9TZGxXHRhLyHB4BWvmtZz9WzxgOAYBteUFO8KcG7IsVBGME9nz5lkFGNckAowV5A-CuHhyUJlV3lL_s_iOXYW85mA71_BRep16EjIxMvM5NyLols_wrIDMskcI2uEbvBQ75spk">
+            <div class="w-full mt-3 flex flex-wrap gap-1 justify-center text-[11px] text-slate-500 font-medium">
+              <span class="bg-white/90 px-2 py-0.5 rounded">Bong gân</span>
+              <span class="bg-white/90 px-2 py-0.5 rounded">Chấn thương mô mềm</span>
+            </div>
+          </div>
+        </article>
+        <!-- Card 2: Bạn thân của mẹ -->
+        <article
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-pink-300 via-pink-50 to-white border border-slate-200/80 shadow-sm hover:shadow-md transition group p-4 flex flex-col justify-between min-h-[360px]">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="badge-pill bg-white/80 text-pink-700 backdrop-blur font-bold">Thai kỳ &amp; Sau sinh</span>
+            </div>
+            <h3 class="text-2xl font-extrabold text-pink-700 leading-tight">
+              BẠN THÂN<br><span class="text-sky-600">CỦA MẸ</span>
+            </h3>
+            <p class="text-xs text-slate-600 mt-1">Cẩm nang sức khỏe mẹ bầu &amp; thai nhi trọn vẹn</p>
+          </div>
+          <div class="mt-4 flex flex-col items-center">
+            <img alt="Bạn thân của mẹ"
+              class="rounded-xl object-cover w-full h-44 group-hover:scale-105 transition duration-300"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPJ6QanQS_9O2r6zH38jm2f4mfz2CAm8MaJg5GpVdnvN1BV5QG7shBWiCivNGvgpVAojdLdpwUDWbdumu-egxJp7OWtmxb7MtYX0CuQIG26cls9tbmH1NXlgYc7yYeCuVJfbaV91jk8K3VlGs6GO2tXThQ2PwRWPD9-9nrvI3qjGd6cFqx5Jj0UpxvqEv9Ymxyq9GlKePDkStgtHJgHSecWGfGte_tyx9i3c81znLxySjwOqs-WN5Z">
+            <div
+              class="w-full mt-3 flex items-center justify-center text-[11px] text-pink-700 font-medium bg-pink-100/70 py-1 rounded">
+              Đồng hành cùng bác sĩ sản khoa 315
+            </div>
+          </div>
+        </article>
+        <!-- Card 3: Tê Nặng Tê -->
+        <article
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-cyan-600 via-slate-800 to-slate-900 text-white border border-slate-700/80 shadow-sm hover:shadow-md transition group p-4 flex flex-col justify-between min-h-[360px]">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="badge-pill bg-cyan-400 text-slate-950 font-bold">Thần kinh - Khớp</span>
+            </div>
+            <h3 class="text-2xl font-black text-cyan-200 tracking-wide uppercase leading-tight">
+              TÊ NẶNG TÊ
+            </h3>
+            <p class="text-xs text-slate-300 mt-1">Dấu hiệu chèn ép thần kinh và thiếu hụt dưỡng chất</p>
+          </div>
+          <div class="mt-4 flex flex-col items-center">
+            <img alt="Tê nặng tê bì tay chân"
+              class="rounded-xl object-cover w-full h-44 group-hover:scale-105 transition duration-300"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBozD3AsXeNYQm7l8L_NVUvl4SLevb1kaDmVtJ6QV34E7sY29OzhBJ2Um3mSQv9712LXtMG_ZKvT8dkTbzfmmsJv5i2iT96yHVH-EcaDNeXavCZhaYZTaw03_zM077TqkvMI4ai_073bJ9xxC5FWqr4p5Bq9ONoDbTZ0tB5SW-eJoD63wGwi-zjPEEIM8eGVswiZW3acETvnNFpKsN847arBCl0APK_HKDxF7nCD2uTbeOYxVcEvJQA">
+            <p class="text-[11px] text-cyan-200 mt-2 text-center font-medium">Đừng chủ quan với cơn tê bì kéo dài</p>
+          </div>
+        </article>
+        <!-- Card 4: Ung thư phổi -->
+        <article
+          class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-sky-500 via-sky-200 to-blue-50 border border-slate-200/80 shadow-sm hover:shadow-md transition group p-4 flex flex-col justify-between min-h-[360px]">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="badge-pill bg-white text-blue-700 font-bold">Ung Bướu</span>
+            </div>
+            <h3 class="text-2xl font-black text-blue-800 leading-tight">
+              UNG THƯ PHỔI
+            </h3>
+            <p class="text-xs font-semibold text-rose-600 mt-1 uppercase">Đừng để "được phát hiện muộn"</p>
+          </div>
+          <div class="mt-4 flex flex-col items-center">
+            <img alt="Tầm soát ung thư phổi"
+              class="rounded-xl object-cover w-full h-44 group-hover:scale-105 transition duration-300"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfNt68w0gVmbeftzxo2AtxY2EybPzPKNlloKe2bsVSrF7vug1QYuQfWF-W4EIDZC2EMsZN1qNfia8HqeQbFgBcWqE3KaYHP4RsQPEMuZz8x-evSnU9uB95st9uhOiRXDQUDWp95z93f4IjRhJdF8M4ox0fe1aXLTRYsAbnw-49Ku3Kl_7Veh0Zf0GPcpLYws-ZLnGSSqJOXDj5qeSleOnPFNTE8iJNQuWGIASGE6YoS1E_2_6hrx-q">
+            <div class="w-full mt-3 text-center text-[11px] text-blue-800 font-medium bg-white/80 py-1 rounded">
+              Tầm soát định kỳ bảo vệ lá phổi
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <!-- END: FeaturedHighlightsSection -->
+    <!-- BEGIN: MedicalDictionaryAndQuickServices -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start" data-purpose="medical-dictionary-and-services">
+      <!-- Left Column: Quick Service Booking Nav (IMAGE_7, IMAGE_8) -->
+      <aside class="lg:col-span-3 space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="mb-4">
+            <h3 class="text-lg font-bold text-blue-600">MedConnect</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Nền tảng đặt dịch vụ và sản phẩm y tế dành cho bạn và gia đình</p>
+          </div>
+          <div class="space-y-2.5">
+            <!-- Service item 1 -->
+            <a class="flex items-center gap-3.5 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition group"
+              href="#">
+              <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition">Đặt khám Bác
+                sĩ</span>
+            </a>
+            <!-- Service item 2 -->
+            <a class="flex items-center gap-3.5 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition group"
+              href="#">
+              <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition">Đặt khám Phòng
+                khám</span>
+            </a>
+            <!-- Service item 3 -->
+            <a class="flex items-center gap-3.5 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition group"
+              href="#">
+              <div
+                class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition">Đặt khám Bệnh
+                viện</span>
+            </a>
+            <!-- Service item 4 -->
+            <a class="flex items-center gap-3.5 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition group"
+              href="#">
+              <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition">Tư vấn trực
+                tuyến</span>
+            </a>
+            <!-- Service item 5 -->
+            <a class="flex items-center gap-3.5 p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition group"
+              href="#">
+              <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-slate-700 group-hover:text-blue-600 transition">Thuốc và Dịch vụ y
+                tế</span>
+            </a>
+          </div>
+        </div>
+      </aside>
+      <!-- Right Column: Từ Điển Y Khoa (Alphabet Filter & Dictionary Entries) -->
+      <section aria-labelledby="dictionary-title"
+        class="lg:col-span-9 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <!-- Dictionary Header & Tabs -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-4 gap-4">
+          <h2 class="text-xl font-bold text-slate-900" id="dictionary-title">Từ Điển Y Khoa</h2>
+          <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold">
+            <button class="px-4 py-1.5 rounded-lg bg-white text-blue-600 shadow-sm" type="button">Thuốc</button>
+            <button class="px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition" type="button">Dược
+              liệu</button>
+            <button class="px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition"
+              type="button">Bệnh</button>
+            <button class="px-4 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition" type="button">Cơ
+              thể</button>
+          </div>
+        </div>
+        <!-- Search Input -->
+        <div class="mt-5">
+          <div class="relative">
+            <input
+              class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Nhập tên thuốc..." type="text">
+            <button class="absolute right-3 top-2.5 text-slate-400 hover:text-blue-600" type="button">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Alphabet Quick Search Index (A-Z) -->
+        <div class="mt-4">
+          <p class="text-xs font-medium text-slate-500 mb-2">Tra cứu bằng chữ cái đầu tiên:</p>
+          <div class="flex flex-wrap gap-1.5 text-xs font-semibold">
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">A</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">B</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">C</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">D</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">E</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">F</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">G</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">H</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">I</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">J</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">K</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">L</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">M</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">N</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">O</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">P</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">Q</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">R</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">S</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">T</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">U</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">V</span>
+            <!-- Active state matching screenshot: W -->
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm font-bold cursor-pointer">W</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">X</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">Y</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">Z</span>
+            <span
+              class="w-7 h-7 flex items-center justify-center rounded-lg bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-600 cursor-pointer">#</span>
+          </div>
+        </div>
+        <!-- Drug Articles Grid (From IMAGE_7) -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Drug Item 1: Medrol -->
+          <article
+            class="border border-slate-200 rounded-xl p-3.5 hover:shadow-md transition bg-slate-50/50 flex flex-col justify-between">
+            <div>
+              <div
+                class="h-32 rounded-lg bg-white border border-slate-100 overflow-hidden flex items-center justify-center p-2 mb-3">
+                <img alt="Thuốc Medrol" class="h-full object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6q4l6O9J09bAsiM8Yji9KUo_IpfhBvvkdtt3gmQPLxZaYwyrozu1RPmcLsyTHYgiAEPjdt5SQL2ZiqEDlaMi_RUEF0V9Qw-WKiaIcRc8RsCtZc2kwtALTZNYjDn6zhnxvP--oBDOkya_TiADLcFoUyUQV4SIlJ5PsI9cqPZXif7dQ9PHqNIQ_Z728rL8R50X_W17E_4KTTeeOPGyTdTaVMxNEkOzRZKNauFsy734auz40KQXmFyGy">
+              </div>
+              <h4 class="font-bold text-slate-900 text-sm hover:text-blue-600 line-clamp-2">
+                Thuốc Medrol (methylprednisolon): Chỉ định &amp; Liều dùng...
+              </h4>
+            </div>
+            <div class="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+              <p>ThS, Dược sĩ Phan Tiểu Long</p>
+              <p class="text-slate-400">Ngày đăng: 12 Th12, 2019</p>
+            </div>
+          </article>
+          <!-- Drug Item 2: Panadol Extra -->
+          <article
+            class="border border-slate-200 rounded-xl p-3.5 hover:shadow-md transition bg-slate-50/50 flex flex-col justify-between">
+            <div>
+              <div
+                class="h-32 rounded-lg bg-white border border-slate-100 overflow-hidden flex items-center justify-center p-2 mb-3">
+                <img alt="Panadol Extra" class="h-full object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8giVasc49O1Skx-U0bPO9APUNFMlgFJkGNamMex0Y21dBTpwB8A4VVZWlN-7MuiHrQ__UQuNDhQdJMO80MmD86L32u9fIZGysNb-K4I4IYzixZBiUaDvUwtec_X3QruA4FCsO8agK5eSng6xySFted-lR9J7vBM31PzS9Pz9kCUCC_XnxdSsl5u5emBqkZ4AWVJhDCkk0sfJq0U4tB96d5brUNcl3CqNLGWinHYZAolU32wfNfqqm">
+              </div>
+              <h4 class="font-bold text-slate-900 text-sm hover:text-blue-600 line-clamp-2">
+                Những điều cần biết về thuốc Panadol Extra
+              </h4>
+            </div>
+            <div class="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+              <p>Dược sĩ Phan Hữu Xuân Hạo</p>
+              <p class="text-slate-400">Ngày đăng: 29 Th6, 2020</p>
+            </div>
+          </article>
+          <!-- Drug Item 3: Thuốc Y -->
+          <article
+            class="border border-slate-200 rounded-xl p-3.5 hover:shadow-md transition bg-slate-50/50 flex flex-col justify-between">
+            <div>
+              <div
+                class="h-32 rounded-lg bg-white border border-slate-100 overflow-hidden flex items-center justify-center p-2 mb-3">
+                <img alt="Thuốc kháng sinh" class="h-full object-contain"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcBJcErShSgd84Ty7DqhI2MVIT-Dqj9IBE-iLcP1b9TerYZGUxrYV4GgIu8UMf6La5AHE56EpeG_7-jQu6xcnJ7izInx1jYAK79CSR10Yzt-onxACpR43qc7SnkSuaE0dOr0gWVIxR_C6hvyhX-9wNG9Duzdft8KCaxJADFK39LYMXopq-nf63zxcwFQHJb4rKEWK-LBc9nMbEoW_hcOPy4-aQL1nBwhZ9QMBB5w6g118NMjxJLPjC">
+              </div>
+              <h4 class="font-bold text-slate-900 text-sm hover:text-blue-600 line-clamp-2">
+                Thuốc Augmentin: Kháng sinh, liều dùng và tác dụng phụ
+              </h4>
+            </div>
+            <div class="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
+              <p>Dược sĩ Nguyễn Thị Mai</p>
+              <p class="text-slate-400">Ngày đăng: 18 Th11, 2021</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </section>
+    <!-- END: MedicalDictionaryAndQuickServices -->
+    <!-- BEGIN: PopularTopicsSection -->
+    <section data-purpose="popular-topics">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-5">Chủ Đề Được Quan Tâm</h2>
+      <!-- 12 Topics Grid (IMAGE_6) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3.5">
+        <!-- Item 1 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🧴
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Chăm sóc da</span>
+        </a>
+        <!-- Item 2 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🖐️
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Da liễu</span>
+        </a>
+        <!-- Item 3 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🥗
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Dinh Dưỡng</span>
+        </a>
+        <!-- Item 4 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🩸
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Đái tháo đường</span>
+        </a>
+        <!-- Item 5 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🤰
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Mang thai</span>
+        </a>
+        <!-- Item 6 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-cyan-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            👁️
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Nhãn khoa</span>
+        </a>
+        <!-- Item 7 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-sky-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            👶
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Nuôi dạy con</span>
+        </a>
+        <!-- Item 8 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🦷
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Răng - Hàm -
+            Mặt</span>
+        </a>
+        <!-- Item 9 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-indigo-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            👨
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Sức khỏe nam
+            giới</span>
+        </a>
+        <!-- Item 10 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-fuchsia-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            👩
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Sức khỏe nữ
+            giới</span>
+        </a>
+        <!-- Item 11 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-purple-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            ⚧️
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-slate-700 group-hover:text-blue-600">Sức khỏe tình
+            dục</span>
+        </a>
+        <!-- Item 12 -->
+        <a class="p-4 rounded-2xl bg-white border border-slate-200/80 hover:border-rose-400 hover:shadow-md transition text-center flex flex-col items-center justify-center group"
+          href="#">
+          <div
+            class="w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-2 group-hover:scale-110 transition">
+            🦠
+          </div>
+          <span class="text-xs sm:text-sm font-semibold text-rose-600 group-hover:text-rose-700">Ung Thư</span>
+        </a>
+      </div>
+    </section>
+    <!-- END: PopularTopicsSection -->
+    <!-- BEGIN: FeaturedVideoSection -->
+    <section data-purpose="featured-video">
+      <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mb-4">Video Nổi Bật</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Main Featured Video with Play Overlay -->
+        <div class="lg:col-span-8 bg-slate-900 rounded-2xl overflow-hidden relative shadow-md group">
+          <div class="relative aspect-video">
+            <img alt="Lễ ký kết Viết vì người bệnh"
+              class="w-full h-full object-cover opacity-90 group-hover:scale-102 transition duration-500"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2xBLPx7FFeIWQW8m9tj8H4ZQ1Wu1JFtkhuoVNYkLxI-2Ke8WfvOix3XoYAacJypQom0ryqiAYTYtdEFDUT_JqJUQvYcFXiqt4XwQpXfsOlmoyH4YdF74RdtctmPu0qZsqH-vdtnJBwEKkJYrSSch_UJpfE7C0G9ygUjAkddXCYfrPFuSk8RwkmWN7UEVk4tIIz6OqrYLvJRqjuIZhdOJ48Mog_b4LjBhJMqwNBTSVcDxDR1CO04gK">
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-center justify-center">
+              <!-- Red Play Button -->
+              <button aria-label="Phát video"
+                class="w-16 h-16 sm:w-20 sm:h-20 bg-red-600 hover:bg-red-700 text-white rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition"
+                type="button">
+                <svg class="w-8 h-8 fill-current ml-1" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="absolute bottom-4 left-4 right-4 text-white">
+              <span class="badge-pill bg-blue-600 text-white mb-2">Hợp tác chiến lược</span>
+              <h3 class="text-base sm:text-xl font-bold leading-snug">Lễ Ký Kết Hợp Tác "Viết Vì Người Bệnh" giữa
+                MedConnect &amp; ĐH Y Dược</h3>
+            </div>
+          </div>
+        </div>
+        <!-- Video Playlist Side Items -->
+        <div class="lg:col-span-4 space-y-4 flex flex-col justify-between">
+          <article class="p-3 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition flex gap-3">
+            <img alt="Đại học y dược" class="w-28 h-20 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7MySMTaqMLQSVAAWC-9AZ0WjKtxJtrkduVJ5uRlzsnH2CjQphyCS2K8Miuau-kW5hVzEitjk1YUmsCW8_hbY2JqO4S7rmklHLxg2rjurKZMR9ULPpQ6ztqLiOYU4I19kcSW9f9tptHPmJHjQTOxbucly1z8WXGCq4vAVBAN1L2_HLvvCeliAz9jRM5-TldjMGt6DfhzdOamrCXF14pkholTcZ7wP_Yx0vd5tJBtmFg7j-txR3yB81">
+            <div>
+              <span class="text-[11px] font-semibold text-blue-600">Tin sự kiện</span>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-800 line-clamp-2 hover:text-blue-600 mt-0.5">
+                Lễ ký kết hợp tác cùng Đại học Y Dược TP.HCM chung tay "Viết vì...
+              </h4>
+              <p class="text-[11px] text-slate-400 mt-1">MedConnect Media</p>
+            </div>
+          </article>
+          <article class="p-3 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition flex gap-3">
+            <img alt="Bạn thân của mẹ tập 6" class="w-28 h-20 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcrOZGCAr3tlVYj6DCUuV6RHBwq2EQ9D9U0af0EeoArnjqJqLh3qFd7fiRTr9UDMi5vbsrVNJxng2LK8DXLWRiFV8HcIyQvAyX1q4tQaPaqE5f6WqfYwUN4I16AIz02A3-D1VBqfAksKyNKkHUH5Yrf0EuDABFdjWz5bsirHHUdzJs1rpEozU1hq9LOO_7kCuZDonBt2sgghKeXU9s9ATSaRePUPP9zjwXjwXYfzawB6hZDyvkAk3M">
+            <div>
+              <span class="text-[11px] font-semibold text-pink-600">Talkshow Sức Khỏe</span>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-800 line-clamp-2 hover:text-blue-600 mt-0.5">
+                Bạn thân của mẹ (tập 6): Đôi bạn khỏe đẹp - Đón xuân phấn khởi
+              </h4>
+              <p class="text-[11px] text-slate-400 mt-1">Chuyên gia Sản Khoa</p>
+            </div>
+          </article>
+          <article class="p-3 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition flex gap-3">
+            <img alt="Chuyên gia dinh dưỡng" class="w-28 h-20 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNfQmHFbPlxiyvCGAWfIDAQoGhE50rAP3I7H2KLAHMDGOKQmIK_0jHsFsRvm8VXNwonzDgNRiOG61tRp2VoZ2d0Io3biGcgQq3rzbb7ZzAqH6lunElO_dqw8ClEV2EYSALCOFXWeJcvfoJ8JrqYLHiGQEo-Tck0gNfiliBlQK7WK35Eyupp6rlMVvl3xHTIZSQOrrqoZKNVRlgpVqWYRQC_ZpG8QJGBWEINky4yg3j-DFLU6w8UR34">
+            <div>
+              <span class="text-[11px] font-semibold text-emerald-600">Dinh dưỡng đúng cách</span>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-800 line-clamp-2 hover:text-blue-600 mt-0.5">
+                Kiểm soát chỉ số đường huyết qua chế độ ăn thông minh hàng ngày
+              </h4>
+              <p class="text-[11px] text-slate-400 mt-1">BS CKII Nguyễn Văn Hùng</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- END: FeaturedVideoSection -->
+    <!-- BEGIN: MedicalAdvisoryBoardSection -->
+    <section class="bg-white rounded-3xl border-2 border-blue-200 p-6 sm:p-8 shadow-sm"
+      data-purpose="medical-expert-board">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <!-- Experts Avatar Grid (6 Doctors) -->
+        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Doctor 1 -->
+          <div class="flex items-center gap-3.5 p-2.5 rounded-xl hover:bg-slate-50 transition">
+            <img alt="ThS.BS Nguyễn Hồng Vân Khánh"
+              class="w-14 h-14 rounded-2xl object-cover border border-blue-100 shadow-sm"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPG7EMIWyVGMYsCm2F5L2XVSmC_540YFG0_TUR7EHa-Fs0w9h5FIUxYV8KI5zWYDLPuRRrs4HX0eQOv9tOaYvNRCICSh6VSlRP19p5IRmCKMMqR1bH-puytWMafVSOyXdVxeNxqT5o9jl2NljpBEelHP9lZjvcGDJ0xGvHEJObfiQYXXxUys966oSDBCl9VqLtAXUZkbaCmjOzVQOQf32SPql10xBMZQmcQh0CeaFVHqJgtflG1jMF">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 leading-snug">ThS.BS Nguyễn Hồng Vân Khánh</h4>
+              <p class="text-xs text-slate-500">Gan mật tụy - Ghép gan, Nhi</p>
+            </div>
+          </div>
+          <!-- Doctor 2 -->
+          <div class="flex items-center gap-3.5 p-2.5 rounded-xl hover:bg-slate-50 transition">
+            <img alt="ThS.BS Phan Lê Nam" class="w-14 h-14 rounded-2xl object-cover border border-blue-100 shadow-sm"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLAjqHz8_pxECnMTEFAl-SrKBscvgckAqGzBrOAAIye2_yup1lRfK212XWk0k-KEtC_X947HQTyrDn7kF3oMhZmE5_kZXZM9wyqh1__5tsaXnJcLIAkvCFwfkl6YcSFzPTbqE83q_ck5PjQ-VCg6suwNKynSkL_oRLf1pzqtDg1tZR5nStIeb8F68Ea_qO-c3JtZxPdA1udmFzMJInIGepVFvNuZ0vMmB3ot2kpPMOAyswQxyNHF_K">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 leading-snug">ThS.BS Phan Lê Nam</h4>
+              <p class="text-xs text-slate-500">Sản phụ khoa</p>
+            </div>
+          </div>
+          <!-- Doctor 3 -->
+          <div class="flex items-center gap-3.5 p-2.5 rounded-xl hover:bg-slate-50 transition">
+            <img alt="ThS.BS Đinh Thị Lan Phương"
+              class="w-14 h-14 rounded-2xl object-cover border border-blue-100 shadow-sm"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJeEP77bC3qhheD-assaXqyArRyMbPm2Y8-srti50OURNaN9z0JMwesWDd3Mt6jTO1LDWznibEPn_aVO5eYBC5Si0buPOoPFUXaEYYUSnHIKjiRxAs0jz4s1ZKvm9lSLLeNJr_GatGPA9TmB6re5Wuk9_LD-CtiG63aSumFE_lyPqmrRSUtYcWveJKtTo-r506DapYH8Fks7hY1RGUYQtKA9i6Xf56ZMYt3pW2379sYLfa7sICFxsU">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 leading-snug">ThS.BS Đinh Thị Lan Phương</h4>
+              <p class="text-xs text-slate-500">Tai - Mũi - Họng</p>
+            </div>
+          </div>
+          <!-- Doctor 4 -->
+          <div class="flex items-center gap-3.5 p-2.5 rounded-xl hover:bg-slate-50 transition">
+            <img alt="Dược sĩ Dương Anh Hoàng"
+              class="w-14 h-14 rounded-2xl object-cover border border-blue-100 shadow-sm"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuARl7zFS78bwdlUAEKrbdRRNF8D1g7gb_8ZQKYgLa29Uoa-lYPlbKhqNuASuLHlYP-piOf4rUTEN3vuBULYdO_HyPxxld3MtYOSQjgDLjCMyqFaHoDbr_40t_IvCBRd2CykzCVhqOSilYsXmhDaE_RxwOBVqb2psTDwPUaoFlhWJ8qYmmh5gCnCj4zvwA9oN8Cor0Lj-E7s8QTFywe6g6EjaqTcuPdV5C3omENpfzAze6ZXEfL38EfK">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 leading-snug">Dược sĩ Dương Anh Hoàng</h4>
+              <p class="text-xs text-slate-500">Dược lý lâm sàng</p>
+            </div>
+          </div>
+          <!-- Doctor 5 -->
+          <div class="flex items-center gap-3.5 p-2.5 rounded-xl hover:bg-slate-50 transition">
+            <img alt="ThS.BS Vũ Thành Đô" class="w-14 h-14 rounded-2xl object-cover border border-blue-100 shadow-sm"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPH8w_ls68VjwBq10jk6S2QnZjIQAjr6V7P7WQTrpJLiAdPYoZHXjis5AH2lpwfokbHS6_SaUe0vw3oInXLHqs-8FlTzirpXYV1ipcJ1KF-uv58QGH0rjt4cZlycaQq0kV_L-xzNLuPOvpH158VcU3wxvoCQeC91uHyjlG4FDINYlxfb9I_81n7UN7DDLqLKeFN5B8oIqd-X1BWafT3xAX2NtR_-IWTDk-JEiPeP0RPyXR4MoivD18">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 leading-snug">ThS.BS Vũ Thành Đô</h4>
+              <p class="text-xs text-slate-500">Tim - Thận - Khớp - Nội tiết</p>
+            </div>
+          </div>
+          <!-- Doctor 6 -->
+          <div class="flex items-center gap-3.5 p-2.5 rounded-xl hover:bg-slate-50 transition">
+            <img alt="ThS.BS Nguyễn Trung Nghĩa"
+              class="w-14 h-14 rounded-2xl object-cover border border-blue-100 shadow-sm"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT4QwTR0HpziyyH-7sGZJAjyq6J4NvLtqBrzScAvKGRRIpjrz7C-59l3MNhIEc_TrkQqQe2oEVH1hDgXY-aFvyhxh0NSiZ_j9uef7AhJ1RaZmGtpO969IWFZ4K-5xY5OvNuSUs6QUWOmIRJCTnEEtwj_cpm138ols7hFuNK8Idz-7p1x0WjYDgKbt2reNavh5bY5U1An18mmWskgKZ8z9vRbqYA-b8lOTFiJT7zFJmDFJlS9hqBWhj">
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 leading-snug">ThS.BS Nguyễn Trung Nghĩa</h4>
+              <p class="text-xs text-slate-500">Tâm thần - Trị liệu tâm lý</p>
+            </div>
+          </div>
+        </div>
+        <!-- Introduction & Action -->
+        <div class="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8">
+          <p class="text-sm sm:text-base text-slate-700 leading-relaxed font-normal">
+            Hội đồng tham vấn y khoa cùng đội ngũ biên tập viên là các bác sĩ, dược sĩ đảm bảo nội dung chúng tôi cung
+            cấp chính xác về mặt y khoa và cập nhật những thông tin mới nhất.
+          </p>
+          <div class="mt-6">
+            <a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition shadow-sm"
+              href="#">
+              <span>Đội ngũ chuyên gia</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: MedicalAdvisoryBoardSection -->
+    <!-- BEGIN: CommitmentsAndTrustSection -->
+    <section class="space-y-6" data-purpose="commitments-and-trust">
+      <!-- Blue Commitment Banner (From IMAGE_5) -->
+      <div class="rounded-3xl gradient-blue-card text-white p-6 sm:p-10 shadow-lg">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-5 space-y-4">
+            <h3 class="text-2xl sm:text-3xl font-extrabold leading-tight">
+              Tạo nên một nguồn thông tin sức khoẻ đáng tin cậy, dễ đọc, dễ hiểu cho mọi đối tượng độc giả
+            </h3>
+            <div>
+              <a class="inline-flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl text-white font-semibold text-xs sm:text-sm border border-white/30 transition"
+                href="#">
+                <span>Cam kết của chúng tôi</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+          <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <!-- Pillar 1 -->
+            <div class="flex flex-col items-center p-3 rounded-2xl bg-white/10 backdrop-blur border border-white/10">
+              <span class="text-3xl mb-2">👨‍⚕️</span>
+              <span class="text-xs font-medium leading-tight">Biên soạn bởi Bác sĩ và Dược sĩ</span>
+            </div>
+            <!-- Pillar 2 -->
+            <div class="flex flex-col items-center p-3 rounded-2xl bg-white/10 backdrop-blur border border-white/10">
+              <span class="text-3xl mb-2">📋</span>
+              <span class="text-xs font-medium leading-tight">Chính sách biên tập nội dung minh bạch</span>
+            </div>
+            <!-- Pillar 3 -->
+            <div class="flex flex-col items-center p-3 rounded-2xl bg-white/10 backdrop-blur border border-white/10">
+              <span class="text-3xl mb-2">👥</span>
+              <span class="text-xs font-medium leading-tight">Thành viên ban điều hành y khoa</span>
+            </div>
+            <!-- Pillar 4: HONcode certified -->
+            <div class="flex flex-col items-center p-3 rounded-2xl bg-white/10 backdrop-blur border border-white/10">
+              <div
+                class="w-10 h-10 rounded-lg bg-white text-blue-600 font-black flex items-center justify-center text-xs mb-2">
+                HON
+              </div>
+              <span class="text-xs font-medium leading-tight">Được chứng nhận bởi HON</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Trust in Our Content / Media Partners (From IMAGE_4) -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <h3 class="text-base font-bold text-slate-800 mb-5">Tin Tưởng Nội Dung Từ Chúng Tôi</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
+          <div class="text-center p-3 rounded-xl hover:bg-slate-50 transition flex flex-col items-center">
+            <img alt="Đại học Y Dược TP.HCM" class="h-10 object-contain mb-2"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp0TukL_iElqRj3GjWXNjVQTzoWl8PaAtHAYA5iECp7uwpq3W9yLvS8uCC-zOYCejNOKsNs1HOUS81-_AB24d8RfX4T33xkvqnZcannTRk17i_zdeRrL5k6wGF0lJzV-1xmeEqCWou6yxIk2qLVF4zAwxpejJtfTiqWB-8WJn7PsBqP_L_EHV2wvd4romob19hwg0BtkOb21gaHbFWnF0X0cy_Dbck0BkPlCpYfUdpgeujjNVbrxq3">
+            <p class="text-xs text-slate-600 line-clamp-2">Chương trình "Viết vì người bệnh": 200 bài viết y tế lan tỏa
+              giá trị nhân văn</p>
+          </div>
+          <div class="text-center p-3 rounded-xl hover:bg-slate-50 transition flex flex-col items-center">
+            <img alt="MedConnect hợp tác" class="h-10 object-contain mb-2"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmaONraXSQusiAj-jNuJyfI0pVlc3avH1R_MDvqUUdNXmIZurKxYoZWFG-YFZPx7nuJ4wJGfkAHpPiyTVHJ56fayf4CKiUXGLaqMhLkM7dWXg3aJSaZ2wm1F80Ay0F7SLD6bzupsnM4ntL78sGM2d2ciZEbtecpMkMrMdK2bmkHp2VJq2wABLOXBZaRBkznn1i5vRf_xpnydL0cnIuTcnR3z_5jL5Cm3XpWYB1fE7NKhq9c-SOYq_9">
+            <p class="text-xs text-slate-600 line-clamp-2">MedConnect hợp tác cùng Đại học Y Dược TPHCM "Viết vì người
+              bệnh"</p>
+          </div>
+          <div class="text-center p-3 rounded-xl hover:bg-slate-50 transition flex flex-col items-center">
+            <span class="text-xl font-bold text-rose-700 tracking-tighter mb-2">VN<span
+                class="text-slate-800">EXPRESS</span></span>
+            <p class="text-xs text-slate-600 line-clamp-2">CEO MedConnect: 'Nỗ lực xây dựng nền tảng y tế toàn diện'</p>
+          </div>
+          <div class="text-center p-3 rounded-xl hover:bg-slate-50 transition flex flex-col items-center">
+            <span class="text-xl font-black text-red-600 uppercase tracking-tight mb-2">Tiềnphong</span>
+            <p class="text-xs text-slate-600 line-clamp-2">MedConnect và những “cú bắt tay” để lan tỏa thông tin y khoa
+              chính thống</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- END: CommitmentsAndTrustSection -->
+    <!-- BEGIN: HospitalInformationSection -->
+    <section data-purpose="hospital-information-articles">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Thông Tin Bệnh Viện</h2>
+        <a class="inline-flex items-center px-4 py-1.5 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm"
+          href="#">
+          XEM TẤT CẢ
+        </a>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Big article on Left -->
+        <article
+          class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <img alt="Bệnh viện A Thái Nguyên" class="w-full h-56 object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUFNo_n5uS33xJAXuCQ4Nz6VEW9uJUXwJfxOQYikxKMn4LMCZLzEGqg5l6NcbVAJ3PzwZ73U27up6UievX8dHa4w4aFCWQSJ2HBLqPJS6a1Kco0iqkS-5KxtzCfNBLTlWz1HQLKe4HBGiukVF7-T0Bl-YuqdQA13OUuMdPSdoh4nR-nxfoeMqoPbHiFeBNwKovl0CGRnYueqXkRXEwE9YGq6sZBqJxGL2Wy_6V3Rv8J-SYh1vm77rD">
+            <div class="p-5">
+              <span class="badge-pill bg-blue-50 text-blue-600 mb-2">Bệnh viện</span>
+              <h3 class="text-lg font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Hướng dẫn khám, chữa bệnh tại Bệnh viện A Thái Nguyên
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3">
+                Trải qua hơn 60 năm hình thành và phát triển, Bệnh viện A Thái Nguyên không chỉ là một cơ sở khám chữa
+                bệnh quen thuộc của người dân địa phương mà còn là địa chỉ khám chữa bệnh uy tín của khu vực trung du
+                miền núi.
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-5 text-xs text-slate-400">
+            MedConnect • Ngày đăng: 10 Th9, 2026
+          </div>
+        </article>
+        <!-- Right Side: 2 smaller articles -->
+        <div class="lg:col-span-6 space-y-4 flex flex-col justify-between">
+          <article class="bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md transition flex gap-4">
+            <div class="flex-1">
+              <span class="badge-pill bg-blue-50 text-blue-600 mb-1">Bệnh viện</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Những điều cần lưu ý khi đi khám, chữa bệnh tại Bệnh viện Mắt Cao Thắng
+              </h3>
+              <div class="text-xs text-slate-400 mt-3">
+                MedConnect • Ngày đăng: 22 Th4, 2020
+              </div>
+            </div>
+            <img alt="Khám mắt bệnh viện" class="w-32 h-28 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnEc9uxxrAFdWjSdxPM1KW_JkBS0oKMtKvnMXPU6PQ0G3_ExqOoo3hlVm0HgPvz9lmuA1epJuvXtVA2o_fASxsRYdN6zqg85PllFfHXp55UGwuGD_UaKBDClHDK8p_6Oz5N8ereDSSnhcA4UiL2gFyFazbU0yF2IX8i-T90dcKLGxEK2cMCBdXZKhDUY0PGzraQtSxw35rWLrAPwWOlCFgBF0U0P7Al5XpFUnDuD483bN2P-K5T342">
+          </article>
+          <article class="bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md transition flex gap-4">
+            <div class="flex-1">
+              <span class="badge-pill bg-blue-50 text-blue-600 mb-1">Bệnh viện</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Bệnh viện Răng Hàm Mặt TP HCM có tốt không? Quy trình và bảng giá
+              </h3>
+              <div class="text-xs text-slate-400 mt-3">
+                MedConnect • Ngày đăng: 23 Th4, 2021
+              </div>
+            </div>
+            <img alt="Bệnh viện Răng Hàm Mặt" class="w-32 h-28 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSJR8FK5ouwWUEi_L-jXuODu2mTgxOX6gvXfx4p9CdED7CM5dRt4FkF3-jFmHk1dH7M8wm9QJYdln_aq3D5s8Cpjmtx8rDCARZNKJfDV2E-It6-Mis0JBnn27kbG1JUu6hAxgzZ1s7CtMRVWIxvGBUsv3ZRT9H3DMq0F3CsvJ71cel2Q8fmMHgla0LxsFhnqKOR9ey0FvNv66XKub8nhZADshXINcOLDe8zGP_VeFVwDyaxTWd8hdN">
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- END: HospitalInformationSection -->
+    <!-- BEGIN: SymptomsAndDiseasesSection -->
+    <section data-purpose="symptoms-and-diseases">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Triệu Chứng &amp; Bệnh</h2>
+        <a class="inline-flex items-center px-4 py-1.5 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm"
+          href="#">
+          XEM TẤT CẢ
+        </a>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Sponsored Left Article (From IMAGE_3) -->
+        <article
+          class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img alt="Bác sĩ xây dựng thương hiệu cá nhân" class="w-full h-56 object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1RJfGsEYSeGoJUUVzTje7w9OcCtxSnF4OZH0MAgpyyFBBmZXb5o3CIeZOHEvlP4xPhOe_yOKvyFEUCiovp-CtGeI6JQ1iwqQNpgfsb_2sCyPY7LFY-qn5yWxQMLThKn5Oe5wdrzBukjQKSiXgrQAzNX20_iEmfra8gHrYTG0wWmwO5-JjCYimENzEgfaL1dnblBMgc6FKLw-F7sxBnr4kSYHeqlr-ALH4Wj6wRUNPiQ1bN8mE8tzm">
+              <span
+                class="absolute top-3 right-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase">ĐƯỢC
+                TÀI TRỢ</span>
+            </div>
+            <div class="p-5">
+              <span class="badge-pill bg-blue-50 text-blue-600 mb-2">Sức khỏe số</span>
+              <h3 class="text-lg font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Tầm quan trọng của việc xây dựng thương hiệu cá nhân cho Bác sĩ trong thời đại số
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3">
+                Ngày nay, việc xây dựng thương hiệu cá nhân cho Bác sĩ ngày càng trở nên quan trọng. Đây không chỉ là
+                hành trình khẳng định chuyên môn, mà còn là...
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-5 text-xs text-slate-400">
+            MedConnect • Ngày đăng: 09 Th10, 2025
+          </div>
+        </article>
+        <!-- Right Side: 2 Clinical Disease Articles -->
+        <div class="lg:col-span-6 space-y-4 flex flex-col justify-between">
+          <article class="bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md transition flex gap-4">
+            <div class="flex-1">
+              <span class="badge-pill bg-indigo-50 text-indigo-600 mb-1">Cơ Xương Khớp</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Viêm khớp ngón tay: Nguyên nhân, triệu chứng và các phương pháp phục hồi
+              </h3>
+              <div class="text-xs text-slate-400 mt-3">
+                ThS.BS Vũ Thành Đô • Ngày đăng: 02 Th11, 2020
+              </div>
+            </div>
+            <img alt="Khớp ngón tay" class="w-32 h-28 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqiZXE5SJG3mG2eZWgnsanZimqNE7hMNAbdipM-J7KDEGC6ZoDCp0ysGf98J0j_NfvVepw115bkSm1ZPT-6_r9ymhdBFJ7Wqk63LQMPepEHW9-Xsrc537ZwvPWf8TvtkuprorebCs296jFqaGjzooMrlPRqM2n5AcbZKWTwA9A3U9UhDf8Yhm7GMhwM4y4s701S3tXOJI2bVzTwE2oS5OeFKqEUGfXXZvfiFX_Nb6HE1gFxbijsF53">
+          </article>
+          <article class="bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md transition flex gap-4">
+            <div class="flex-1">
+              <span class="badge-pill bg-cyan-50 text-cyan-600 mb-1">Bệnh hô hấp</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Bệnh phổi tắc nghẽn mạn tính (COPD): Nguyên nhân &amp; Cách điều trị
+              </h3>
+              <div class="text-xs text-slate-400 mt-3">
+                ThS.BS Trần Thanh Long • Ngày đăng: 12 Th11, 2019
+              </div>
+            </div>
+            <img alt="Phổi tắc nghẽn mạn tính" class="w-32 h-28 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiEyOk_MzFZajgaOtV32ydmwA55ENtIkszZIRfiY7Jzsai0B_ZVRUmXJvxdHsdS5Uo1RTW2zq7jeo_ABVgmucrNd7DmumflOr9CRbIFo21ahoZl19RJBRUQG3GIFQ1iZpufvJNqcr5LGkjU69wxq8efb_2Bd2TaFC7MSMuhlbBI6F5EI_K3M4LD8Gnvk7H1It9xF3YQBrMWcMS3xBlXV68cYmAA-h5tflxoRdq1lE8mY0wbjcqr-SR">
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- END: SymptomsAndDiseasesSection -->
+    <!-- BEGIN: MaternityCareSection -->
+    <section data-purpose="maternity-care">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Chăm Sóc Mẹ Bầu</h2>
+        <a class="inline-flex items-center px-4 py-1.5 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition shadow-sm"
+          href="#">
+          XEM TẤT CẢ
+        </a>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Sponsored Left Maternity Article -->
+        <article
+          class="lg:col-span-6 bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="relative">
+              <img alt="Chăm sóc thai phụ an toàn" class="w-full h-56 object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKByKiymFqzz8fsXO6b5V5mCoIQZqSFTtgWSHKlOpdMCrcf3t2bfuYSQYalAS8OgVVcDHcaIsiYtwSjFUcslkLXdckDQrMykWzR46fUBJxi5GEFRv19oXoN_AvsG2PbJYcZm7FWcuN8Fvge3veTNbyhEbGSNhufQg2iHGTeaTKfgfnZrO244Yb2IyDAegSeDPXxydf2VT88Kx0CnNd29rBLRCjFBb1k_BF3kfmWoCPuhZ0gIbdY3Jh">
+              <span
+                class="absolute top-3 right-3 bg-slate-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded tracking-wider uppercase">ĐƯỢC
+                TÀI TRỢ</span>
+            </div>
+            <div class="p-5">
+              <span class="badge-pill bg-pink-50 text-pink-600 mb-2">Sức khỏe số &amp; Sản khoa</span>
+              <h3 class="text-lg font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Tầm quan trọng của việc theo dõi sức khỏe thai kỳ định kỳ với Bác sĩ sản khoa
+              </h3>
+              <p class="text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3">
+                Chăm sóc mẹ bầu đúng cách trong từng tam cá nguyệt là chìa khóa để đảm bảo sự phát triển toàn diện của
+                thai nhi và sự hồi phục an toàn của người mẹ sau sinh...
+              </p>
+            </div>
+          </div>
+          <div class="px-5 pb-5 text-xs text-slate-400">
+            MedConnect • Ngày đăng: 09 Th10, 2025
+          </div>
+        </article>
+        <!-- Right Side: 2 Pregnancy Care Articles -->
+        <div class="lg:col-span-6 space-y-4 flex flex-col justify-between">
+          <article class="bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md transition flex gap-4">
+            <div class="flex-1">
+              <span class="badge-pill bg-pink-50 text-pink-600 mb-1">Chăm sóc mẹ bầu</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Dưỡng da khi mang thai: Mẹ bầu cần lưu ý những gì để an toàn cho thai nhi?
+              </h3>
+              <div class="text-xs text-slate-400 mt-3">
+                ThS.BS Phan Lê Nam • Ngày đăng: 12 Th10, 2020
+              </div>
+            </div>
+            <img alt="Dưỡng da cho mẹ bầu" class="w-32 h-28 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe3IDt0L0o5YjrfL1Ya5fjA47BV0gafrfrt334WPcyZcNAjbF2ystEUWNK6h8beozCo9BYgBjYYEgCDwbNazI1ZjIyIQapTrtI21hg3TTDv6JZp0k4SIYMqOIeosw01vMhpptu8S7MUZNLMTe8A7MaTP7uXXgbjcl0h4zaosD0dcKGqKKIN2CdvkdtWbWPSZmJE-wAZOMvYqKvJqsUmFbsiHeD4z_D8W8zv44WuQjb8c8JL7qxFN4Q">
+          </article>
+          <article class="bg-white rounded-2xl border border-slate-200 p-4 hover:shadow-md transition flex gap-4">
+            <div class="flex-1">
+              <span class="badge-pill bg-pink-50 text-pink-600 mb-1">Chăm sóc mẹ bầu</span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900 hover:text-blue-600 transition leading-snug">
+                Tiêm trưởng thành phổi thai nhi: Lợi ích, tác dụng phụ và khi nào cần tiêm?
+              </h3>
+              <div class="text-xs text-slate-400 mt-3">
+                ThS.BS Phan Lê Nam • Ngày đăng: 30 Th9, 2020
+              </div>
+            </div>
+            <img alt="Tiêm trưởng thành phổi" class="w-32 h-28 rounded-xl object-cover shrink-0"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBquL6PfxMhA_y0y1k7uZGFXuI3kvQxUoDwG45KFQ38kofwbkl_vyLB2ZPgcAyI82IC4IiXxoWoWGztkoQtUMnSSNjRFPxQzN-z9ZPRxj3lm6_jkAVAs_tJysJsEY0w1P78HZDh4D7buFTfDUoneex3FhaPsUQuRXSmYve0sf6hQm6eaJdpf5M6Ux9Tf2NxSnGlDnwZnQ3yfXh9fgD2hRsFt46WBVe5F2Dj-RilUkDh5xYDNO3ccP7b">
+          </article>
+        </div>
+      </div>
+    </section>
+    <!-- END: MaternityCareSection -->
+  </main>
+  <!-- END: MainContent -->
+  <!-- BEGIN: SiteFooter -->
+  <footer class="bg-white border-t border-slate-200 mt-16 pt-12 pb-8 text-slate-600 text-xs sm:text-sm"
+    data-purpose="site-footer">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Columns: Company & Links -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-200">
+        <!-- Col 1: Company Profile -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-900 uppercase text-xs tracking-wider">CÔNG TY TNHH MEDCONNECT VIỆT NAM</h4>
+          <p class="leading-relaxed">
+            <strong class="text-slate-700">VPĐD:</strong> Tòa nhà MedConnect, 3/1 Thành Thái, Phường Diên Hồng, TP. HCM
+          </p>
+          <p>
+            <strong class="text-slate-700">Hotline:</strong>
+            <a class="text-blue-600 font-bold hover:underline" href="tel:19002805">1900-2805</a> (8:00 - 17:30 | T2 đến
+            T7)
+          </p>
+          <p class="text-slate-500 text-xs leading-relaxed">
+            Số ĐKKD 0315268642 do Sở Kế hoạch và Đầu tư TP. Hồ Chí Minh cấp lần đầu ngày 14/09/2018.
+          </p>
+          <p class="text-slate-500 text-xs">
+            Chịu trách nhiệm nội dung: <strong class="text-slate-700">Dược sĩ Dương Anh Hoàng</strong>.
+          </p>
+        </div>
+        <!-- Col 2: About MedConnect -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 uppercase text-xs tracking-wider mb-3">Về MedConnect</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a class="hover:text-blue-600 transition" href="#">Về Tin Y Tế MedConnect</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Ban Điều Hành MedConnect</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Hội Đồng Tham Vấn</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Đội Ngũ Biên Tập</a></li>
+          </ul>
+        </div>
+        <!-- Col 3: Services -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 uppercase text-xs tracking-wider mb-3">Dịch vụ</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a class="hover:text-blue-600 transition" href="#">Đặt khám Bác sĩ</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Đặt khám Bệnh viện</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Đặt khám Phòng khám</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Nhà thuốc &amp; Giao thuốc tận nhà</a></li>
+          </ul>
+        </div>
+        <!-- Col 4: Support & Policy -->
+        <div class="space-y-2">
+          <h4 class="font-bold text-slate-900 uppercase text-xs tracking-wider mb-3">Hỗ trợ</h4>
+          <ul class="space-y-2 text-xs">
+            <li><a class="hover:text-blue-600 transition" href="#">Chính Sách Biên Tập</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Chính Sách Quảng Cáo</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Chính Sách Bảo Mật</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Điều Khoản Sử Dụng</a></li>
+            <li><a class="hover:text-blue-600 transition" href="#">Liên Hệ Trợ Giúp</a></li>
+          </ul>
+        </div>
+      </div>
+      <!-- Bottom Bar: Social, Ecosystem & Certifications -->
+      <div class="pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-500">
+        <!-- Social Networks -->
+        <div class="flex items-center space-x-3">
+          <span class="font-semibold text-slate-700">Kết nối với chúng tôi:</span>
+          <a aria-label="Facebook"
+            class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition"
+            href="#">
+            <span class="font-bold">f</span>
+          </a>
+          <a aria-label="LinkedIn"
+            class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition"
+            href="#">
+            <span class="font-bold">in</span>
+          </a>
+          <a aria-label="YouTube"
+            class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:text-red-600 hover:bg-red-50 transition"
+            href="#">
+            <span class="font-bold">▶</span>
+          </a>
+          <a class="px-2 py-1 rounded-md bg-blue-50 text-blue-600 font-bold text-[11px]" href="#">
+            Zalo OA
+          </a>
+        </div>
+        <!-- Ecosystem -->
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-slate-700">Hệ sinh thái:</span>
+          <span class="font-bold text-teal-600">MedConnect <span class="text-blue-600">Store</span></span>
+        </div>
+        <!-- Certification Badges -->
+        <div class="flex items-center space-x-3">
+          <span class="font-semibold text-slate-700">Bảo trợ thông tin:</span>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-1 rounded bg-slate-100 border border-slate-200 text-blue-800 font-bold text-[10px]">ĐÃ
+              ĐĂNG KÝ BỘ CÔNG THƯƠNG</span>
+            <span
+              class="px-2 py-1 rounded bg-blue-50 border border-blue-200 text-blue-700 font-bold text-[10px]">HONcode
+              Standard</span>
+          </div>
+        </div>
+      </div>
+      <!-- Copyright Notice -->
+      <div class="mt-8 text-center text-[11px] text-slate-400">
+        © 2026 MedConnect Vietnam. Toàn bộ thông tin y khoa đều được tham vấn bởi chuyên gia y tế trước khi xuất bản.
+      </div>
+    </div>
+  </footer>
+  <!-- END: SiteFooter -->
+  <!-- BEGIN: InteractiveTabScript -->
+  <script data-purpose="tab-and-search-interactivity">
+    document.addEventListener('DOMContentLoaded', () => {
+      // Bổ sung phản hồi nhẹ cho các nút chữ cái alphabet
+      const alphabetButtons = document.querySelectorAll('section[aria-labelledby="dictionary-title"] span');
+      alphabetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          alphabetButtons.forEach(b => {
+            b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm', 'font-bold');
+            b.classList.add('bg-slate-100', 'text-slate-700');
+          });
+          btn.classList.remove('bg-slate-100', 'text-slate-700');
+          btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm', 'font-bold');
+        });
+      });
+    });
+  </script>
+  <!-- END: InteractiveTabScript -->
+</body>
+
+</html>

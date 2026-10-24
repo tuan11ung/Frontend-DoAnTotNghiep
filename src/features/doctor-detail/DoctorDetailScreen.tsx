@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Home, ChevronRight } from 'lucide-react';
 import { getDoctorDetailById } from './data/doctor-detail-data';
 import { DoctorHeaderCard } from './components/DoctorHeaderCard';
@@ -10,18 +11,17 @@ import { DoctorBioSection } from './components/DoctorBioSection';
 import { DoctorSpecialtiesSection } from './components/DoctorSpecialtiesSection';
 import { DoctorClinicSection } from './components/DoctorClinicSection';
 import { DoctorStickyBookingBar } from './components/DoctorStickyBookingBar';
-import { DoctorBookingModal } from './components/DoctorBookingModal';
 
 interface DoctorDetailScreenProps {
   doctorId: string;
 }
 
 export const DoctorDetailScreen: React.FC<DoctorDetailScreenProps> = ({ doctorId }) => {
+  const router = useRouter();
   const doctor = getDoctorDetailById(doctorId);
 
   const [selectedDateId, setSelectedDateId] = useState(doctor.schedules[0]?.id || 'date-1');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   const activeSchedule =
     doctor.schedules.find((s) => s.id === selectedDateId) || doctor.schedules[0];
@@ -31,11 +31,18 @@ export const DoctorDetailScreen: React.FC<DoctorDetailScreenProps> = ({ doctorId
     : 'Hôm nay';
 
   const handleTriggerBooking = () => {
-    // If no slot is selected, default to the first morning slot
-    if (!selectedSlot && doctor.morningSlots.length > 0) {
-      setSelectedSlot(doctor.morningSlots[0]);
+    const params = new URLSearchParams();
+    params.set('step', '2');
+    params.set('mode', 'demand');
+    params.set('demandType', 'doctor');
+    params.set('doctorId', doctor.id);
+    if (selectedSlot) {
+      params.set('slot', selectedSlot);
     }
-    setIsBookingModalOpen(true);
+    if (selectedDateText) {
+      params.set('date', selectedDateText);
+    }
+    router.push(`/booking?${params.toString()}`);
   };
 
   return (
@@ -97,14 +104,6 @@ export const DoctorDetailScreen: React.FC<DoctorDetailScreenProps> = ({ doctorId
         onBook={handleTriggerBooking}
       />
 
-      {/* 4. Booking Dialog Modal */}
-      <DoctorBookingModal
-        isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
-        doctor={doctor}
-        selectedDateText={selectedDateText}
-        selectedSlot={selectedSlot}
-      />
     </div>
   );
 };

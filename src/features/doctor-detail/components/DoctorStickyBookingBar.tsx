@@ -53,7 +53,7 @@ export const DoctorStickyBookingBar: React.FC<DoctorStickyBookingBarProps> = ({
         <button
           type="button"
           onClick={onBook}
-          className="flex-1 sm:flex-initial sm:min-w-[260px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 text-center text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
+          className="flex-1 sm:flex-initial sm:min-w-[260px] bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-blue-500/25 transition-all transform active:scale-95 text-center text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer"
         >
           <span>ĐẶT KHÁM NGAY</span>
           <ArrowRight className="w-4 h-4" />

@@ -118,7 +118,7 @@ export const HospitalDetailHeader: React.FC<HospitalDetailHeaderProps> = ({
               <button
                 type="button"
                 onClick={onOpenBooking}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
               >
                 <Calendar className="w-4 h-4" />
                 <span>Đặt khám ngay</span>
@@ -127,7 +127,7 @@ export const HospitalDetailHeader: React.FC<HospitalDetailHeaderProps> = ({
               <button
                 type="button"
                 onClick={onScrollToMap}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm transition-all duration-150 cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm transition-all duration-150 cursor-pointer"
               >
                 <MapPin className="w-4 h-4 text-blue-600" />
                 <span>Địa chỉ</span>

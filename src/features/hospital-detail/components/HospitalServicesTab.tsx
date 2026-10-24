@@ -127,7 +127,7 @@ export const HospitalServicesTab: React.FC<HospitalServicesTabProps> = ({
                 <button
                   type="button"
                   onClick={() => onBookService(service)}
-                  className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm shadow-xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Calendar className="w-3.5 h-3.5" />
                   <span>Đặt lịch</span>
