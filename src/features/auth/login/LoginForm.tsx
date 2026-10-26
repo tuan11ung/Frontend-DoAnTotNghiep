@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react';
-import { AUTH_STORAGE_KEY } from '../auth-storage';
+import { AUTH_STORAGE_KEY, createAuthSession } from '../auth-storage';
 
 interface LoginResponse {
   success: boolean;
@@ -62,9 +62,13 @@ export function LoginForm() {
       window.localStorage.removeItem(AUTH_STORAGE_KEY);
       window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
       const storage = rememberMe ? window.localStorage : window.sessionStorage;
-      storage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ accessToken, refreshToken }));
+      const authSession = createAuthSession(accessToken, refreshToken);
+      storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authSession));
       setIsRedirecting(true);
-      window.setTimeout(() => router.replace('/'), 1000);
+      const redirectPath = authSession.roles.includes('HOSPITAL_ADMIN')
+        ? '/admin/facility'
+        : '/';
+      window.setTimeout(() => router.replace(redirectPath), 1000);
     } catch {
       showLoginError('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
     } finally {

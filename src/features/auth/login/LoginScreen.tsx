@@ -8,7 +8,7 @@ export function LoginScreen() {
       <div className="relative w-full max-w-md">
         <div className="mb-6 text-center">
           <p className="mb-2 text-sm font-bold uppercase tracking-[0.12em] text-emerald-700">
-            Cổng bệnh nhân
+            Cổng đăng nhập MedConnect
           </p>
           {/* <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
             Chào mừng trở lại
