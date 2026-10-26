@@ -247,7 +247,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
                     type="radio"
                     onChange={() => handleFacilitySelect('hospital')}
                   />
-                  <span>Bệnh viện (Công lập &amp; Tư nhân)</span>
+                  <span>Bệnh viện công lập</span>
                 </label>
                 <label className="flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50 cursor-pointer text-slate-800 text-sm">
                   <input
