@@ -2,10 +2,10 @@
 
 import React, { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
-import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper, CalendarClock } from 'lucide-react';
+import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper, CalendarClock, LogOut, LoaderCircle } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { AppointmentTabType } from '@/src/types/medical';
-import { hasStoredPatientSession } from '@/src/features/auth/auth-storage';
+import { hasStoredPatientSession, clearPatientSession, getStoredPatientToken } from '@/src/features/auth/auth-storage';
 
 interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
@@ -191,8 +191,10 @@ function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
 }
 
 export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const syncAuthentication = () => setIsAuthenticated(hasStoredPatientSession());
@@ -200,6 +202,29 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
     window.addEventListener('storage', syncAuthentication);
     return () => window.removeEventListener('storage', syncAuthentication);
   }, []);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    const token = getStoredPatientToken();
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        cache: 'no-store',
+      });
+    } catch {
+      // Bỏ qua lỗi mạng – vẫn xóa session phía client
+    } finally {
+      clearPatientSession();
+      setIsLoggingOut(false);
+      setMobileMenuOpen(false);
+      router.replace('/patient/login');
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
@@ -227,13 +252,28 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
         {/* Account / Action Button */}
         <div className="flex items-center space-x-3">
           {isAuthenticated ? (
-            <span
-              aria-label="Đã đăng nhập"
-              className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700"
-              title="Tài khoản bệnh nhân"
-            >
-              <CircleUserRound aria-hidden="true" className="h-6 w-6" />
-            </span>
+            <div className="hidden md:flex items-center gap-2">
+              <span
+                aria-label="Đã đăng nhập"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700"
+                title="Tài khoản bệnh nhân"
+              >
+                <CircleUserRound aria-hidden="true" className="h-5 w-5" />
+              </span>
+              <button
+                id="desktop-logout-btn"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                type="button"
+                aria-label="Đăng xuất"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isLoggingOut
+                  ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
+                  : <LogOut aria-hidden="true" className="h-4 w-4" />}
+                <span>{isLoggingOut ? 'Đang thoát...' : 'Đăng xuất'}</span>
+              </button>
+            </div>
           ) : (
             <Link
               className="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-lg transition-all"
@@ -269,13 +309,26 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
 
           <div className="pt-2">
             {isAuthenticated ? (
-              <div
-                aria-label="Đã đăng nhập"
-                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-blue-700"
-                title="Tài khoản bệnh nhân"
-              >
-                <CircleUserRound aria-hidden="true" className="h-5 w-5" />
-                <span>Tài khoản bệnh nhân</span>
+              <div className="flex flex-col gap-2">
+                <div
+                  aria-label="Đã đăng nhập"
+                  className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-blue-700"
+                >
+                  <CircleUserRound aria-hidden="true" className="h-5 w-5" />
+                  <span>Tài khoản bệnh nhân</span>
+                </div>
+                <button
+                  id="mobile-logout-btn"
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  type="button"
+                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isLoggingOut
+                    ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
+                    : <LogOut aria-hidden="true" className="h-4 w-4" />}
+                  <span>{isLoggingOut ? 'Đang thoát...' : 'Đăng xuất'}</span>
+                </button>
               </div>
             ) : (
               <Link

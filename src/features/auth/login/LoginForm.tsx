@@ -5,17 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react';
 import { AUTH_STORAGE_KEY, createAuthSession } from '../auth-storage';
-
-interface LoginResponse {
-  success: boolean;
-  message?: string | null;
-  data?: {
-    accessToken?: string;
-    refreshToken?: string;
-  } | null;
-}
-
-const INVALID_LOGIN_MESSAGE = 'Thông tin đăng nhập không chính xác. Vui lòng kiểm tra lại.';
+import { loginPatient, LoginApiError } from '../api/auth-api';
 
 export function LoginForm() {
   const router = useRouter();
@@ -41,26 +31,11 @@ export function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login: login.trim(), password }),
-      });
-      const result = (await response.json().catch(() => null)) as LoginResponse | null;
-      const accessToken = result?.data?.accessToken;
-      const refreshToken = result?.data?.refreshToken;
-
-      if (!response.ok || !result?.success || !accessToken || !refreshToken) {
-        showLoginError(
-          response.status === 401
-            ? INVALID_LOGIN_MESSAGE
-            : result?.message || INVALID_LOGIN_MESSAGE,
-        );
-        return;
-      }
+      const { accessToken, refreshToken } = await loginPatient({ login, password });
 
       window.localStorage.removeItem(AUTH_STORAGE_KEY);
       window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+
       const storage = rememberMe ? window.localStorage : window.sessionStorage;
       const authSession = createAuthSession(accessToken, refreshToken);
       storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authSession));
@@ -71,8 +46,12 @@ export function LoginForm() {
           ? '/admin/facility'
           : '/';
       window.setTimeout(() => router.replace(redirectPath), 1000);
-    } catch {
-      showLoginError('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
+    } catch (error) {
+      showLoginError(
+        error instanceof LoginApiError
+          ? error.message
+          : 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+      );
     } finally {
       setIsSubmitting(false);
     }

@@ -80,6 +80,40 @@ export function clearStoredAuthSession() {
   window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
+/** Lấy accessToken đang lưu (localStorage hoặc sessionStorage). */
+export function getStoredPatientToken(): string | null {
+  if (typeof window === 'undefined') return null;
+
+  for (const storage of [window.localStorage, window.sessionStorage]) {
+    const storedAuth = storage.getItem(AUTH_STORAGE_KEY);
+    if (!storedAuth) continue;
+    try {
+      const parsed: unknown = JSON.parse(storedAuth);
+      if (
+        typeof parsed === 'object' &&
+        parsed !== null &&
+        'accessToken' in parsed &&
+        typeof (parsed as { accessToken: unknown }).accessToken === 'string'
+      ) {
+        return (parsed as { accessToken: string }).accessToken;
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+/** Xóa session bệnh nhân khỏi cả localStorage và sessionStorage. */
+export function clearPatientSession(): void {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem(AUTH_STORAGE_KEY);
+  window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+  // Kích hoạt storage event để các tab/component khác cập nhật ngay
+  window.dispatchEvent(new StorageEvent('storage', { key: AUTH_STORAGE_KEY }));
+}
+
 export function hasStoredPatientSession() {
   return getStoredAuthSession()?.roles.includes('PATIENT') ?? false;
 }
