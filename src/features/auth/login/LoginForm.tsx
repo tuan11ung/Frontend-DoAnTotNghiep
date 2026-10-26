@@ -65,9 +65,11 @@ export function LoginForm() {
       const authSession = createAuthSession(accessToken, refreshToken);
       storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authSession));
       setIsRedirecting(true);
-      const redirectPath = authSession.roles.includes('HOSPITAL_ADMIN')
-        ? '/admin/facility'
-        : '/';
+      const redirectPath = authSession.roles.includes('SUPER_ADMIN')
+        ? '/admin/system'
+        : authSession.roles.includes('HOSPITAL_ADMIN')
+          ? '/admin/facility'
+          : '/';
       window.setTimeout(() => router.replace(redirectPath), 1000);
     } catch {
       showLoginError('Không thể kết nối đến máy chủ. Vui lòng thử lại.');
