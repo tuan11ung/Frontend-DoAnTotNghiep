@@ -10,12 +10,6 @@ export function LoginScreen() {
           <p className="mb-2 text-sm font-bold uppercase tracking-[0.12em] text-emerald-700">
             Cổng đăng nhập MedConnect
           </p>
-          {/* <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
-            Chào mừng trở lại
-          </h1> */}
-          {/* <p className="mt-2 text-sm leading-6 text-slate-600">
-            Đăng nhập để tiếp tục chăm sóc sức khỏe cùng MedConnect.
-          </p> */}
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.3)]">
