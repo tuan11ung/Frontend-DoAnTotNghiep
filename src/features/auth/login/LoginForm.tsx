@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react';
-import { AUTH_STORAGE_KEY, createAuthSession } from '../auth-storage';
+import { createAuthSession, storeAuthSession } from '../auth-storage';
 import { loginPatient, LoginApiError } from '../api/auth-api';
 
 export function LoginForm() {
@@ -16,7 +16,6 @@ export function LoginForm() {
   const [rememberMe, setRememberMe] = useState(true);
   const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const showLoginError = (message: string) => {
     setLoginError(message);
@@ -33,19 +32,14 @@ export function LoginForm() {
     try {
       const { accessToken, refreshToken } = await loginPatient({ login, password });
 
-      window.localStorage.removeItem(AUTH_STORAGE_KEY);
-      window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
-
-      const storage = rememberMe ? window.localStorage : window.sessionStorage;
       const authSession = createAuthSession(accessToken, refreshToken);
-      storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authSession));
-      setIsRedirecting(true);
+      storeAuthSession(authSession, rememberMe);
       const redirectPath = authSession.roles.includes('SUPER_ADMIN')
         ? '/admin/system'
         : authSession.roles.includes('HOSPITAL_ADMIN')
           ? '/admin/facility'
           : '/';
-      window.setTimeout(() => router.replace(redirectPath), 1000);
+      router.replace(redirectPath);
     } catch (error) {
       showLoginError(
         error instanceof LoginApiError
@@ -138,23 +132,13 @@ export function LoginForm() {
 
       <button
         className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 active:bg-blue-900 disabled:cursor-not-allowed disabled:opacity-70"
-        disabled={isSubmitting || isRedirecting}
+        disabled={isSubmitting}
         type="submit"
       >
         {isSubmitting ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : null}
         {isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
       </button>
 
-      {isRedirecting && (
-        <div
-          aria-live="polite"
-          className="fixed left-1/2 top-5 z-[100] flex -translate-x-1/2 items-center gap-2 rounded-lg border border-emerald-200 bg-white px-5 py-3 text-sm font-semibold text-emerald-800 shadow-lg"
-          role="status"
-        >
-          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-emerald-500" />
-          Đăng nhập thành công!
-        </div>
-      )}
     </form>
   );
 }

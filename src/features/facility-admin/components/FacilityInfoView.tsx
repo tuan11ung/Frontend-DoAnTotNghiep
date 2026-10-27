@@ -89,20 +89,9 @@ export function FacilityInfoView({ facility, onSave, onUploadLogo }: FacilityInf
         }
       }}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3">
-        <div className="flex items-center gap-2 text-sm text-blue-900">
-          <Info className="h-4 w-4 shrink-0 text-blue-700" />
-          Thông tin này được hiển thị trên hồ sơ công khai và dùng để cấu hình lịch khám.
-        </div>
-        <div className="flex items-center gap-2">
-          {dirty && <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Có thay đổi chưa lưu</span>}
-          <button className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50" disabled={!dirty} onClick={() => setDraft(facility)} type="button">
-            <RotateCcw className="h-4 w-4" /> Hủy
-          </button>
-          <button className="inline-flex h-9 items-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={saving || !dirty} type="submit">
-            <Save className="h-4 w-4" /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
-          </button>
-        </div>
+      <div className="flex items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm text-blue-900">
+        <Info className="h-4 w-4 shrink-0 text-blue-700" />
+        Thông tin này được hiển thị trên hồ sơ công khai và dùng để cấu hình lịch khám.
       </div>
 
       {error && <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert">{error}</p>}
@@ -224,6 +213,16 @@ export function FacilityInfoView({ facility, onSave, onUploadLogo }: FacilityInf
           <label><span className={labelClass}>Nội dung chính sách</span><textarea className="min-h-28 w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-3 text-sm leading-6 text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100" onChange={(event) => update('policyText', event.target.value)} value={draft.policyText} /></label>
         </div>
       </section>
+
+      <div className="flex flex-wrap items-center justify-end gap-3 rounded-xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-6">
+        {dirty && <span className="mr-auto rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Có thay đổi chưa lưu</span>}
+        <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50" disabled={!dirty || saving} onClick={() => setDraft(facility)} type="button">
+          <RotateCcw className="h-4 w-4" /> Hủy
+        </button>
+        <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-700 px-5 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={saving || !dirty} type="submit">
+          <Save className="h-4 w-4" /> {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+        </button>
+      </div>
     </form>
   );
 }
