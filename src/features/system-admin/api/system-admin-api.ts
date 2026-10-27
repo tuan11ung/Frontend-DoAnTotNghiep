@@ -1,4 +1,4 @@
-import { SYSTEM_PAGEABLE, systemAdminCommand, systemAdminDownload, systemAdminRequest } from './system-admin-client';
+import { SYSTEM_PAGEABLE, systemAdminCommand, systemAdminDownload, systemAdminRequest, type SystemPageable } from './system-admin-client';
 import type {
   ArticleItem,
   HospitalDetail,
@@ -14,8 +14,8 @@ import type {
   SystemLogItem,
 } from '../types';
 
-export const searchHospitals = (filters: Record<string, unknown> = {}) =>
-  systemAdminRequest<PageResponse<HospitalSummary>>('hospitals/search', { ...filters, pageable: SYSTEM_PAGEABLE });
+export const searchHospitals = (filters: Record<string, unknown> = {}, pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<HospitalSummary>>('hospitals/search', { ...filters, pageable });
 export const getHospitalDetail = (id: number) =>
   systemAdminRequest<HospitalDetail>('hospitals/detail', { id });
 export const createHospital = (payload: Omit<HospitalDetail, 'id' | 'status' | 'code'> & { code: string }) =>
@@ -27,33 +27,33 @@ export const suspendHospital = (id: number, reason: string) =>
 export const activateHospital = (id: number) =>
   systemAdminRequest<HospitalDetail>('hospitals/activate', { id });
 
-export const searchSpecialties = (keyword = '') =>
-  systemAdminRequest<PageResponse<SpecialtyItem>>('specialties/search', { keyword, pageable: SYSTEM_PAGEABLE });
+export const searchSpecialties = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<SpecialtyItem>>('specialties/search', { keyword, pageable });
 export const saveSpecialty = (payload: Pick<SpecialtyItem, 'code' | 'name' | 'description'> & { id?: number }) =>
   systemAdminRequest<SpecialtyItem>('specialties/save', payload);
 
-export const searchServiceCategories = (filters: Record<string, unknown> = {}) =>
-  systemAdminRequest<PageResponse<ServiceCategoryItem>>('service-categories/search', { ...filters, pageable: SYSTEM_PAGEABLE });
+export const searchServiceCategories = (filters: Record<string, unknown> = {}, pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<ServiceCategoryItem>>('service-categories/search', { ...filters, pageable });
 export const saveServiceCategory = (payload: Pick<ServiceCategoryItem, 'code' | 'name'> & { id?: number; parentId?: number }) =>
   systemAdminRequest<ServiceCategoryItem>('service-categories/save', payload);
 export const changeServiceCategoryStatus = (id: number, active: boolean) =>
   systemAdminRequest<ServiceCategoryItem>('service-categories/change-status', { id, active });
 
-export const searchRanks = (keyword = '') =>
-  systemAdminRequest<PageResponse<RankItem>>('ranks/search', { keyword, pageable: SYSTEM_PAGEABLE });
+export const searchRanks = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<RankItem>>('ranks/search', { keyword, pageable });
 
-export const searchIcd10 = (keyword = '') =>
-  systemAdminRequest<PageResponse<Icd10Item>>('icd10/search', { keyword, pageable: SYSTEM_PAGEABLE });
+export const searchIcd10 = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<Icd10Item>>('icd10/search', { keyword, pageable });
 export const saveIcd10 = (payload: Omit<Icd10Item, 'id'> & { id?: number }) =>
   systemAdminRequest<Icd10Item>('icd10/save', payload);
 
-export const searchIngredients = (keyword = '') =>
-  systemAdminRequest<PageResponse<IngredientItem>>('ingredients/search', { keyword, pageable: SYSTEM_PAGEABLE });
+export const searchIngredients = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<IngredientItem>>('ingredients/search', { keyword, pageable });
 export const saveIngredient = (payload: Omit<IngredientItem, 'id'> & { id?: number }) =>
   systemAdminRequest<IngredientItem>('ingredients/save', payload);
 
-export const searchMedicines = (filters: Record<string, unknown> = {}) =>
-  systemAdminRequest<PageResponse<MedicineItem>>('medicines/search', { ...filters, pageable: SYSTEM_PAGEABLE });
+export const searchMedicines = (filters: Record<string, unknown> = {}, pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<MedicineItem>>('medicines/search', { ...filters, pageable });
 export const saveMedicine = (payload: {
   id?: number;
   code: string;
@@ -64,8 +64,8 @@ export const saveMedicine = (payload: {
   ingredients: Array<{ ingredientId: number; strength?: string }>;
 }) => systemAdminRequest<MedicineItem>('medicines/save', payload);
 
-export const searchArticles = (filters: Record<string, unknown> = {}) =>
-  systemAdminRequest<PageResponse<ArticleItem>>('articles/search', { ...filters, pageable: SYSTEM_PAGEABLE });
+export const searchArticles = (filters: Record<string, unknown> = {}, pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<ArticleItem>>('articles/search', { ...filters, pageable });
 export const getArticleDetail = (articleId: number) =>
   systemAdminRequest<ArticleItem>('articles/detail', { articleId });
 export const saveArticle = (payload: {
@@ -91,8 +91,8 @@ export interface SystemLogFilters {
   loggedTo?: string;
 }
 
-export const searchSystemLogs = (filters: SystemLogFilters = {}) =>
-  systemAdminRequest<PageResponse<SystemLogItem>>('system-logs/search', { ...filters, pageable: { ...SYSTEM_PAGEABLE, sortDirection: 'DESC' } });
+export const searchSystemLogs = (filters: SystemLogFilters = {}, pageable: SystemPageable = SYSTEM_PAGEABLE) =>
+  systemAdminRequest<PageResponse<SystemLogItem>>('system-logs/search', { ...filters, pageable: { ...pageable, sortDirection: 'DESC' } });
 export const exportSystemLogs = (filters: SystemLogFilters = {}) =>
   systemAdminDownload('system-logs/export', filters);
 
