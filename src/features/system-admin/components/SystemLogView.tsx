@@ -4,11 +4,18 @@ import { useState, type FormEvent } from 'react';
 import { ClipboardList, Download, Filter, Search, ShieldAlert } from 'lucide-react';
 import type { SystemLogFilters } from '../api/system-admin-api';
 import type { SystemLogEventType, SystemLogItem } from '../types';
+import { SystemPagination } from './SystemPagination';
 
 interface SystemLogViewProps {
   items: SystemLogItem[];
   loading: boolean;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
   onExport: (filters: SystemLogFilters) => Promise<void>;
+  onPageChange: (page: number) => Promise<void>;
+  onPageSizeChange: (size: number) => Promise<void>;
   onSearch: (filters: SystemLogFilters) => Promise<void>;
 }
 
@@ -38,7 +45,7 @@ function formFilters(form: HTMLFormElement): SystemLogFilters {
   };
 }
 
-export function SystemLogView({ items, loading, onExport, onSearch }: SystemLogViewProps) {
+export function SystemLogView({ items, loading, page, size, totalElements, totalPages, onExport, onPageChange, onPageSizeChange, onSearch }: SystemLogViewProps) {
   const [exporting, setExporting] = useState(false);
   const [activeFilters, setActiveFilters] = useState<SystemLogFilters>({});
 
@@ -86,6 +93,7 @@ export function SystemLogView({ items, loading, onExport, onSearch }: SystemLogV
         {!loading && items.length === 0 && <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center"><Search className="h-9 w-9 text-slate-300" /><p className="mt-3 font-bold text-slate-700">Chưa có nhật ký phù hợp</p><p className="mt-1 text-sm text-slate-500">Thử thay đổi điều kiện lọc và tìm lại.</p></div>}
         {loading && <div className="flex min-h-56 items-center justify-center text-sm font-semibold text-slate-500">Đang tải nhật ký...</div>}
       </div>
+      <SystemPagination loading={loading} onPageChange={(nextPage) => void onPageChange(nextPage)} onPageSizeChange={(nextSize) => void onPageSizeChange(nextSize)} page={page} size={size} totalElements={totalElements} totalPages={totalPages} />
     </section>
   );
 }

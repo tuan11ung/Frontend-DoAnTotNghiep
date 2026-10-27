@@ -30,13 +30,20 @@ import type {
   SystemResource,
 } from '../types';
 import { getRankOrderLabel } from '../rank-levels';
+import { SystemPagination } from './SystemPagination';
 
 interface SystemResourceViewProps {
   section: ResourceSection;
   items: SystemResource[];
   loading: boolean;
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
   onAdd: (section: EditableSection) => void;
   onEdit: (section: EditableSection, item: SystemResource) => void;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
   onRefresh: () => void;
   onToggle: (section: EditableSection, item: SystemResource) => void;
 }
@@ -147,7 +154,7 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
   return <><td className="max-w-md px-5 py-4"><p className="line-clamp-2 font-bold text-slate-900">{article.title}</p><p className="mt-1 line-clamp-1 text-xs text-slate-500">{article.summary || 'Chưa có tóm tắt'}</p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600">{article.specialtyName || 'Tin chung'}</td><td className="px-4 py-4 text-xs text-slate-500">{new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(article.updatedAt))}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
 }
 
-export function SystemResourceView({ section, items, loading, onAdd, onEdit, onRefresh, onToggle }: SystemResourceViewProps) {
+export function SystemResourceView({ section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle }: SystemResourceViewProps) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const meta = SECTION_META[section];
@@ -178,7 +185,7 @@ export function SystemResourceView({ section, items, loading, onAdd, onEdit, onR
       <div className="flex flex-wrap items-end gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
         <label className="min-w-[240px] flex-1 sm:max-w-md"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Tìm kiếm</span><span className="relative block"><Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" /><input className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setQuery(event.target.value)} placeholder={meta.search} type="search" value={query} /></span></label>
         {meta.hasStatus && <label className="w-44"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Trạng thái</span><select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setStatus(event.target.value as typeof status)} value={status}><option value="ALL">Tất cả</option><option value="ACTIVE">Đang hoạt động</option><option value="INACTIVE">Tạm ngừng / Nháp</option></select></label>}
-        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{items.length} bản ghi</p>
+        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{totalElements} bản ghi</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -189,6 +196,7 @@ export function SystemResourceView({ section, items, loading, onAdd, onEdit, onR
         {!loading && filteredItems.length === 0 && <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center"><Search className="h-9 w-9 text-slate-300" /><p className="mt-3 font-bold text-slate-700">Không tìm thấy dữ liệu phù hợp</p><p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc tải lại dữ liệu.</p></div>}
         {loading && <div className="flex min-h-56 items-center justify-center text-sm font-semibold text-slate-500">Đang tải dữ liệu...</div>}
       </div>
+      <SystemPagination loading={loading} onPageChange={onPageChange} onPageSizeChange={onPageSizeChange} page={page} size={size} totalElements={totalElements} totalPages={totalPages} />
     </section>
   );
 }

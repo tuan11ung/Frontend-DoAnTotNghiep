@@ -46,6 +46,7 @@ import type {
   HospitalSummary,
   IngredientItem,
   MedicineItem,
+  PageResponse,
   ServiceCategoryItem,
   SpecialtyItem,
   ResourceSection,
@@ -54,6 +55,26 @@ import type {
   SystemResource,
   SystemSection,
 } from './types';
+
+interface PaginationInfo {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+const EMPTY_PAGINATION: PaginationInfo = { page: 0, size: 20, totalElements: 0, totalPages: 0 };
+
+const EMPTY_RESOURCE_PAGINATION: Record<ResourceSection, PaginationInfo> = {
+  hospitals: { ...EMPTY_PAGINATION },
+  specialties: { ...EMPTY_PAGINATION },
+  'service-categories': { ...EMPTY_PAGINATION },
+  ranks: { ...EMPTY_PAGINATION },
+  icd10: { ...EMPTY_PAGINATION },
+  ingredients: { ...EMPTY_PAGINATION },
+  medicines: { ...EMPTY_PAGINATION },
+  articles: { ...EMPTY_PAGINATION },
+};
 
 const SECTION_TITLES: Record<SystemSection, string> = {
   overview: 'Tổng quan hệ thống',
@@ -96,6 +117,9 @@ export function SystemAdminScreen() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resources, setResources] = useState(EMPTY_RESOURCES);
   const [logs, setLogs] = useState<SystemLogItem[]>([]);
+  const [resourcePagination, setResourcePagination] = useState(EMPTY_RESOURCE_PAGINATION);
+  const [logPagination, setLogPagination] = useState<PaginationInfo>({ ...EMPTY_PAGINATION });
+  const [logFilters, setLogFilters] = useState<SystemLogFilters>({});
   const [counts, setCounts] = useState<Partial<Record<SystemSection, number>>>({});
   const [stats, setStats] = useState(EMPTY_STATS);
   const [overviewLoaded, setOverviewLoaded] = useState(false);
@@ -112,29 +136,40 @@ export function SystemAdminScreen() {
     setError(caught instanceof Error ? caught.message : 'Không thể tải dữ liệu quản trị hệ thống.');
   }, [router]);
 
-  const setSectionData = useCallback((section: ResourceSection, items: SystemResource[], total: number) => {
-    setResources((current) => ({ ...current, [section]: items }));
-    setCounts((current) => ({ ...current, [section]: total }));
+  const setSectionData = useCallback((section: ResourceSection, response: PageResponse<SystemResource>) => {
+    setResources((current) => ({ ...current, [section]: response.content }));
+    setResourcePagination((current) => ({
+      ...current,
+      [section]: {
+        page: response.page,
+        size: response.size,
+        totalElements: response.totalElements,
+        totalPages: response.totalPages,
+      },
+    }));
+    setCounts((current) => ({ ...current, [section]: response.totalElements }));
     loadedSections.current.add(section);
   }, []);
 
-  const loadSection = useCallback(async (section: SystemSection, force = false) => {
+  const loadSection = useCallback(async (section: SystemSection, force = false, page = 0, size = EMPTY_PAGINATION.size) => {
     if (!force && loadedSections.current.has(section)) return;
     setLoadingSection(section);
     setError('');
+    const pageable = { page, size, sortDirection: 'ASC' as const };
     try {
-      if (section === 'hospitals') { const page = await searchHospitals(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'specialties') { const page = await searchSpecialties(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'service-categories') { const page = await searchServiceCategories(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'ranks') { const page = await searchRanks(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'icd10') { const page = await searchIcd10(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'ingredients') { const page = await searchIngredients(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'medicines') { const page = await searchMedicines(); setSectionData(section, page.content, page.totalElements); }
-      else if (section === 'articles') { const page = await searchArticles(); setSectionData(section, page.content, page.totalElements); }
+      if (section === 'hospitals') { const response = await searchHospitals({}, pageable); setSectionData(section, response); }
+      else if (section === 'specialties') { const response = await searchSpecialties('', pageable); setSectionData(section, response); }
+      else if (section === 'service-categories') { const response = await searchServiceCategories({}, pageable); setSectionData(section, response); }
+      else if (section === 'ranks') { const response = await searchRanks('', pageable); setSectionData(section, response); }
+      else if (section === 'icd10') { const response = await searchIcd10('', pageable); setSectionData(section, response); }
+      else if (section === 'ingredients') { const response = await searchIngredients('', pageable); setSectionData(section, response); }
+      else if (section === 'medicines') { const response = await searchMedicines({}, pageable); setSectionData(section, response); }
+      else if (section === 'articles') { const response = await searchArticles({}, pageable); setSectionData(section, response); }
       else if (section === 'system-logs') {
-        const page = await searchSystemLogs();
-        setLogs(page.content);
-        setCounts((current) => ({ ...current, 'system-logs': page.totalElements }));
+        const response = await searchSystemLogs({}, pageable);
+        setLogs(response.content);
+        setLogPagination({ page: response.page, size: response.size, totalElements: response.totalElements, totalPages: response.totalPages });
+        setCounts((current) => ({ ...current, 'system-logs': response.totalElements }));
         loadedSections.current.add(section);
       }
     } catch (caught) {
@@ -153,23 +188,24 @@ export function SystemAdminScreen() {
     const [hospitalResult, specialtyResult, medicineResult, articleResult, logResult] = results;
     if (hospitalResult.status === 'fulfilled') {
       const page = hospitalResult.value;
-      setSectionData('hospitals', page.content, page.totalElements);
+      setSectionData('hospitals', page);
       setStats((current) => ({ ...current, hospitals: page.totalElements, activeHospitals: page.content.filter((item) => item.status === 'ACTIVE').length }));
     }
     if (specialtyResult.status === 'fulfilled') {
-      setSectionData('specialties', specialtyResult.value.content, specialtyResult.value.totalElements);
+      setSectionData('specialties', specialtyResult.value);
       setStats((current) => ({ ...current, specialties: specialtyResult.value.totalElements }));
     }
     if (medicineResult.status === 'fulfilled') {
-      setSectionData('medicines', medicineResult.value.content, medicineResult.value.totalElements);
+      setSectionData('medicines', medicineResult.value);
       setStats((current) => ({ ...current, medicines: medicineResult.value.totalElements }));
     }
     if (articleResult.status === 'fulfilled') {
-      setSectionData('articles', articleResult.value.content, articleResult.value.totalElements);
+      setSectionData('articles', articleResult.value);
       setStats((current) => ({ ...current, publishedArticles: articleResult.value.content.filter((item) => item.published).length }));
     }
     if (logResult.status === 'fulfilled') {
       setLogs(logResult.value.content);
+      setLogPagination({ page: logResult.value.page, size: logResult.value.size, totalElements: logResult.value.totalElements, totalPages: logResult.value.totalPages });
       setCounts((current) => ({ ...current, 'system-logs': logResult.value.totalElements }));
       setStats((current) => ({ ...current, recentLogs: logResult.value.totalElements }));
       loadedSections.current.add('system-logs');
@@ -231,7 +267,15 @@ export function SystemAdminScreen() {
   const refreshSection = async (section: SystemSection) => {
     loadedSections.current.delete(section);
     if (section === 'overview') await loadOverview();
-    else await loadSection(section, true);
+    else if (section === 'system-logs') await filterLogs(logFilters, logPagination.page, logPagination.size);
+    else {
+      const pagination = resourcePagination[section];
+      await loadSection(section, true, pagination.page, pagination.size);
+    }
+  };
+
+  const changeResourcePage = async (section: ResourceSection, page: number, size = resourcePagination[section].size) => {
+    await loadSection(section, true, page, size);
   };
 
   const saveEditor = async (section: EditableSection, payload: Record<string, unknown>) => {
@@ -278,16 +322,18 @@ export function SystemAdminScreen() {
     } catch (caught) { handleError(caught); }
   };
 
-  const filterLogs = async (filters: SystemLogFilters) => {
+  async function filterLogs(filters: SystemLogFilters, page = 0, size = logPagination.size) {
     setLoadingSection('system-logs');
     setError('');
+    setLogFilters(filters);
     try {
-      const page = await searchSystemLogs(filters);
-      setLogs(page.content);
-      setCounts((current) => ({ ...current, 'system-logs': page.totalElements }));
+      const response = await searchSystemLogs(filters, { page, size, sortDirection: 'DESC' });
+      setLogs(response.content);
+      setLogPagination({ page: response.page, size: response.size, totalElements: response.totalElements, totalPages: response.totalPages });
+      setCounts((current) => ({ ...current, 'system-logs': response.totalElements }));
     } catch (caught) { handleError(caught); }
     finally { setLoadingSection(null); }
-  };
+  }
 
   const downloadLogs = async (filters: SystemLogFilters) => {
     try {
@@ -338,8 +384,8 @@ export function SystemAdminScreen() {
           {error && <div className="mb-5 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert"><span className="flex-1">{error}</span><button aria-label="Đóng thông báo lỗi" onClick={() => setError('')} type="button"><X className="h-4 w-4" /></button></div>}
           {activeSection === 'overview' && loadingSection === 'overview' && !overviewLoaded ? <div className="flex min-h-[55vh] items-center justify-center"><RefreshCw className="h-7 w-7 animate-spin text-blue-700" /></div> : null}
           {activeSection === 'overview' && (overviewLoaded || loadingSection !== 'overview') && <SystemOverview onNavigate={setActiveSection} stats={stats} />}
-          {resourceSection && <SystemResourceView items={resources[resourceSection]} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} section={resourceSection} />}
-          {activeSection === 'system-logs' && <SystemLogView items={logs} loading={loadingSection === 'system-logs'} onExport={downloadLogs} onSearch={filterLogs} />}
+          {resourceSection && <SystemResourceView items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
+          {activeSection === 'system-logs' && <SystemLogView items={logs} loading={loadingSection === 'system-logs'} onExport={downloadLogs} onPageChange={(page) => filterLogs(logFilters, page, logPagination.size)} onPageSizeChange={(size) => filterLogs(logFilters, 0, size)} onSearch={filterLogs} page={logPagination.page} size={logPagination.size} totalElements={logPagination.totalElements} totalPages={logPagination.totalPages} />}
         </main>
       </div>
 

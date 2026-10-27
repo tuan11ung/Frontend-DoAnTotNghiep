@@ -17,7 +17,13 @@ export class SystemAdminApiError extends Error {
   }
 }
 
-export const SYSTEM_PAGEABLE = { page: 0, size: 100, sortDirection: 'ASC' } as const;
+export interface SystemPageable {
+  page: number;
+  size: number;
+  sortDirection?: 'ASC' | 'DESC';
+}
+
+export const SYSTEM_PAGEABLE: SystemPageable = { page: 0, size: 20, sortDirection: 'ASC' };
 
 function getSystemSession() {
   const authSession = getStoredAuthSession();
@@ -92,5 +98,5 @@ export async function systemAdminCommand(path: string, body: unknown): Promise<v
 }
 
 export function emptyPage<T>(): PageResponse<T> {
-  return { content: [], page: 0, size: 100, totalElements: 0, totalPages: 0, first: true, last: true };
+  return { content: [], page: 0, size: SYSTEM_PAGEABLE.size, totalElements: 0, totalPages: 0, first: true, last: true };
 }
