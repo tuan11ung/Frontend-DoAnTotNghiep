@@ -6,6 +6,7 @@ import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newsp
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { AppointmentTabType } from '@/src/types/medical';
 import { hasStoredPatientSession, clearPatientSession, getStoredPatientToken } from '@/src/features/auth/auth-storage';
+import { PatientNotificationBell } from '@/src/features/notifications/PatientNotificationBell';
 
 interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
@@ -251,6 +252,7 @@ export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
 
         {/* Account / Action Button */}
         <div className="flex items-center space-x-3">
+          {isAuthenticated && <PatientNotificationBell />}
           {isAuthenticated ? (
             <div className="hidden md:flex items-center gap-2">
               <span
