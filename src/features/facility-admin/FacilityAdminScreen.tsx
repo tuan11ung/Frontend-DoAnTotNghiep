@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Bell,
   CheckCircle2,
@@ -71,7 +71,11 @@ function replaceOrAppend<T extends { id: number }>(items: T[], next: T) {
 
 export function FacilityAdminScreen() {
   const router = useRouter();
-  const [activeSection, setActiveSection] = useState<AdminSection>('overview');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeSection: AdminSection = pathname === '/admin/facility/work-schedules'
+    ? 'work-schedules'
+    : (Object.keys(SECTION_CONTENT) as AdminSection[]).find((section) => section !== 'work-schedules' && section === searchParams.get('section')) ?? 'overview';
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [facility, setFacility] = useState<FacilityInfo>(INITIAL_FACILITY);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -86,6 +90,18 @@ export function FacilityAdminScreen() {
   const [toast, setToast] = useState<ToastState>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
+
+  const navigateToSection = (section: AdminSection) => {
+    if (section === activeSection) return;
+    setEditor(null);
+    setToast(null);
+    const href = section === 'work-schedules'
+      ? '/admin/facility/work-schedules'
+      : section === 'overview'
+        ? '/admin/facility'
+        : `/admin/facility?section=${section}`;
+    router.push(href);
+  };
 
   const showToast = (nextToast: Exclude<ToastState, null>) => {
     setToast(nextToast);
@@ -273,7 +289,7 @@ export function FacilityAdminScreen() {
         onCloseMobile={() => setMobileNavOpen(false)}
         onLogout={handleLogout}
         onOpenMobile={() => setMobileNavOpen(true)}
-        onSelect={setActiveSection}
+        onSelect={navigateToSection}
       />
 
       <div className="min-h-screen lg:pl-[280px]">
@@ -299,7 +315,7 @@ export function FacilityAdminScreen() {
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">{currentContent.description}</p>
             </div>
 
-            {activeSection === 'overview' && <DashboardOverview departments={departments} onNavigate={setActiveSection} rooms={rooms} services={services} specialties={specialties} staff={staff} />}
+            {activeSection === 'overview' && <DashboardOverview departments={departments} onNavigate={navigateToSection} rooms={rooms} services={services} specialties={specialties} staff={staff} />}
             {activeSection === 'facility' && <FacilityInfoView key={facility.id} facility={facility} onSave={saveFacility} onUploadLogo={uploadLogo} />}
             {activeSection === 'work-schedules' && <WorkScheduleScreen />}
             {currentKind && (
