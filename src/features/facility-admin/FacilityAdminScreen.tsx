@@ -13,6 +13,7 @@ import {
   Search,
 } from 'lucide-react';
 import { clearStoredAuthSession, getStoredAuthSession } from '../auth/auth-storage';
+import { WorkScheduleScreen } from '../work-schedules/WorkScheduleScreen';
 import { AdminApiError } from './api/admin-api-client';
 import { facilityAdminApi } from './api/facility-admin-api';
 import { medicalServiceAdminApi } from './api/medical-service-admin-api';
@@ -44,6 +45,7 @@ import type {
 const SECTION_CONTENT: Record<AdminSection, { eyebrow: string; title: string; description: string }> = {
   overview: { eyebrow: 'Điều hành', title: 'Tổng quan cơ sở', description: 'Theo dõi nhanh cấu hình tổ chức, nguồn lực và tình trạng vận hành của bệnh viện.' },
   facility: { eyebrow: 'Điều hành', title: 'Thông tin cơ sở y tế', description: 'Quản lý hồ sơ công khai, giờ làm việc và chính sách đặt hoặc hủy lịch khám.' },
+  'work-schedules': { eyebrow: 'Điều hành', title: 'Phân công lịch làm việc', description: 'Sắp xếp bác sĩ theo phòng và ca khám để chủ động điều phối lịch làm việc trong tuần.' },
   departments: { eyebrow: 'Cơ cấu chuyên môn', title: 'Khoa', description: 'Quản lý các đơn vị chuyên môn của cơ sở y tế.' },
   specialties: { eyebrow: 'Cơ cấu chuyên môn', title: 'Chuyên khoa', description: 'Bật, tắt hoặc bổ sung chuyên khoa từ danh mục chung của hệ thống.' },
   rooms: { eyebrow: 'Cơ cấu chuyên môn', title: 'Phòng', description: 'Quản lý phòng khám, phòng chức năng và năng lực tiếp nhận.' },
@@ -299,6 +301,7 @@ export function FacilityAdminScreen() {
 
             {activeSection === 'overview' && <DashboardOverview departments={departments} onNavigate={setActiveSection} rooms={rooms} services={services} specialties={specialties} staff={staff} />}
             {activeSection === 'facility' && <FacilityInfoView key={facility.id} facility={facility} onSave={saveFacility} onUploadLogo={uploadLogo} />}
+            {activeSection === 'work-schedules' && <WorkScheduleScreen />}
             {currentKind && (
               <ResourceListView
                 departments={departments}

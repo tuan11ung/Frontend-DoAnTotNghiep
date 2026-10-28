@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   BadgeDollarSign,
   Building2,
+  CalendarDays,
   ChevronRight,
   CircleUserRound,
   DoorOpen,
@@ -39,6 +40,7 @@ const NAVIGATION_GROUPS: { label: string; items: NavigationItem[] }[] = [
     items: [
       { id: 'overview', label: 'Tổng quan', icon: LayoutDashboard },
       { id: 'facility', label: 'Thông tin cơ sở', icon: Building2 },
+      { id: 'work-schedules', label: 'Phân công lịch làm việc', icon: CalendarDays },
     ],
   },
   {
