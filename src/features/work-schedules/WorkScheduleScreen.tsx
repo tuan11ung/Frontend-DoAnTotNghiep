@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { CalendarDays, Info, Stethoscope } from 'lucide-react';
+import { CalendarDays, Info, Lock, Stethoscope } from 'lucide-react';
 import { DoctorAssignmentPopover } from './components/DoctorAssignmentPopover';
 import { ScheduleGrid } from './components/ScheduleGrid';
 import { ScheduleToolbar } from './components/ScheduleToolbar';
@@ -70,11 +70,30 @@ export function WorkScheduleScreen() {
         }} rooms={SCHEDULE_ROOMS} selectedCell={canEditSelectedDay ? selectedCell : null} today={today} />
 
         <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 px-5 py-4 text-xs sm:px-6">
-          <p className="inline-flex items-center gap-2 text-slate-500"><Stethoscope aria-hidden="true" className="h-4 w-4 shrink-0 text-medblue-600" />Chọn ca chưa khóa để phân công bác sĩ.</p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-slate-500">
-            <span className="inline-flex items-center gap-2"><span aria-hidden="true" className="h-3.5 w-3.5 rounded border border-slate-200 border-l-4 border-l-emerald-500 bg-white" />Đã phân công</span>
-            <span className="inline-flex items-center gap-2"><span aria-hidden="true" className="h-3.5 w-3.5 rounded border border-dashed border-slate-400 bg-white" />Chưa có bác sĩ</span>
-            <span className="inline-flex items-center gap-2"><span aria-hidden="true" className="h-3.5 w-3.5 rounded bg-slate-100" />Đã khóa</span>
+          <p className="inline-flex items-center gap-2 font-medium text-slate-600"><Stethoscope aria-hidden="true" className="h-4 w-4 shrink-0 text-medblue-600" />Nhấp vào ca mở để phân công hoặc đổi bác sĩ trực.</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-slate-600">
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-flex h-4 w-5 items-center justify-center rounded border border-emerald-300 bg-emerald-50">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              </span>
+              <span>Đã phân công (có thể sửa)</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-flex h-4 w-5 items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-[10px] font-bold text-slate-400">+</span>
+              <span>Chưa có bác sĩ</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-flex h-4 w-5 items-center justify-center rounded border border-blue-200 bg-blue-50 text-blue-600">
+                <Lock aria-hidden="true" className="h-2.5 w-2.5" />
+              </span>
+              <span>Hôm nay (đã khóa)</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-flex h-4 w-5 items-center justify-center rounded border border-slate-200 bg-slate-100 text-slate-400">
+                <Lock aria-hidden="true" className="h-2.5 w-2.5" />
+              </span>
+              <span>Đã khóa (quá khứ)</span>
+            </span>
           </div>
           <p aria-live="polite" className="font-medium text-slate-500">Đã xếp <span className="font-extrabold text-medblue-700">{assignedCount}/{totalCount}</span> ca</p>
         </div>
