@@ -45,6 +45,8 @@ export interface HospitalDetail extends HospitalSummary {
   afternoonEnd: string;
   workingDays: string;
   slotMinutes: number;
+  slotCapacity: number;
+  onlinePercent: number;
   bookingWeeksAhead: number;
   cancelBeforeHours: number;
   refundPercent: number;

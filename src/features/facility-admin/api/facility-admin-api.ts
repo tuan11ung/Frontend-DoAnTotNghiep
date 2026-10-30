@@ -24,6 +24,8 @@ interface HospitalResponse {
   afternoonEnd: string;
   workingDays: string;
   slotMinutes: number;
+  slotCapacity: number;
+  onlinePercent: number;
   bookingWeeksAhead: number;
   cancelBeforeHours: number;
   refundPercent: number;
@@ -62,7 +64,9 @@ interface RoomResponse {
   name: string;
   location?: string | null;
   roomType: Room['type'];
-  maxPatientsPerSlot: number;
+  serviceType?: Room['serviceType'] | null;
+  specialtyId?: number | null;
+  maxPatientsPerSlot?: number | null;
   slotMinutes?: number | null;
   isActive: boolean;
 }
@@ -91,6 +95,8 @@ function toFacility(data: HospitalResponse): FacilityInfo {
     afternoonEnd: data.afternoonEnd.slice(0, 5),
     workingDays: data.workingDays.split(',').map(Number).filter(Number.isFinite),
     slotMinutes: data.slotMinutes,
+    slotCapacity: data.slotCapacity,
+    onlinePercent: data.onlinePercent,
     bookingWeeksAhead: data.bookingWeeksAhead,
     cancelBeforeHours: data.cancelBeforeHours,
     refundPercent: Number(data.refundPercent),
@@ -122,9 +128,11 @@ const toRoom = (data: RoomResponse): Room => ({
   code: data.code,
   name: data.name,
   type: data.roomType,
+  serviceType: data.serviceType ?? undefined,
+  specialtyId: data.specialtyId ?? undefined,
   location: data.location ?? '',
-  slotMinutes: data.slotMinutes ?? 15,
-  maxPatients: data.maxPatientsPerSlot,
+  slotMinutes: data.slotMinutes ?? null,
+  maxPatients: data.maxPatientsPerSlot ?? null,
   active: data.isActive,
 });
 
@@ -147,6 +155,8 @@ export const facilityAdminApi = {
       afternoonEnd: facility.afternoonEnd,
       workingDays: facility.workingDays.join(','),
       slotMinutes: facility.slotMinutes,
+      slotCapacity: facility.slotCapacity,
+      onlinePercent: facility.onlinePercent,
       bookingWeeksAhead: facility.bookingWeeksAhead,
       cancelBeforeHours: facility.cancelBeforeHours,
       refundPercent: facility.refundPercent,
@@ -233,6 +243,8 @@ export const facilityAdminApi = {
       name: room.name,
       location: room.location || null,
       roomType: room.type,
+      serviceType: room.serviceType ?? null,
+      specialtyId: room.specialtyId ?? null,
       maxPatientsPerSlot: room.maxPatients,
       slotMinutes: room.slotMinutes || null,
     });

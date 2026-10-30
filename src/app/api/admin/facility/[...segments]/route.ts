@@ -3,6 +3,12 @@ import { NextResponse } from 'next/server';
 const BACKEND_API_URL = process.env.BACKEND_API_URL ?? 'http://localhost:8081';
 
 const ENDPOINTS: Record<string, string> = {
+  'work-schedules/week': '/admin/work-schedules/week',
+  'work-schedules/doctor-options': '/admin/work-schedules/doctor-options',
+  'work-schedules/save-draft': '/admin/work-schedules/save-draft',
+  'work-schedules/publish': '/admin/work-schedules/publish',
+  'work-schedules/change-doctor': '/admin/work-schedules/change-doctor',
+  'work-schedules/delete': '/admin/work-schedules/delete',
   'hospital/detail': '/admin/hospitals/detail',
   'hospital/update': '/admin/hospitals/update',
   'hospital/upload-logo': '/admin/hospitals/upload-logo',

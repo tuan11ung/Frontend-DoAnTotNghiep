@@ -215,8 +215,8 @@ export function ResourceListView({ kind, items, departments, staff, onAdd, onEdi
               {(filteredItems as Room[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
                   <td className="px-5 py-4"><p className="font-bold text-slate-900">{item.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.code}</p></td>
-                  <td className="px-4 py-4"><p className="font-semibold text-slate-700">{ROOM_TYPE_LABELS[item.type]}</p><p className="mt-1 text-xs text-slate-500">{item.location}</p></td>
-                  <td className="px-4 py-4"><p className="font-semibold text-slate-700">{item.maxPatients} bệnh nhân / khung</p><p className="mt-1 text-xs text-slate-500">{item.slotMinutes} phút mỗi khung</p></td>
+                  <td className="px-4 py-4"><p className="font-semibold text-slate-700">{ROOM_TYPE_LABELS[item.type]}{item.type === 'EXAM' && ` · ${item.serviceType === 'BHYT' ? 'BHYT' : 'Dịch vụ'}`}</p><p className="mt-1 text-xs text-slate-500">{item.location}</p></td>
+                  <td className="px-4 py-4"><p className="font-semibold text-slate-700">{item.maxPatients == null ? 'Theo cấu hình bệnh viện' : `${item.maxPatients} bệnh nhân / khung`}</p><p className="mt-1 text-xs text-slate-500">{item.slotMinutes == null ? 'Thời lượng theo bệnh viện' : `${item.slotMinutes} phút mỗi khung`}</p></td>
                   <td className="px-4 py-4"><StatusBadge active={item.active} /></td>
                   <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.name}`} onClick={() => onEdit('room', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><Toggle active={item.active} label={`Đổi trạng thái ${item.name}`} onClick={() => void onToggle('room', item.id)} /></div></td>
                 </tr>

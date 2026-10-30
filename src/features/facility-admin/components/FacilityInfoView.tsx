@@ -191,6 +191,11 @@ export function FacilityInfoView({ facility, onSave, onUploadLogo }: FacilityInf
             <label><span className={labelClass}>Buổi chiều từ</span><input className={inputClass} onChange={(event) => update('afternoonStart', event.target.value)} type="time" value={draft.afternoonStart} /></label>
             <label><span className={labelClass}>Đến</span><input className={inputClass} onChange={(event) => update('afternoonEnd', event.target.value)} type="time" value={draft.afternoonEnd} /></label>
           </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label><span className={labelClass}>Tổng số chỗ / khung check-in</span><input name="slotCapacity" className={inputClass} min={1} max={50} step={1} required onChange={(event) => update('slotCapacity', Number(event.target.value))} type="number" value={draft.slotCapacity} /></label>
+            <label><span className={labelClass}>Tỷ lệ dành cho đặt online (%)</span><input name="onlinePercent" className={inputClass} min={0} max={100} step={1} required onChange={(event) => update('onlinePercent', Number(event.target.value))} type="number" value={draft.onlinePercent} /></label>
+            <p className="sm:col-span-2 text-xs text-slate-500">Mỗi khung mới có {Math.floor((draft.slotCapacity * draft.onlinePercent + 50) / 100)} chỗ online trên tổng {draft.slotCapacity} chỗ. Thay đổi áp dụng khi tạo slot mới.</p>
+          </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <label><span className={labelClass}>Khung khám mặc định</span><div className="relative"><input className={`${inputClass} pr-14`} min={5} onChange={(event) => update('slotMinutes', Number(event.target.value))} type="number" value={draft.slotMinutes} /><span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">phút</span></div></label>
             <label><span className={labelClass}>Cho phép đặt trước</span><div className="relative"><input className={`${inputClass} pr-12`} min={1} onChange={(event) => update('bookingWeeksAhead', Number(event.target.value))} type="number" value={draft.bookingWeeksAhead} /><span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">tuần</span></div></label>

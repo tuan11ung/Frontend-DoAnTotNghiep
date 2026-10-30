@@ -342,6 +342,7 @@ export function FacilityAdminScreen() {
           onSave={saveEntity}
           rankCatalog={rankCatalog}
           serviceCategories={serviceCategories}
+          specialties={specialties}
           specialtyCatalog={specialtyCatalog.filter((catalogItem) => !specialties.some((item) => item.specialtyId === catalogItem.id))}
         />
       )}
