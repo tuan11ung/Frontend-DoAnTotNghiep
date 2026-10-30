@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { PublicHeader } from '@/src/layouts/PublicHeader';
-import { PublicFooter } from '@/src/layouts/PublicFooter';
-import { DoctorDetailScreen } from '@/src/features/doctor-detail/DoctorDetailScreen';
-import { getDoctorDetailById } from '@/src/features/doctor-detail/data/doctor-detail-data';
+import { PublicHeader } from '@/src/shared/components/layout/PublicHeader';
+import { PublicFooter } from '@/src/shared/components/layout/PublicFooter';
+import { DoctorDetailPage as DoctorDetailFeaturePage } from '@/src/features/doctor-detail/DoctorDetailPage';
+import { getDoctorDetailById } from '@/src/features/doctor-detail/utils/doctor-detail-data';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -42,7 +42,7 @@ function DoctorLoadingSkeleton() {
 
 async function DoctorDetailContainer({ params }: PageProps) {
   const { id } = await params;
-  return <DoctorDetailScreen doctorId={id} />;
+  return <DoctorDetailFeaturePage doctorId={id} />;
 }
 
 export default function DoctorDetailPage({ params }: PageProps) {

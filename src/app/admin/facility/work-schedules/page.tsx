@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { FacilityAdminScreen } from '@/src/features/facility-admin/FacilityAdminScreen';
+import { FacilityAdminPage as FacilityAdminFeaturePage } from '@/src/features/facility-admin/FacilityAdminPage';
 
 export const metadata: Metadata = {
   title: 'Phân công lịch làm việc | MedConnect',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function WorkSchedulePage() {
-  return <FacilityAdminScreen />;
+  return <FacilityAdminFeaturePage />;
 }

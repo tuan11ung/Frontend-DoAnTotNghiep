@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { PublicHeader } from '@/src/layouts/PublicHeader';
-import { PublicFooter } from '@/src/layouts/PublicFooter';
-import { NewsScreen } from '@/src/features/news/NewsScreen';
+import { PublicHeader } from '@/src/shared/components/layout/PublicHeader';
+import { PublicFooter } from '@/src/shared/components/layout/PublicFooter';
+import { NewsPage as NewsFeaturePage } from '@/src/features/news/NewsPage';
 
 export const metadata: Metadata = {
   title: 'Tin Y Tế & Cẩm Nang Sức Khỏe Toàn Diện | MedConnect',
@@ -32,7 +32,7 @@ export default function NewsPage() {
       <PublicHeader />
       <main className="flex-1 flex flex-col">
         <Suspense fallback={<NewsLoadingSkeleton />}>
-          <NewsScreen />
+          <NewsFeaturePage />
         </Suspense>
       </main>
       <PublicFooter />

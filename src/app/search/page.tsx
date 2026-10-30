@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { PublicHeader } from '@/src/layouts/PublicHeader';
-import { PublicFooter } from '@/src/layouts/PublicFooter';
-import { SearchScreen } from '@/src/features/search/SearchScreen';
+import { PublicHeader } from '@/src/shared/components/layout/PublicHeader';
+import { PublicFooter } from '@/src/shared/components/layout/PublicFooter';
+import { SearchPage as SearchFeaturePage } from '@/src/features/search/SearchPage';
 
 export const metadata: Metadata = {
   title: 'Kết quả tìm kiếm & Đặt khám - MedConnect',
@@ -31,7 +31,7 @@ export default function SearchPage() {
       <PublicHeader />
       <main className="flex-1 flex flex-col">
         <Suspense fallback={<SearchLoadingSkeleton />}>
-          <SearchScreen />
+          <SearchFeaturePage />
         </Suspense>
       </main>
       <PublicFooter />

@@ -1,0 +1,2 @@
+// Queries for auth
+export {};

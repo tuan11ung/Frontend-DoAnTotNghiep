@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { PublicHeader } from '@/src/layouts/PublicHeader';
-import { PublicFooter } from '@/src/layouts/PublicFooter';
-import { BookingScreen } from '@/src/features/booking/BookingScreen';
+import { PublicHeader } from '@/src/shared/components/layout/PublicHeader';
+import { PublicFooter } from '@/src/shared/components/layout/PublicFooter';
+import { BookingPage as BookingFeaturePage } from '@/src/features/booking/BookingPage';
 
 export const metadata: Metadata = {
   title: 'Đặt lịch khám trực tuyến | MedConnect Cổng bệnh nhân',
@@ -31,7 +31,7 @@ export default function BookingPage() {
       <PublicHeader />
       <main className="flex-1 flex flex-col">
         <Suspense fallback={<BookingLoadingSkeleton />}>
-          <BookingScreen />
+          <BookingFeaturePage />
         </Suspense>
       </main>
       <PublicFooter />

@@ -1,0 +1,2 @@
+// Mutations for booking
+export {};

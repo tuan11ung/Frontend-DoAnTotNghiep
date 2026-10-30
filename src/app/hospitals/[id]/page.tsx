@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
-import { PublicHeader } from '@/src/layouts/PublicHeader';
-import { PublicFooter } from '@/src/layouts/PublicFooter';
-import { HospitalDetailScreen } from '@/src/features/hospital-detail/HospitalDetailScreen';
-import { getHospitalDetailById } from '@/src/features/hospital-detail/data/hospital-detail-data';
+import { PublicHeader } from '@/src/shared/components/layout/PublicHeader';
+import { PublicFooter } from '@/src/shared/components/layout/PublicFooter';
+import { HospitalDetailPage as HospitalDetailFeaturePage } from '@/src/features/hospital-detail/HospitalDetailPage';
+import { getHospitalDetailById } from '@/src/features/hospital-detail/utils/hospital-detail-data';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -50,7 +50,7 @@ function HospitalLoadingSkeleton() {
 
 async function HospitalDetailContainer({ params }: PageProps) {
   const { id } = await params;
-  return <HospitalDetailScreen hospitalId={id} />;
+  return <HospitalDetailFeaturePage hospitalId={id} />;
 }
 
 export default function HospitalDetailPage({ params }: PageProps) {

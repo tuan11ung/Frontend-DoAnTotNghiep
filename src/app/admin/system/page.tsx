@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SystemAdminScreen } from '@/src/features/system-admin/SystemAdminScreen';
+import { SystemAdminPage as SystemAdminFeaturePage } from '@/src/features/system-admin/SystemAdminPage';
 
 export const metadata: Metadata = {
   title: 'Quản trị hệ thống | MedConnect',
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function SystemAdminPage() {
-  return <SystemAdminScreen />;
+  return <SystemAdminFeaturePage />;
 }

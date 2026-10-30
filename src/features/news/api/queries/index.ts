@@ -1,0 +1,2 @@
+// Queries for news
+export {};

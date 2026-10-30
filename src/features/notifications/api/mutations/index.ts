@@ -1,0 +1,2 @@
+// Mutations for notifications
+export {};

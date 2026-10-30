@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { RegisterScreen } from '@/src/features/auth/register/RegisterScreen';
-import { PublicLayout } from '@/src/layouts/PublicLayout';
+import { RegisterPage } from '@/src/features/auth/RegisterPage';
+import { PublicLayout } from '@/src/shared/components/layout/PublicLayout';
 
 export const metadata: Metadata = {
   title: 'Đăng ký tài khoản người bệnh | MedConnect',
@@ -20,7 +20,7 @@ export default function PatientRegisterPage() {
   return (
     <PublicLayout>
       <Suspense fallback={<RegisterScreenFallback />}>
-        <RegisterScreen />
+        <RegisterPage />
       </Suspense>
     </PublicLayout>
   );
