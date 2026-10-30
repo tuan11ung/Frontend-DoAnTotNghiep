@@ -30,6 +30,7 @@ interface ResourceListViewProps {
   kind: EntityKind;
   items: AdminEntity[];
   departments: Department[];
+  specialties: Specialty[];
   staff: StaffAccount[];
   onAdd: (kind: EntityKind) => void;
   onEdit: (kind: EntityKind, id: number) => void;
@@ -108,8 +109,9 @@ function ActionButton({ children, label, onClick }: { children: React.ReactNode;
   );
 }
 
-export function ResourceListView({ kind, items, departments, staff, onAdd, onEdit, onToggle }: ResourceListViewProps) {
+export function ResourceListView({ kind, items, departments, specialties, staff, onAdd, onEdit, onToggle }: ResourceListViewProps) {
   const [query, setQuery] = useState('');
+  const [specialtyFilter, setSpecialtyFilter] = useState('ALL');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const meta = SECTION_META[kind];
   const SectionIcon = meta.icon;
@@ -117,6 +119,10 @@ export function ResourceListView({ kind, items, departments, staff, onAdd, onEdi
   const filteredItems = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('vi');
     return items.filter((item) => {
+      if (kind === 'room' && specialtyFilter !== 'ALL') {
+        const room = item as Room;
+        if (specialtyFilter === 'NONE' ? room.specialtyId != null : room.specialtyId !== Number(specialtyFilter)) return false;
+      }
       if (status === 'ACTIVE' && !item.active) return false;
       if (status === 'INACTIVE' && item.active) return false;
       if (!normalizedQuery) return true;
@@ -128,7 +134,7 @@ export function ResourceListView({ kind, items, departments, staff, onAdd, onEdi
           : `${item.code} ${item.name}`;
       return searchable.toLocaleLowerCase('vi').includes(normalizedQuery);
     });
-  }, [items, query, status]);
+  }, [items, query, status, kind, specialtyFilter]);
 
   const departmentName = (id?: number) => departments.find((item) => item.id === id)?.name ?? 'Chưa phân khoa';
   const departmentHeadNames = (departmentId: number) => staff
@@ -161,6 +167,16 @@ export function ResourceListView({ kind, items, departments, staff, onAdd, onEdi
             <input className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setQuery(event.target.value)} placeholder={meta.search} type="search" value={query} />
           </span>
         </label>
+        {kind === 'room' && (
+          <label className="w-full sm:w-56">
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Chuyên khoa</span>
+            <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setSpecialtyFilter(event.target.value)} value={specialtyFilter}>
+              <option value="ALL">Tất cả chuyên khoa</option>
+              <option value="NONE">Chưa gán chuyên khoa</option>
+              {specialties.map((item) => <option key={item.specialtyId} value={item.specialtyId}>{item.name}{!item.active && ' (tạm ngừng)'}</option>)}
+            </select>
+          </label>
+        )}
         <label className="w-44">
           <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Trạng thái</span>
           <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setStatus(event.target.value as typeof status)} value={status}>
@@ -169,7 +185,7 @@ export function ResourceListView({ kind, items, departments, staff, onAdd, onEdi
             <option value="INACTIVE">Tạm ngừng</option>
           </select>
         </label>
-        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{items.length} bản ghi · {activeCount} đang hoạt động</p>
+        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{kind === 'room' ? `${filteredItems.length} / ${items.length} bản ghi` : `${items.length} bản ghi`} · {activeCount} đang hoạt động</p>
       </div>
 
       <div className="overflow-x-auto">
