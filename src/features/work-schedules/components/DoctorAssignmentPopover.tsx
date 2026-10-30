@@ -9,8 +9,12 @@ interface DoctorAssignmentPopoverProps {
   trigger: HTMLButtonElement;
   title: string;
   options: DoctorAssignmentOption[];
-  selectedDoctorId: string | null;
-  onSelect: (doctorId: string | null) => void;
+  selectedDoctorId: number | null;
+  subtitle: string;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+  onSelect: (doctorId: number | null) => void;
   onClose: () => void;
 }
 
@@ -25,12 +29,12 @@ function getPopoverPosition(trigger: HTMLButtonElement) {
   return { left, width, maxHeight, ...(below ? { top: rect.bottom + 8 } : { bottom: window.innerHeight - rect.top + 8 }) };
 }
 
-export function DoctorAssignmentPopover({ trigger, title, options, selectedDoctorId, onSelect, onClose }: DoctorAssignmentPopoverProps) {
+export function DoctorAssignmentPopover({ trigger, title, subtitle, loading, error, onRetry, options, selectedDoctorId, onSelect, onClose }: DoctorAssignmentPopoverProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(() => getPopoverPosition(trigger));
 
   useEffect(() => {
-    panelRef.current?.querySelector<HTMLButtonElement>('[data-doctor-option]:not(:disabled)')?.focus();
+    panelRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
 
     const handlePointerDown = (event: PointerEvent) => {
       if (event.target instanceof Node && !panelRef.current?.contains(event.target) && !trigger.contains(event.target)) onClose();
@@ -73,20 +77,23 @@ export function DoctorAssignmentPopover({ trigger, title, options, selectedDocto
       <div className="flex shrink-0 items-start gap-2 border-b border-slate-100 px-4 py-3.5">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-slate-800" id="doctor-assignment-title">{title}</p>
-          <p className="mt-1 text-xs leading-5 text-slate-500">Bác sĩ chuyên khoa Hô hấp</p>
+          <p className="mt-1 text-xs leading-5 text-slate-500">{subtitle}</p>
         </div>
         <button aria-label="Đóng danh sách bác sĩ" className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medblue-500" onClick={onClose} type="button"><X aria-hidden="true" className="h-4 w-4" /></button>
       </div>
       <div className="min-h-0 overflow-y-auto p-2">
-        {options.map((doctor) => (
-          <button aria-label={`${doctor.name}${doctor.assignedRoom ? `, đã ở ${doctor.assignedRoom}` : ''}`} className={`flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-medblue-500 disabled:cursor-not-allowed ${doctor.assignedRoom ? 'text-slate-400' : doctor.id === selectedDoctorId ? 'bg-medblue-50 text-medblue-700' : 'text-slate-700 hover:bg-slate-50'}`} data-doctor-option disabled={Boolean(doctor.assignedRoom)} key={doctor.id} onClick={() => onSelect(doctor.id)} type="button">
+        {loading && <p className="px-3 py-4 text-sm text-slate-500" role="status">Đang tải danh sách bác sĩ…</p>}
+        {error && <div className="space-y-2 px-3 py-3 text-sm text-rose-700" role="alert"><p>{error}</p><button className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold" onClick={onRetry} type="button">Thử lại</button></div>}
+        {!loading && !error && !options.length && <p className="px-3 py-4 text-sm text-slate-500">Chưa có bác sĩ phù hợp trong chuyên khoa.</p>}
+        {!loading && !error && options.map((doctor) => (
+          <button aria-label={`${doctor.name}${doctor.assignedRoom ? `, đã ở ${doctor.assignedRoom}` : doctor.disabled ? ', đang bận' : ''}`} className={`flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-medblue-500 disabled:cursor-not-allowed ${doctor.disabled ? 'text-slate-400' : doctor.id === selectedDoctorId ? 'bg-medblue-50 text-medblue-700' : 'text-slate-700 hover:bg-slate-50'}`} data-doctor-option disabled={doctor.disabled} key={doctor.id} onClick={() => onSelect(doctor.id)} type="button">
             <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${doctor.assignedRoom ? 'bg-slate-100 text-slate-400' : 'bg-medblue-50 text-medblue-600'}`}><Stethoscope aria-hidden="true" className="h-3.5 w-3.5" /></span>
             <span className="flex-1 font-semibold">{doctor.name}</span>
             {doctor.assignedRoom ? <span className="inline-flex items-center gap-1 text-[11px]"><LockKeyhole aria-hidden="true" className="h-3 w-3" />đã ở {doctor.assignedRoom}</span> : doctor.id === selectedDoctorId ? <Check aria-hidden="true" className="h-4 w-4" /> : null}
           </button>
         ))}
       </div>
-      {selectedDoctorId && <div className="shrink-0 border-t border-slate-100 p-2"><button className="flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500" onClick={() => onSelect(null)} type="button"><Trash2 aria-hidden="true" className="h-3.5 w-3.5" />Bỏ phân công ca này</button></div>}
+      {selectedDoctorId !== null && <div className="shrink-0 border-t border-slate-100 p-2"><button className="flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 disabled:opacity-50" disabled={loading || Boolean(error)} onClick={() => onSelect(null)} type="button"><Trash2 aria-hidden="true" className="h-3.5 w-3.5" />Bỏ phân công ca này</button></div>}
     </div>,
     document.body,
   );

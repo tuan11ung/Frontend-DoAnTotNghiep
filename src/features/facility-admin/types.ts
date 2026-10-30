@@ -28,6 +28,8 @@ export interface FacilityInfo {
   afternoonEnd: string;
   workingDays: number[];
   slotMinutes: number;
+  slotCapacity: number;
+  onlinePercent: number;
   bookingWeeksAhead: number;
   cancelBeforeHours: number;
   refundPercent: number;
@@ -62,10 +64,11 @@ export interface Room {
   name: string;
   departmentId?: number;
   specialtyId?: number;
+  serviceType?: 'BHYT' | 'SERVICE';
   type: 'EXAM' | 'XRAY' | 'ULTRASOUND' | 'LAB' | 'PROCEDURE' | 'RECEPTION' | 'CASHIER' | 'PHARMACY';
   location: string;
-  slotMinutes: number;
-  maxPatients: number;
+  slotMinutes: number | null;
+  maxPatients: number | null;
   leadId?: number;
   active: boolean;
 }
@@ -85,6 +88,7 @@ export interface StaffAccount {
   gender: 'MALE' | 'FEMALE' | 'OTHER';
   roles: StaffRole[];
   departmentId?: number;
+  specialtyId?: number;
   rankId?: number;
   rankName?: string;
   status: 'ACTIVE' | 'LOCKED' | 'DEACTIVATED';

@@ -10,6 +10,7 @@ interface StaffResponse {
   rankId?: number | null;
   rankName?: string | null;
   departmentId?: number | null;
+  specialtyId?: number | null;
   roles: StaffRole[];
   status: StaffAccount['status'];
 }
@@ -29,6 +30,7 @@ const toStaff = (data: StaffResponse): StaffAccount => ({
   gender: data.gender,
   roles: data.roles,
   departmentId: data.departmentId ?? undefined,
+  specialtyId: data.specialtyId ?? undefined,
   rankId: data.rankId ?? undefined,
   rankName: data.rankName ?? undefined,
   status: data.status,
@@ -69,6 +71,7 @@ export const staffAdminApi = {
       staffCode: staff.staffCode,
       rankId: staff.rankId ?? null,
       departmentId: staff.departmentId ?? null,
+      specialtyId: staff.specialtyId ?? null,
       roles: staff.roles,
     };
     const path = staff.id > 0 ? 'staff/update' : 'staff/create';

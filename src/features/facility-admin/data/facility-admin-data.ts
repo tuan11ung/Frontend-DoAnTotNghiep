@@ -21,6 +21,8 @@ export const INITIAL_FACILITY: FacilityInfo = {
   afternoonStart: '13:00',
   afternoonEnd: '17:00',
   workingDays: [1, 2, 3, 4, 5, 6],
+  slotCapacity: 3,
+  onlinePercent: 60,
   slotMinutes: 15,
   bookingWeeksAhead: 4,
   cancelBeforeHours: 12,

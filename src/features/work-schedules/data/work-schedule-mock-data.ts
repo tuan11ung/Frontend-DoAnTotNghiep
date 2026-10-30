@@ -1,4 +1,8 @@
-import type { ScheduleAssignments, ScheduleDay, ScheduleDoctor, ScheduleRoom } from '../types';
+// Legacy preview data used only by DashboardOverview; the assignment screen uses the backend.
+interface ScheduleDay { id: string; label: string; date: string }
+interface ScheduleDoctor { id: string; name: string }
+interface ScheduleRoom { id: string; name: string; type: 'clinical' | 'paraclinical'; description?: string }
+type ScheduleAssignments = Record<string, (string | null)[]>;
 
 export const SCHEDULE_DAYS: ScheduleDay[] = [
   { id: '2026-10-26', label: 'Thứ Hai', date: '26/10' },
