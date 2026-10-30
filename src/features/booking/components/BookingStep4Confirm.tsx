@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import {
   BookingMode,
+  BookingTarget,
   DateOption,
   DoctorItem,
   HospitalItem,
@@ -26,6 +27,7 @@ import {
 
 interface BookingStep4ConfirmProps {
   mode: BookingMode;
+  target?: BookingTarget;
   hospital: HospitalItem;
   specialty: SpecialtyItem;
   doctor: DoctorItem | null;
@@ -40,6 +42,7 @@ interface BookingStep4ConfirmProps {
 
 export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
   mode,
+  target,
   hospital,
   specialty,
   doctor,
@@ -151,8 +154,16 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
 
         <div className="space-y-2.5 text-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1.5 border-b border-slate-100">
-            <span className="text-slate-500 font-medium">Bệnh nhân:</span>
-            <span className="font-bold text-slate-900">{patient.name}</span>
+            <span className="text-slate-500 font-medium">Bệnh nhân / Đối tượng:</span>
+            <div className="sm:text-right">
+              <span className="font-bold text-slate-900 block">{patient.name}</span>
+              <span className="text-xs text-blue-700 font-medium">
+                {target?.type === 'FAMILY'
+                  ? `Người nhà (${target.relationshipLabel || 'Thân nhân'})`
+                  : 'Bản thân (Chính chủ)'}
+                {target?.dob ? ` • NS: ${target.dob}` : ''}
+              </span>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-start justify-between py-1.5 border-b border-slate-100">

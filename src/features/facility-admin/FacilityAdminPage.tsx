@@ -321,6 +321,7 @@ export function FacilityAdminPage() {
             {currentKind && (
               <ResourceListView
                 departments={departments}
+                specialties={specialties}
                 items={getItems(currentKind)}
                 kind={currentKind}
                 onAdd={(kind) => setEditor({ kind })}

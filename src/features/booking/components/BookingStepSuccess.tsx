@@ -13,9 +13,11 @@ import {
   ArrowRight,
   ShieldCheck,
   PlusCircle,
+  CalendarCheck,
 } from 'lucide-react';
 import {
   BookingMode,
+  BookingTarget,
   DateOption,
   DoctorItem,
   HospitalItem,
@@ -25,6 +27,7 @@ import {
 
 interface BookingStepSuccessProps {
   mode: BookingMode;
+  target?: BookingTarget;
   hospital: HospitalItem;
   specialty: SpecialtyItem;
   doctor: DoctorItem | null;
@@ -37,6 +40,7 @@ interface BookingStepSuccessProps {
 
 export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
   mode,
+  target,
   hospital,
   specialty,
   doctor,
@@ -223,10 +227,17 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1">
-            <span className="text-xs text-slate-500">Bệnh nhân</span>
-            <span className="text-sm font-bold text-slate-900 text-left sm:text-right">
-              {patient.name}
-            </span>
+            <span className="text-xs text-slate-500">Bệnh nhân / Đối tượng</span>
+            <div className="text-left sm:text-right">
+              <span className="text-sm font-bold text-slate-900 block">
+                {patient.name}
+              </span>
+              <span className="text-xs text-blue-700 font-medium">
+                {target?.type === 'FAMILY'
+                  ? `Người nhà (${target.relationshipLabel || 'Thân nhân'})`
+                  : 'Bản thân (Chính chủ)'}
+              </span>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 py-1">
@@ -289,6 +300,14 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-3 justify-center">
+          <Link
+            href="/patient/appointments"
+            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-md shadow-emerald-500/25 flex items-center justify-center gap-2 transition-all"
+          >
+            <CalendarCheck className="w-4 h-4" />
+            <span>Xem lịch khám của tôi</span>
+          </Link>
+
           <button
             type="button"
             onClick={handleDownload}
@@ -309,10 +328,10 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
 
           <Link
             href="/"
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-bold shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all"
+            className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all"
           >
-            <Home className="w-4 h-4" />
-            <span>Về trang chủ</span>
+            <Home className="w-4 h-4 text-slate-500" />
+            <span>Trang chủ</span>
           </Link>
         </div>
 

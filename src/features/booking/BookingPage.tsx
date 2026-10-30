@@ -7,6 +7,7 @@ import { Home, ChevronRight, Activity } from 'lucide-react';
 import {
   BookingMode,
   BookingState,
+  BookingTarget,
   DateOption,
   DemandSubtype,
   DoctorItem,
@@ -24,12 +25,14 @@ import {
   findSpecialtyById,
 } from './data/booking-mock-data';
 import { BookingStepper } from './components/BookingStepper';
+import { BookingTargetSelector } from './components/BookingTargetSelector';
 import { BookingStep1Mode } from './components/BookingStep1Mode';
 import { BookingStep2Bhyt } from './components/BookingStep2Bhyt';
 import { BookingStep2Demand } from './components/BookingStep2Demand';
 import { BookingStep3Schedule } from './components/BookingStep3Schedule';
 import { BookingStep4Confirm } from './components/BookingStep4Confirm';
 import { BookingStepSuccess } from './components/BookingStepSuccess';
+import { INITIAL_PATIENT_PROFILE, saveAppointment } from '@/src/shared/utils/patient-storage';
 
 export const BookingPage: React.FC = () => {
   const router = useRouter();
@@ -77,16 +80,35 @@ export const BookingPage: React.FC = () => {
       ? 'doctor'
       : 'specialty';
 
+  const initialTarget: BookingTarget = {
+    type: 'SELF',
+    id: INITIAL_PATIENT_PROFILE.id,
+    name: INITIAL_PATIENT_PROFILE.fullName,
+    gender: INITIAL_PATIENT_PROFILE.gender,
+    dob: INITIAL_PATIENT_PROFILE.dob,
+    nationalId: INITIAL_PATIENT_PROFILE.nationalId,
+    phone: INITIAL_PATIENT_PROFILE.phone,
+    bhytNumber: INITIAL_PATIENT_PROFILE.bhytNumber,
+  };
+
   const [bookingState, setBookingState] = useState<BookingState>({
     step: initialStep,
     mode: initialBookingMode,
+    target: initialTarget,
     hospital: initialHospital,
     demandType: initialDemandType,
     specialty: initialSpecialty,
     doctor: initialDoctor,
     selectedDate: MOCK_DATE_OPTIONS[0],
     selectedSlot: '16:15',
-    patient: MOCK_PATIENT,
+    patient: {
+      name: INITIAL_PATIENT_PROFILE.fullName,
+      code: 'BN-81252',
+      bhytNumber: INITIAL_PATIENT_PROFILE.bhytNumber,
+      cccd: INITIAL_PATIENT_PROFILE.nationalId,
+      expiryDate: '31/12/2028',
+      initialHospital: 'Bệnh viện Bạch Mai (01-001)',
+    },
     routeType: 'dung-tuyen',
     symptoms: '',
     appointmentCode: 'LH-20261015-81252',
@@ -189,6 +211,19 @@ export const BookingPage: React.FC = () => {
     setBookingState((prev) => ({ ...prev, mode: newMode }));
   };
 
+  const handleSelectTarget = (target: BookingTarget) => {
+    setBookingState((prev) => ({
+      ...prev,
+      target,
+      patient: {
+        ...prev.patient,
+        name: target.name,
+        cccd: target.nationalId,
+        bhytNumber: target.bhytNumber || prev.patient.bhytNumber,
+      },
+    }));
+  };
+
   const handleStep1Continue = () => {
     navigateToStep(2, bookingState.mode);
   };
@@ -202,10 +237,45 @@ export const BookingPage: React.FC = () => {
   };
 
   const handleConfirmBooking = () => {
-    // Generate random realistic appointment code
-    const randomSuffix = Math.floor(10000 + Math.random() * 90000);
+    // Generate realistic appointment code
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const dateFormatted = bookingState.selectedDate.fullDate.replace(/\//g, '');
-    const newCode = `LH-${dateFormatted}-${randomSuffix}`;
+    const newCode = `MED-2026-${randomSuffix}`;
+
+    // Lưu vào LocalStorage đồng bộ với danh sách lịch khám của bệnh nhân
+    const isBhyt = bookingState.mode === 'bhyt';
+    const finalPrice = isBhyt ? 7740 : (bookingState.doctor?.price || bookingState.specialty.price);
+    const finalPriceFormatted = isBhyt ? '7.740 ₫' : (bookingState.doctor?.priceFormatted || bookingState.specialty.priceFormatted);
+
+    saveAppointment({
+      targetType: bookingState.target.type,
+      patientName: bookingState.target.name,
+      patientId: bookingState.target.id,
+      patientRelationship: bookingState.target.relationshipLabel,
+      patientDob: bookingState.target.dob,
+      patientGender: bookingState.target.gender,
+      patientNationalId: bookingState.target.nationalId,
+      patientPhone: bookingState.target.phone,
+      patientBhyt: bookingState.target.bhytNumber,
+      hospitalId: bookingState.hospital.id,
+      hospitalName: bookingState.hospital.name,
+      hospitalAddress: bookingState.hospital.address,
+      hospitalHotline: bookingState.hospital.hotline,
+      departmentName: bookingState.specialty.name,
+      roomName: bookingState.doctor?.room || bookingState.specialty.room,
+      doctorName: bookingState.doctor ? bookingState.doctor.name : 'Phòng khám phân công',
+      doctorTitle: bookingState.doctor ? bookingState.doctor.degreeTitle : 'Bác sĩ chuyên khoa',
+      doctorAvatar: bookingState.doctor?.avatar,
+      bookingMode: bookingState.mode,
+      specialtyName: bookingState.specialty.name,
+      workDate: '2026-11-05',
+      timeSlot: bookingState.selectedSlot,
+      session: parseInt(bookingState.selectedSlot.split(':')[0], 10) < 12 ? 'morning' : 'afternoon',
+      symptoms: bookingState.symptoms,
+      price: finalPrice,
+      priceFormatted: finalPriceFormatted,
+    });
+
     setBookingState((prev) => ({ ...prev, appointmentCode: newCode }));
     navigateToStep(5);
   };
@@ -257,7 +327,14 @@ export const BookingPage: React.FC = () => {
 
         {/* Stepper (Steps 1 to 4) */}
         {bookingState.step <= 4 && (
-          <BookingStepper currentStep={bookingState.step} mode={bookingState.mode} />
+          <>
+            <BookingStepper currentStep={bookingState.step} mode={bookingState.mode} />
+            {/* Bộ chọn Đối tượng khám (Bản thân / Người nhà) */}
+            <BookingTargetSelector
+              currentTarget={bookingState.target}
+              onSelectTarget={handleSelectTarget}
+            />
+          </>
         )}
 
         {/* Step Views */}
@@ -338,6 +415,7 @@ export const BookingPage: React.FC = () => {
         {bookingState.step === 4 && (
           <BookingStep4Confirm
             mode={bookingState.mode}
+            target={bookingState.target}
             hospital={bookingState.hospital}
             specialty={bookingState.specialty}
             doctor={bookingState.doctor}
@@ -354,6 +432,7 @@ export const BookingPage: React.FC = () => {
         {bookingState.step === 5 && (
           <BookingStepSuccess
             mode={bookingState.mode}
+            target={bookingState.target}
             hospital={bookingState.hospital}
             specialty={bookingState.specialty}
             doctor={bookingState.doctor}

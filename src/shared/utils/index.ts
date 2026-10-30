@@ -1,2 +1,1 @@
-// Shared utility functions
-export {};
+export * from './patient-storage';

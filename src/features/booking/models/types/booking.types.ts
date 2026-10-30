@@ -65,9 +65,23 @@ export interface PatientInfo {
   initialHospital: string;
 }
 
+export interface BookingTarget {
+  type: 'SELF' | 'FAMILY';
+  id: string;
+  name: string;
+  relationshipLabel?: string;
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  dob: string;
+  nationalId: string;
+  phone: string;
+  bhytNumber?: string;
+  note?: string;
+}
+
 export interface BookingState {
   step: 1 | 2 | 3 | 4 | 5;
   mode: BookingMode;
+  target: BookingTarget;
   hospital: HospitalItem;
   demandType: DemandSubtype;
   specialty: SpecialtyItem;

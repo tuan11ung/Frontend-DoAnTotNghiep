@@ -2,7 +2,7 @@
 
 import React, { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
-import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper, CalendarClock, LogOut, LoaderCircle } from 'lucide-react';
+import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper, CalendarClock, CalendarDays, Users, LogOut, LoaderCircle } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { AppointmentTabType } from '@/src/shared/types/medical';
 import { hasStoredPatientSession, clearPatientSession, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
@@ -34,6 +34,8 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   const isHospitalActive = isSearchPage && (currentType === 'hospital' || !currentType);
 
   const isBookingActive = pathname === '/booking';
+  const isAppointmentsActive = pathname.startsWith('/patient/appointments');
+  const isFamilyActive = pathname.startsWith('/patient/family');
   const isNewsActive = pathname.startsWith('/news') || pathname.startsWith('/tin-tuc');
 
   const handleTabClick = (tab: AppointmentTabType) => {
@@ -63,6 +65,30 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
         >
           <CalendarClock className={`w-4 h-4 ${isBookingActive ? 'text-white' : 'text-blue-600'}`} />
           <span>Đặt lịch khám</span>
+        </Link>
+        <Link
+          href="/patient/appointments"
+          onClick={onCloseMobile}
+          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            isAppointmentsActive
+              ? 'bg-blue-600 text-white font-bold shadow-sm'
+              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
+          }`}
+        >
+          <CalendarDays className={`w-4 h-4 ${isAppointmentsActive ? 'text-white' : 'text-emerald-600'}`} />
+          <span>Lịch khám của tôi</span>
+        </Link>
+        <Link
+          href="/patient/family"
+          onClick={onCloseMobile}
+          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+            isFamilyActive
+              ? 'bg-blue-600 text-white font-bold shadow-sm'
+              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
+          }`}
+        >
+          <Users className={`w-4 h-4 ${isFamilyActive ? 'text-white' : 'text-blue-600'}`} />
+          <span>Quản lý gia đình</span>
         </Link>
         <button
           onClick={() => handleTabClick('doctor')}
@@ -105,22 +131,46 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   }
 
   return (
-    <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
+    <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-1.5 text-sm font-semibold">
       <Link
         href="/booking"
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
           isBookingActive
             ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
             : 'text-blue-700 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 font-bold'
         }`}
       >
         <CalendarClock className={`w-4 h-4 ${isBookingActive ? 'text-white' : 'text-blue-600'}`} />
-        <span>Đặt lịch khám</span>
+        <span>Đặt lịch</span>
+      </Link>
+
+      <Link
+        href="/patient/appointments"
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
+          isAppointmentsActive
+            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+        }`}
+      >
+        <CalendarDays className={`w-4 h-4 ${isAppointmentsActive ? 'text-white' : 'text-emerald-600'}`} />
+        <span>Lịch khám</span>
+      </Link>
+
+      <Link
+        href="/patient/family"
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
+          isFamilyActive
+            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
+            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
+        }`}
+      >
+        <Users className={`w-4 h-4 ${isFamilyActive ? 'text-white' : 'text-blue-600'}`} />
+        <span>Hồ sơ gia đình</span>
       </Link>
 
       <button
         onClick={() => handleTabClick('doctor')}
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
           isDoctorActive
             ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
             : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
@@ -128,12 +178,12 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
         type="button"
       >
         <Stethoscope className={`w-4 h-4 ${isDoctorActive ? 'text-white' : 'text-blue-600'}`} />
-        <span>Đặt khám Bác sĩ</span>
+        <span>Bác sĩ</span>
       </button>
 
       <button
         onClick={() => handleTabClick('hospital')}
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
           isHospitalActive
             ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
             : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
@@ -141,19 +191,19 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
         type="button"
       >
         <Building2 className={`w-4 h-4 ${isHospitalActive ? 'text-white' : 'text-slate-400'}`} />
-        <span>Đặt khám Bệnh viện</span>
+        <span>Bệnh viện</span>
       </button>
 
       <Link
         href="/news"
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl ${
+        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
           isNewsActive
             ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
             : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
         }`}
       >
         <Newspaper className={`w-4 h-4 ${isNewsActive ? 'text-white' : 'text-slate-400'}`} />
-        <span>Tin Y tế</span>
+        <span>Tin tức</span>
       </Link>
     </nav>
   );
@@ -166,26 +216,35 @@ function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
         <div className="h-10 bg-slate-50 rounded-xl"></div>
         <div className="h-10 bg-slate-50 rounded-xl"></div>
         <div className="h-10 bg-slate-50 rounded-xl"></div>
+        <div className="h-10 bg-slate-50 rounded-xl"></div>
       </div>
     );
   }
   return (
     <nav className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
-      <div className="px-3.5 py-2 text-blue-700 flex items-center gap-1.5">
+      <div className="px-3 py-2 text-blue-700 flex items-center gap-1.5">
         <CalendarClock className="w-4 h-4 text-blue-600" />
-        <span>Đặt lịch khám</span>
+        <span>Đặt lịch</span>
       </div>
-      <div className="px-3.5 py-2 text-slate-700 flex items-center gap-1.5">
+      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
+        <CalendarDays className="w-4 h-4 text-emerald-600" />
+        <span>Lịch khám</span>
+      </div>
+      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
+        <Users className="w-4 h-4 text-blue-600" />
+        <span>Hồ sơ gia đình</span>
+      </div>
+      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
         <Stethoscope className="w-4 h-4 text-blue-600" />
-        <span>Đặt khám Bác sĩ</span>
+        <span>Bác sĩ</span>
       </div>
-      <div className="px-3.5 py-2 text-slate-700 flex items-center gap-1.5">
+      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
         <Building2 className="w-4 h-4 text-slate-400" />
-        <span>Đặt khám Bệnh viện</span>
+        <span>Bệnh viện</span>
       </div>
       <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
         <Newspaper className="w-4 h-4 text-slate-400" />
-        <span>Tin Y tế</span>
+        <span>Tin tức</span>
       </div>
     </nav>
   );
