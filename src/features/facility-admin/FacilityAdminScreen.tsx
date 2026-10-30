@@ -320,12 +320,14 @@ export function FacilityAdminScreen() {
             {activeSection === 'work-schedules' && <WorkScheduleScreen />}
             {currentKind && (
               <ResourceListView
+                key={currentKind}
                 departments={departments}
                 items={getItems(currentKind)}
                 kind={currentKind}
                 onAdd={(kind) => setEditor({ kind })}
                 onEdit={(kind, id) => setEditor({ kind, id })}
                 onToggle={toggleEntity}
+                specialties={specialties}
                 staff={staff}
               />
             )}
