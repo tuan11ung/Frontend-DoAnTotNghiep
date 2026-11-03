@@ -1,0 +1,1064 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>MedConnect - Hệ thống tiếp nhận bệnh nhân</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+    body {
+      font-family: 'Manrope', 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen antialiased selection:bg-blue-100 selection:text-blue-900 flex flex-col justify-between">
+<!-- TOP HEADER -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+<!-- Brand Logo & System Name -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+<path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+<path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+<path d="M10 6h4"></path>
+<path d="M10 10h4"></path>
+<path d="M10 14h4"></path>
+<path d="M10 18h4"></path>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-lg text-slate-900 tracking-tight">MedConnect</span>
+<span class="hidden sm:inline-block text-slate-300">|</span>
+<span class="hidden sm:inline-block font-medium text-slate-700 text-sm">Hệ thống tiếp nhận bệnh nhân</span>
+</div>
+<p class="text-xs text-slate-400 sm:hidden">Hệ thống tiếp nhận bệnh nhân</p>
+</div>
+</div>
+<!-- Status Badge & Staff Profile -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            Lễ tân trực ca
+          </span>
+<div class="hidden md:flex items-center gap-2 pl-3 border-l border-slate-200 text-xs text-slate-500">
+<span>Quầy tiếp đón #02</span>
+<span class="text-slate-300">•</span>
+<span>NV: Lê Thu Hà</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN CONTAINER -->
+<main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8">
+<!-- Page Title Area -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+<div>
+<h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
+          Đăng ký khám trực tiếp
+          <span class="text-xs px-2.5 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold align-middle">Ngoại trú</span>
+</h1>
+<p class="text-sm text-slate-500 mt-1">Quy trình tiếp nhận bệnh nhân tại quầy lễ tân bệnh viện nhanh chóng và chính xác.</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 active:scale-95" id="btn-restart-header" title="Bắt đầu phiên tiếp nhận mới" type="button">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+<path d="M21 3v5h-5"></path>
+<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+<path d="M8 16H3v5"></path>
+</svg>
+<span>Bắt đầu lại</span>
+</button>
+</div>
+<!-- STEPPER COMPONENT -->
+<div class="bg-white border border-slate-200 rounded-xl p-3 sm:p-4 mb-8 shadow-sm">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="stepper-container">
+<!-- Step 1 -->
+<div class="stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-blue-50 border-blue-200 shadow-sm" data-step="1" id="step-node-1">
+<div class="step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-blue-600 text-white shadow-md shadow-blue-500/30">1</div>
+<span class="step-label text-sm font-semibold truncate text-blue-900 font-bold">1. Tra cứu</span>
+</div>
+<!-- Step 2 -->
+<div class="stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-slate-50 border-transparent text-slate-400" data-step="2" id="step-node-2">
+<div class="step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-slate-200 text-slate-500">2</div>
+<span class="step-label text-sm font-semibold truncate text-slate-400">2. Hồ sơ bệnh nhân</span>
+</div>
+<!-- Step 3 -->
+<div class="stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-slate-50 border-transparent text-slate-400" data-step="3" id="step-node-3">
+<div class="step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-slate-200 text-slate-500">3</div>
+<span class="step-label text-sm font-semibold truncate text-slate-400">3. Đăng ký khám</span>
+</div>
+<!-- Step 4 -->
+<div class="stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-slate-50 border-transparent text-slate-400" data-step="4" id="step-node-4">
+<div class="step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-slate-200 text-slate-500">4</div>
+<span class="step-label text-sm font-semibold truncate text-slate-400">4. Hoàn tất</span>
+</div>
+</div>
+</div>
+<!-- ========================================================
+        VIEW 1: LOOKUP (Tra cứu bệnh nhân)
+       ======================================================== -->
+<div class="view-panel transition-all" id="view-lookup">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="p-6 sm:p-8">
+<!-- Card Header -->
+<div class="flex items-start gap-4 mb-6">
+<div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.3-4.3"></path>
+</svg>
+</div>
+<div>
+<h2 class="text-xl font-bold text-slate-900">Tra cứu bệnh nhân</h2>
+<p class="text-sm text-slate-500 mt-1">Nhập số CCCD để tìm hồ sơ bệnh nhân trong hệ thống bệnh viện.</p>
+</div>
+</div>
+<!-- Input form -->
+<form class="space-y-4" id="form-search" onsubmit="event.preventDefault();">
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="input-cccd">
+                Số CCCD / Định danh cá nhân <span class="text-rose-500">*</span>
+</label>
+<div class="flex flex-col sm:flex-row gap-3">
+<div class="relative flex-1">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="14" rx="2" width="20" x="2" y="5"></rect>
+<line x1="2" x2="22" y1="10" y2="10"></line>
+</svg>
+</div>
+<input class="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 font-medium tracking-wider text-base focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400" id="input-cccd" maxlength="12" placeholder="Nhập 12 chữ số CCCD" type="text" value="001085012345">
+</div>
+<button class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-sm hover:shadow-md hover:shadow-blue-600/20 active:scale-[0.98] transition-all text-sm whitespace-nowrap" id="btn-search" type="button">
+<svg class="animate-spin h-4 w-4 text-white hidden" fill="none" id="search-spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<svg class="w-4 h-4" fill="none" id="search-icon" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="11" cy="11" r="8"></circle>
+<path d="m21 21-4.3-4.3"></path>
+</svg>
+<span id="search-btn-label">Tra cứu</span>
+</button>
+</div>
+<!-- Quick fill sample -->
+<div class="mt-2.5 flex items-center justify-between text-xs text-slate-500">
+<button class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 transition-colors" id="btn-sample-cccd" type="button">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M12 16v-4"></path>
+<path d="M12 8h.01"></path>
+</svg>
+<span>Thử CCCD mẫu: <strong class="font-mono underline text-blue-700">001085012345</strong> để tìm thấy bệnh nhân mẫu...</span>
+</button>
+<span>12 ký tự số</span>
+</div>
+<!-- Search Error Msg -->
+<div class="hidden mt-3 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2" id="search-error-msg">
+<svg class="w-4 h-4 shrink-0 text-rose-600" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="8" y2="12"></line>
+<line x1="12" x2="12.01" y1="16" y2="16"></line>
+</svg>
+<span>Không tìm thấy hồ sơ với số CCCD này. Vui lòng kiểm tra lại hoặc bấm <strong>"Đăng ký mới"</strong>.</span>
+</div>
+</div>
+</form>
+</div>
+<!-- Bottom action bar -->
+<div class="bg-slate-50/80 px-6 sm:px-8 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center gap-2 text-sm text-slate-600">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+<path d="M12 17h.01"></path>
+</svg>
+<span>Bệnh nhân chưa có hồ sơ trong hệ thống?</span>
+</div>
+<button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-600 bg-white border border-blue-200 hover:border-blue-300 hover:bg-blue-50/50 rounded-lg shadow-sm transition-all active:scale-95" id="btn-to-new-patient" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+<circle cx="9" cy="7" r="4"></circle>
+<line x1="19" x2="19" y1="8" y2="14"></line>
+<line x1="22" x2="16" y1="11" y2="11"></line>
+</svg>
+<span>Đăng ký mới</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ========================================================
+        VIEW 2: PATIENT FOUND STATE (Hồ sơ bệnh nhân tìm thấy)
+       ======================================================== -->
+<div class="view-panel hidden transition-all" id="view-found">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="p-6 sm:p-8 space-y-6">
+<!-- Top info / Re-search -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-sm font-medium text-slate-500">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span>Kết quả tra cứu cho CCCD: <strong class="text-slate-800 font-mono" id="found-searched-cccd">001085012345</strong></span>
+</div>
+<button class="text-xs font-semibold text-slate-500 hover:text-slate-800 hover:underline flex items-center gap-1 transition-colors" id="btn-back-to-lookup" type="button">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="m15 18-6-6 6-6"></path>
+</svg>
+              Tra cứu lại
+            </button>
+</div>
+<!-- Alert box -->
+<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 sm:p-6 transition-all">
+<div class="flex items-center gap-2.5 mb-4 pb-3 border-b border-emerald-200/60">
+<div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<span class="text-emerald-900 font-bold text-base">Đã tìm thấy bệnh nhân trong cơ sở dữ liệu</span>
+<span class="ml-auto text-xs px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300">
+                Hồ sơ hợp lệ
+              </span>
+</div>
+<!-- Patient summary card -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+<div class="space-y-3 bg-white/70 p-4 rounded-lg border border-emerald-100">
+<div class="flex justify-between items-center py-1 border-b border-emerald-50">
+<span class="text-slate-500 font-medium">Họ và tên:</span>
+<span class="font-bold text-slate-900 text-base" id="found-name">Nguyễn Văn Minh</span>
+</div>
+<div class="flex justify-between items-center py-1 border-b border-emerald-50">
+<span class="text-slate-500 font-medium">Giới tính:</span>
+<span class="font-semibold text-slate-800 px-2 py-0.5 rounded bg-slate-100" id="found-gender">Nam</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="text-slate-500 font-medium">Số điện thoại:</span>
+<span class="font-semibold text-slate-800 font-mono" id="found-phone">0987***678</span>
+</div>
+</div>
+<div class="space-y-3 bg-white/70 p-4 rounded-lg border border-emerald-100">
+<div class="flex justify-between items-center py-1 border-b border-emerald-50">
+<span class="text-slate-500 font-medium">Ngày sinh:</span>
+<span class="font-semibold text-slate-800" id="found-dob">1985-06-15</span>
+</div>
+<div class="flex justify-between items-center py-1 border-b border-emerald-50">
+<span class="text-slate-500 font-medium">CCCD:</span>
+<span class="font-semibold text-slate-800 font-mono" id="found-cccd">001******345</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="text-slate-500 font-medium">Mã BHYT:</span>
+<span class="font-semibold text-emerald-800 font-mono bg-emerald-100 px-2 py-0.5 rounded text-xs" id="found-bhyt">DN4012345678901</span>
+</div>
+</div>
+</div>
+<div class="mt-3 pt-3 border-t border-emerald-200/40 text-xs text-slate-500 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+<circle cx="12" cy="10" r="3"></circle>
+</svg>
+<span>Địa chỉ thường trú: <span id="found-address">Số 24 ngõ 182, Đội Cấn, Ba Đình, Hà Nội</span></span>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-2">
+<button class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.99] transition-all text-base" id="btn-confirm-found-patient" type="button">
+<span>Xác nhận bệnh nhân &amp; Tiếp tục đăng ký</span>
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 12h14"></path>
+<path d="m12 5 7 7-7 7"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================
+        VIEW: NEW PATIENT (Đăng ký bệnh nhân mới)
+       ======================================================== -->
+<div class="view-panel hidden transition-all" id="view-new-patient">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="p-6 sm:p-8">
+<!-- Card Header -->
+<div class="flex items-start gap-4 mb-6 pb-5 border-b border-slate-100">
+<div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 shadow-sm">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+<circle cx="9" cy="7" r="4"></circle>
+<line x1="19" x2="19" y1="8" y2="14"></line>
+<line x1="22" x2="16" y1="11" y2="11"></line>
+</svg>
+</div>
+<div>
+<h2 class="text-xl font-bold text-slate-900">Đăng ký bệnh nhân mới</h2>
+<p class="text-sm text-slate-500 mt-1">Nhập thông tin theo giấy tờ tùy thân và thông tin bệnh nhân cung cấp.</p>
+</div>
+</div>
+<!-- Form Fields -->
+<form class="space-y-4" id="form-new-patient" onsubmit="event.preventDefault();">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Họ và tên -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-name">
+                  Họ và tên <span class="text-rose-500">*</span>
+</label>
+<input class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400" id="np-name" placeholder="VD: Trần Thị Mai" type="text" value="Trần Thị Mai">
+<p class="hidden text-xs text-rose-600 mt-1" id="np-name-err">Vui lòng nhập họ và tên</p>
+</div>
+<!-- Ngày sinh -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-dob">
+                  Ngày sinh <span class="text-rose-500">*</span>
+</label>
+<input class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all" id="np-dob" type="date" value="1993-04-12">
+<p class="hidden text-xs text-rose-600 mt-1" id="np-dob-err">Vui lòng chọn ngày sinh</p>
+</div>
+<!-- Giới tính -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-gender">
+                  Giới tính <span class="text-rose-500">*</span>
+</label>
+<select class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all" id="np-gender">
+<option selected="" value="Nữ">Nữ</option>
+<option value="Nam">Nam</option>
+</select>
+</div>
+<!-- Số CCCD -->
+<div>
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-cccd">
+                  Số CCCD <span class="text-rose-500">*</span>
+</label>
+<input class="w-full px-4 py-2.5 bg-white border font-mono border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400" id="np-cccd" maxlength="12" placeholder="12 chữ số định danh cá nhân" type="text" value="038193005821">
+<p class="hidden text-xs text-rose-600 mt-1" id="np-cccd-err">Vui lòng nhập số CCCD</p>
+</div>
+<!-- Số điện thoại -->
+<div class="col-span-1 md:col-span-2">
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-phone">
+                  Số điện thoại
+                </label>
+<input class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400" id="np-phone" placeholder="Số điện thoại liên hệ" type="tel" value="0912345890">
+</div>
+<!-- Địa chỉ -->
+<div class="col-span-1 md:col-span-2">
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-address">
+                  Địa chỉ
+                </label>
+<input class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400" id="np-address" placeholder="Địa chỉ thường trú / tạm trú" type="text" value="Số 88 Phố Huế, Phường Hàng Bài, Quận Hoàn Kiếm, Hà Nội">
+</div>
+<!-- Mã BHYT -->
+<div class="col-span-1 md:col-span-2">
+<label class="block text-sm font-semibold text-slate-700 mb-1.5" for="np-bhyt">
+                  Mã BHYT (nếu có)
+                </label>
+<input class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm font-mono focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-slate-400" id="np-bhyt" placeholder="VD: DN4012345678901" type="text" value="DN4019876543210">
+</div>
+</div>
+<!-- Actions -->
+<div class="pt-6 mt-6 border-t border-slate-200 flex items-center justify-end gap-3">
+<button class="px-5 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 hover:text-slate-900 rounded-xl shadow-xs transition-colors" id="btn-cancel-new-patient" type="button">
+                Hủy
+              </button>
+<button class="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md hover:shadow-blue-600/25 active:scale-95 transition-all text-sm" id="btn-submit-new-patient" type="button">
+<span>Tạo hồ sơ</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- ========================================================
+        VIEW 3: REGISTER (Giao diện Đăng ký khám)
+       ======================================================== -->
+<div class="view-panel hidden transition-all" id="view-register">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<!-- SECTION A: Read-only patient details -->
+<div class="p-6 sm:p-8 bg-slate-50/70 border-b border-slate-200">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center">A</span>
+<h3 class="font-bold text-slate-800 text-base">Thông tin bệnh nhân (Đã xác thực)</h3>
+</div>
+<span class="text-xs bg-slate-200 text-slate-600 font-semibold px-2.5 py-1 rounded">Chế độ xem</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
+<div class="space-y-2">
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Họ và tên:</span>
+<span class="font-bold text-slate-800" id="reg-summary-name">Nguyễn Văn Minh</span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Giới tính:</span>
+<span class="font-semibold text-slate-700" id="reg-summary-gender">Nam</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-slate-500">Số điện thoại:</span>
+<span class="font-mono text-slate-700" id="reg-summary-phone">0987***678</span>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">Ngày sinh:</span>
+<span class="font-semibold text-slate-700" id="reg-summary-dob">1985-06-15</span>
+</div>
+<div class="flex justify-between py-1 border-b border-slate-100">
+<span class="text-slate-500">CCCD:</span>
+<span class="font-mono text-slate-700" id="reg-summary-cccd">001******345</span>
+</div>
+<div class="flex justify-between py-1">
+<span class="text-slate-500">Mã BHYT:</span>
+<span class="font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 rounded text-xs" id="reg-summary-bhyt">DN4012345678901</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION B: Examination form options -->
+<div class="p-6 sm:p-8 space-y-6">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center">B</span>
+<h3 class="font-bold text-slate-900 text-base">Thông tin đăng ký khám bệnh</h3>
+</div>
+<div class="space-y-5">
+<!-- Chọn khoa -->
+<div>
+<label class="block text-sm font-semibold text-slate-800 mb-1.5" for="reg-dept-select">
+                Chọn khoa khám <span class="text-rose-500">*</span>
+</label>
+<select class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm" id="reg-dept-select">
+<option value="tmh">Khoa Tai Mũi Họng - Tầng 2 Tòa A</option>
+<option value="noi">Khoa Nội Tổng Quát - Tầng 1 Tòa A</option>
+<option value="ngoai">Khoa Ngoại Chấn Thương - Tầng 3 Tòa B</option>
+<option value="mat">Khoa Mắt &amp; Khúc Xạ - Tầng 2 Tòa C</option>
+<option value="tim">Khoa Tim Mạch Can Thiệp - Tầng 4 Tòa A</option>
+<option value="nhi">Khoa Nhi &amp; Tiêm Chủng - Tầng 1 Tòa B</option>
+</select>
+</div>
+<!-- Radio mức khám -->
+<div>
+<label class="block text-sm font-semibold text-slate-800 mb-2">
+                Mức khám dịch vụ <span class="text-rose-500">*</span>
+</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<label class="relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/10" id="label-tier-standard">
+<div class="flex items-center gap-3">
+<input checked="" class="w-4 h-4 text-blue-600 focus:ring-blue-500" name="examTierRadio" type="radio" value="standard">
+<div>
+<div class="font-semibold text-slate-900 text-sm">Khám tiêu chuẩn</div>
+<div class="text-xs text-slate-500">Khám theo lượt chỉ định thông thường</div>
+</div>
+</div>
+<span class="font-bold text-blue-700 text-sm">150.000đ</span>
+</label>
+<label class="relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all border-slate-200 hover:border-slate-300 bg-white" id="label-tier-expert">
+<div class="flex items-center gap-3">
+<input class="w-4 h-4 text-blue-600 focus:ring-blue-500" name="examTierRadio" type="radio" value="expert">
+<div>
+<div class="font-semibold text-slate-900 text-sm">Khám chuyên gia</div>
+<div class="text-xs text-slate-500">Trưởng khoa / Phó Giáo sư trực tiếp</div>
+</div>
+</div>
+<span class="font-bold text-blue-700 text-sm">300.000đ</span>
+</label>
+</div>
+</div>
+<!-- Chọn bác sĩ phụ trách -->
+<div>
+<label class="block text-sm font-semibold text-slate-800 mb-1.5" for="reg-doctor-select">
+                Chọn bác sĩ phụ trách <span class="text-rose-500">*</span>
+</label>
+<select class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 font-medium focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm" id="reg-doctor-select">
+<!-- Populated dynamically via JS -->
+</select>
+</div>
+<!-- Lý do khám -->
+<div>
+<label class="block text-sm font-semibold text-slate-800 mb-1.5" for="reg-reason">
+                Lý do thăm khám / Triệu chứng ban đầu <span class="text-rose-500">*</span>
+</label>
+<textarea class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all" id="reg-reason" placeholder="Mô tả tóm tắt triệu chứng bệnh nhân chia sẻ tại quầy..." rows="3">Đau rát họng kéo dài 4 ngày, ho khan kèm sốt nhẹ về chiều.</textarea>
+</div>
+</div>
+</div>
+<!-- Footer / Total fee & actions -->
+<div class="bg-slate-50 px-6 sm:px-8 py-5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div>
+<span class="text-xs text-slate-500 block uppercase tracking-wider font-semibold">Tạm tính phí ban đầu</span>
+<div class="text-xl font-extrabold text-blue-700" id="reg-fee-display">
+              Phí khám dự kiến: 150.000đ
+            </div>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 bg-white border border-slate-300 rounded-xl shadow-xs hover:bg-slate-50 transition-colors" id="btn-back-from-register" type="button">
+              Quay lại
+            </button>
+<button class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md hover:shadow-blue-600/25 active:scale-95 transition-all text-sm" id="btn-confirm-registration" type="button">
+<span>Đăng ký khám</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================
+        VIEW 4: SUCCESS (Hoàn tất đăng ký)
+       ======================================================== -->
+<div class="view-panel hidden transition-all" id="view-success">
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden text-center p-6 sm:p-10">
+<!-- Large Checkmark Icon -->
+<div class="mx-auto w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-5 ring-8 ring-emerald-50">
+<svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+<polyline points="22 4 12 14.01 9 11.01"></polyline>
+</svg>
+</div>
+<h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Đăng ký khám thành công
+        </h2>
+<p class="text-slate-500 mt-2 text-sm sm:text-base max-w-md mx-auto">
+          Bệnh nhân đã được thêm vào hàng chờ của phòng khám chuyên khoa.
+        </p>
+<!-- Ticket Card Box -->
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-6 sm:p-8 mt-8 text-left max-w-2xl mx-auto shadow-xs">
+<!-- Top: Ticket code & Queue number -->
+<div class="flex items-center justify-between pb-5 border-b border-slate-200">
+<div>
+<span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Mã lượt khám</span>
+<span class="text-lg font-bold font-mono text-slate-800" id="success-ticket-code">LK-20261012-001</span>
+</div>
+<div class="text-right">
+<span class="text-xs font-semibold text-blue-600 uppercase tracking-wider block">Số thứ tự khám</span>
+<div class="text-4xl sm:text-5xl font-black text-blue-600 tracking-tight" id="success-queue-num">
+                20
+              </div>
+</div>
+</div>
+<!-- Rows of ticket details -->
+<div class="pt-5 space-y-3.5 text-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60">
+<span class="text-slate-500 font-medium">Bệnh nhân:</span>
+<span class="font-bold text-slate-900 text-base" id="success-patient-name">Nguyễn Văn Minh</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60">
+<span class="text-slate-500 font-medium">Khoa khám:</span>
+<span class="font-semibold text-slate-800" id="success-dept-name">Khoa Tai Mũi Họng - Tầng 2 Tòa A</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60">
+<span class="text-slate-500 font-medium">Bác sĩ phụ trách:</span>
+<span class="font-semibold text-blue-700" id="success-doc-name">BS.CKII Trần Quốc Huy (Trưởng khoa)</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between py-1 border-b border-slate-200/60">
+<span class="text-slate-500 font-medium">Địa chỉ phòng khám:</span>
+<span class="font-semibold text-emerald-800 bg-emerald-100/70 px-2.5 py-1 rounded-md text-xs sm:text-sm" id="success-room">
+                Tòa A - Tầng 2 - Phòng 205
+              </span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between py-1">
+<span class="text-slate-500 font-medium">Mức phí &amp; Hình thức:</span>
+<span class="font-bold text-slate-900" id="success-fee-tier">150.000đ (Khám tiêu chuẩn)</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="max-w-2xl mx-auto mt-8 flex flex-col sm:flex-row items-center gap-3">
+<button class="w-full sm:w-1/3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl shadow-xs transition-all text-sm active:scale-95" id="btn-copy-ticket" type="button">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="14" rx="2" ry="2" width="14" x="8" y="8"></rect>
+<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+</svg>
+<span>Sao chép phiếu</span>
+</button>
+<button class="w-full sm:w-2/3 inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md hover:shadow-blue-600/25 active:scale-[0.99] transition-all text-sm" id="btn-finish-restart" type="button">
+<span>Hoàn tất - Tiếp nhận bệnh nhân tiếp theo</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 12h14"></path>
+<path d="m12 5 7 7-7 7"></path>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- TOAST ALERT SYSTEM -->
+<div class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none" id="toast-notification">
+<svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+<span class="text-sm font-semibold tracking-wide" id="toast-text">Thông báo thành công</span>
+</div>
+<!-- FOOTER -->
+<footer class="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-400 mt-auto">
+    MedConnect Hospital Information System © 2026 • Hỗ trợ kỹ thuật: 1900 1234 (Ext: 201)
+  </footer>
+<!-- ========================================================
+      CLIENT-SIDE INTERACTIVITY CONTROLLER
+     ======================================================== -->
+<script>
+    (function() {
+      // Mock Datastore
+      const DEFAULT_PATIENT = {
+        id: "001085012345",
+        name: "Nguyễn Văn Minh",
+        gender: "Nam",
+        phone: "0987***678",
+        fullPhone: "0987654678",
+        dob: "1985-06-15",
+        cccdMasked: "001******345",
+        bhyt: "DN4012345678901",
+        address: "Số 24 ngõ 182, Đội Cấn, Ba Đình, Hà Nội"
+      };
+
+      const DEPARTMENTS = {
+        tmh: {
+          name: "Khoa Tai Mũi Họng - Tầng 2 Tòa A",
+          doctors: [
+            { id: "d1", name: "BS.CKII Trần Quốc Huy (Trưởng khoa)", room: "Tòa A - Tầng 2 - Phòng 205" },
+            { id: "d2", name: "ThS.BS Nguyễn Bích Ngọc", room: "Tòa A - Tầng 2 - Phòng 208" }
+          ]
+        },
+        noi: {
+          name: "Khoa Nội Tổng Quát - Tầng 1 Tòa A",
+          doctors: [
+            { id: "d3", name: "PGS.TS Lê Hải Quân", room: "Tòa A - Tầng 1 - Phòng 102" },
+            { id: "d4", name: "BS.CKI Đỗ Mỹ Linh", room: "Tòa A - Tầng 1 - Phòng 105" }
+          ]
+        },
+        ngoai: {
+          name: "Khoa Ngoại Chấn Thương - Tầng 3 Tòa B",
+          doctors: [
+            { id: "d5", name: "TS.BS Hoàng Tuấn Long", room: "Tòa B - Tầng 3 - Phòng 312" }
+          ]
+        },
+        mat: {
+          name: "Khoa Mắt & Khúc Xạ - Tầng 2 Tòa C",
+          doctors: [
+            { id: "d6", name: "BS.CKII Mai Thu Trang", room: "Tòa C - Tầng 2 - Phòng 201" }
+          ]
+        },
+        tim: {
+          name: "Khoa Tim Mạch Can Thiệp - Tầng 4 Tòa A",
+          doctors: [
+            { id: "d7", name: "GS.TS Vũ Đình Trọng", room: "Tòa A - Tầng 4 - Phòng 402" }
+          ]
+        },
+        nhi: {
+          name: "Khoa Nhi & Tiêm Chủng - Tầng 1 Tòa B",
+          doctors: [
+            { id: "d8", name: "BS.CKI Phạm Quỳnh Anh", room: "Tòa B - Tầng 1 - Phòng 108" }
+          ]
+        }
+      };
+
+      // Application State
+      let currentView = 'lookup'; // 'lookup' | 'found' | 'new_patient' | 'register' | 'success'
+      let currentStep = 1;        // 1, 2, 3, 4
+      let patient = { ...DEFAULT_PATIENT };
+      let examTier = 'standard';  // 'standard' (150.000đ) or 'expert' (300.000đ)
+      let selectedDepartment = 'tmh';
+      let selectedDoctor = 'd1';
+      let queueNumber = 20;
+      let ticketCode = "LK-20261012-001";
+
+      // DOM Elements
+      const viewLookup = document.getElementById('view-lookup');
+      const viewFound = document.getElementById('view-found');
+      const viewNewPatient = document.getElementById('view-new-patient');
+      const viewRegister = document.getElementById('view-register');
+      const viewSuccess = document.getElementById('view-success');
+      const toastEl = document.getElementById('toast-notification');
+      const toastText = document.getElementById('toast-text');
+
+      let toastTimer = null;
+      function showToast(message) {
+        if (toastTimer) clearTimeout(toastTimer);
+        toastText.innerText = message;
+        toastEl.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        toastEl.classList.add('translate-y-0', 'opacity-100');
+
+        toastTimer = setTimeout(() => {
+          toastEl.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+          toastEl.classList.remove('translate-y-0', 'opacity-100');
+        }, 3200);
+      }
+
+      // Update Stepper Visuals
+      function renderStepper() {
+        const stepItems = [
+          { num: 1, el: document.getElementById('step-node-1'), label: "1. Tra cứu" },
+          { num: 2, el: document.getElementById('step-node-2'), label: "2. Hồ sơ bệnh nhân" },
+          { num: 3, el: document.getElementById('step-node-3'), label: "3. Đăng ký khám" },
+          { num: 4, el: document.getElementById('step-node-4'), label: "4. Hoàn tất" },
+        ];
+
+        stepItems.forEach(item => {
+          const badge = item.el.querySelector('.step-badge');
+          const label = item.el.querySelector('.step-label');
+
+          if (currentStep === item.num) {
+            // Active Step
+            item.el.className = "stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-blue-50 border-blue-200 shadow-sm";
+            badge.className = "step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-blue-600 text-white shadow-md shadow-blue-500/30";
+            badge.innerHTML = item.num;
+            label.className = "step-label text-sm font-semibold truncate text-blue-900 font-bold";
+          } else if (currentStep > item.num) {
+            // Completed Step
+            item.el.className = "stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-emerald-50 border-emerald-300 text-emerald-800 shadow-2xs hover:bg-emerald-100/50";
+            badge.className = "step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-emerald-600 text-white";
+            badge.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+            label.className = "step-label text-sm font-semibold truncate text-emerald-800";
+          } else {
+            // Inactive Step
+            item.el.className = "stepper-item flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all cursor-pointer bg-slate-50 border-transparent text-slate-400";
+            badge.className = "step-badge w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-all bg-slate-200 text-slate-500";
+            badge.innerHTML = item.num;
+            label.className = "step-label text-sm font-semibold truncate text-slate-400";
+          }
+        });
+      }
+
+      // Switch View Panel
+      function switchView(viewName) {
+        currentView = viewName;
+        // Determine step
+        if (viewName === 'lookup') currentStep = 1;
+        else if (viewName === 'found' || viewName === 'new_patient') currentStep = 2;
+        else if (viewName === 'register') currentStep = 3;
+        else if (viewName === 'success') currentStep = 4;
+
+        renderStepper();
+
+        // Toggle DOM panels
+        [viewLookup, viewFound, viewNewPatient, viewRegister, viewSuccess].forEach(p => p.classList.add('hidden'));
+
+        if (viewName === 'lookup') {
+          viewLookup.classList.remove('hidden');
+        } else if (viewName === 'found') {
+          updateFoundView();
+          viewFound.classList.remove('hidden');
+        } else if (viewName === 'new_patient') {
+          viewNewPatient.classList.remove('hidden');
+        } else if (viewName === 'register') {
+          updateRegisterView();
+          viewRegister.classList.remove('hidden');
+        } else if (viewName === 'success') {
+          updateSuccessView();
+          viewSuccess.classList.remove('hidden');
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Populate Doctor Select
+      function populateDoctors(deptId) {
+        const docSelect = document.getElementById('reg-doctor-select');
+        docSelect.innerHTML = '';
+        const dept = DEPARTMENTS[deptId] || DEPARTMENTS.tmh;
+        dept.doctors.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = `${d.name} - (${d.room})`;
+          docSelect.appendChild(opt);
+        });
+        selectedDoctor = dept.doctors[0].id;
+      }
+
+      // Update View 2 'found' data
+      function updateFoundView() {
+        document.getElementById('found-searched-cccd').textContent = patient.id;
+        document.getElementById('found-name').textContent = patient.name;
+        document.getElementById('found-gender').textContent = patient.gender;
+        document.getElementById('found-phone').textContent = patient.phone;
+        document.getElementById('found-dob').textContent = patient.dob;
+        document.getElementById('found-cccd').textContent = patient.cccdMasked;
+        document.getElementById('found-bhyt').textContent = patient.bhyt;
+        document.getElementById('found-address').textContent = patient.address;
+      }
+
+      // Update View 3 'register' data
+      function updateRegisterView() {
+        document.getElementById('reg-summary-name').textContent = patient.name;
+        document.getElementById('reg-summary-gender').textContent = patient.gender;
+        document.getElementById('reg-summary-phone').textContent = patient.phone;
+        document.getElementById('reg-summary-dob').textContent = patient.dob;
+        document.getElementById('reg-summary-cccd').textContent = patient.cccdMasked;
+        document.getElementById('reg-summary-bhyt').textContent = patient.bhyt;
+
+        // Ensure department doctors are synced
+        populateDoctors(selectedDepartment);
+        updateFeeDisplay();
+      }
+
+      // Update Fee & Radio Style
+      function updateFeeDisplay() {
+        const fee = examTier === 'expert' ? '300.000đ' : '150.000đ';
+        document.getElementById('reg-fee-display').textContent = `Phí khám dự kiến: ${fee}`;
+
+        const radioStandard = document.querySelector('input[name="examTierRadio"][value="standard"]');
+        const radioExpert = document.querySelector('input[name="examTierRadio"][value="expert"]');
+        const labelStandard = document.getElementById('label-tier-standard');
+        const labelExpert = document.getElementById('label-tier-expert');
+
+        if (examTier === 'standard') {
+          radioStandard.checked = true;
+          labelStandard.className = "relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/10";
+          labelExpert.className = "relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all border-slate-200 hover:border-slate-300 bg-white";
+        } else {
+          radioExpert.checked = true;
+          labelExpert.className = "relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all border-blue-600 bg-blue-50/50 ring-2 ring-blue-500/10";
+          labelStandard.className = "relative flex items-center justify-between p-3.5 border rounded-xl cursor-pointer transition-all border-slate-200 hover:border-slate-300 bg-white";
+        }
+      }
+
+      // Update View 4 'success' data
+      function updateSuccessView() {
+        const dept = DEPARTMENTS[selectedDepartment] || DEPARTMENTS.tmh;
+        const doc = dept.doctors.find(d => d.id === selectedDoctor) || dept.doctors[0];
+        const fee = examTier === 'expert' ? '300.000đ (Khám chuyên gia)' : '150.000đ (Khám tiêu chuẩn)';
+
+        document.getElementById('success-ticket-code').textContent = ticketCode;
+        document.getElementById('success-queue-num').textContent = queueNumber;
+        document.getElementById('success-patient-name').textContent = patient.name;
+        document.getElementById('success-dept-name').textContent = dept.name;
+        document.getElementById('success-doc-name').textContent = doc.name;
+        document.getElementById('success-room').textContent = doc.room;
+        document.getElementById('success-fee-tier').textContent = fee;
+      }
+
+      // Reset entire flow
+      function resetWorkflow() {
+        patient = { ...DEFAULT_PATIENT };
+        document.getElementById('input-cccd').value = "001085012345";
+        document.getElementById('search-error-msg').classList.add('hidden');
+        examTier = 'standard';
+        selectedDepartment = 'tmh';
+        document.getElementById('reg-dept-select').value = 'tmh';
+        document.getElementById('reg-reason').value = "Đau rát họng kéo dài 4 ngày, ho khan kèm sốt nhẹ về chiều.";
+        switchView('lookup');
+      }
+
+      // Event Listeners setup
+      function setupListeners() {
+        // Top Reset Button
+        document.getElementById('btn-restart-header').addEventListener('click', resetWorkflow);
+
+        // Click on Stepper item to jump back if already passed
+        document.querySelectorAll('.stepper-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const stepNum = parseInt(item.getAttribute('data-step'), 10);
+            if (stepNum < currentStep) {
+              if (stepNum === 1) switchView('lookup');
+              else if (stepNum === 2) switchView('found');
+              else if (stepNum === 3) switchView('register');
+            }
+          });
+        });
+
+        // Sample CCCD link
+        document.getElementById('btn-sample-cccd').addEventListener('click', () => {
+          const input = document.getElementById('input-cccd');
+          input.value = "001085012345";
+          document.getElementById('search-error-msg').classList.add('hidden');
+          input.focus();
+        });
+
+        // Perform Search
+        const btnSearch = document.getElementById('btn-search');
+        btnSearch.addEventListener('click', () => {
+          const cccdVal = document.getElementById('input-cccd').value.trim();
+          const spinner = document.getElementById('search-spinner');
+          const icon = document.getElementById('search-icon');
+          const label = document.getElementById('search-btn-label');
+          const errorMsg = document.getElementById('search-error-msg');
+
+          errorMsg.classList.add('hidden');
+          spinner.classList.remove('hidden');
+          icon.classList.add('hidden');
+          label.textContent = "Đang tra cứu...";
+          btnSearch.disabled = true;
+
+          setTimeout(() => {
+            spinner.classList.add('hidden');
+            icon.classList.remove('hidden');
+            label.textContent = "Tra cứu";
+            btnSearch.disabled = false;
+
+            if (cccdVal === "001085012345" || cccdVal === "001085" || cccdVal.length >= 6) {
+              patient = { ...DEFAULT_PATIENT, id: cccdVal || DEFAULT_PATIENT.id };
+              switchView('found');
+            } else {
+              errorMsg.classList.remove('hidden');
+            }
+          }, 350);
+        });
+
+        // Search on Enter key
+        document.getElementById('input-cccd').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            btnSearch.click();
+          }
+        });
+
+        // Open New Patient
+        document.getElementById('btn-to-new-patient').addEventListener('click', () => {
+          const cccdVal = document.getElementById('input-cccd').value.trim();
+          if (cccdVal && cccdVal !== "001085012345") {
+            document.getElementById('np-cccd').value = cccdVal;
+          }
+          switchView('new_patient');
+        });
+
+        // Found view -> Confirm patient & go to Register
+        document.getElementById('btn-confirm-found-patient').addEventListener('click', () => {
+          switchView('register');
+        });
+
+        // Found view -> Tra cứu lại
+        document.getElementById('btn-back-to-lookup').addEventListener('click', () => {
+          switchView('lookup');
+        });
+
+        // New Patient -> Cancel
+        document.getElementById('btn-cancel-new-patient').addEventListener('click', () => {
+          switchView('lookup');
+        });
+
+        // New Patient -> Submit
+        document.getElementById('btn-submit-new-patient').addEventListener('click', () => {
+          const name = document.getElementById('np-name').value.trim();
+          const dob = document.getElementById('np-dob').value;
+          const gender = document.getElementById('np-gender').value;
+          const cccd = document.getElementById('np-cccd').value.trim();
+          const phone = document.getElementById('np-phone').value.trim();
+          const address = document.getElementById('np-address').value.trim();
+          const bhyt = document.getElementById('np-bhyt').value.trim();
+
+          let hasError = false;
+          if (!name) {
+            document.getElementById('np-name-err').classList.remove('hidden');
+            hasError = true;
+          } else {
+            document.getElementById('np-name-err').classList.add('hidden');
+          }
+
+          if (!dob) {
+            document.getElementById('np-dob-err').classList.remove('hidden');
+            hasError = true;
+          } else {
+            document.getElementById('np-dob-err').classList.add('hidden');
+          }
+
+          if (!cccd) {
+            document.getElementById('np-cccd-err').classList.remove('hidden');
+            hasError = true;
+          } else {
+            document.getElementById('np-cccd-err').classList.add('hidden');
+          }
+
+          if (hasError) return;
+
+          const maskedCccd = cccd.length >= 6 
+            ? `${cccd.slice(0, 3)}******${cccd.slice(-3)}`
+            : cccd;
+
+          const maskedPhone = phone && phone.length >= 6
+            ? `${phone.slice(0, 4)}***${phone.slice(-3)}`
+            : (phone || "Chưa cập nhật");
+
+          patient = {
+            id: cccd,
+            name: name,
+            gender: gender,
+            dob: dob,
+            phone: maskedPhone,
+            fullPhone: phone || "Chưa cập nhật",
+            cccdMasked: maskedCccd,
+            bhyt: bhyt || "Chưa đăng ký",
+            address: address || "Chưa cập nhật địa chỉ"
+          };
+
+          showToast("Tạo hồ sơ bệnh nhân mới thành công!");
+          switchView('register');
+        });
+
+        // Register -> Dept Change
+        const deptSelect = document.getElementById('reg-dept-select');
+        deptSelect.addEventListener('change', (e) => {
+          selectedDepartment = e.target.value;
+          populateDoctors(selectedDepartment);
+        });
+
+        // Register -> Doctor Change
+        document.getElementById('reg-doctor-select').addEventListener('change', (e) => {
+          selectedDoctor = e.target.value;
+        });
+
+        // Register -> Exam Tier Change
+        document.querySelectorAll('input[name="examTierRadio"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            examTier = e.target.value;
+            updateFeeDisplay();
+          });
+        });
+
+        document.getElementById('label-tier-standard').addEventListener('click', () => {
+          examTier = 'standard';
+          updateFeeDisplay();
+        });
+        document.getElementById('label-tier-expert').addEventListener('click', () => {
+          examTier = 'expert';
+          updateFeeDisplay();
+        });
+
+        // Register -> Back button
+        document.getElementById('btn-back-from-register').addEventListener('click', () => {
+          switchView('found');
+        });
+
+        // Register -> Confirm and Generate Ticket
+        document.getElementById('btn-confirm-registration').addEventListener('click', () => {
+          const randomQueue = Math.floor(Math.random() * 25) + 12;
+          queueNumber = randomQueue;
+          const today = new Date();
+          const yyyy = today.getFullYear();
+          const mm = String(today.getMonth() + 1).padStart(2, '0');
+          const dd = String(today.getDate()).padStart(2, '0');
+          ticketCode = `LK-${yyyy}${mm}${dd}-${String(randomQueue).padStart(3, '0')}`;
+          
+          switchView('success');
+          showToast("Đã cấp số thứ tự khám thành công!");
+        });
+
+        // Success -> Copy ticket details
+        document.getElementById('btn-copy-ticket').addEventListener('click', () => {
+          const dept = DEPARTMENTS[selectedDepartment] || DEPARTMENTS.tmh;
+          const doc = dept.doctors.find(d => d.id === selectedDoctor) || dept.doctors[0];
+          const fee = examTier === 'expert' ? '300.000đ (Khám chuyên gia)' : '150.000đ (Khám tiêu chuẩn)';
+          const textToCopy = `PHIẾU KHÁM MEDCONNECT\n- Mã lượt khám: ${ticketCode}\n- Số thứ tự: ${queueNumber}\n- Bệnh nhân: ${patient.name}\n- Khoa: ${dept.name}\n- Bác sĩ: ${doc.name}\n- Phòng khám: ${doc.room}\n- Chi phí: ${fee}`;
+          
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(() => {
+              showToast("Đã sao chép phiếu khám vào bộ nhớ tạm!");
+            });
+          } else {
+            showToast("Đã sao chép phiếu khám!");
+          }
+        });
+
+        // Success -> Finish and restart next patient
+        document.getElementById('btn-finish-restart').addEventListener('click', resetWorkflow);
+      }
+
+      // Initialise App
+      setupListeners();
+      populateDoctors('tmh');
+      renderStepper();
+    })();
+  </script>
+</body></html>

@@ -1,409 +1,123 @@
 'use client';
 
-import React, { useState, Suspense, useEffect } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
-import { Activity, User, CircleUserRound, Menu, X, Stethoscope, Building2, Newspaper, CalendarClock, CalendarDays, Users, LogOut, LoaderCircle } from 'lucide-react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { AppointmentTabType } from '@/src/shared/types/medical';
-import { hasStoredPatientSession, clearPatientSession, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Activity, Building2, CalendarClock, Menu, Newspaper, Stethoscope, User, X } from 'lucide-react';
+import type { AppointmentTabType } from '@/src/shared/types/medical';
+import { clearPatientSession, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
+import { setAuthPreviewMode } from '@/src/features/auth/utils/auth-preview';
+import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
+import { AuthContinuationLink } from '@/src/features/auth/components/AuthContinuation';
 import { PatientNotificationBell } from '@/src/features/notifications/components/PatientNotificationBell';
+import { HeaderSearch } from '@/src/features/site-search/components/HeaderSearch';
+import { PatientAccountDropdown } from './PatientAccountDropdown';
 
 interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
 }
 
-interface NavLinksProps {
-  onSelectTab?: (tab: AppointmentTabType) => void;
+interface NavLinksProps extends PublicHeaderProps {
   mobile?: boolean;
   onCloseMobile?: () => void;
 }
 
 function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLinksProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const isSearchPage = pathname === '/search';
-  const currentType = searchParams.get('type');
-
-  // Active state logic:
-  // When on /search:
-  // - If URL has type=doctor -> Doctor is active
-  // - If URL has type=hospital (or default on /search without type) -> Hospital is active
-  const isDoctorActive = isSearchPage && currentType === 'doctor';
-  const isHospitalActive = isSearchPage && (currentType === 'hospital' || !currentType);
-
-  const isBookingActive = pathname === '/booking';
-  const isAppointmentsActive = pathname.startsWith('/patient/appointments');
-  const isFamilyActive = pathname.startsWith('/patient/family');
-  const isNewsActive = pathname.startsWith('/news') || pathname.startsWith('/tin-tuc');
-
-  const handleTabClick = (tab: AppointmentTabType) => {
-    onCloseMobile?.();
-    if (pathname === '/' && onSelectTab) {
-      onSelectTab(tab);
-      const element = document.getElementById('sub-nav-tabs');
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        return;
-      }
-    }
-    router.push(`/search?type=${tab}`);
-  };
-
-  if (mobile) {
-    return (
-      <div className="space-y-2">
-        <Link
-          href="/booking"
-          onClick={onCloseMobile}
-          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-            isBookingActive
-              ? 'bg-blue-600 text-white font-bold shadow-sm'
-              : 'text-blue-700 bg-blue-50/80 hover:bg-blue-100 font-bold'
-          }`}
-        >
-          <CalendarClock className={`w-4 h-4 ${isBookingActive ? 'text-white' : 'text-blue-600'}`} />
-          <span>Đặt lịch khám</span>
-        </Link>
-        <Link
-          href="/patient/appointments"
-          onClick={onCloseMobile}
-          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-            isAppointmentsActive
-              ? 'bg-blue-600 text-white font-bold shadow-sm'
-              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
-          }`}
-        >
-          <CalendarDays className={`w-4 h-4 ${isAppointmentsActive ? 'text-white' : 'text-emerald-600'}`} />
-          <span>Lịch khám của tôi</span>
-        </Link>
-        <Link
-          href="/patient/family"
-          onClick={onCloseMobile}
-          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-            isFamilyActive
-              ? 'bg-blue-600 text-white font-bold shadow-sm'
-              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
-          }`}
-        >
-          <Users className={`w-4 h-4 ${isFamilyActive ? 'text-white' : 'text-blue-600'}`} />
-          <span>Quản lý gia đình</span>
-        </Link>
-        <button
-          onClick={() => handleTabClick('doctor')}
-          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-            isDoctorActive
-              ? 'bg-blue-600 text-white font-bold shadow-sm'
-              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
-          }`}
-          type="button"
-        >
-          <Stethoscope className={`w-4 h-4 ${isDoctorActive ? 'text-white' : 'text-blue-600'}`} />
-          <span>Đặt khám Bác sĩ</span>
-        </button>
-        <button
-          onClick={() => handleTabClick('hospital')}
-          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-            isHospitalActive
-              ? 'bg-blue-600 text-white font-bold shadow-sm'
-              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
-          }`}
-          type="button"
-        >
-          <Building2 className={`w-4 h-4 ${isHospitalActive ? 'text-white' : 'text-slate-400'}`} />
-          <span>Đặt khám Bệnh viện</span>
-        </button>
-        <Link
-          href="/news"
-          onClick={onCloseMobile}
-          className={`w-full text-left py-2.5 px-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer ${
-            isNewsActive
-              ? 'bg-blue-600 text-white font-bold shadow-sm'
-              : 'text-slate-700 hover:bg-blue-50 hover:text-blue-600'
-          }`}
-        >
-          <Newspaper className={`w-4 h-4 ${isNewsActive ? 'text-white' : 'text-slate-400'}`} />
-          <span>Tin Y tế</span>
-        </Link>
-      </div>
-    );
-  }
+  const searchType = pathname === '/search' ? searchParams.get('type') : null;
+  const links = [
+    { href: '/booking', label: mobile ? 'Đặt lịch khám' : 'Đặt lịch', Icon: CalendarClock, active: pathname === '/booking', tab: undefined },
+    { href: '/search?type=doctor', label: mobile ? 'Đặt khám Bác sĩ' : 'Bác sĩ', Icon: Stethoscope, active: searchType === 'doctor', tab: 'doctor' as const },
+    { href: '/search?type=hospital', label: mobile ? 'Đặt khám Bệnh viện' : 'Bệnh viện', Icon: Building2, active: pathname === '/search' && (searchType === 'hospital' || !searchType), tab: 'hospital' as const },
+    { href: '/news', label: 'Tin tức', Icon: Newspaper, active: pathname.startsWith('/news') || pathname.startsWith('/tin-tuc'), tab: undefined },
+  ];
 
   return (
-    <nav aria-label="Thanh điều hướng chính" className="hidden lg:flex items-center space-x-1.5 text-sm font-semibold">
-      <Link
-        href="/booking"
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
-          isBookingActive
-            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
-            : 'text-blue-700 bg-blue-50 hover:bg-blue-100 hover:text-blue-800 font-bold'
-        }`}
-      >
-        <CalendarClock className={`w-4 h-4 ${isBookingActive ? 'text-white' : 'text-blue-600'}`} />
-        <span>Đặt lịch</span>
-      </Link>
-
-      <Link
-        href="/patient/appointments"
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
-          isAppointmentsActive
-            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
-            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-        }`}
-      >
-        <CalendarDays className={`w-4 h-4 ${isAppointmentsActive ? 'text-white' : 'text-emerald-600'}`} />
-        <span>Lịch khám</span>
-      </Link>
-
-      <Link
-        href="/patient/family"
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
-          isFamilyActive
-            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
-            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-        }`}
-      >
-        <Users className={`w-4 h-4 ${isFamilyActive ? 'text-white' : 'text-blue-600'}`} />
-        <span>Hồ sơ gia đình</span>
-      </Link>
-
-      <button
-        onClick={() => handleTabClick('doctor')}
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
-          isDoctorActive
-            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
-            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-        }`}
-        type="button"
-      >
-        <Stethoscope className={`w-4 h-4 ${isDoctorActive ? 'text-white' : 'text-blue-600'}`} />
-        <span>Bác sĩ</span>
-      </button>
-
-      <button
-        onClick={() => handleTabClick('hospital')}
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
-          isHospitalActive
-            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
-            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-        }`}
-        type="button"
-      >
-        <Building2 className={`w-4 h-4 ${isHospitalActive ? 'text-white' : 'text-slate-400'}`} />
-        <span>Bệnh viện</span>
-      </button>
-
-      <Link
-        href="/news"
-        className={`transition-all duration-200 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl ${
-          isNewsActive
-            ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20'
-            : 'text-slate-700 hover:text-blue-600 hover:bg-slate-50'
-        }`}
-      >
-        <Newspaper className={`w-4 h-4 ${isNewsActive ? 'text-white' : 'text-slate-400'}`} />
-        <span>Tin tức</span>
-      </Link>
+    <nav aria-label={mobile ? 'Điều hướng trên điện thoại' : 'Thanh điều hướng chính'} className={mobile ? 'space-y-1' : 'hidden items-center gap-2 text-sm font-semibold xl:flex [header:has([data-search-open=true])_&]:invisible'}>
+      {links.map(({ href, label, Icon, active, tab }) => (
+        <Link key={href} href={href} aria-current={active ? 'page' : undefined} onClick={(event) => {
+          onCloseMobile?.();
+          if (tab && pathname === '/' && onSelectTab) {
+            const section = document.getElementById('sub-nav-tabs');
+            if (section) {
+              event.preventDefault();
+              onSelectTab(tab);
+              section.scrollIntoView({ behavior: 'smooth' });
+            }
+          }
+        }} className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${mobile ? 'w-full' : ''} ${active ? 'bg-blue-600 text-white shadow-sm' : href === '/booking' ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'}`}>
+          <Icon className="size-4" aria-hidden="true" />{label}
+        </Link>
+      ))}
     </nav>
   );
 }
 
 function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
-  if (mobile) {
-    return (
-      <div className="space-y-2">
-        <div className="h-10 bg-slate-50 rounded-xl"></div>
-        <div className="h-10 bg-slate-50 rounded-xl"></div>
-        <div className="h-10 bg-slate-50 rounded-xl"></div>
-        <div className="h-10 bg-slate-50 rounded-xl"></div>
-      </div>
-    );
-  }
-  return (
-    <nav className="hidden lg:flex items-center space-x-2 text-sm font-semibold">
-      <div className="px-3 py-2 text-blue-700 flex items-center gap-1.5">
-        <CalendarClock className="w-4 h-4 text-blue-600" />
-        <span>Đặt lịch</span>
-      </div>
-      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
-        <CalendarDays className="w-4 h-4 text-emerald-600" />
-        <span>Lịch khám</span>
-      </div>
-      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
-        <Users className="w-4 h-4 text-blue-600" />
-        <span>Hồ sơ gia đình</span>
-      </div>
-      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
-        <Stethoscope className="w-4 h-4 text-blue-600" />
-        <span>Bác sĩ</span>
-      </div>
-      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
-        <Building2 className="w-4 h-4 text-slate-400" />
-        <span>Bệnh viện</span>
-      </div>
-      <div className="px-3 py-2 text-slate-700 flex items-center gap-1.5">
-        <Newspaper className="w-4 h-4 text-slate-400" />
-        <span>Tin tức</span>
-      </div>
-    </nav>
-  );
+  return <div aria-hidden="true" className={mobile ? 'h-44 animate-pulse rounded-lg bg-slate-50' : 'hidden h-10 w-96 animate-pulse rounded-lg bg-slate-50 xl:block'} />;
 }
 
-export const PublicHeader: React.FC<PublicHeaderProps> = ({ onSelectTab }) => {
+export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { state, isAuthenticated, isPreview } = usePatientNavigation();
 
-  useEffect(() => {
-    const syncAuthentication = () => setIsAuthenticated(hasStoredPatientSession());
-    syncAuthentication();
-    window.addEventListener('storage', syncAuthentication);
-    return () => window.removeEventListener('storage', syncAuthentication);
-  }, []);
-
-  const handleLogout = async () => {
+  async function handleLogout() {
     if (isLoggingOut) return;
+    if (isPreview) {
+      setAuthPreviewMode('guest');
+      setMobileMenuOpen(false);
+      router.replace('/');
+      return;
+    }
+
     setIsLoggingOut(true);
     const token = getStoredPatientToken();
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         cache: 'no-store',
       });
     } catch {
-      // Bỏ qua lỗi mạng – vẫn xóa session phía client
+      // Clear the local session even when the logout endpoint is unavailable.
     } finally {
       clearPatientSession();
       setIsLoggingOut(false);
       setMobileMenuOpen(false);
-      router.replace('/patient/login');
+      router.replace('/');
     }
-  };
+  }
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm" data-purpose="site-navigation-header">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Logo MedConnect */}
-        <Link aria-label="MedConnect Trang chủ" className="flex items-center gap-2.5 group" href="/">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-            <Activity className="w-5 h-5" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-extrabold tracking-tight text-blue-600 leading-none">
-              Med<span className="text-emerald-500">Connect</span>
-            </span>
-            <span className="text-[10px] tracking-wider text-slate-400 font-semibold uppercase mt-0.5">
-              Y tế &amp; Sức khỏe
-            </span>
-          </div>
+    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-md" data-purpose="site-navigation-header">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
+        <Link aria-label="MedConnect Trang chủ" className="group flex shrink-0 items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 sm:gap-2.5" href="/" onClick={() => setMobileMenuOpen(false)}>
+          <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 text-white shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105 sm:size-10"><Activity className="size-5" /></span>
+          <span className="hidden flex-col min-[400px]:flex"><span className="text-lg leading-none font-extrabold tracking-tight text-blue-600 sm:text-2xl">Med<span className="text-emerald-500">Connect</span></span><span className="mt-0.5 text-[9px] font-semibold tracking-wider text-slate-400 uppercase sm:text-[10px]">Y tế &amp; Sức khỏe</span></span>
         </Link>
 
-        {/* Desktop Nav Links */}
-        <Suspense fallback={<NavLinksFallback />}>
-          <NavLinksContent onSelectTab={onSelectTab} />
-        </Suspense>
+        <Suspense fallback={<NavLinksFallback />}><NavLinksContent onSelectTab={onSelectTab} /></Suspense>
 
-        {/* Account / Action Button */}
-        <div className="flex items-center space-x-3">
-          {isAuthenticated && <PatientNotificationBell />}
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <HeaderSearch onOpen={() => setMobileMenuOpen(false)} />
+          {isAuthenticated && !isPreview && <PatientNotificationBell />}
           {isAuthenticated ? (
-            <div className="hidden md:flex items-center gap-2">
-              <span
-                aria-label="Đã đăng nhập"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 text-blue-700"
-                title="Tài khoản bệnh nhân"
-              >
-                <CircleUserRound aria-hidden="true" className="h-5 w-5" />
-              </span>
-              <button
-                id="desktop-logout-btn"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                type="button"
-                aria-label="Đăng xuất"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-semibold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {isLoggingOut
-                  ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
-                  : <LogOut aria-hidden="true" className="h-4 w-4" />}
-                <span>{isLoggingOut ? 'Đang thoát...' : 'Đăng xuất'}</span>
-              </button>
-            </div>
+            <Suspense fallback={<span aria-hidden="true" className="size-10 rounded-lg bg-blue-50" />}>
+              <PatientAccountDropdown key={state} isPreview={isPreview} isLoggingOut={isLoggingOut} onLogout={() => void handleLogout()} />
+            </Suspense>
           ) : (
-            <Link
-              className="hidden md:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50/80 hover:bg-blue-100 border border-blue-200/80 rounded-lg transition-all"
-              href="/patient/login"
-            >
-              <User className="w-4 h-4 mr-2" />
-              <span>Đăng nhập</span>
-            </Link>
+            <Suspense fallback={<span aria-hidden="true" className="h-10 w-10 rounded-lg bg-blue-50 sm:w-32" />}>
+              <AuthContinuationLink page="login" onClick={() => { setAuthPreviewMode(null); setMobileMenuOpen(false); }} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-200/80 bg-blue-50/80 px-2.5 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4" aria-label="Đăng nhập"><User className="size-4" /><span className="hidden sm:inline">Đăng nhập</span></AuthContinuationLink>
+            </Suspense>
           )}
-
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2 text-slate-600 hover:text-blue-600 transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle navigation menu"
-            type="button"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <button type="button" className="rounded-lg p-1.5 text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 sm:p-2 xl:hidden" aria-label={mobileMenuOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng'} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" onClick={() => setMobileMenuOpen((value) => !value)}>{mobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}</button>
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-3 pb-6 space-y-3">
-          <Suspense fallback={<NavLinksFallback mobile />}>
-            <NavLinksContent
-              onSelectTab={onSelectTab}
-              mobile
-              onCloseMobile={() => setMobileMenuOpen(false)}
-            />
-          </Suspense>
-
-          <div className="pt-2">
-            {isAuthenticated ? (
-              <div className="flex flex-col gap-2">
-                <div
-                  aria-label="Đã đăng nhập"
-                  className="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-blue-700"
-                >
-                  <CircleUserRound aria-hidden="true" className="h-5 w-5" />
-                  <span>Tài khoản bệnh nhân</span>
-                </div>
-                <button
-                  id="mobile-logout-btn"
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  type="button"
-                  className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {isLoggingOut
-                    ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" />
-                    : <LogOut aria-hidden="true" className="h-4 w-4" />}
-                  <span>{isLoggingOut ? 'Đang thoát...' : 'Đăng xuất'}</span>
-                </button>
-              </div>
-            ) : (
-              <Link
-                className="w-full inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-all"
-                href="/patient/login"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <User className="w-4 h-4 mr-2" />
-                <span>Đăng nhập</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
+      {mobileMenuOpen && <div id="mobile-navigation" className="border-t border-slate-100 bg-white px-4 py-4 xl:hidden"><Suspense fallback={<NavLinksFallback mobile />}><NavLinksContent mobile onSelectTab={onSelectTab} onCloseMobile={() => setMobileMenuOpen(false)} /></Suspense></div>}
     </header>
   );
-};
+}

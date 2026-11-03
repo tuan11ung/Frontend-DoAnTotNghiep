@@ -1,3 +1,5 @@
+import { setAuthPreviewMode } from './auth-preview';
+
 export const AUTH_STORAGE_KEY = 'medconnect.auth';
 
 export interface AuthSession {
@@ -78,6 +80,7 @@ export function clearStoredAuthSession() {
   if (typeof window === 'undefined') return;
   window.localStorage.removeItem(AUTH_STORAGE_KEY);
   window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
+  setAuthPreviewMode(null);
   window.dispatchEvent(new StorageEvent('storage', { key: AUTH_STORAGE_KEY }));
 }
 
@@ -88,6 +91,7 @@ export function storeAuthSession(session: AuthSession, rememberMe: boolean) {
   window.sessionStorage.removeItem(AUTH_STORAGE_KEY);
   const storage = rememberMe ? window.localStorage : window.sessionStorage;
   storage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  setAuthPreviewMode(null);
   window.dispatchEvent(new StorageEvent('storage', { key: AUTH_STORAGE_KEY }));
 }
 

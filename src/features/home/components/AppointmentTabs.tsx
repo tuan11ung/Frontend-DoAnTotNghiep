@@ -16,7 +16,7 @@ export const AppointmentTabs: React.FC<AppointmentTabsProps> = ({ activeTab, onT
       data-purpose="quick-appointment-category-tabs"
       id="sub-nav-tabs"
     >
-      <div className="px-3 sm:px-6">
+      <div className="flex flex-col px-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
         <nav aria-label="Loại hình đặt khám" className="flex items-center justify-center sm:justify-start sm:gap-6 overflow-x-auto custom-scrollbar-hide">
           {/* Tab 1: Bác sĩ */}
           <button
@@ -28,6 +28,7 @@ export const AppointmentTabs: React.FC<AppointmentTabsProps> = ({ activeTab, onT
             onClick={() => onTabChange('doctor')}
             type="button"
             id="tab-btn-doctor"
+            aria-pressed={activeTab === 'doctor'}
           >
             <Stethoscope className={`w-4 h-4 ${activeTab === 'doctor' ? 'text-blue-600' : 'text-slate-400'}`} />
             <span>Đặt khám Bác sĩ</span>
@@ -43,10 +44,15 @@ export const AppointmentTabs: React.FC<AppointmentTabsProps> = ({ activeTab, onT
             onClick={() => onTabChange('hospital')}
             type="button"
             id="tab-btn-hospital"
+            aria-pressed={activeTab === 'hospital'}
           >
             <Hospital className={`w-4 h-4 ${activeTab === 'hospital' ? 'text-blue-600' : 'text-slate-400'}`} />
             <span>Đặt khám Bệnh viện</span>
           </button>
+        </nav>
+        <nav aria-label="Khám phá thông tin" className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-slate-100 px-3 py-3 text-[11px] font-semibold text-slate-500 lg:border-0 lg:px-0 lg:py-0">
+          <a href="#hospital-network" className="rounded-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600">Hệ thống bệnh viện ↗</a>
+          <a href="#home-knowledge" className="rounded-sm hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600">Cẩm nang & BHYT ↗</a>
         </nav>
       </div>
     </section>

@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { ArrowRight, HeartPulse, ShieldCheck } from 'lucide-react';
 import { LoginForm } from './components/LoginForm';
+import { AuthContinuationLink, BookingContinuationNotice } from './components/AuthContinuation';
 
 export function LoginPage() {
   return (
@@ -24,19 +24,20 @@ export function LoginPage() {
               <h2 className="text-xl font-bold text-slate-900 text-center">Đăng nhập</h2>
             </div>
 
+            <BookingContinuationNotice />
             <LoginForm />
 
             <div className="my-7 h-px bg-slate-100" />
 
             <p className="flex flex-wrap items-center justify-center gap-1.5 text-center text-sm text-slate-600">
               Chưa có tài khoản?
-              <Link
+              <AuthContinuationLink
                 className="inline-flex items-center gap-1 font-bold text-blue-700 transition-colors hover:text-blue-800"
-                href="/patient/register"
+                page="register"
               >
                 Đăng ký ngay
                 <ArrowRight aria-hidden="true" className="h-4 w-4" />
-              </Link>
+              </AuthContinuationLink>
             </p>
           </div>
         </div>

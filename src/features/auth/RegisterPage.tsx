@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   RegisterStep,
   RegisterFormValues,
@@ -12,6 +13,11 @@ import { RegisterFormStep } from './components/RegisterFormStep';
 import { RegisterOtpStep } from './components/RegisterOtpStep';
 import { RegisterSuccessStep } from './components/RegisterSuccessStep';
 import { ShieldCheck } from 'lucide-react';
+import { BookingContinuationNotice } from './components/AuthContinuation';
+import { useBookingReturnTo } from './hooks/use-booking-return-to';
+import { loginPatient } from './api/auth-api';
+import { createAuthSession, storeAuthSession } from './utils/auth-storage';
+import { getPostLoginDestination } from './utils/booking-return';
 
 const INITIAL_FORM_VALUES: RegisterFormValues = {
   fullName: '',
@@ -33,12 +39,15 @@ async function readApiResponse(response: Response): Promise<RegisterApiResponse 
 }
 
 export function RegisterPage() {
+  const router = useRouter();
+  const returnTo = useBookingReturnTo();
   const [currentStep, setCurrentStep] = useState<RegisterStep>('form');
   const [formValues, setFormValues] = useState<RegisterFormValues>(INITIAL_FORM_VALUES);
   const [accountId, setAccountId] = useState<number | null>(null);
   const [verificationDestination, setVerificationDestination] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [continuationError, setContinuationError] = useState<string | null>(null);
 
   const handleFormSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
@@ -106,6 +115,24 @@ export function RegisterPage() {
         return;
       }
 
+      if (returnTo) {
+        try {
+          const { accessToken, refreshToken } = await loginPatient({
+            login: formValues.email.trim() || formValues.phone.replace(/[\s.-]/g, ''),
+            password: formValues.password,
+          });
+          const session = createAuthSession(accessToken, refreshToken);
+          storeAuthSession(session, false);
+          setFormValues((values) => ({ ...values, password: '', confirmPassword: '' }));
+          router.replace(getPostLoginDestination(session.roles, returnTo));
+          return;
+        } catch {
+          // The account is already active; never send the user back to OTP verification.
+          setContinuationError('Tài khoản đã được kích hoạt. Vui lòng đăng nhập để tiếp tục đặt khám. Lựa chọn của bạn vẫn được giữ lại.');
+        }
+      }
+
+      setFormValues((values) => ({ ...values, password: '', confirmPassword: '' }));
       setCurrentStep('success');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch {
@@ -158,6 +185,7 @@ export function RegisterPage() {
 
       {/* Stepper Progress */}
       <RegisterStepper currentStep={currentStep} />
+      {currentStep !== 'success' && <BookingContinuationNotice />}
 
       {/* Main Step Cards */}
       <div className="w-full flex justify-center">
@@ -181,7 +209,7 @@ export function RegisterPage() {
         )}
 
         {currentStep === 'success' && (
-          <RegisterSuccessStep registeredData={formValues} />
+          <RegisterSuccessStep registeredData={formValues} continuationError={continuationError} />
         )}
       </div>
 

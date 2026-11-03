@@ -1,0 +1,56 @@
+.reception-portal .reception-card {
+  border: 1px solid var(--color-slate-200);
+  border-radius: 16px;
+  background: white;
+}
+
+.reception-portal .reception-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-slate-600);
+}
+
+.reception-portal .reception-input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  border: 1px solid var(--color-slate-200);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: white;
+  font-size: 13px;
+  color: var(--color-slate-700);
+  outline: none;
+}
+
+.reception-portal .reception-input:focus {
+  border-color: var(--color-blue-400);
+  box-shadow: 0 0 0 3px var(--color-blue-50);
+}
+
+.reception-portal .reception-primary,
+.reception-portal .reception-secondary {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  transition: background-color 150ms, border-color 150ms;
+}
+
+.reception-portal .reception-primary { background: var(--color-medblue-600); color: white; }
+.reception-portal .reception-primary:hover { background: var(--color-medblue-700); }
+.reception-portal .reception-secondary { background: white; border-color: var(--color-slate-200); color: var(--color-slate-600); }
+.reception-portal .reception-secondary:hover { background: var(--color-slate-50); border-color: var(--color-blue-200); }
+.reception-portal .reception-primary:focus-visible,
+.reception-portal .reception-secondary:focus-visible { outline: 2px solid var(--color-blue-600); outline-offset: 2px; }
+.reception-portal button:not(:disabled) { cursor: pointer; }
+.reception-portal button:disabled { cursor: not-allowed; opacity: 0.45; }

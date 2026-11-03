@@ -5,6 +5,8 @@ import { AppointmentTabType } from '@/src/shared/types/medical';
 import { HeroSection } from './components/HeroSection';
 import { AppointmentContainer } from './components/AppointmentContainer';
 import { TrustAndValuesSection } from './components/TrustAndValuesSection';
+import { HospitalNetworkSection } from './components/HospitalNetworkSection';
+import { HomeKnowledgeSection } from './components/HomeKnowledgeSection';
 
 export function HomePage() {
   const [activeTab, setActiveTab] = useState<AppointmentTabType>('doctor');
@@ -21,7 +23,10 @@ export function HomePage() {
       {/* 2. Interactive Appointment Container (Tabs + Content) */}
       <AppointmentContainer currentTab={activeTab} onTabChange={handleSelectTab} />
 
-      {/* 3. Trust & Core Values */}
+      <HospitalNetworkSection />
+      <HomeKnowledgeSection />
+
+      {/* Trust & Core Values */}
       <TrustAndValuesSection onSelectTab={handleSelectTab} />
     </div>
   );

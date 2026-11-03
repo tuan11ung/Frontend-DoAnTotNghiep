@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, type FormEvent, type ChangeEvent } from 'react';
-import Link from 'next/link';
+import { AuthContinuationLink } from './AuthContinuation';
 import {
   UserRound,
   Calendar,
@@ -477,13 +477,13 @@ export function RegisterFormStep({
         {/* Link back to login */}
         <div className="pt-4 text-center border-t border-slate-100 flex items-center justify-center gap-1.5 text-sm">
           <span className="text-slate-500">Đã có tài khoản?</span>
-          <Link
-            href="/patient/login"
+          <AuthContinuationLink
+            page="login"
             className="text-blue-600 font-bold hover:text-blue-700 hover:underline inline-flex items-center gap-1"
           >
             <span>Đăng nhập ngay</span>
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </AuthContinuationLink>
         </div>
       </form>
     </div>

@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  User,
   Building2,
   Stethoscope,
   Video,
@@ -20,6 +19,7 @@ import { DictionaryItem, DictionaryTab } from '../types';
 
 interface NewsDictionarySectionProps {
   dictionaryItems: DictionaryItem[];
+  initialItemId?: string | null;
 }
 
 const ALPHABET = [
@@ -36,11 +36,13 @@ const TABS: { key: DictionaryTab; label: string }[] = [
 
 export const NewsDictionarySection: React.FC<NewsDictionarySectionProps> = ({
   dictionaryItems,
+  initialItemId,
 }) => {
-  const [activeTab, setActiveTab] = useState<DictionaryTab>('thuoc');
+  const initialItem = dictionaryItems.find((item) => item.id === initialItemId) || null;
+  const [activeTab, setActiveTab] = useState<DictionaryTab>(initialItem?.category || 'thuoc');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLetter, setSelectedLetter] = useState<string>('W');
-  const [selectedItem, setSelectedItem] = useState<DictionaryItem | null>(null);
+  const [selectedLetter, setSelectedLetter] = useState<string>(initialItem?.firstLetter || 'W');
+  const [selectedItem, setSelectedItem] = useState<DictionaryItem | null>(initialItem);
 
   const filteredItems = useMemo(() => {
     return dictionaryItems.filter((item) => {
@@ -294,7 +296,7 @@ export const NewsDictionarySection: React.FC<NewsDictionarySectionProps> = ({
             <div className="text-center py-12 px-4 rounded-xl border border-dashed border-slate-200 bg-slate-50">
               <Pill className="w-8 h-8 text-slate-400 mx-auto mb-2" />
               <p className="text-sm font-semibold text-slate-700">
-                Không tìm thấy kết quả phù hợp cho "{searchQuery || selectedLetter}"
+                Không tìm thấy kết quả phù hợp cho &ldquo;{searchQuery || selectedLetter}&rdquo;
               </p>
               <p className="text-xs text-slate-500 mt-1">
                 Vui lòng thử chọn chữ cái khác hoặc tìm kiếm với từ khóa khác.
@@ -319,6 +321,7 @@ export const NewsDictionarySection: React.FC<NewsDictionarySectionProps> = ({
         <div
           role="dialog"
           aria-modal="true"
+          aria-label={selectedItem.name}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
         >
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">

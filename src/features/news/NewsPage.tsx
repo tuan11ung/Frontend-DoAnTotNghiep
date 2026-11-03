@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { NEWS_ARTICLES } from './utils/news-articles';
 import {
   MOCK_FEATURED_HIGHLIGHTS,
   MOCK_DICTIONARY_ITEMS,
@@ -20,10 +22,17 @@ import { NewsAdvisoryBoard } from './components/NewsAdvisoryBoard';
 import { NewsCommitmentTrust } from './components/NewsCommitmentTrust';
 import { NewsSectionArticles } from './components/NewsSectionArticles';
 import { NewsArticleModal } from './components/NewsArticleModal';
-import { NewsArticleItem, TopicItem, FeaturedHighlightItem } from './types';
+import { NewsArticleItem, FeaturedHighlightItem } from './types';
 
 export const NewsPage: React.FC = () => {
-  const [selectedArticle, setSelectedArticle] = useState<NewsArticleItem | null>(null);
+  const params = useSearchParams();
+  const articleId = params.get('article');
+  const dictionaryId = params.get('dictionary');
+  return <NewsContent key={`${articleId || ''}:${dictionaryId || ''}`} initialArticle={NEWS_ARTICLES.find((article) => article.id === articleId) || null} initialDictionaryId={dictionaryId} />;
+};
+
+function NewsContent({ initialArticle, initialDictionaryId }: { initialArticle: NewsArticleItem | null; initialDictionaryId: string | null }) {
+  const [selectedArticle, setSelectedArticle] = useState<NewsArticleItem | null>(initialArticle);
 
   const handleSelectHighlight = (highlight: FeaturedHighlightItem) => {
     // Open article modal with highlight details
@@ -39,7 +48,7 @@ export const NewsPage: React.FC = () => {
     });
   };
 
-  const handleSelectTopic = (topic: TopicItem) => {
+  const handleSelectTopic = () => {
     // Scroll to dictionary or show notification
     const dictEl = document.getElementById('medical-dictionary');
     if (dictEl) {
@@ -61,7 +70,7 @@ export const NewsPage: React.FC = () => {
         />
 
         {/* Section 2: Medical Dictionary & Quick Services */}
-        <NewsDictionarySection dictionaryItems={MOCK_DICTIONARY_ITEMS} />
+        <NewsDictionarySection dictionaryItems={MOCK_DICTIONARY_ITEMS} initialItemId={initialDictionaryId} />
 
         {/* Section 3: Popular Topics (12 Topics) */}
         <NewsPopularTopics

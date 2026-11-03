@@ -6,9 +6,12 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react';
 import { createAuthSession, storeAuthSession } from '../utils/auth-storage';
 import { loginPatient, LoginApiError } from '../api/auth-api';
+import { useBookingReturnTo } from '../hooks/use-booking-return-to';
+import { getPostLoginDestination } from '../utils/booking-return';
 
 export function LoginForm() {
   const router = useRouter();
+  const returnTo = useBookingReturnTo();
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [login, setLogin] = useState('');
@@ -34,12 +37,7 @@ export function LoginForm() {
 
       const authSession = createAuthSession(accessToken, refreshToken);
       storeAuthSession(authSession, rememberMe);
-      const redirectPath = authSession.roles.includes('SUPER_ADMIN')
-        ? '/admin/system'
-        : authSession.roles.includes('HOSPITAL_ADMIN')
-          ? '/admin/facility'
-          : '/';
-      router.replace(redirectPath);
+      router.replace(getPostLoginDestination(authSession.roles, returnTo));
     } catch (error) {
       showLoginError(
         error instanceof LoginApiError

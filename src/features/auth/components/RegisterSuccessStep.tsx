@@ -13,12 +13,17 @@ import {
   CreditCard,
 } from 'lucide-react';
 import { RegisterFormValues } from '../models/types/register.types';
+import { useBookingReturnTo } from '../hooks/use-booking-return-to';
+import { getPatientAuthHref } from '../utils/booking-return';
 
 interface RegisterSuccessStepProps {
   registeredData: RegisterFormValues;
+  continuationError?: string | null;
 }
 
-export function RegisterSuccessStep({ registeredData }: RegisterSuccessStepProps) {
+export function RegisterSuccessStep({ registeredData, continuationError }: RegisterSuccessStepProps) {
+  const returnTo = useBookingReturnTo();
+
   return (
     <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-200/80 p-6 md:p-8 relative overflow-hidden transition-all">
       {/* Top accent line */}
@@ -102,17 +107,22 @@ export function RegisterSuccessStep({ registeredData }: RegisterSuccessStepProps
       </div>
 
       {/* Actions */}
+      {continuationError && (
+        <p className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900" role="status">
+          {continuationError}
+        </p>
+      )}
       <div className="mt-6 flex flex-col gap-2.5">
         <Link
-          href="/booking"
+          href={getPatientAuthHref('login', returnTo || '/booking')}
           className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all text-sm"
         >
           <CalendarClock className="w-4 h-4" />
-          <span>Đặt khám ngay</span>
+          <span>{returnTo ? 'Đăng nhập để tiếp tục đặt khám' : 'Đăng nhập để đặt khám'}</span>
         </Link>
 
         <Link
-          href="/patient/login"
+          href={getPatientAuthHref('login', returnTo)}
           className="w-full h-11 border border-slate-200 hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-semibold rounded-lg flex items-center justify-center gap-2 transition-all text-sm"
         >
           <LogIn className="w-4 h-4" />

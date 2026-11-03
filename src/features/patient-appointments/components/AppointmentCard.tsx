@@ -2,22 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Calendar,
-  Clock,
   Building2,
   MapPin,
   Stethoscope,
   QrCode,
-  XCircle,
-  CheckCircle2,
   AlertCircle,
   FileText,
   User,
-  HeartHandshake,
   RotateCcw,
-  Sparkles,
 } from 'lucide-react';
 import {
   PatientAppointment,
@@ -186,14 +180,13 @@ export function AppointmentCard({
 
           {/* Lịch hoàn tất: Xem kết quả */}
           {isCompleted && (
-            <button
-              onClick={() => alert(`Lượt khám của ${appointment.patientName} ngày ${appointment.workDate} đã có kết quả chẩn đoán và đơn thuốc điện tử trên hệ thống.`)}
-              type="button"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all cursor-pointer"
+            <Link
+              href={{ pathname: '/patient/results', query: { encounter: appointment.id } }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Xem kết quả khám</span>
-            </button>
+            </Link>
           )}
 
           {/* Lịch đã hủy: Nút đặt lại */}
