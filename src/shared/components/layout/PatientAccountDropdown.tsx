@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, ChevronDown, CircleUserRound, ClipboardList, LoaderCircle, LogOut, Users } from 'lucide-react';
+import { CalendarDays, ChevronDown, CircleUserRound, ClipboardList, LoaderCircle, LogOut, Users, Wallet } from 'lucide-react';
 
 const accountLinks = [
-  { href: '/patient/appointments', label: 'Lịch khám', Icon: CalendarDays },
+  { href: '/patient/profile', label: 'Hồ sơ cá nhân', Icon: CircleUserRound },
+  { href: '/patient/appointments', label: 'Xem lịch khám', Icon: CalendarDays },
   { href: '/patient/results', label: 'Kết quả khám', Icon: ClipboardList },
+  { href: '/patient/payments', label: 'Thanh toán & hóa đơn', Icon: Wallet },
   { href: '/patient/family', label: 'Hồ sơ gia đình', Icon: Users },
 ];
 

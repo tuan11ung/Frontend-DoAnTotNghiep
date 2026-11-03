@@ -1,10 +1,11 @@
 import type { PatientNotification } from '../models/types/notification.types';
+import { isNotification } from './notification-validation';
 
 const RECONNECT_DELAY_MS = 5000;
 
 function websocketUrl() {
   if (process.env.NEXT_PUBLIC_BACKEND_WS_URL) return process.env.NEXT_PUBLIC_BACKEND_WS_URL;
-  return 'ws://localhost:8081/api/v1/ws';
+  return process.env.NODE_ENV === 'development' ? 'ws://localhost:8081/api/v1/ws' : null;
 }
 
 function frame(command: string, headers: Record<string, string>) {
@@ -26,6 +27,8 @@ export function connectPatientNotificationSocket(
   accessToken: string,
   onNotification: (notification: PatientNotification) => void,
 ) {
+  const url = websocketUrl();
+  if (!url) return () => {};
   let active = true;
   let socket: WebSocket | null = null;
   let reconnectTimer: number | undefined;
@@ -33,7 +36,7 @@ export function connectPatientNotificationSocket(
   const connect = () => {
     if (!active) return;
     try {
-      socket = new WebSocket(websocketUrl());
+      socket = new WebSocket(url);
     } catch {
       reconnectTimer = window.setTimeout(connect, RECONNECT_DELAY_MS);
       return;
@@ -56,7 +59,8 @@ export function connectPatientNotificationSocket(
           }));
         } else if (incoming.command === 'MESSAGE') {
           try {
-            onNotification(JSON.parse(incoming.body) as PatientNotification);
+            const notification: unknown = JSON.parse(incoming.body);
+            if (isNotification(notification)) onNotification(notification);
           } catch {
             // Bỏ qua frame không đúng định dạng notification.
           }

@@ -6,12 +6,12 @@ Route `/reception` có sidebar và khung làm việc độc lập, không dùng 
 
 - `/reception`: tra cứu theo tên có/không dấu, CCCD, số điện thoại hoặc mã bệnh nhân. Hiển thị thông tin định danh đã che bớt, đối chiếu hồ sơ rồi chuyển sang đăng ký khám. Có luồng tạo hồ sơ mới, kiểm tra trùng CCCD/số điện thoại và xác nhận trước khi tạo.
 - `/reception?tab=registration`: chọn bệnh nhân, chuyên khoa, mức khám, bác sĩ, lý do khám và nhãn ưu tiên. Xem phí, xác nhận rồi tạo lượt và số thứ tự theo phòng/ngày; tải phiếu khám dạng văn bản. Chặn lượt đang tiếp nhận trùng chuyên khoa.
-- `/reception?tab=checkin`: nhập mã lịch hẹn hoặc nội dung QR dạng `MEDCONNECT:AP-1001` / `MEDCONNECT-CHECKIN-AP-1001`; hỗ trợ máy quét như bàn phím. Đối chiếu, xác nhận và cấp số. Chặn check-in trùng, lịch đã hủy hoặc khác ngày.
+- `/reception?tab=checkin`: có thêm khu vực **Lịch hẹn từ cổng bệnh nhân** để nhận mã/QR và đồng bộ trạng thái Đang diễn ra cùng hàng chờ sang cổng bệnh nhân. Bộ AP-1001 cũ vẫn nhận `MEDCONNECT:AP-1001` / `MEDCONNECT-CHECKIN-AP-1001`. Hỗ trợ máy quét dạng bàn phím, chặn check-in trùng, lịch đã hủy hoặc khác ngày. Xem [luồng thử hai tab](appointments-tracking.md).
 - `/reception?tab=checkout`: tìm lượt khám, xem bảng kê, giảm trừ/tạm ứng, mô phỏng thu tiền mặt (kiểm tra số tiền và tính tiền trả lại) hoặc chuyển khoản (nhập tham chiếu). Xác nhận trước khi ghi nhận, chặn thu trùng và chặn ca chưa hoàn tất. Tải biên lai văn bản, ghi rõ không có giá trị thanh toán.
 
 ## Dữ liệu và cách thử
 
-Đây là bản giao diện mô phỏng, chưa có API lễ tân, phiên nhân viên hoặc phân quyền backend. Chỉ dùng thông tin giả. Lưu riêng trong `medconnect.reception-demo.v1`, không đọc/ghi token, hồ sơ hay thanh toán của cổng bệnh nhân. Dữ liệu được giữ khi tải lại, cập nhật giữa các tab trình duyệt cùng origin.
+Đây là bản giao diện mô phỏng, chưa có API lễ tân, phiên nhân viên hoặc phân quyền backend. Chỉ dùng thông tin giả. Bộ tiếp đón AP-1001 cũ lưu riêng trong `medconnect.reception-demo.v1`. Khu vực tiếp nhận từ cổng bệnh nhân đọc lịch ở `medconnect.patient_appointments` và ghi trạng thái tiếp nhận/hàng chờ ở `medconnect.appointment-queue-demo.v1`; không đọc/ghi token, hồ sơ hoặc thanh toán. Dữ liệu được giữ khi tải lại, cập nhật giữa các tab trình duyệt cùng origin.
 
 Ngày làm việc mẫu cố định là **03/11/2026**. Giá tiền và giảm trừ đều là số mẫu, không mô phỏng quy tắc chi trả BHYT hoặc quyết toán thật.
 

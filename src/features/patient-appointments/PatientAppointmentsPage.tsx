@@ -9,9 +9,7 @@ import {
   Home,
   ChevronRight,
   Search,
-  Filter,
   Users,
-  Building2,
   Sparkles,
   AlertCircle,
   PlusCircle,
@@ -22,22 +20,27 @@ import { AppointmentCard } from './components/AppointmentCard';
 import { AppointmentFilterTabs } from './components/AppointmentFilterTabs';
 import { CancelAppointmentDialog } from './workflow/CancelAppointmentDialog';
 import { AppointmentQrDialog } from './workflow/AppointmentQrDialog';
+import { AppointmentQueueDialog } from './workflow/AppointmentQueueDialog';
+import { findAppointmentQueue } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { PatientAppointment, AppointmentFilterTab } from './models/types/appointment.types';
 
 export function PatientAppointmentsPage() {
   const searchParams = useSearchParams();
   const initialTarget = searchParams.get('target') || 'ALL';
 
-  const { appointments, loading, cancelAppointment } = usePatientAppointments();
+  const { appointments, loading, storageError, queueError, rooms, cancelAppointment } = usePatientAppointments();
   const { members } = useFamilyMembers();
 
   // Filters state
-  const [currentTab, setCurrentTab] = useState<AppointmentFilterTab>('UPCOMING');
+  const [currentTab, setCurrentTab] = useState<AppointmentFilterTab>(searchParams.get('tab') === 'ongoing' ? 'ONGOING' : 'UPCOMING');
   const [selectedProfile, setSelectedProfile] = useState<string>(initialTarget);
   const [searchQuery, setSearchQuery] = useState('');
 
   // Workflow Dialogs
-  const [qrAppointment, setQrAppointment] = useState<PatientAppointment | null>(null);
+  const [qrAppointmentId, setQrAppointmentId] = useState<string | null>(null);
+  const [queueAppointmentId, setQueueAppointmentId] = useState<string | null>(null);
+  const qrAppointment = appointments.find((appointment) => appointment.id === qrAppointmentId) || null;
+  const queueAppointment = appointments.find((appointment) => appointment.id === queueAppointmentId) || null;
   const [cancelTarget, setCancelTarget] = useState<PatientAppointment | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -46,13 +49,14 @@ export function PatientAppointmentsPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleConfirmCancel = (id: string, reason: string) => {
-    const res = cancelAppointment(id, reason);
+  const handleConfirmCancel = async (id: string, reason: string) => {
+    const res = await cancelAppointment(id, reason);
     if (res.success) {
       showToast(`Đã hủy lịch hẹn ${res.appointment?.code} thành công.`);
     } else {
       showToast(res.error || 'Có lỗi xảy ra khi hủy lịch.');
     }
+    return res.success;
   };
 
   // Lọc danh sách lịch hẹn
@@ -60,7 +64,9 @@ export function PatientAppointmentsPage() {
     return appointments.filter((apt) => {
       // 1. Tab filter
       if (currentTab === 'UPCOMING') {
-        if (!['BOOKED', 'CHECKED_IN', 'IN_PROGRESS'].includes(apt.status)) return false;
+        if (apt.status !== 'BOOKED') return false;
+      } else if (currentTab === 'ONGOING') {
+        if (!['CHECKED_IN', 'IN_PROGRESS'].includes(apt.status)) return false;
       } else if (currentTab === 'HISTORY') {
         if (!['COMPLETED', 'NO_SHOW'].includes(apt.status)) return false;
       } else if (currentTab === 'CANCELLED') {
@@ -90,7 +96,7 @@ export function PatientAppointmentsPage() {
     });
   }, [appointments, currentTab, selectedProfile, searchQuery]);
 
-  // Counts cho 3 tab
+  // Counts use the same status rules as the filtered lists.
   const tabCounts = useMemo(() => {
     const baseList = selectedProfile === 'ALL'
       ? appointments
@@ -99,7 +105,8 @@ export function PatientAppointmentsPage() {
       : appointments.filter((a) => a.patientId === selectedProfile);
 
     return {
-      upcoming: baseList.filter((a) => ['BOOKED', 'CHECKED_IN', 'IN_PROGRESS'].includes(a.status)).length,
+      upcoming: baseList.filter((a) => a.status === 'BOOKED').length,
+      ongoing: baseList.filter((a) => ['CHECKED_IN', 'IN_PROGRESS'].includes(a.status)).length,
       history: baseList.filter((a) => ['COMPLETED', 'NO_SHOW'].includes(a.status)).length,
       cancelled: baseList.filter((a) => a.status === 'CANCELLED').length,
     };
@@ -155,11 +162,12 @@ export function PatientAppointmentsPage() {
           {/* Dropdown chọn Hồ sơ (Mục 8.1: Bản thân / từng người nhà) */}
           <div className="flex items-center gap-2.5 w-full md:w-auto">
             <Users className="w-4 h-4 text-blue-600 shrink-0" />
-            <label className="text-xs font-bold text-slate-700 whitespace-nowrap">Hồ sơ khám:</label>
+            <label htmlFor="appointment-profile" className="text-xs font-bold text-slate-700 whitespace-nowrap">Hồ sơ khám:</label>
             <select
+              id="appointment-profile"
               value={selectedProfile}
               onChange={(e) => setSelectedProfile(e.target.value)}
-              className="px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all text-slate-800"
+              className="min-w-0 flex-1 px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all text-slate-800"
             >
               <option value="ALL">Toàn bộ gia đình (Tất cả)</option>
               <option value="SELF">Bản thân (Nguyễn Văn An)</option>
@@ -173,9 +181,11 @@ export function PatientAppointmentsPage() {
 
           {/* Search box */}
           <div className="relative w-full md:w-80">
+            <label htmlFor="appointment-search" className="sr-only">Tìm lịch hẹn</label>
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
+              id="appointment-search"
               placeholder="Tìm mã lịch, bệnh viện, bác sĩ..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -184,7 +194,10 @@ export function PatientAppointmentsPage() {
           </div>
         </div>
 
-        {/* Tabs Filter (Sắp tới / Lịch sử khám / Đã hủy) */}
+        {(storageError || queueError) && <p role="alert" className="mb-5 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />Không thể đọc đầy đủ dữ liệu lịch hẹn hoặc hàng chờ trong trình duyệt. Vui lòng kiểm tra dữ liệu lưu trữ; không cấp số hoặc hủy lịch khi dữ liệu không hợp lệ.</p>}
+        {currentTab === 'UPCOMING' && tabCounts.ongoing > 0 && <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-xs text-emerald-900"><p><strong>{tabCounts.ongoing}</strong> lịch đã check-in đang diễn ra.</p><button type="button" onClick={() => setCurrentTab('ONGOING')} className="rounded-lg px-3 py-2 font-bold hover:bg-emerald-100">Xem số thứ tự & phòng khám →</button></div>}
+
+        {/* Appointment status tabs */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden mb-6">
           <div className="px-6 pt-3">
             <AppointmentFilterTabs
@@ -206,6 +219,8 @@ export function PatientAppointmentsPage() {
             <h3 className="text-lg font-bold text-slate-800">
               {currentTab === 'UPCOMING'
                 ? 'Không có lịch khám sắp tới nào'
+                : currentTab === 'ONGOING'
+                ? 'Chưa có lịch khám đang diễn ra'
                 : currentTab === 'CANCELLED'
                 ? 'Không có lịch khám đã hủy'
                 : 'Chưa có lịch sử khám bệnh'}
@@ -213,7 +228,7 @@ export function PatientAppointmentsPage() {
             <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-6">
               {currentTab === 'UPCOMING'
                 ? 'Bạn hiện chưa có cuộc hẹn khám bệnh nào sắp diễn ra cho hồ sơ đang chọn.'
-                : 'Các thông tin lịch hẹn đã qua hoặc hủy sẽ được lưu giữ tại đây.'}
+                : currentTab === 'ONGOING' ? 'Sau khi lễ tân check-in, lịch hẹn sẽ xuất hiện tại đây để theo dõi phòng và số thứ tự.' : 'Các thông tin lịch hẹn đã qua hoặc hủy sẽ được lưu giữ tại đây.'}
             </p>
             <Link
               href="/booking"
@@ -229,8 +244,10 @@ export function PatientAppointmentsPage() {
               <AppointmentCard
                 key={apt.id}
                 appointment={apt}
-                onOpenQr={(a) => setQrAppointment(a)}
+                onOpenQr={(a) => setQrAppointmentId(a.id)}
                 onOpenCancel={(a) => setCancelTarget(a)}
+                onOpenQueue={(a) => setQueueAppointmentId(a.id)}
+                queueRoom={findAppointmentQueue(rooms, apt)}
               />
             ))}
           </div>
@@ -239,7 +256,7 @@ export function PatientAppointmentsPage() {
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5 border border-slate-700 animate-in slide-in-from-bottom duration-200">
+        <div role="status" className="fixed bottom-6 right-6 z-50 max-w-[calc(100vw-3rem)] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2.5 border border-slate-700 animate-in slide-in-from-bottom duration-200">
           <Sparkles className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -249,10 +266,13 @@ export function PatientAppointmentsPage() {
       <AppointmentQrDialog
         isOpen={Boolean(qrAppointment)}
         appointment={qrAppointment}
-        onClose={() => setQrAppointment(null)}
+        onClose={() => setQrAppointmentId(null)}
       />
 
+      <AppointmentQueueDialog appointment={queueAppointment} room={queueAppointment ? findAppointmentQueue(rooms, queueAppointment) : undefined} onClose={() => setQueueAppointmentId(null)} />
+
       <CancelAppointmentDialog
+        key={cancelTarget?.id || 'closed'}
         isOpen={Boolean(cancelTarget)}
         appointment={cancelTarget}
         onClose={() => setCancelTarget(null)}

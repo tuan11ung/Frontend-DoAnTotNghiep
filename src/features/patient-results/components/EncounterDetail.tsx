@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, ClipboardList, FileClock, MapPin, Pill, Receipt, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, ClipboardList, FileClock, MapPin, Pill, ShieldCheck } from 'lucide-react';
 import type { ResultEncounter, ResultPatient } from '../models/types/patient-results.types';
 import { ClinicalServiceList } from './ClinicalServiceList';
 import { EncounterCard } from './EncounterCard';
 import { EncounterOverview } from './EncounterOverview';
 import { patientResultsHref } from '../utils/result-format';
+import { EncounterBillingLink } from '@/src/features/patient-payments/components/EncounterBillingLink';
 
 const tabs = [
   { id: 'overview', label: 'Tổng quan' }, { id: 'services', label: 'Dịch vụ' },
@@ -30,7 +31,8 @@ export function EncounterDetail({ encounter, patient }: { encounter: ResultEncou
         {tab.id !== 'services' && <EncounterCard encounter={encounter} patient={patient} detail />}
         {tab.id === 'overview' && <EncounterOverview encounter={encounter} />}
         {tab.id === 'services' && <ClinicalServiceList key={`${encounter.id}:${group}:${status}`} encounter={encounter} initialGroup={group} initialStatus={status} />}
-        {(tab.id === 'prescriptions' || tab.id === 'billing') && <section role="status" className="rounded-2xl border border-slate-200 bg-white px-5 py-12 text-center">{tab.id === 'prescriptions' ? <Pill aria-hidden="true" className="mx-auto mb-4 size-10 text-blue-300" /> : <Receipt aria-hidden="true" className="mx-auto mb-4 size-10 text-blue-300" />}<h2 className="text-base font-bold text-slate-800">{tab.id === 'prescriptions' ? 'Chưa có dữ liệu đơn thuốc' : 'Chưa có dữ liệu viện phí'}</h2><p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-slate-500">{tab.id === 'prescriptions' ? 'Đơn thuốc sẽ hiển thị khi được bác sĩ kê và công bố cho ca khám này.' : 'Thông tin chi phí và thanh toán sẽ hiển thị khi được cơ sở y tế cập nhật.'}</p></section>}
+        {tab.id === 'billing' && <EncounterBillingLink profileId={patient.id} encounterId={encounter.id} />}
+        {tab.id === 'prescriptions' && <section role="status" className="rounded-2xl border border-slate-200 bg-white px-5 py-12 text-center"><Pill aria-hidden="true" className="mx-auto mb-4 size-10 text-blue-300" /><h2 className="text-base font-bold text-slate-800">Chưa có dữ liệu đơn thuốc</h2><p className="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-slate-500">Đơn thuốc sẽ hiển thị khi được bác sĩ kê và công bố cho ca khám này.</p></section>}
       </div>
       <aside className="hidden space-y-4 lg:block">
         <section className="rounded-2xl border border-slate-200 bg-white p-5"><div className="mb-4 flex items-center gap-2 text-sm font-bold text-slate-800"><ClipboardList className="size-4 text-blue-700" />Thông tin tiếp đón</div><p className="text-xs font-semibold text-blue-800">{patient.name}</p><p className="mt-2 text-xs leading-relaxed text-slate-500">{encounter.facilityName}<br />{encounter.specialty}</p><p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-slate-500"><MapPin className="mt-0.5 size-3.5 shrink-0" />{encounter.roomName}</p><p className="mt-4 border-t border-slate-100 pt-4 text-xs leading-relaxed text-slate-500">Bác sĩ chỉ định<br /><strong className="mt-1 inline-block text-slate-700">{encounter.doctorName}</strong></p></section>

@@ -14,14 +14,15 @@ export async function POST(
   { params }: RouteContext<'/api/patient/notifications/[...segments]'>,
 ) {
   const { segments } = await params;
-  const endpoint = ENDPOINTS[segments.join('/')];
+  const key = segments.join('/');
+  const endpoint = Object.hasOwn(ENDPOINTS, key) ? ENDPOINTS[key] : undefined;
   const authorization = request.headers.get('authorization');
 
   if (!endpoint) {
-    return NextResponse.json({ success: false, message: 'API thông báo không tồn tại.' }, { status: 404 });
+    return NextResponse.json({ success: false, message: 'API thông báo không tồn tại.' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
   }
-  if (!authorization?.startsWith('Bearer ')) {
-    return NextResponse.json({ success: false, message: 'Phiên đăng nhập không hợp lệ.' }, { status: 401 });
+  if (!authorization?.startsWith('Bearer ') || !authorization.slice(7).trim()) {
+    return NextResponse.json({ success: false, message: 'Phiên đăng nhập không hợp lệ.' }, { status: 401, headers: { 'Cache-Control': 'no-store' } });
   }
 
   try {
@@ -35,6 +36,7 @@ export async function POST(
       },
       body: body || '{}',
       cache: 'no-store',
+      signal: AbortSignal.timeout(15000),
     });
     return new NextResponse(await backendResponse.text(), {
       status: backendResponse.status,

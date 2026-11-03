@@ -103,7 +103,7 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <HeaderSearch onOpen={() => setMobileMenuOpen(false)} />
-          {isAuthenticated && !isPreview && <PatientNotificationBell />}
+          {isAuthenticated && <PatientNotificationBell key={state} onOpen={() => setMobileMenuOpen(false)} />}
           {isAuthenticated ? (
             <Suspense fallback={<span aria-hidden="true" className="size-10 rounded-lg bg-blue-50" />}>
               <PatientAccountDropdown key={state} isPreview={isPreview} isLoggingOut={isLoggingOut} onLogout={() => void handleLogout()} />

@@ -8,6 +8,7 @@ interface AppointmentFilterTabsProps {
   onTabChange: (tab: AppointmentFilterTab) => void;
   counts: {
     upcoming: number;
+    ongoing: number;
     history: number;
     cancelled: number;
   };
@@ -20,6 +21,7 @@ export function AppointmentFilterTabs({
 }: AppointmentFilterTabsProps) {
   const tabs: { key: AppointmentFilterTab; label: string; count: number }[] = [
     { key: 'UPCOMING', label: 'Lịch sắp tới', count: counts.upcoming },
+    { key: 'ONGOING', label: 'Đang diễn ra', count: counts.ongoing },
     { key: 'HISTORY', label: 'Lịch sử khám', count: counts.history },
     { key: 'CANCELLED', label: 'Lịch đã hủy', count: counts.cancelled },
   ];
@@ -33,6 +35,7 @@ export function AppointmentFilterTabs({
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
             type="button"
+            aria-pressed={isActive}
             className={`flex items-center gap-2 py-3 px-4 font-bold text-sm border-b-2 transition-all whitespace-nowrap cursor-pointer ${
               isActive
                 ? 'border-blue-600 text-blue-700 font-extrabold'

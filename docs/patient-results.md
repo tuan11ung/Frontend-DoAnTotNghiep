@@ -8,7 +8,8 @@ Chọn Kết quả để vào **Thông tin đợt khám**, gồm các tab:
 
 - **Tổng quan:** thông tin ca khám, thanh tiến độ, số chỉ định theo ba trạng thái và chi tiết theo nhóm. Chọn một nhóm hoặc trạng thái sẽ mở tab Dịch vụ với bộ lọc tương ứng.
 - **Dịch vụ:** hai bộ lọc loại dịch vụ và trạng thái; accordion cho Xét nghiệm, Siêu âm, Thăm dò chức năng và Chẩn đoán hình ảnh. Chỉ xuất hiện nhóm có chỉ định trong ca đang xem; không thêm nhóm Khám bệnh/Thủ thuật khi chưa có dữ liệu. Mặc định thu gọn, có mở/thu tất cả. Chỉ dịch vụ đã có kết quả mới có nút xem phiếu.
-- **Đơn thuốc / Viện phí:** trạng thái chưa có dữ liệu; không tạo đơn thuốc hoặc số tiền minh họa để thay thế dữ liệu chưa được cung cấp.
+- **Đơn thuốc:** trạng thái chưa có dữ liệu; không tạo đơn thuốc thay thế thông tin từ bác sĩ.
+- **Viện phí:** dẫn sang trang Thanh toán & hóa đơn của đúng hồ sơ/ca khám. Dữ liệu chi phí mô phỏng nằm riêng trong module thanh toán; dữ liệu thật chỉ hiển thị khi API cung cấp. Xem [hướng dẫn thanh toán](patient-payments.md).
 
 Phiếu kết quả có khung giấy, thông tin người bệnh, bảng chỉ số và điều khiển phóng to/thu nhỏ/vừa khung. Hai dịch vụ CBC và AST trong ca `demo-20261101` có mẫu bố cục phiếu. Các ô số liệu và khoảng tham chiếu để “—”, có nhãn minh họa; không tạo kết quả y khoa hoặc chữ ký. Trạng thái đã có kết quả và việc có tệp phiếu là hai dữ liệu riêng: nếu thiếu tệp, hiển thị “Chưa có tệp phiếu kết quả”. Dịch vụ chưa hoàn tất không được hiển thị mẫu phiếu dù mở URL trực tiếp.
 

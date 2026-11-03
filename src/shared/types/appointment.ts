@@ -70,6 +70,8 @@ export interface PatientAppointment {
   priceFormatted: string;
   status: AppointmentStatus;
   qrCodeData: string;
+  roomInfo?: { building: string; floor: string; number: string };
+  cancellationPolicy?: { summary: string; cutoffMinutes?: number; refundNote: string; isDemo?: boolean };
   cancelReason?: string;
   cancelledAt?: string;
   refundAmount?: number;

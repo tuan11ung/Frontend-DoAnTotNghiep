@@ -10,7 +10,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 Chạy `pnpm dev`, mở trang chủ và dùng thanh **Xem thử giao diện** phía trên banner:
 
 - **Khách**: ẩn Lịch khám, Kết quả khám và Hồ sơ gia đình.
-- **Đã đăng nhập**: nhấn biểu tượng **Tài khoản** ở góc phải để mở ba mục cá nhân và nút **Thoát**.
+- **Đã đăng nhập**: nhấn biểu tượng **Tài khoản** ở góc phải để mở Hồ sơ cá nhân, Xem lịch khám, Kết quả khám, Thanh toán & hóa đơn, Hồ sơ gia đình và nút **Thoát**.
 - **Thoát** trong menu trở về giao diện khách; **Thoát mô phỏng** trên thanh xem thử khôi phục trạng thái đăng nhập thực tế.
 
 Lựa chọn được lưu trong trình duyệt và giữ khi tải lại hoặc chuyển trang. Mô phỏng không tạo token, không gọi API đăng nhập/đăng xuất/thông báo và không thay đổi phiên đăng nhập thật. Đăng nhập thật sẽ tự kết thúc mô phỏng.
@@ -31,7 +31,24 @@ Bấm ô tìm kiếm/kính lúp trên header để tra cứu bài viết, bệnh
 
 Mở `/patient/results` để chọn thành viên và xem thẻ ca khám. Mỗi ca có các tab Tổng quan, Dịch vụ, Đơn thuốc và Viện phí. Dịch vụ chia nhóm mở/thu gọn, có bộ lọc và màn xem phiếu. Dùng ca `demo-20261101` để xem đủ ba trạng thái cùng mẫu phiếu CBC/AST chưa có số liệu y khoa; xem [hướng dẫn và đường dẫn thử](docs/patient-results.md).
 
+## Lịch hẹn và hàng chờ
+
+Trang `/patient/appointments` có modal chi tiết lịch hẹn và QR tải PNG, cùng tab **Đang diễn ra** để xem phòng/số thứ tự/hàng chờ sau check-in. Có thể thử đồng bộ giữa cổng bệnh nhân và `/reception?tab=checkin` không cần backend; xem [hướng dẫn lịch hẹn và hàng chờ](docs/appointments-tracking.md).
+
+## Hồ sơ cá nhân
+
+Mở dropdown **Tài khoản → Hồ sơ cá nhân** (`/patient/profile`) để sửa thông tin cá nhân, quản lý dị ứng thuốc/thực phẩm và bệnh mạn tính. Chọn **Đã đăng nhập** trên thanh xem thử ở trang chủ để thử không cần backend. Đổi mật khẩu hiện hỗ trợ mô phỏng, chưa thay đổi tài khoản thật; xem [hướng dẫn hồ sơ cá nhân](docs/patient-profile.md).
+
+## Thông báo bệnh nhân
+
+Sau khi đăng nhập, chuông bên phải ô tìm kiếm hiển thị số chưa đọc và danh sách thông báo. Bấm một mục để mở kết quả CLS, lịch khám, viện phí hoặc chi tiết thông báo; **Xem tất cả** mở `/patient/notifications`. Có bộ lọc chưa đọc và đánh dấu đã đọc tất cả. Chế độ mô phỏng có sáu loại thông báo mẫu và lưu trạng thái đọc trong trình duyệt; xem [hướng dẫn thông báo](docs/patient-notifications.md).
+
+## Thanh toán & hóa đơn
+
+Trang `/patient/payments` có lối vào từ **Tài khoản → Thanh toán & hóa đơn**, tab **Viện phí** của ca khám và thông báo yêu cầu thanh toán. Hóa đơn có chi phí khám/CLS/thuốc, giảm trừ, số phải trả, lịch sử và biên lai. Chọn **Đã đăng nhập** trên thanh xem thử để mô phỏng VNPay, MoMo, thẻ; không thu tiền thật. Biên lai mẫu tải HTML hoặc In / Lưu PDF. Tài khoản thật hiện xem dữ liệu API, chưa kích hoạt thu tiền online; xem [hướng dẫn thanh toán](docs/patient-payments.md).
+
 ## Quy tắc phát triển
+
 - [Quy tắc phát triển module frontend](docs/frontend-module-guidelines.md)
 
 Phần dưới là README.md tự động tạo

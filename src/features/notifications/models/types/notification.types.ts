@@ -1,10 +1,11 @@
-export type NotificationType = 'CLS_RESULT_AVAILABLE' | 'RETURN_TO_ORIGINAL_ROOM';
+export type NotificationType = 'CLS_RESULT_AVAILABLE' | 'RETURN_TO_ORIGINAL_ROOM' | 'FOLLOW_UP_REMINDER'
+  | 'RECORD_ACCESS_GRANTED' | 'RECORD_ACCESS_REVOKED' | 'PAYMENT_REQUEST' | 'SYSTEM_MESSAGE' | (string & {});
 
 export interface PatientNotification {
   id: number;
-  patientId: number;
-  hospitalId: number;
-  encounterId: number;
+  patientId?: number | null;
+  hospitalId?: number | null;
+  encounterId?: number | null;
   orderedServiceId?: number | null;
   roomId?: number | null;
   type: NotificationType;

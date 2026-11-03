@@ -1,6 +1,6 @@
 export * from '@/src/shared/types/appointment';
 
-export type AppointmentFilterTab = 'UPCOMING' | 'HISTORY' | 'CANCELLED';
+export type AppointmentFilterTab = 'UPCOMING' | 'ONGOING' | 'HISTORY' | 'CANCELLED';
 
 export interface CancelAppointmentInput {
   appointmentId: string;

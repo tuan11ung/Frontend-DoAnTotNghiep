@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, AlertTriangle, ShieldCheck, Clock, Calendar, Building2, User } from 'lucide-react';
+import { X, AlertTriangle, ShieldCheck, Calendar, Building2, User } from 'lucide-react';
 import { PatientAppointment } from '../models/types/appointment.types';
 
 interface CancelAppointmentDialogProps {
   isOpen: boolean;
   appointment: PatientAppointment | null;
   onClose: () => void;
-  onConfirmCancel: (id: string, reason: string) => void;
+  onConfirmCancel: (id: string, reason: string) => Promise<boolean>;
 }
 
 const CANCEL_REASONS = [
@@ -29,26 +29,30 @@ export function CancelAppointmentDialog({
   const [selectedReason, setSelectedReason] = useState(CANCEL_REASONS[0]);
   const [customNote, setCustomNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   if (!isOpen || !appointment) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError('');
     const finalReason = selectedReason === 'Lý do cá nhân khác' && customNote.trim()
       ? `Lý do khác: ${customNote.trim()}`
       : selectedReason;
 
-    setTimeout(() => {
-      onConfirmCancel(appointment.id, finalReason);
+    try {
+      const success = await onConfirmCancel(appointment.id, finalReason);
+      if (success) onClose();
+      else setSubmitError('Không thể hủy lịch. Vui lòng kiểm tra trạng thái và thời hạn hủy của cơ sở.');
+    } finally {
       setIsSubmitting(false);
-      onClose();
-    }, 400);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg overflow-hidden">
+    <div role="dialog" aria-modal="true" aria-labelledby="cancel-appointment-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
         {/* Header */}
         <div className="bg-rose-50/70 border-b border-rose-100 px-6 py-4.5 flex items-center justify-between">
           <div className="flex items-center gap-2.5 text-rose-700">
@@ -56,7 +60,7 @@ export function CancelAppointmentDialog({
               <AlertTriangle className="w-5 h-5 text-rose-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Hủy lịch khám online</h2>
+            <h2 id="cancel-appointment-title" className="text-base font-bold text-slate-900">Hủy lịch khám online</h2>
               <p className="text-xs text-rose-700 font-medium">Mã lịch hẹn: {appointment.code}</p>
             </div>
           </div>
@@ -140,12 +144,14 @@ export function CancelAppointmentDialog({
           <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 space-y-1">
             <div className="flex items-center gap-1.5 font-bold">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Chính sách hoàn tiền tự động</span>
+              <span>Chính sách hủy & hoàn phí của cơ sở</span>
             </div>
             <p className="text-[11px] leading-relaxed text-emerald-700">
-              Hủy lịch trước 24 giờ so với giờ khám được hoàn <strong>100% chi phí khám</strong> ({appointment.priceFormatted}) về tài khoản thanh toán ban đầu trong vòng 1-3 ngày làm việc.
+              {appointment.cancellationPolicy?.summary || 'Cơ sở chưa công bố chính sách hủy. Vui lòng liên hệ cơ sở để được hướng dẫn.'}
             </p>
+            <p className="text-[11px] leading-relaxed text-emerald-700">{appointment.cancellationPolicy?.refundNote || 'Việc hoàn phí cần được cơ sở xác nhận.'}</p>
           </div>
+          {submitError && <p role="alert" className="text-xs leading-relaxed text-rose-700">{submitError}</p>}
 
           {/* Footer buttons */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">

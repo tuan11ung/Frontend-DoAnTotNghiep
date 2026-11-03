@@ -2,6 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
+import { canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
+import { AppointmentQueueSummary } from './AppointmentQueueSummary';
 import {
   Calendar,
   Building2,
@@ -22,12 +25,16 @@ interface AppointmentCardProps {
   appointment: PatientAppointment;
   onOpenQr: (appointment: PatientAppointment) => void;
   onOpenCancel: (appointment: PatientAppointment) => void;
+  onOpenQueue: (appointment: PatientAppointment) => void;
+  queueRoom?: VisitQueueRoom;
 }
 
 export function AppointmentCard({
   appointment,
   onOpenQr,
   onOpenCancel,
+  onOpenQueue,
+  queueRoom,
 }: AppointmentCardProps) {
   const statusConfig = APPOINTMENT_STATUS_LABELS[appointment.status] || {
     label: appointment.status,
@@ -41,7 +48,7 @@ export function AppointmentCard({
   const isCancelled = appointment.status === 'CANCELLED';
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
+    <div data-appointment-id={appointment.id} className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
       {/* Header bar */}
       <div className="p-5 pb-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
         <div className="flex items-center gap-2.5">
@@ -114,6 +121,8 @@ export function AppointmentCard({
           </div>
         )}
 
+        {isCheckedIn && <AppointmentQueueSummary appointment={appointment} room={queueRoom} />}
+
         {/* Lý do hủy nếu đã hủy */}
         {isCancelled && appointment.cancelReason && (
           <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-800 space-y-1">
@@ -135,7 +144,7 @@ export function AppointmentCard({
 
       {/* Action Footer */}
       <div className="p-4 px-5 border-t border-slate-100 bg-white flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-slate-500 font-medium">Chi phí:</span>
           <span className="font-bold text-sm text-slate-900">{appointment.priceFormatted}</span>
           {appointment.bookingMode === 'bhyt' && (
@@ -145,9 +154,9 @@ export function AppointmentCard({
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Lịch đang đặt: Xem QR & Hủy lịch */}
-          {isBooked && (
+          {isBooked && canCancelAppointment(appointment) && (
             <>
               <button
                 onClick={() => onOpenCancel(appointment)}
@@ -156,27 +165,21 @@ export function AppointmentCard({
               >
                 Hủy lịch
               </button>
-              <button
-                onClick={() => onOpenQr(appointment)}
-                type="button"
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-all cursor-pointer"
-              >
-                <QrCode className="w-3.5 h-3.5" />
-                <span>Vé khám & QR</span>
-              </button>
             </>
           )}
 
           {/* Lịch đã checkin: Xem hàng chờ */}
           {isCheckedIn && (
             <button
-              onClick={() => alert(`Bệnh nhân ${appointment.patientName} đang ở hàng chờ phòng ${appointment.roomName}. Số thứ tự hiện tại: 14.`)}
+              onClick={() => onOpenQueue(appointment)}
               type="button"
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition-all cursor-pointer"
             >
-              <span>Xem hàng chờ phòng</span>
+              <span>Xem phòng & hàng chờ</span>
             </button>
           )}
+
+          <button onClick={() => onOpenQr(appointment)} type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-100"><QrCode className="size-3.5" />Xem chi tiết</button>
 
           {/* Lịch hoàn tất: Xem kết quả */}
           {isCompleted && (
