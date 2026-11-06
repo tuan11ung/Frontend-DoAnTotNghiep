@@ -20,8 +20,11 @@ export interface DoctorRecordGrant {
 export interface DoctorRecordAudit {
   id: string; grantId: string; action: 'GRANTED' | 'VIEWED' | 'REVOKED'; occurredAt: string;
   assignmentId: string; patientId: string; encounterCode: string; doctorId: string; hospitalId: string;
-  resource?: 'PERSONAL_PROFILE' | 'HISTORY_LIST' | 'PAST_ENCOUNTER' | 'CLINICAL_EXAM' | 'CLS_ORDERS'; targetId?: string; viewId?: string;
+  resource?: DoctorViewResource; targetId?: string; viewId?: string;
 }
+export const DOCTOR_VIEW_RESOURCES = ['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS', 'CLS_RESULTS', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE'] as const;
+export type DoctorViewResource = typeof DOCTOR_VIEW_RESOURCES[number];
+export const DOCTOR_TARGETED_VIEW_RESOURCES: readonly DoctorViewResource[] = ['PAST_ENCOUNTER', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE'];
 export interface DoctorQueueSnapshot {
   version: 1; revision: number; updatedAt: string; patients: DoctorQueuePatient[];
   recordGrants: DoctorRecordGrant[]; recordAudit: DoctorRecordAudit[];

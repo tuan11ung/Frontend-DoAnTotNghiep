@@ -24,7 +24,7 @@ Cảnh báo dị ứng đỏ vẫn ở đầu vùng khám và sticky khi cuộn.
 - requestId cho cùng nội dung giúp retry không sinh phiếu trùng. Nội dung khác không được dùng lại requestId. Hai tab cùng chọn một dịch vụ đang chưa hoàn tất chỉ một bên thành công; bên còn lại giữ nội dung, báo lỗi và có **Cập nhật phiếu**.
 - Lỗi lưu không xóa dịch vụ/lý do/cờ đang nhập và không báo xác nhận thành công. Chỉ reset form sau khi lưu thành công.
 
-D5d Kết quả CLS và D5e Kết luận & kê đơn vẫn chưa triển khai. Danh sách phiếu ở D5c không thêm thao tác hủy hoặc cập nhật kết quả của D5d.
+D5d [Kết quả CLS](doctor-cls-results.md) đã có xem báo cáo/ảnh, hủy và yêu cầu chụp lại; D5e Kết luận & kê đơn chưa triển khai. Danh sách phiếu D5c đồng bộ từ cùng ledger khi D5d đổi trạng thái: dịch vụ đã hủy có thể được chỉ định lại, dịch vụ chưa thực hiện/đang thực hiện vẫn được chặn trùng.
 
 ## Cấu trúc và tích hợp Git
 

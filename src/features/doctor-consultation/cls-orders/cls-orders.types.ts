@@ -1,3 +1,4 @@
+import type { ClsCancellation, ClsReport, ClsRetakeRequest } from '../cls-results/cls-results.types';
 export const CLS_SAFETY_FLAGS = [
   { id: 'CONTRAST_ALLERGY', label: 'Dị ứng thuốc cản quang' },
   { id: 'PREGNANCY', label: 'Đang mang thai / nghi ngờ mang thai' },
@@ -21,7 +22,7 @@ export interface ClsOrder extends ClsDraft {
   hospitalId: string;
   grantId: string;
   createdAt: string;
-  lines: { serviceId: string; status: ClsServiceStatus }[];
+  lines: { serviceId: string; status: ClsServiceStatus; result?: ClsReport; cancellation?: ClsCancellation; retakeRequests?: ClsRetakeRequest[] }[];
 }
 export interface ClsCatalogService {
   id: string;

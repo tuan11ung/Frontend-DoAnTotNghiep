@@ -1,5 +1,6 @@
 import { DOCTOR_ASSIGNMENTS, DOCTOR_DEMO_ENABLED, DOCTOR_DEMO_TIME, INITIAL_DOCTOR_SNAPSHOT } from '../data/doctor-queue-demo';
 import type { DoctorDemoActor, DoctorQueueSnapshot, DoctorRecordAudit, QueueStatus } from '../doctor-queue.types';
+import { DOCTOR_TARGETED_VIEW_RESOURCES, DOCTOR_VIEW_RESOURCES } from '../doctor-queue.types';
 import { doctorRecordAccess, recordAudit, validRecordAccess } from '../doctor-record-access';
 import { isClinicalNote, validateClinicalExam, type ClinicalExamValues } from '@/src/features/doctor-consultation/clinical-exam.types';
 import { validClsOrderLedger } from '@/src/features/doctor-consultation/cls-orders/cls-orders-validation';
@@ -96,7 +97,7 @@ export function readMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: st
     if (signal?.aborted) throw new DOMException('Đã hủy lượt xem.', 'AbortError');
     const access = doctorRecordAccess(data, actor, assignmentId, patientId);
     if (!access || access.patient.status !== 'IN_PROGRESS') throw new Error('Chỉ bác sĩ điều trị của lượt khám đang diễn ra mới được xem hồ sơ và lịch sử.');
-    if (!metadata.viewId || metadata.viewId.length > 100 || !['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS'].includes(metadata.resource) || (metadata.resource === 'PAST_ENCOUNTER' ? !metadata.targetId : metadata.targetId !== undefined)) throw new Error('Yêu cầu xem hồ sơ không hợp lệ.');
+    if (!metadata.viewId || metadata.viewId.length > 100 || !DOCTOR_VIEW_RESOURCES.includes(metadata.resource) || (DOCTOR_TARGETED_VIEW_RESOURCES.includes(metadata.resource) ? !metadata.targetId : metadata.targetId !== undefined)) throw new Error('Yêu cầu xem hồ sơ không hợp lệ.');
     const previous = data.recordAudit.find(event => event.viewId === metadata.viewId);
     if (previous && (previous.grantId !== access.grant.id || previous.resource !== metadata.resource || previous.targetId !== metadata.targetId)) throw new Error('Yêu cầu xem không thuộc lượt khám này.');
     const result = reader(access, data);

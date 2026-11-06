@@ -1,5 +1,6 @@
 import { DOCTOR_ASSIGNMENTS, DOCTOR_DEMO_ENABLED } from './data/doctor-queue-demo';
 import type { DoctorDemoActor, DoctorQueuePatient, DoctorQueueSnapshot, DoctorRecordAudit, DoctorRecordGrant } from './doctor-queue.types';
+import { DOCTOR_TARGETED_VIEW_RESOURCES, DOCTOR_VIEW_RESOURCES } from './doctor-queue.types';
 
 function object(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null; }
 const validDate = (value: unknown): value is string => typeof value === 'string' && Number.isFinite(Date.parse(value));
@@ -17,7 +18,7 @@ export function validRecordAccess(grants: unknown, audit: unknown, patients: Doc
     if (!object(a) || typeof a.id !== 'string' || !a.id || !validDate(a.occurredAt) || !['GRANTED', 'VIEWED', 'REVOKED'].includes(String(a.action))) return false;
     const grant = grants.find(g => g.id === a.grantId);
     const clinicalMetadata = a.resource !== undefined || a.targetId !== undefined || a.viewId !== undefined;
-    if (clinicalMetadata && (a.action !== 'VIEWED' || !['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS'].includes(String(a.resource)) || typeof a.viewId !== 'string' || !a.viewId || a.viewId.length > 100 || (a.resource === 'PAST_ENCOUNTER' ? typeof a.targetId !== 'string' || !a.targetId : a.targetId !== undefined))) return false;
+    if (clinicalMetadata && (a.action !== 'VIEWED' || !DOCTOR_VIEW_RESOURCES.some(resource => resource === a.resource) || typeof a.viewId !== 'string' || !a.viewId || a.viewId.length > 100 || (DOCTOR_TARGETED_VIEW_RESOURCES.some(resource => resource === a.resource) ? typeof a.targetId !== 'string' || !a.targetId : a.targetId !== undefined))) return false;
     return grant && a.assignmentId === grant.assignmentId && a.patientId === grant.patientId && a.encounterCode === grant.encounterCode && a.doctorId === grant.doctorId && a.hospitalId === grant.hospitalId
       && Date.parse(a.occurredAt) >= Date.parse(grant.openedAt)
       && (grant.closedAt === null || Date.parse(a.occurredAt) <= Date.parse(grant.closedAt));

@@ -1,6 +1,7 @@
 import type { DoctorQueuePatient, DoctorRecordGrant } from '@/src/features/doctor-queue/doctor-queue.types';
 import { clsCatalogForFacility } from './cls-catalog-demo';
 import { validateClsDraft, type ClsOrder } from './cls-orders.types';
+import { validClsLineDetails } from '../cls-results/cls-results-validation';
 
 function object(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }
 
@@ -17,7 +18,18 @@ export function validClsOrderLedger(value: unknown, patients: DoctorQueuePatient
     if (Object.keys(validateClsDraft(draft)).length) return false;
     const catalog = clsCatalogForFacility(grant.hospitalId);
     if (!entry.serviceIds.every(id => catalog.some(service => service.id === id)) || !Array.isArray(entry.lines) || entry.lines.length !== entry.serviceIds.length || !entry.lines.every((line: unknown, index: number) => object(line) && line.serviceId === draft.serviceIds[index] && ['NOT_STARTED', 'PROCESSING', 'COMPLETED', 'CANCELLED'].includes(String(line.status)))) return false;
+    if (!entry.lines.every((line: Record<string, unknown>) => {
+      const service = catalog.find(item => item.id === line.serviceId);
+      return service && validClsLineDetails(line, grant.id, grant.doctorId, service);
+    })) return false;
     ids.add(entry.id); requests.add(entry.requestId);
+    for (const line of entry.lines) {
+      const actions: unknown[] = [line.cancellation, ...(line.retakeRequests ?? [])].filter(Boolean);
+      for (const action of actions) {
+        if (!object(action) || typeof action.requestId !== 'string' || requests.has(action.requestId)) return false;
+        requests.add(action.requestId);
+      }
+    }
     return true;
   }));
 }

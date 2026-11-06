@@ -8,10 +8,13 @@ import { confirmMockClsOrder, loadMockClsOrders } from './cls-orders-demo-servic
 import { CLS_SAFETY_FLAGS, emptyClsDraft, validateClsDraft } from './cls-orders.types';
 import { ClsCatalogTree } from './ClsCatalogTree';
 import { ClsOrderList } from './ClsOrderList';
+import { useDoctorQueue } from '@/src/features/doctor-queue/hooks/use-doctor-queue';
 
 export function ClsOrders({ scope, grantId }: { scope: ClinicalScope; grantId: string }) {
+  const snapshot = useDoctorQueue();
+  const signature = JSON.stringify(snapshot.data?.clsOrders?.[scope.patientId] ?? []);
   const load = useCallback((viewId: string, signal: AbortSignal) => loadMockClsOrders(scope, viewId, signal), [scope]);
-  const result = useAuditedMockView(`${grantId}:cls-orders`, load);
+  const result = useAuditedMockView(`${grantId}:cls-orders:${signature}`, load);
   const [draft, setDraft] = useState(emptyClsDraft);
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
