@@ -1,0 +1,9 @@
+import { AlertTriangle, ShieldAlert } from 'lucide-react';
+import type { ClinicalProfile } from '../consultation.types';
+export function AllergyAlert({ profile, loading, error, onRetry }: { profile: ClinicalProfile | null; loading: boolean; error: string; onRetry: () => void }) {
+  return <section aria-label="Cảnh báo dị ứng" className="sticky top-0 z-40 rounded-xl border border-red-200 bg-red-50 px-4 py-3 shadow-sm shadow-red-900/5 sm:px-5"><div className="flex items-start gap-3"><span className="mt-0.5 rounded-lg bg-red-100 p-2 text-red-600"><ShieldAlert className="size-5" /></span><div className="min-w-0 flex-1"><h2 className="flex flex-wrap items-center gap-2 text-sm font-bold text-red-800">Cảnh báo dị ứng<span className="rounded-md bg-red-100 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-red-700">Luôn hiển thị</span></h2>
+    {loading ? <p role="status" className="mt-1.5 text-xs text-red-700">Đang tải thông tin dị ứng…</p> : error ? <div className="mt-1.5 text-xs leading-6 text-red-700"><p>Chưa tải được thông tin dị ứng.</p><button type="button" onClick={onRetry} className="mt-1 rounded-lg border border-red-200 bg-white px-2.5 py-1 font-semibold">Thử lại</button></div>
+      : profile?.allergies.length ? <div className="mt-2 flex flex-wrap gap-x-6 gap-y-2">{profile.allergies.map(allergy => <div key={`${allergy.kind}:${allergy.name}`} className="min-w-0"><p className="text-xs font-semibold text-red-800">{allergy.kind}: {allergy.name}<span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-[9px]">{allergy.severity}</span></p><p className="mt-0.5 text-[11px] leading-5 text-red-700/80">{allergy.reaction} · {allergy.source}</p></div>)}</div>
+        : <p className="mt-1.5 flex items-start gap-1.5 text-xs leading-6 text-red-700"><AlertTriangle className="mt-1 size-3.5 shrink-0" />Chưa có khai báo dị ứng. Chưa xác nhận người bệnh không có dị ứng.</p>}
+    </div></div></section>;
+}

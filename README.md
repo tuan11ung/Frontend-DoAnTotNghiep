@@ -47,6 +47,10 @@ Sau khi đăng nhập, chuông bên phải ô tìm kiếm hiển thị số chư
 
 Trang `/patient/payments` có lối vào từ **Tài khoản → Thanh toán & hóa đơn**, tab **Viện phí** của ca khám và thông báo yêu cầu thanh toán. Hóa đơn có chi phí khám/CLS/thuốc, giảm trừ, số phải trả, lịch sử và biên lai. Chọn **Đã đăng nhập** trên thanh xem thử để mô phỏng VNPay, MoMo, thẻ; không thu tiền thật. Biên lai mẫu tải HTML hoặc In / Lưu PDF. Tài khoản thật hiện xem dữ liệu API, chưa kích hoạt thu tiền online; xem [hướng dẫn thanh toán](docs/patient-payments.md).
 
+## Cổng bác sĩ
+
+Giữ hàng chờ và popup tiếp nhận từ `main`. Mở `/doctor/queue` trong development, chọn **Gọi bệnh nhân tiếp theo → Đã vào phòng** để mở màn **Khám bệnh**. Phạm vi màn khám chỉ gồm D5a–D5e; hiện thao tác được **Hồ sơ & lịch sử** và **Khám lâm sàng** (triệu chứng, sinh hiệu, lưu bản nháp). Ba mục còn lại chờ phát triển. Các giao diện cũ ngoài phạm vi do lượt trước thêm (đăng nhập bác sĩ riêng, hàng chờ/popup trùng, xem hồ sơ popup) đã gỡ. Toàn bộ luồng khám dùng mock data, không gọi API; xem [hướng dẫn màn Khám bệnh](docs/doctor-clinical-history.md).
+
 ## Quy tắc phát triển
 
 - [Quy tắc phát triển module frontend](docs/frontend-module-guidelines.md)

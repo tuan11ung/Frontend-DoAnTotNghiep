@@ -19,5 +19,6 @@ export function getPatientAuthHref(page: 'login' | 'register', returnTo?: string
 export function getPostLoginDestination(roles: string[], returnTo?: string | null): string {
   if (roles.includes('SUPER_ADMIN')) return '/admin/system';
   if (roles.includes('HOSPITAL_ADMIN')) return '/admin/facility';
+  if (roles.includes('DOCTOR')) return '/doctor/queue';
   return roles.includes('PATIENT') ? getBookingReturnTo(returnTo) || '/' : '/';
 }

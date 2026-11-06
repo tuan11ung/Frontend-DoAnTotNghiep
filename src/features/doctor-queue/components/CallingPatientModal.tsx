@@ -10,9 +10,11 @@ interface CallingPatientModalProps {
   onClose: () => void;
   onAdmit: () => void;
   onAbsent: () => void;
+  onRecall: () => void;
+  busy: boolean;
 }
 
-export function CallingPatientModal({ patient, room, onClose, onAdmit, onAbsent }: CallingPatientModalProps) {
+export function CallingPatientModal({ patient, room, onClose, onAdmit, onAbsent, onRecall, busy }: CallingPatientModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const admitRef = useRef<HTMLButtonElement>(null);
   const [callCount, setCallCount] = useState(1);
@@ -46,13 +48,13 @@ export function CallingPatientModal({ patient, room, onClose, onAdmit, onAbsent 
         </div>
         <p aria-live="polite" className="mt-4 text-xs font-medium text-slate-500">{callCount > 1 ? `Đã gọi lại · Lần gọi ${callCount}` : ''}</p>
       </div>
-      <div className="border-t border-slate-100 bg-slate-50/50 px-6 py-5 sm:px-8">
+      <fieldset disabled={busy} className="border-t border-slate-100 bg-slate-50/50 px-6 py-5 disabled:opacity-50 sm:px-8">
         <button className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-blue-700 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600" onClick={onAdmit} ref={admitRef} type="button"><Check aria-hidden="true" className="h-4 w-4" />Đã vào phòng</button>
         <div className="mt-3 grid grid-cols-2 gap-3">
-          <button className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={() => setCallCount((count) => count + 1)} type="button"><RotateCcw aria-hidden="true" className="h-4 w-4" />Gọi lại</button>
+          <button className="flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={() => { onRecall(); setCallCount((count) => count + 1); }} type="button"><RotateCcw aria-hidden="true" className="h-4 w-4" />Gọi lại</button>
           <button className="flex h-11 items-center justify-center gap-2 rounded-lg border border-rose-200 bg-white text-xs font-bold text-rose-700 hover:bg-rose-50 focus-visible:outline-2 focus-visible:outline-rose-600" onClick={onAbsent} type="button"><UserRoundX aria-hidden="true" className="h-4 w-4" />Vắng mặt</button>
         </div>
-      </div>
+      </fieldset>
     </dialog>
   );
 }
