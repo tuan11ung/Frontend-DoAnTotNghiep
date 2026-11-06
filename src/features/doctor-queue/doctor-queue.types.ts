@@ -1,4 +1,5 @@
 import type { MockClinicalNote } from '@/src/features/doctor-consultation/clinical-exam.types';
+import type { ClsOrder } from '@/src/features/doctor-consultation/cls-orders/cls-orders.types';
 export type QueueStatus = 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'ABSENT' | 'AWAITING_CLS' | 'COMPLETED';
 export type QueueFilter = 'WAITING' | 'ABSENT' | 'AWAITING_CLS' | 'COMPLETED';
 export type QueueLabel = 'PRIORITY' | 'RETURN_AFTER_CLS' | 'ONLINE';
@@ -19,12 +20,13 @@ export interface DoctorRecordGrant {
 export interface DoctorRecordAudit {
   id: string; grantId: string; action: 'GRANTED' | 'VIEWED' | 'REVOKED'; occurredAt: string;
   assignmentId: string; patientId: string; encounterCode: string; doctorId: string; hospitalId: string;
-  resource?: 'PERSONAL_PROFILE' | 'HISTORY_LIST' | 'PAST_ENCOUNTER' | 'CLINICAL_EXAM'; targetId?: string; viewId?: string;
+  resource?: 'PERSONAL_PROFILE' | 'HISTORY_LIST' | 'PAST_ENCOUNTER' | 'CLINICAL_EXAM' | 'CLS_ORDERS'; targetId?: string; viewId?: string;
 }
 export interface DoctorQueueSnapshot {
   version: 1; revision: number; updatedAt: string; patients: DoctorQueuePatient[];
   recordGrants: DoctorRecordGrant[]; recordAudit: DoctorRecordAudit[];
   clinicalNotes?: Record<string, MockClinicalNote>;
+  clsOrders?: Record<string, ClsOrder[]>;
 }
 export interface DoctorDemoActor { role: 'DOCTOR'; doctorId: string; hospitalId: string }
 export const queueFilters: { id: QueueFilter; label: string }[] = [

@@ -2,6 +2,7 @@ import { DOCTOR_ASSIGNMENTS, DOCTOR_DEMO_ENABLED, DOCTOR_DEMO_TIME, INITIAL_DOCT
 import type { DoctorDemoActor, DoctorQueueSnapshot, DoctorRecordAudit, QueueStatus } from '../doctor-queue.types';
 import { doctorRecordAccess, recordAudit, validRecordAccess } from '../doctor-record-access';
 import { isClinicalNote, validateClinicalExam, type ClinicalExamValues } from '@/src/features/doctor-consultation/clinical-exam.types';
+import { validClsOrderLedger } from '@/src/features/doctor-consultation/cls-orders/cls-orders-validation';
 export const DOCTOR_QUEUE_KEY = 'medconnect.doctor-queue-demo.v2';
 const CHANGE_EVENT = 'medconnect:doctor-queue-demo-change';
 const statuses: QueueStatus[] = ['WAITING', 'CALLED', 'IN_PROGRESS', 'ABSENT', 'AWAITING_CLS', 'COMPLETED'];
@@ -30,6 +31,7 @@ export function parseDoctorQueue(value: string): DoctorQueueSnapshot | null {
     const audit = legacy ? [] : 'recordAudit' in data ? data.recordAudit : null;
     if (!validRecordAccess(grants, audit, rows)) return null;
     if ('clinicalNotes' in data && (!data.clinicalNotes || typeof data.clinicalNotes !== 'object' || Array.isArray(data.clinicalNotes) || !Object.entries(data.clinicalNotes).every(([id, note]) => isClinicalNote(note) && rows.some(p => p.id === id) && grants.some(g => g.id === note.grantId && g.patientId === id && g.doctorId === note.updatedBy)))) return null;
+    if ('clsOrders' in data && !validClsOrderLedger(data.clsOrders, rows, grants)) return null;
     return { ...data, patients: rows, recordGrants: grants, recordAudit: audit } as DoctorQueueSnapshot;
   } catch { return null; }
 }
@@ -94,12 +96,19 @@ export function readMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: st
     if (signal?.aborted) throw new DOMException('Đã hủy lượt xem.', 'AbortError');
     const access = doctorRecordAccess(data, actor, assignmentId, patientId);
     if (!access || access.patient.status !== 'IN_PROGRESS') throw new Error('Chỉ bác sĩ điều trị của lượt khám đang diễn ra mới được xem hồ sơ và lịch sử.');
-    if (!metadata.viewId || metadata.viewId.length > 100 || !['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM'].includes(metadata.resource) || (metadata.resource === 'PAST_ENCOUNTER' ? !metadata.targetId : metadata.targetId !== undefined)) throw new Error('Yêu cầu xem hồ sơ không hợp lệ.');
+    if (!metadata.viewId || metadata.viewId.length > 100 || !['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS'].includes(metadata.resource) || (metadata.resource === 'PAST_ENCOUNTER' ? !metadata.targetId : metadata.targetId !== undefined)) throw new Error('Yêu cầu xem hồ sơ không hợp lệ.');
     const previous = data.recordAudit.find(event => event.viewId === metadata.viewId);
     if (previous && (previous.grantId !== access.grant.id || previous.resource !== metadata.resource || previous.targetId !== metadata.targetId)) throw new Error('Yêu cầu xem không thuộc lượt khám này.');
     const result = reader(access, data);
     if (!previous) recordAudit(data, access.grant, 'VIEWED', simulatedTime(data), metadata);
     return result;
+  });
+}
+export function updateMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: string, patientId: string, writer: (access: NonNullable<ReturnType<typeof doctorRecordAccess>>, data: DoctorQueueSnapshot) => T): Promise<T> {
+  return update(actor, assignmentId, data => {
+    const access = doctorRecordAccess(data, actor, assignmentId, patientId);
+    if (!access || access.patient.status !== 'IN_PROGRESS') throw new Error('Lượt khám đã kết thúc hoặc bạn không còn quyền chỉnh sửa.');
+    return writer(access, data);
   });
 }
 export function saveMockClinicalExam(actor: DoctorDemoActor, assignmentId: string, patientId: string, values: ClinicalExamValues, expectedRevision: number) {

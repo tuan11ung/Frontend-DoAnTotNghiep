@@ -17,7 +17,7 @@ export function validRecordAccess(grants: unknown, audit: unknown, patients: Doc
     if (!object(a) || typeof a.id !== 'string' || !a.id || !validDate(a.occurredAt) || !['GRANTED', 'VIEWED', 'REVOKED'].includes(String(a.action))) return false;
     const grant = grants.find(g => g.id === a.grantId);
     const clinicalMetadata = a.resource !== undefined || a.targetId !== undefined || a.viewId !== undefined;
-    if (clinicalMetadata && (a.action !== 'VIEWED' || !['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM'].includes(String(a.resource)) || typeof a.viewId !== 'string' || !a.viewId || a.viewId.length > 100 || (a.resource === 'PAST_ENCOUNTER' ? typeof a.targetId !== 'string' || !a.targetId : a.targetId !== undefined))) return false;
+    if (clinicalMetadata && (a.action !== 'VIEWED' || !['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS'].includes(String(a.resource)) || typeof a.viewId !== 'string' || !a.viewId || a.viewId.length > 100 || (a.resource === 'PAST_ENCOUNTER' ? typeof a.targetId !== 'string' || !a.targetId : a.targetId !== undefined))) return false;
     return grant && a.assignmentId === grant.assignmentId && a.patientId === grant.patientId && a.encounterCode === grant.encounterCode && a.doctorId === grant.doctorId && a.hospitalId === grant.hospitalId
       && Date.parse(a.occurredAt) >= Date.parse(grant.openedAt)
       && (grant.closedAt === null || Date.parse(a.occurredAt) <= Date.parse(grant.closedAt));
