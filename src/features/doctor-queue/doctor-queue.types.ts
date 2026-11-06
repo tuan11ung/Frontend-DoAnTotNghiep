@@ -23,9 +23,9 @@ export interface DoctorRecordAudit {
   assignmentId: string; patientId: string; encounterCode: string; doctorId: string; hospitalId: string;
   resource?: DoctorViewResource; targetId?: string; viewId?: string;
 }
-export const DOCTOR_VIEW_RESOURCES = ['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS', 'CLS_RESULTS', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE', 'CONCLUSION'] as const;
+export const DOCTOR_VIEW_RESOURCES = ['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS', 'CLS_RESULTS', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE', 'CONCLUSION', 'PAST_ENCOUNTER_DETAIL', 'PAST_ENCOUNTER_REPORT', 'PAST_ENCOUNTER_IMAGE'] as const;
 export type DoctorViewResource = typeof DOCTOR_VIEW_RESOURCES[number];
-export const DOCTOR_TARGETED_VIEW_RESOURCES: readonly DoctorViewResource[] = ['PAST_ENCOUNTER', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE'];
+export const DOCTOR_TARGETED_VIEW_RESOURCES: readonly DoctorViewResource[] = ['PAST_ENCOUNTER', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE', 'PAST_ENCOUNTER_DETAIL', 'PAST_ENCOUNTER_REPORT', 'PAST_ENCOUNTER_IMAGE'];
 export interface DoctorQueueSnapshot {
   version: 1; revision: number; updatedAt: string; patients: DoctorQueuePatient[];
   recordGrants: DoctorRecordGrant[]; recordAudit: DoctorRecordAudit[];

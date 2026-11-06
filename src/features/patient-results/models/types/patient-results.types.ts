@@ -12,6 +12,9 @@ export interface ClinicalService {
     code: string;
     issuedAt: string;
     rows: { name: string; unit?: string; value?: string; reference?: string }[];
+    description?: string;
+    conclusion?: string;
+    images?: EncounterImage[];
   };
 }
 
@@ -37,7 +40,20 @@ export interface ResultEncounter {
   visitDate: string;
   status: 'IN_PROGRESS' | 'COMPLETED';
   services: ClinicalService[];
+  record?: EncounterRecord;
 }
+export interface EncounterImage { id: string; src: string; title: string }
+export interface EncounterRecord {
+  dischargeDate?: string; reason?: string; symptoms?: string; examination?: string;
+  vitals?: { label: string; value?: string; unit: string }[];
+  diagnoses?: { code: string; name: string; primary?: boolean }[];
+  conclusion?: string; advice?: string; followUp?: { date: string; note?: string };
+  prescriptions?: { id: string; name: string; strength?: string; dose: string; usage: string; days?: string; quantity?: string }[];
+  timeline?: { time: string; label: string }[];
+  allergies?: string[]; review?: { rating: number; comment: string };
+}
+export interface ResultDetailOptions { tab?: string; service?: string; group?: string; status?: string }
+export type ResultDetailHref = (options?: ResultDetailOptions) => string;
 
 export interface PatientResultsData {
   patients: ResultPatient[];

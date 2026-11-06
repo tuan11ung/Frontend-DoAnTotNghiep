@@ -4,7 +4,7 @@ import type { ResultEncounter, ResultPatient } from '../models/types/patient-res
 import { formatResultDate, patientResultsHref } from '../utils/result-format';
 import { EncounterActions } from './EncounterActions';
 
-export function EncounterCard({ encounter, patient, detail = false }: { encounter: ResultEncounter; patient: ResultPatient; detail?: boolean }) {
+export function EncounterCard({ encounter, patient, detail = false, readOnly = false }: { encounter: ResultEncounter; patient: ResultPatient; detail?: boolean; readOnly?: boolean }) {
   const completed = encounter.status === 'COMPLETED';
   const readyCount = encounter.services.filter((service) => service.status === 'RESULT_READY').length;
   const formattedDate = formatResultDate(encounter.visitDate);
@@ -35,7 +35,7 @@ export function EncounterCard({ encounter, patient, detail = false }: { encounte
         <p className="inline-flex items-center gap-2 text-[11px] text-slate-500"><FileCheck2 aria-hidden="true" className={`size-4 shrink-0 ${readyCount === encounter.services.length && readyCount > 0 ? 'text-emerald-600' : 'text-blue-500'}`} /><span><strong className="font-bold text-slate-700">{readyCount}/{encounter.services.length}</strong> dịch vụ đã có kết quả</span></p>
         <div className="flex flex-wrap items-center gap-2">
           {!detail && <Link href={href} className="inline-flex items-center gap-1.5 rounded-lg bg-medblue-600 px-3 py-2 text-[11px] font-bold text-white transition-colors hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Xem kết quả<ArrowRight aria-hidden="true" className="size-3.5" /></Link>}
-          <EncounterActions encounter={encounter} />
+          {!readOnly && <EncounterActions encounter={encounter} />}
         </div>
       </div>
     </article>

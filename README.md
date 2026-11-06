@@ -51,6 +51,8 @@ Trang `/patient/payments` có lối vào từ **Tài khoản → Thanh toán & h
 
 Giữ hàng chờ và popup tiếp nhận từ `main`. Mở `/doctor/queue` trong development, chọn **Gọi bệnh nhân tiếp theo → Đã vào phòng** để mở màn **Khám bệnh** với đủ năm tab: Hồ sơ & lịch sử, Khám lâm sàng, Chỉ định CLS, Kết quả CLS, **Kết luận & kê đơn**. Tab cuối có ICD, đơn thuốc có cảnh báo dị ứng, lời dặn, kế hoạch tái khám và hoàn tất/khóa bệnh án. Nút hoàn tất ở hàng chờ mở tab này để kiểm tra trước khi xác nhận. Toàn bộ dùng mock data, không gọi API; xem [màn Khám bệnh](docs/doctor-clinical-history.md), [chỉ định CLS](docs/doctor-cls-orders.md), [kết quả CLS](docs/doctor-cls-results.md), [kết luận & kê đơn](docs/doctor-conclusion-prescription.md).
 
+Trong **Hồ sơ & lịch sử**, nút **Xem chi tiết** mở [phiên khám cũ D6](docs/doctor-past-encounter.md) bằng cùng component P12 của bệnh nhân, ở chế độ bác sĩ chỉ đọc. Có thông tin chung, khám lâm sàng, ICD/kết luận, CLS/ảnh phóng to, đơn thuốc, lời dặn và timeline; chỉ xem được khi quyền hồ sơ còn mở. Quay lại giữ bộ lọc lịch sử.
+
 ## Quy tắc phát triển
 
 - [Quy tắc phát triển module frontend](docs/frontend-module-guidelines.md)

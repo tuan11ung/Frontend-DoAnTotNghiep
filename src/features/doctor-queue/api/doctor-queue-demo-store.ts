@@ -94,11 +94,20 @@ export function viewMockPatientRecord(actor: DoctorDemoActor, assignmentId: stri
     recordAudit(data, access.grant, 'VIEWED', simulatedTime(data));
   });
 }
-export function readMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: string, patientId: string, metadata: Required<Pick<DoctorRecordAudit, 'resource' | 'viewId'>> & Pick<DoctorRecordAudit, 'targetId'>, reader: (access: NonNullable<ReturnType<typeof doctorRecordAccess>>, data: DoctorQueueSnapshot) => T, signal?: AbortSignal): Promise<T> {
+type RecordViewMetadata = Required<Pick<DoctorRecordAudit, 'resource' | 'viewId'>> & Pick<DoctorRecordAudit, 'targetId'>;
+type RecordReader<T> = (access: NonNullable<ReturnType<typeof doctorRecordAccess>>, data: DoctorQueueSnapshot) => T;
+export function readMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: string, patientId: string, metadata: RecordViewMetadata, reader: RecordReader<T>, signal?: AbortSignal): Promise<T> {
+  return readScopedRecord(actor, assignmentId, patientId, metadata, reader, true, signal);
+}
+export function readMockOpenRecord<T>(actor: DoctorDemoActor, assignmentId: string, patientId: string, metadata: RecordViewMetadata, reader: RecordReader<T>, signal?: AbortSignal): Promise<T> {
+  if (!['PAST_ENCOUNTER_DETAIL', 'PAST_ENCOUNTER_REPORT', 'PAST_ENCOUNTER_IMAGE'].includes(metadata.resource)) return Promise.reject(new Error('Loại hồ sơ không được đọc theo quyền phiên khám cũ.'));
+  return readScopedRecord(actor, assignmentId, patientId, metadata, reader, false, signal);
+}
+function readScopedRecord<T>(actor: DoctorDemoActor, assignmentId: string, patientId: string, metadata: RecordViewMetadata, reader: RecordReader<T>, requireInProgress: boolean, signal?: AbortSignal): Promise<T> {
   return update(actor, assignmentId, data => {
     if (signal?.aborted) throw new DOMException('Đã hủy lượt xem.', 'AbortError');
     const access = doctorRecordAccess(data, actor, assignmentId, patientId);
-    if (!access || access.patient.status !== 'IN_PROGRESS') throw new Error('Chỉ bác sĩ điều trị của lượt khám đang diễn ra mới được xem hồ sơ và lịch sử.');
+    if (!access || requireInProgress && access.patient.status !== 'IN_PROGRESS') throw new Error('Quyền hồ sơ chưa mở, đã bị thu hồi hoặc lượt khám không cho phép truy cập.');
     if (!metadata.viewId || metadata.viewId.length > 100 || !DOCTOR_VIEW_RESOURCES.includes(metadata.resource) || (DOCTOR_TARGETED_VIEW_RESOURCES.includes(metadata.resource) ? !metadata.targetId : metadata.targetId !== undefined)) throw new Error('Yêu cầu xem hồ sơ không hợp lệ.');
     const previous = data.recordAudit.find(event => event.viewId === metadata.viewId);
     if (previous && (previous.grantId !== access.grant.id || previous.resource !== metadata.resource || previous.targetId !== metadata.targetId)) throw new Error('Yêu cầu xem không thuộc lượt khám này.');

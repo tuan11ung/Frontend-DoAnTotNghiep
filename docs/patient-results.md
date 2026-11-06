@@ -8,7 +8,7 @@ Chọn Kết quả để vào **Thông tin đợt khám**, gồm các tab:
 
 - **Tổng quan:** thông tin ca khám, thanh tiến độ, số chỉ định theo ba trạng thái và chi tiết theo nhóm. Chọn một nhóm hoặc trạng thái sẽ mở tab Dịch vụ với bộ lọc tương ứng.
 - **Dịch vụ:** hai bộ lọc loại dịch vụ và trạng thái; accordion cho Xét nghiệm, Siêu âm, Thăm dò chức năng và Chẩn đoán hình ảnh. Chỉ xuất hiện nhóm có chỉ định trong ca đang xem; không thêm nhóm Khám bệnh/Thủ thuật khi chưa có dữ liệu. Mặc định thu gọn, có mở/thu tất cả. Chỉ dịch vụ đã có kết quả mới có nút xem phiếu.
-- **Đơn thuốc:** trạng thái chưa có dữ liệu; không tạo đơn thuốc thay thế thông tin từ bác sĩ.
+- **Đơn thuốc:** dùng component đọc đơn thuốc chung; nếu nguồn cung cấp `record.prescriptions` thì hiện tên/hàm lượng/liều/cách dùng/số ngày, còn fixture P12 hiện tại chưa có đơn nên vẫn có trạng thái chưa có dữ liệu.
 - **Viện phí:** dẫn sang trang Thanh toán & hóa đơn của đúng hồ sơ/ca khám. Dữ liệu chi phí mô phỏng nằm riêng trong module thanh toán; dữ liệu thật chỉ hiển thị khi API cung cấp. Xem [hướng dẫn thanh toán](patient-payments.md).
 
 Phiếu kết quả có khung giấy, thông tin người bệnh, bảng chỉ số và điều khiển phóng to/thu nhỏ/vừa khung. Hai dịch vụ CBC và AST trong ca `demo-20261101` có mẫu bố cục phiếu. Các ô số liệu và khoảng tham chiếu để “—”, có nhãn minh họa; không tạo kết quả y khoa hoặc chữ ký. Trạng thái đã có kết quả và việc có tệp phiếu là hai dữ liệu riêng: nếu thiếu tệp, hiển thị “Chưa có tệp phiếu kết quả”. Dịch vụ chưa hoàn tất không được hiển thị mẫu phiếu dù mở URL trực tiếp.
@@ -46,10 +46,20 @@ Hồ sơ mặc định là `self` khi không có tham số `profile`. Hồ sơ k
 
 Bản này chưa tích hợp backend hoặc cơ chế xác thực/phân quyền kết quả khám. Khi kết nối dữ liệu thật, backend phải xác thực phiên đăng nhập và quyền truy cập hồ sơ, giới hạn ca khám theo bệnh nhân được phép xem, rồi chỉ trả các chỉ định của ca đó. Tham số URL và bộ lọc phía trình duyệt không thay thế phân quyền backend. Màn hình cần bổ sung xử lý tải dữ liệu, lỗi HTTP/mạng và cập nhật trạng thái theo API thực tế khi có contract.
 
+## Dùng chung với bác sĩ (D6)
+
+`EncounterDetail` được dùng trực tiếp cho cả P12 và D6, với `mode` do caller truyền, không lấy chế độ từ URL. Chế độ mặc định `patient` giữ bốn tab và các thao tác mã ca/chia sẻ/hỗ trợ/viện phí hiện có. Chế độ `doctor` yêu cầu navigation riêng, chỉ có Tổng quan/Dịch vụ/Đơn thuốc và ẩn các thao tác bệnh nhân/thanh toán. Đường dẫn dịch vụ và bộ lọc ở `EncounterOverview`, `ClinicalServiceList` dùng href builder của caller; không điều hướng bác sĩ sang patient portal.
+
+`EncounterRecordSections` trình bày thông tin phiên, triệu chứng/sinh hiệu, chẩn đoán cuối cùng, kết luận, lời dặn/tái khám, dị ứng, timeline và đánh giá khi có. `record` là dữ liệu tùy chọn; nguồn P12 chưa cung cấp thì hiện trạng thái thiếu dữ liệu, không tự dùng dữ liệu của người bệnh/phiên khác. Giữ nguyên fixture người bệnh hiện tại.
+
+`ServiceResultViewer` tiếp tục dùng cùng khung phiếu cho hai chế độ; bổ sung mô tả/kết luận/ảnh khi report có các trường tương ứng. `EncounterImageDialog` là viewer chung, hỗ trợ callback kiểm tra quyền/ghi log trước khi trả ảnh cho chế độ bác sĩ. D6 cấp callback và banner dị ứng; P12 không tự nhận quyền bác sĩ nhờ query. Chi tiết [quyền và cách thử D6](doctor-past-encounter.md).
+
+Các thay đổi này không tích hợp backend hoặc thay đổi cơ chế xác thực P12. Phía bác sĩ có guard và audit mock riêng trước khi truyền dữ liệu vào component chung.
+
 ## Kiểm tra giao diện
 
 - TypeScript, build production và ESLint các file mới/thay đổi: đạt.
-- Lint toàn dự án gần nhất còn 8 lỗi và 36 cảnh báo ở các module có sẵn; không có lỗi/cảnh báo ở module kết quả khám.
+- Lint toàn dự án ở lượt D6 còn 7 lỗi và 30 cảnh báo ngoài phạm vi; lint phần kết quả khám/bác sĩ đạt.
 - Chrome: 12 nhóm kiểm tra tương tác, không có lỗi JavaScript. Mở ca khám từ danh sách; kiểm tra đúng 5 chỉ định, số lượng theo ba trạng thái (2 chưa khám, 1 đang chờ, 2 đã có kết quả), tiến độ 2/5; điều hướng từ tổng quan sang nhóm/trạng thái.
 - Kiểm tra accordion, mở/thu tất cả, kết hợp bộ lọc loại/trạng thái, trạng thái không khớp, mở phiếu, phóng to và quay lại giữ bộ lọc. Kiểm tra các hộp mã ca/copy đường dẫn/hỗ trợ, đóng bằng Esc và nút đóng.
 - Kiểm tra tìm kiếm tiếng Việt không dấu, xóa bộ lọc, chọn hồ sơ, hồ sơ chưa có ca khám, trạng thái không có dịch vụ tương ứng.

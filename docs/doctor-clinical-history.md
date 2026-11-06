@@ -31,7 +31,7 @@ Màn Khám bệnh chỉ có năm mục:
 - Chỉ có giá trị CCCD/điện thoại/BHYT đã che trong DTO, không giữ số đầy đủ để che bằng CSS.
 - Cảnh báo dị ứng màu đỏ luôn ở đầu vùng khám và sticky khi cuộn, kể cả khi chuyển tab. Thiếu khai báo không được hiển thị thành không dị ứng; lỗi tải/ghi log vẫn có cảnh báo đỏ.
 - Lịch sử chỉ của người bệnh đang khám, có bộ lọc cơ sở, chuyên khoa, khoảng ngày bao gồm hai đầu và tiền tố mã ICD. Khoảng ngày sai không thực hiện lượt xem mới. Không có kết quả thì hiển thị danh sách rỗng.
-- Xem tóm tắt ngay trong danh sách; không thêm màn chi tiết phiên cũ D6.
+- Xem tóm tắt ngay trong danh sách; **Xem chi tiết** mở [D6 dùng chung khung P12](doctor-past-encounter.md), quay lại giữ bộ lọc đã áp dụng. D6 chỉ đọc và áp dụng quyền hồ sơ còn mở, kể cả khi lượt hiện tại đang chờ CLS; các thao tác Khám bệnh D5 vẫn yêu cầu `IN_PROGRESS`.
 
 ## Phiếu khám lâm sàng
 

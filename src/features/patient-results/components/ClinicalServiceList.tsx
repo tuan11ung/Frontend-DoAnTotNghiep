@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { CheckCircle2, ChevronDown, Clock3, Eye, Filter, MapPin, RotateCcw } from 'lucide-react';
-import type { ClinicalService, ClinicalServiceStatus, ResultEncounter } from '../models/types/patient-results.types';
+import type { ClinicalService, ClinicalServiceStatus, ResultEncounter, ResultDetailHref } from '../models/types/patient-results.types';
 import { ServiceStatusBadge, SERVICE_STATUS_LABELS } from './ServiceStatusBadge';
 import { formatResultDate, formatResultTime, patientResultsHref } from '../utils/result-format';
 import { SERVICE_GROUPS } from './service-group-config';
 
-export function ClinicalServiceList({ encounter, initialGroup, initialStatus }: { encounter: ResultEncounter; initialGroup: string; initialStatus: string }) {
+export function ClinicalServiceList({ encounter, initialGroup, initialStatus, href: customHref }: { encounter: ResultEncounter; initialGroup: string; initialStatus: string; href?: ResultDetailHref }) {
+  const href: ResultDetailHref = customHref ?? (options => patientResultsHref(encounter.patientId, encounter.id, options));
   const { services } = encounter;
   const validGroup = SERVICE_GROUPS.some((item) => item.id === initialGroup) ? initialGroup as ClinicalService['kind'] : 'ALL';
   const validStatus = Object.hasOwn(SERVICE_STATUS_LABELS, initialStatus) ? initialStatus as ClinicalServiceStatus : 'ALL';
@@ -40,7 +41,7 @@ export function ClinicalServiceList({ encounter, initialGroup, initialStatus }: 
           <div className="mt-3"><ServiceStatusBadge status={service.status} /></div>
           <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-slate-600"><MapPin aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-slate-400" /><span><strong className="font-semibold">Nơi thực hiện: </strong>{service.location}</span></p>
           {service.updatedAt && <p className="mt-2 flex items-start gap-2 text-[11px] leading-relaxed text-slate-400"><Clock3 aria-hidden="true" className="mt-0.5 size-3.5 shrink-0" /><span>{service.status === 'RESULT_READY' ? 'Hoàn tất' : 'Cập nhật'}: {formatResultTime(service.updatedAt)} · {formatResultDate(service.updatedAt)}</span></p>}
-          <div className="mt-4 flex items-center justify-end border-t border-slate-100 pt-3">{service.status === 'RESULT_READY' ? <Link href={patientResultsHref(encounter.patientId, encounter.id, { tab: 'services', service: service.id, group: groupFilter === 'ALL' ? undefined : groupFilter, status: statusFilter === 'ALL' ? undefined : statusFilter })} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-blue-50 px-3 py-2 text-[11px] font-bold text-blue-800 hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-blue-600"><Eye aria-hidden="true" className="size-3.5" />Xem phiếu kết quả</Link> : <span className="text-[11px] text-slate-400">{service.status === 'AWAITING_RESULT' ? 'Phiếu sẽ hiển thị khi có kết quả' : 'Chưa thực hiện dịch vụ'}</span>}</div>
+          <div className="mt-4 flex items-center justify-end border-t border-slate-100 pt-3">{service.status === 'RESULT_READY' ? <Link href={href({ tab: 'services', service: service.id, group: groupFilter === 'ALL' ? undefined : groupFilter, status: statusFilter === 'ALL' ? undefined : statusFilter })} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-blue-50 px-3 py-2 text-[11px] font-bold text-blue-800 hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-blue-600"><Eye aria-hidden="true" className="size-3.5" />Xem phiếu kết quả</Link> : <span className="text-[11px] text-slate-400">{service.status === 'AWAITING_RESULT' ? 'Phiếu sẽ hiển thị khi có kết quả' : 'Chưa thực hiện dịch vụ'}</span>}</div>
         </li>)}</ul></div>
       </div>;
     })}</div>
