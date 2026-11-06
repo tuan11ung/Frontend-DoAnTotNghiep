@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { countQueuePatients, filterQueuePatients, sortWaitingPatients } from './queue-utils';
 import { useDoctorQueue as useSnapshot } from './hooks/use-doctor-queue';
-import { callNextPatient, simulateQueueEvent, updateCalledPatient } from './api/doctor-queue-demo-store';
+import { callNextPatient, updateCalledPatient } from './api/doctor-queue-demo-store';
 import { DOCTOR_DEMO_ACTOR } from './data/doctor-queue-demo';
 import { consultationHref } from '@/src/features/doctor-consultation/consultation.types';
 import type { DoctorShift, PatientTag, QueueFilterStatus, QueuePatient, QueueStatus } from './types';
@@ -58,7 +58,7 @@ export function useDoctorQueue(shifts: DoctorShift[]) {
     callNextPatient: () => perform(() => callNextPatient(DOCTOR_DEMO_ACTOR, shiftId)),
     admitPatient: () => calledAction('ENTER'), markAbsent: () => calledAction('ABSENT'),
     recallPatient: () => calledAction('RECALL'), closeCall: () => calledAction('CANCEL'),
-    completeConsultation: () => perform(() => simulateQueueEvent(DOCTOR_DEMO_ACTOR, shiftId, 'COMPLETE')),
+    completeConsultation: () => { if (currentPatient) router.push(`${consultationHref(shiftId, currentPatient.id)}&tab=conclusion`); },
     examinationHref: currentPatient ? consultationHref(shiftId, currentPatient.id) : '',
     notice: error || notice, dismissNotice: () => setNotice(''),
   };

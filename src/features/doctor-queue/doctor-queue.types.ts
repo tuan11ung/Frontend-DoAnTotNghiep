@@ -1,5 +1,6 @@
 import type { MockClinicalNote } from '@/src/features/doctor-consultation/clinical-exam.types';
 import type { ClsOrder } from '@/src/features/doctor-consultation/cls-orders/cls-orders.types';
+import type { ConclusionRecord } from '@/src/features/doctor-consultation/conclusion/conclusion.types';
 export type QueueStatus = 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'ABSENT' | 'AWAITING_CLS' | 'COMPLETED';
 export type QueueFilter = 'WAITING' | 'ABSENT' | 'AWAITING_CLS' | 'COMPLETED';
 export type QueueLabel = 'PRIORITY' | 'RETURN_AFTER_CLS' | 'ONLINE';
@@ -22,7 +23,7 @@ export interface DoctorRecordAudit {
   assignmentId: string; patientId: string; encounterCode: string; doctorId: string; hospitalId: string;
   resource?: DoctorViewResource; targetId?: string; viewId?: string;
 }
-export const DOCTOR_VIEW_RESOURCES = ['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS', 'CLS_RESULTS', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE'] as const;
+export const DOCTOR_VIEW_RESOURCES = ['PERSONAL_PROFILE', 'HISTORY_LIST', 'PAST_ENCOUNTER', 'CLINICAL_EXAM', 'CLS_ORDERS', 'CLS_RESULTS', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE', 'CONCLUSION'] as const;
 export type DoctorViewResource = typeof DOCTOR_VIEW_RESOURCES[number];
 export const DOCTOR_TARGETED_VIEW_RESOURCES: readonly DoctorViewResource[] = ['PAST_ENCOUNTER', 'CLS_RESULT_DETAIL', 'CLS_RESULT_IMAGE'];
 export interface DoctorQueueSnapshot {
@@ -30,6 +31,7 @@ export interface DoctorQueueSnapshot {
   recordGrants: DoctorRecordGrant[]; recordAudit: DoctorRecordAudit[];
   clinicalNotes?: Record<string, MockClinicalNote>;
   clsOrders?: Record<string, ClsOrder[]>;
+  conclusions?: Record<string, ConclusionRecord>;
 }
 export interface DoctorDemoActor { role: 'DOCTOR'; doctorId: string; hospitalId: string }
 export const queueFilters: { id: QueueFilter; label: string }[] = [

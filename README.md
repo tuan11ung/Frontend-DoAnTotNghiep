@@ -49,7 +49,7 @@ Trang `/patient/payments` có lối vào từ **Tài khoản → Thanh toán & h
 
 ## Cổng bác sĩ
 
-Giữ hàng chờ và popup tiếp nhận từ `main`. Mở `/doctor/queue` trong development, chọn **Gọi bệnh nhân tiếp theo → Đã vào phòng** để mở màn **Khám bệnh**. Đã có **Hồ sơ & lịch sử**, **Khám lâm sàng**, **Chỉ định CLS** và **Kết quả CLS** (mô tả/kết luận, ảnh phóng to, hủy dịch vụ chưa thực hiện kèm lý do, yêu cầu chụp lại). **Kết luận & kê đơn** chờ phát triển. Toàn bộ luồng khám dùng mock data, không gọi API; xem [màn Khám bệnh](docs/doctor-clinical-history.md), [chỉ định CLS](docs/doctor-cls-orders.md), [kết quả CLS](docs/doctor-cls-results.md).
+Giữ hàng chờ và popup tiếp nhận từ `main`. Mở `/doctor/queue` trong development, chọn **Gọi bệnh nhân tiếp theo → Đã vào phòng** để mở màn **Khám bệnh** với đủ năm tab: Hồ sơ & lịch sử, Khám lâm sàng, Chỉ định CLS, Kết quả CLS, **Kết luận & kê đơn**. Tab cuối có ICD, đơn thuốc có cảnh báo dị ứng, lời dặn, kế hoạch tái khám và hoàn tất/khóa bệnh án. Nút hoàn tất ở hàng chờ mở tab này để kiểm tra trước khi xác nhận. Toàn bộ dùng mock data, không gọi API; xem [màn Khám bệnh](docs/doctor-clinical-history.md), [chỉ định CLS](docs/doctor-cls-orders.md), [kết quả CLS](docs/doctor-cls-results.md), [kết luận & kê đơn](docs/doctor-conclusion-prescription.md).
 
 ## Quy tắc phát triển
 

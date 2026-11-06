@@ -12,7 +12,7 @@ Màn Khám bệnh chỉ có năm mục:
 | D5b Khám lâm sàng | Nhập triệu chứng, ghi nhận khám, sinh hiệu và lưu bản nháp |
 | D5c Chỉ định CLS | Danh mục cây theo cơ sở, lý do, cờ an toàn và xác nhận; [chi tiết](doctor-cls-orders.md) |
 | D5d Kết quả CLS | Báo cáo, ảnh phóng to, hủy chưa thực hiện và yêu cầu chụp lại; [chi tiết](doctor-cls-results.md) |
-| D5e Kết luận & kê đơn | Chưa triển khai; tab chưa mở |
+| D5e Kết luận & kê đơn | ICD, kê đơn có cảnh báo dị ứng, lời dặn, tái khám và hoàn tất/khóa; [chi tiết](doctor-conclusion-prescription.md) |
 
 ## Cách thử
 
@@ -21,7 +21,7 @@ Màn Khám bệnh chỉ có năm mục:
 3. Chọn tab **Khám lâm sàng**, nhập triệu chứng và các chỉ số đã đo, chọn **Lưu bản nháp**.
 4. Đổi qua Hồ sơ & lịch sử rồi quay lại, hoặc tải lại trang để kiểm tra nội dung.
 5. Mở hai tab cùng lượt để thử xung đột bản nháp. Bản cũ không được ghi đè bản mới; nút **Nạp lại bản đã lưu (bỏ thay đổi)** tải dữ liệu mới nhất.
-6. Về hàng chờ, chọn **Hoàn tất lượt khám** để thử thu hồi quyền. Các tab đang xem đều ẩn hồ sơ/biểu mẫu; đọc và lưu sau đó bị từ chối.
+6. Về hàng chờ, chọn **Hoàn tất lượt khám** để mở tab Kết luận & kê đơn; nhập dữ liệu hợp lệ rồi xác nhận hoàn tất. Hồ sơ/biểu mẫu ở mọi tab sẽ ẩn; đọc và lưu tiếp bị từ chối. Chỉ còn thông báo chung đã hoàn tất và khóa chỉnh sửa.
 
 Ở production, mock chỉ mở khi `NEXT_PUBLIC_ENABLE_DOCTOR_DEMO=true`. Không tích hợp API hoặc dữ liệu bệnh án thật.
 

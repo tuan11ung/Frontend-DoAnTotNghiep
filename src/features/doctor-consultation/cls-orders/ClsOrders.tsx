@@ -10,7 +10,7 @@ import { ClsCatalogTree } from './ClsCatalogTree';
 import { ClsOrderList } from './ClsOrderList';
 import { useDoctorQueue } from '@/src/features/doctor-queue/hooks/use-doctor-queue';
 
-export function ClsOrders({ scope, grantId }: { scope: ClinicalScope; grantId: string }) {
+export function ClsOrders({ scope, grantId, onDirtyChange }: { scope: ClinicalScope; grantId: string; onDirtyChange: (dirty: boolean) => void }) {
   const snapshot = useDoctorQueue();
   const signature = JSON.stringify(snapshot.data?.clsOrders?.[scope.patientId] ?? []);
   const load = useCallback((viewId: string, signal: AbortSignal) => loadMockClsOrders(scope, viewId, signal), [scope]);
@@ -25,6 +25,7 @@ export function ClsOrders({ scope, grantId }: { scope: ClinicalScope; grantId: s
   const orders = result.data?.orders ?? [];
   const blocked = new Set(orders.flatMap(order => order.lines.filter(line => line.status === 'NOT_STARTED' || line.status === 'PROCESSING').map(line => line.serviceId)));
   const dirty = draft.serviceIds.length > 0 || draft.reason.length > 0 || draft.safetyFlags.length > 0;
+  useEffect(() => { onDirtyChange(dirty); return () => onDirtyChange(false); }, [dirty, onDirtyChange]);
   useEffect(() => {
     if (!dirty) return;
     const preventLoss = (event: BeforeUnloadEvent) => { event.preventDefault(); };

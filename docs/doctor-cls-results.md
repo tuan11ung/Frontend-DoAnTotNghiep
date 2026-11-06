@@ -37,7 +37,7 @@ Tái sử dụng actor/assignment/encounter/grant: chỉ bác sĩ điều trị 
 
 Đọc danh sách dùng `CLS_RESULTS` chỉ trả metadata; mở báo cáo dùng `CLS_RESULT_DETAIL`, mở/chuyển ảnh dùng `CLS_RESULT_IMAGE`. Hai resource sau bắt buộc targetId cụ thể. Tất cả ghi log trước khi trả dữ liệu; lỗi ghi log không trả báo cáo/ảnh mới, có thể thử lại. Zoom cùng ảnh không tạo log thừa; đóng/mở lại hoặc chuyển ảnh tạo lượt xem riêng. Không log nội dung sức khỏe, lý do hủy, token hoặc mật khẩu ra console.
 
-Các kiểm tra quyền và audit ở localStorage chỉ phục vụ mock. Backend thực tế phải thực thi quyền và log phía server. Không bổ sung màn kỹ thuật viên, kê đơn hoặc kết thúc khám D5e trong tác vụ này.
+Các kiểm tra quyền và audit ở localStorage chỉ phục vụ mock. Backend thực tế phải thực thi quyền và log phía server. Không có màn kỹ thuật viên. Kê đơn/hoàn tất hiện nằm ở [D5e](doctor-conclusion-prescription.md); nút hoàn tất ở hàng chờ dẫn tới D5e để kiểm tra và xác nhận, không đóng lượt khám trực tiếp.
 
 ## Kiểm tra
 

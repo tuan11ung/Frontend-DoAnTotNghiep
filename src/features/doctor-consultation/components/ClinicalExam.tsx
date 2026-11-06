@@ -8,15 +8,15 @@ import type { ClinicalScope } from '../api/clinical-demo-service';
 import { emptyClinicalExam, validateClinicalExam, VITAL_FIELDS, type MockClinicalNote } from '../clinical-exam.types';
 import { recordAccessTime } from '@/src/features/doctor-queue/doctor-record-access';
 
-export function ClinicalExam({ scope, grantId }: { scope: ClinicalScope; grantId: string }) {
+export function ClinicalExam({ scope, grantId, onDirtyChange }: { scope: ClinicalScope; grantId: string; onDirtyChange: (dirty: boolean) => void }) {
   const load = useCallback((viewId: string, signal: AbortSignal) => loadMockClinicalExam(scope, viewId, signal), [scope]);
   const result = useAuditedMockView(`${grantId}:clinical-exam`, load);
   if (result.loading) return <p role="status" className="rounded-2xl border border-slate-200 bg-white p-8 text-sm text-slate-500">Đang tải phiếu khám lâm sàng…</p>;
   if (result.error) return <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-sm text-rose-700">{result.error}<button type="button" onClick={result.retry} className="ml-3 rounded-lg border border-rose-200 bg-white px-3 py-2 font-semibold">Thử lại</button></div>;
-  return <ClinicalExamEditor initial={result.data} scope={scope} onReload={result.retry} />;
+  return <ClinicalExamEditor initial={result.data} scope={scope} onReload={result.retry} onDirtyChange={onDirtyChange} />;
 }
 
-function ClinicalExamEditor({ initial, scope, onReload }: { initial: MockClinicalNote | null; scope: ClinicalScope; onReload: () => void }) {
+function ClinicalExamEditor({ initial, scope, onReload, onDirtyChange }: { initial: MockClinicalNote | null; scope: ClinicalScope; onReload: () => void; onDirtyChange: (dirty: boolean) => void }) {
   const [values, setValues] = useState(() => initial?.values ?? emptyClinicalExam());
   const [saved, setSaved] = useState(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -24,6 +24,7 @@ function ClinicalExamEditor({ initial, scope, onReload }: { initial: MockClinica
   const [failure, setFailure] = useState('');
   const [busy, setBusy] = useState(false);
   const dirty = JSON.stringify(values) !== JSON.stringify(saved?.values ?? emptyClinicalExam());
+  useEffect(() => { onDirtyChange(dirty); return () => onDirtyChange(false); }, [dirty, onDirtyChange]);
   useEffect(() => {
     if (!dirty) return;
     const preventLoss = (event: BeforeUnloadEvent) => { event.preventDefault(); };

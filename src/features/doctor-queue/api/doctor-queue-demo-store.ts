@@ -4,6 +4,7 @@ import { DOCTOR_TARGETED_VIEW_RESOURCES, DOCTOR_VIEW_RESOURCES } from '../doctor
 import { doctorRecordAccess, recordAudit, validRecordAccess } from '../doctor-record-access';
 import { isClinicalNote, validateClinicalExam, type ClinicalExamValues } from '@/src/features/doctor-consultation/clinical-exam.types';
 import { validClsOrderLedger } from '@/src/features/doctor-consultation/cls-orders/cls-orders-validation';
+import { validConclusionLedger } from '@/src/features/doctor-consultation/conclusion/conclusion-validation';
 export const DOCTOR_QUEUE_KEY = 'medconnect.doctor-queue-demo.v2';
 const CHANGE_EVENT = 'medconnect:doctor-queue-demo-change';
 const statuses: QueueStatus[] = ['WAITING', 'CALLED', 'IN_PROGRESS', 'ABSENT', 'AWAITING_CLS', 'COMPLETED'];
@@ -33,6 +34,7 @@ export function parseDoctorQueue(value: string): DoctorQueueSnapshot | null {
     if (!validRecordAccess(grants, audit, rows)) return null;
     if ('clinicalNotes' in data && (!data.clinicalNotes || typeof data.clinicalNotes !== 'object' || Array.isArray(data.clinicalNotes) || !Object.entries(data.clinicalNotes).every(([id, note]) => isClinicalNote(note) && rows.some(p => p.id === id) && grants.some(g => g.id === note.grantId && g.patientId === id && g.doctorId === note.updatedBy)))) return null;
     if ('clsOrders' in data && !validClsOrderLedger(data.clsOrders, rows, grants)) return null;
+    if ('conclusions' in data && !validConclusionLedger(data.conclusions, rows, grants)) return null;
     return { ...data, patients: rows, recordGrants: grants, recordAudit: audit } as DoctorQueueSnapshot;
   } catch { return null; }
 }
@@ -110,6 +112,18 @@ export function updateMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: 
     const access = doctorRecordAccess(data, actor, assignmentId, patientId);
     if (!access || access.patient.status !== 'IN_PROGRESS') throw new Error('Lượt khám đã kết thúc hoặc bạn không còn quyền chỉnh sửa.');
     return writer(access, data);
+  });
+}
+export function finalizeMockClinicalData<T>(actor: DoctorDemoActor, assignmentId: string, patientId: string, writer: (access: NonNullable<ReturnType<typeof doctorRecordAccess>>, data: DoctorQueueSnapshot, closedAt: string) => T): Promise<T> {
+  return updateMockClinicalData(actor, assignmentId, patientId, (access, data) => {
+    const lastAuditAt = data.recordAudit.filter(event => event.patientId === patientId && event.assignmentId === assignmentId).reduce((latest, event) => Math.max(latest, Date.parse(event.occurredAt)), Date.parse(access.grant.openedAt));
+    const closedAt = new Date(Math.max(Date.now(), lastAuditAt)).toISOString();
+    const result = writer(access, data, closedAt);
+    access.patient.status = 'COMPLETED';
+    data.recordGrants.filter(grant => grant.patientId === patientId && grant.assignmentId === assignmentId && grant.closedAt === null).forEach(grant => {
+      grant.closedAt = closedAt; recordAudit(data, grant, 'REVOKED', closedAt);
+    });
+    return result;
   });
 }
 export function saveMockClinicalExam(actor: DoctorDemoActor, assignmentId: string, patientId: string, values: ClinicalExamValues, expectedRevision: number) {
