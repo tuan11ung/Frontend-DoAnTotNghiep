@@ -1,0 +1,35 @@
+.doctor-queue-next {
+  position: relative;
+}
+
+.doctor-queue-next::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--color-medblue-500);
+  opacity: 0;
+  content: '';
+  pointer-events: none;
+  animation: nextPatientGlow 2.8s ease-in-out infinite;
+}
+
+.doctor-queue-next-badge {
+  animation: nextBadgePulse 2.8s ease-out infinite;
+}
+
+@keyframes nextPatientGlow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes nextBadgePulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-medblue-600) 35%, transparent); }
+  65%, 100% { box-shadow: 0 0 0 6px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doctor-queue-next::before,
+  .doctor-queue-next-badge {
+    animation: none;
+  }
+}
