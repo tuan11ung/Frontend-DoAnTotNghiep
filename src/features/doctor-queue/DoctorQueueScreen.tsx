@@ -34,7 +34,7 @@ export function DoctorQueueScreen({ data }: { data: DoctorQueueData }) {
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">
           <div className="mx-auto max-w-[1500px] space-y-6">
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">Hàng chờ phòng khám</h1>
-            <DoctorQueueWorkspace shifts={data.shifts} />
+            <Link href="/doctor/emergency?demo=1" className="inline-block rounded-lg border border-rose-200 bg-white px-3 py-2 text-xs font-bold text-rose-700 lg:hidden">Tra cứu hồ sơ khẩn cấp</Link><DoctorQueueWorkspace shifts={data.shifts} />
           </div>
         </main>
       </div>

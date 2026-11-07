@@ -23,6 +23,7 @@ export function DoctorSidebar({ doctor, facility }: DoctorSidebarProps) {
       <nav aria-label="Điều hướng bác sĩ" className="flex-1 px-3 py-6">
         <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-100/45">Khám chữa bệnh</p>
         <Link aria-current="page" className="flex min-h-11 items-center gap-3 rounded-lg bg-white px-3 text-sm font-bold text-[#0b5754] shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" href="/doctor/queue"><ListOrdered aria-hidden="true" className="h-[18px] w-[18px] text-blue-700" /><span className="flex-1">Hàng chờ phòng</span><ChevronRight aria-hidden="true" className="h-4 w-4 text-slate-400" /></Link>
+        <Link className="mt-3 flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold text-emerald-100 hover:bg-white/10" href="/doctor/emergency?demo=1">Tra cứu hồ sơ khẩn cấp</Link>
       </nav>
       <div className="border-t border-white/10 p-5">
         <div className="flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100/10 text-emerald-100"><Stethoscope aria-hidden="true" className="h-5 w-5" /></span><div><p className="text-sm font-bold">BS. {doctor.name}</p><p className="mt-1 text-xs text-emerald-100/55">Bác sĩ · {doctor.specialty}</p></div></div>
