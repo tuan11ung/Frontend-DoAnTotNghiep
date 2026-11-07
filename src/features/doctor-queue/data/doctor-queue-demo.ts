@@ -18,7 +18,7 @@ export const INITIAL_DOCTOR_QUEUE: DoctorQueueSnapshot = {
   version: 1, revision: 0, updatedAt: DOCTOR_DEMO_TIME, recordGrants: [], recordAudit: [],
   patients: DOCTOR_QUEUE_DEMO.shifts.flatMap(shift => shift.patients.map(patient => ({
     id: patient.id, assignmentId: shift.id, encounterCode: `LK-DEMO-${patient.id.toUpperCase()}`,
-    ticket: patient.number, fullName: patient.name, birthYear: patient.birthYear, reason: patient.reason,
+    ticket: patient.number, fullName: patient.name, birthYear: patient.birthYear, reason: patient.detail,
     checkedInAt: `${DOCTOR_QUEUE_DEMO.date}T${patient.checkIn}:00+07:00`, status: statuses[patient.status] ?? 'WAITING',
     labels: patient.tags.map(tag => labels[tag]), photo: patient.avatar, callCount: 0, lastCalledAt: null, enteredAt: null,
   }))),

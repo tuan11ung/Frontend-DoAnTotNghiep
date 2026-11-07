@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { countQueuePatients, filterQueuePatients, sortWaitingPatients } from './queue-utils';
+import { countQueuePatients, filterQueuePatients, sortWaitingPatients } from '../clinical-queue/queue-utils';
 import { useDoctorQueue as useSnapshot } from './hooks/use-doctor-queue';
 import { callNextPatient, updateCalledPatient } from './api/doctor-queue-demo-store';
 import { DOCTOR_DEMO_ACTOR } from './data/doctor-queue-demo';
 import { consultationHref } from '@/src/features/doctor-consultation/consultation.types';
-import type { DoctorShift, PatientTag, QueueFilterStatus, QueuePatient, QueueStatus } from './types';
+import type { QueueShift, PatientTag, QueueFilterStatus, QueuePatient, QueueStatus } from '../clinical-queue/types';
 
 const statusMap: Record<string, QueueStatus> = { WAITING: 'waiting', CALLED: 'waiting', IN_PROGRESS: 'in-room', ABSENT: 'absent', AWAITING_CLS: 'awaiting-results', COMPLETED: 'completed' };
 
 // Keep main's queue layout; share its mock encounter state with the examination.
-export function useDoctorQueue(shifts: DoctorShift[]) {
+export function useDoctorQueue(shifts: QueueShift[]) {
   const router = useRouter();
   const { data, error } = useSnapshot();
   const [shiftId, setShiftId] = useState(shifts[0]?.id ?? '');

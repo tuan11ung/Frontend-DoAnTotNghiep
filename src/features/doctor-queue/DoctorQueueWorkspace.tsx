@@ -3,14 +3,14 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import { Check, CheckCheck, Megaphone, X } from 'lucide-react';
-import { CallingPatientModal } from './components/CallingPatientModal';
-import { QueuePatientList } from './components/QueuePatientList';
-import { QueueShiftSummary } from './components/QueueShiftSummary';
-import { QueueToolbar } from './components/QueueToolbar';
+import { CallingPatientModal } from '../clinical-queue/components/CallingPatientModal';
+import { QueuePatientList } from '../clinical-queue/components/QueuePatientList';
+import { QueueShiftSummary } from '../clinical-queue/components/QueueShiftSummary';
+import { QueueToolbar } from '../clinical-queue/components/QueueToolbar';
 import { useDoctorQueue } from './use-doctor-queue';
-import type { DoctorShift } from './types';
+import type { QueueShift } from '../clinical-queue/types';
 
-export function DoctorQueueWorkspace({ shifts }: { shifts: DoctorShift[] }) {
+export function DoctorQueueWorkspace({ shifts }: { shifts: QueueShift[] }) {
   const state = useDoctorQueue(shifts);
   const nextCallRef = useRef<HTMLButtonElement>(null);
   const queueSectionRef = useRef<HTMLElement>(null);
@@ -34,7 +34,7 @@ export function DoctorQueueWorkspace({ shifts }: { shifts: DoctorShift[] }) {
 
   return (
     <>
-      <QueueShiftSummary busy={Boolean(currentPatient)} completed={state.counts.completed} onChange={state.changeShift} shift={shift} shifts={shifts} total={state.patients.length} />
+      <QueueShiftSummary copy={{ assignmentAriaLabel: "Ca khám được phân công", assignmentLabel: "Phòng được phân công", completedSummary: "Đã khám", readyStatus: "Phòng sẵn sàng", busyStatus: "Đang khám" }} busy={Boolean(currentPatient || callingPatient || state.busy)} completed={state.counts.completed} onChange={state.changeShift} shift={shift} shifts={shifts} total={state.patients.length} />
 
       {currentPatient && (
         <section aria-label="Bệnh nhân đang khám" className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-violet-200 bg-violet-50/60 p-4">
@@ -42,7 +42,7 @@ export function DoctorQueueWorkspace({ shifts }: { shifts: DoctorShift[] }) {
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-extrabold text-violet-700 tabular-nums">{String(currentPatient.number).padStart(3, '0')}</span>
             <div>
               <p className="text-xs font-bold text-violet-700">Đang khám · {currentPatient.name}</p>
-              <p className="mt-1 text-xs text-slate-500">{currentPatient.birthYear} · {currentPatient.reason}</p>
+              <p className="mt-1 text-xs text-slate-500">{currentPatient.birthYear} · {currentPatient.detail}</p>
             </div>
           </div>
           <Link className="inline-flex h-9 items-center rounded-lg bg-blue-700 px-4 text-xs font-bold text-white hover:bg-blue-800" href={state.examinationHref}>Vào màn Khám bệnh</Link>
@@ -70,6 +70,8 @@ export function DoctorQueueWorkspace({ shifts }: { shifts: DoctorShift[] }) {
           </button>
         </div>
         <QueueToolbar
+          filters={["waiting", "absent", "awaiting-results", "completed"]}
+          statusLabels={{ waiting: "Đang chờ", absent: "Vắng mặt", "awaiting-results": "Chờ kết quả CLS", completed: "Đã khám", "in-room": "Đang khám" }}
           counts={state.counts}
           onQuery={state.setQuery}
           onStatus={state.setStatusFilter}
@@ -79,7 +81,7 @@ export function DoctorQueueWorkspace({ shifts }: { shifts: DoctorShift[] }) {
           status={state.statusFilter}
           tag={state.tagFilter}
         />
-        <QueuePatientList filtered={state.filtered} nextId={state.nextPatient?.id} onResetFilters={state.resetFilters} patients={state.visiblePatients} />
+        <QueuePatientList detailLabel="Lý do khám" filtered={state.filtered} nextId={state.nextPatient?.id} onResetFilters={state.resetFilters} patients={state.visiblePatients} />
       </section>
 
       {callingPatient && (
