@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from './AppointmentQueueSummary';
+import { AppointmentRoomLoad } from './AppointmentRoomLoad';
 import {
   Calendar,
   Building2,
@@ -27,6 +28,7 @@ interface AppointmentCardProps {
   onOpenCancel: (appointment: PatientAppointment) => void;
   onOpenQueue: (appointment: PatientAppointment) => void;
   queueRoom?: VisitQueueRoom;
+  queueError?: boolean;
 }
 
 export function AppointmentCard({
@@ -35,6 +37,7 @@ export function AppointmentCard({
   onOpenCancel,
   onOpenQueue,
   queueRoom,
+  queueError,
 }: AppointmentCardProps) {
   const statusConfig = APPOINTMENT_STATUS_LABELS[appointment.status] || {
     label: appointment.status,
@@ -121,6 +124,7 @@ export function AppointmentCard({
           </div>
         )}
 
+        {isBooked && <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />}
         {isCheckedIn && <AppointmentQueueSummary appointment={appointment} room={queueRoom} />}
 
         {/* Lý do hủy nếu đã hủy */}

@@ -24,7 +24,7 @@ Không có thêm/sửa/xóa bệnh án, kê đơn, hủy chỉ định, yêu c�
 - Doctor và `PatientResultsScreen` đều render **cùng `EncounterDetail`**, cùng `EncounterRecordSections`, `EncounterPrescription`, `EncounterOverview`, `ClinicalServiceList`.
 - Doctor và patient dùng cùng **`ServiceResultViewer`** và **`EncounterImageDialog`**. Callback tải ảnh ở doctor đi qua guard/audit; không có một bản markup D6 riêng sao chép từ P12.
 - `mode='doctor'` bắt buộc navigation riêng theo kiểu props; mặc định là patient. Mode không do tham số URL quyết định.
-- P12 giữ bốn tab, mã ca/chia sẻ/hỗ trợ và đường viện phí cũ. Các dữ liệu mới là optional để P12 đang thiếu dữ liệu vẫn hiện thông báo rõ ràng. Không thay đổi fixture P12 hoặc gọi API mới.
+- P12 giữ bốn tab, chia sẻ/hỗ trợ và đường viện phí cũ. Theo yêu cầu giản lược giao diện, P12 bỏ thông tin cá nhân lặp lại và mã ca khám; mode doctor vẫn giữ thông tin đã masking. Các dữ liệu mới là optional để P12 đang thiếu dữ liệu vẫn hiện thông báo rõ ràng. Không thay đổi fixture P12 hoặc gọi API mới.
 
 ## Quyền và audit mock
 

@@ -247,7 +247,8 @@ export function PatientAppointmentsPage() {
                 onOpenQr={(a) => setQrAppointmentId(a.id)}
                 onOpenCancel={(a) => setCancelTarget(a)}
                 onOpenQueue={(a) => setQueueAppointmentId(a.id)}
-                queueRoom={findAppointmentQueue(rooms, apt)}
+                queueError={queueError}
+                queueRoom={rooms.find(room => room.key === JSON.stringify([apt.hospitalId, apt.departmentName, apt.roomName, apt.workDate]))}
               />
             ))}
           </div>

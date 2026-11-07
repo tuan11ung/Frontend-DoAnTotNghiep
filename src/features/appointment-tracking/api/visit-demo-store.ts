@@ -6,6 +6,22 @@ export const VISIT_QUEUE_STORAGE_KEY = 'medconnect.appointment-queue-demo.v1';
 export const VISIT_QUEUE_EVENT = 'medconnect:appointment-queue-change';
 export const EMPTY_VISIT_SNAPSHOT = '{"version":1,"rooms":[]}';
 
+// A room preview never checks in the appointment or assigns it a queue ticket.
+export function preparePortalRoomPreview(appointment: PatientAppointment) {
+  return withVisitQueueLock(() => {
+    if (appointment.status !== 'BOOKED') throw new Error('Chỉ tạo hàng chờ mẫu cho lịch sắp tới.');
+    const state = readState(); const key = appointmentQueueKey(appointment);
+    if (state.rooms.some(room => room.key === key)) return;
+    const location = appointmentRoomInfo(appointment); const now = new Date().toISOString();
+    state.rooms.push({ key, date: appointment.workDate, hospitalId: appointment.hospitalId, hospitalName: appointment.hospitalName, department: appointment.departmentName, roomName: appointment.roomName, ...location, doctorName: appointment.doctorName, averageMinutes: 10, updatedAt: now, tickets: [
+      { id: crypto.randomUUID(), number: 1, displayName: 'N.V.H', priority: false, status: 'SERVING' },
+      { id: crypto.randomUUID(), number: 2, displayName: 'T.T.L', priority: true, status: 'CALLED' },
+      { id: crypto.randomUUID(), number: 3, displayName: 'P.M.A', priority: false, status: 'WAITING' },
+      { id: crypto.randomUUID(), number: 4, displayName: 'L.T.B', priority: false, status: 'WAITING' },
+    ] }); saveState(state);
+  });
+}
+
 export function getVisitQueueSnapshot() {
   if (typeof window === 'undefined') return EMPTY_VISIT_SNAPSHOT;
   try { return window.localStorage.getItem(VISIT_QUEUE_STORAGE_KEY) || EMPTY_VISIT_SNAPSHOT; }
