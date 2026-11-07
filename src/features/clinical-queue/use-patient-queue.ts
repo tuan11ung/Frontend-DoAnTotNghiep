@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { countQueuePatients, filterQueuePatients, sortWaitingPatients } from './queue-utils';
-import type { DoctorShift, PatientTag, QueueFilterStatus, QueuePatient, QueueStatus } from './types';
+import type { PatientTag, QueueFilterStatus, QueuePatient, QueueShift, QueueStatus } from './types';
 
-// Local UI state only; callers provide the assigned shifts instead of importing fixtures here.
-export function useDoctorQueue(shifts: DoctorShift[]) {
+// Local UI state only; callers provide assigned shifts instead of importing fixtures here.
+export function usePatientQueue(shifts: QueueShift[]) {
   const [shiftId, setShiftId] = useState(shifts[0]?.id ?? '');
   const [patientsByShift, setPatientsByShift] = useState<Record<string, QueuePatient[]>>(() => (
     Object.fromEntries(shifts.map((shift) => [shift.id, shift.patients]))
@@ -71,17 +71,17 @@ export function useDoctorQueue(shifts: DoctorShift[]) {
     setCallingId(null);
   }
 
-  function completeConsultation() {
+  function completeCurrentPatient() {
     if (!currentPatient) return;
     updateStatus(currentPatient, 'completed');
-    setNotice(`Đã hoàn tất lượt khám của ${currentPatient.name}.`);
+    setNotice(`Đã hoàn tất lượt của ${currentPatient.name}.`);
   }
 
   return {
     shift, patients, counts, nextPatient, currentPatient, callingPatient, visiblePatients,
     statusFilter, setStatusFilter, query, setQuery, tagFilter, setTagFilter,
     filtered: Boolean(query.trim() || tagFilter), resetFilters, changeShift,
-    callNextPatient, admitPatient, markAbsent, completeConsultation,
+    callNextPatient, admitPatient, markAbsent, completeCurrentPatient,
     closeCall: () => setCallingId(null), notice, dismissNotice: () => setNotice(''),
   };
 }

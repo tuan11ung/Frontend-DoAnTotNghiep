@@ -1,8 +1,8 @@
-.doctor-queue-next {
+.clinical-queue-next {
   position: relative;
 }
 
-.doctor-queue-next::before {
+.clinical-queue-next::before {
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
@@ -13,7 +13,7 @@
   animation: nextPatientGlow 2.8s ease-in-out infinite;
 }
 
-.doctor-queue-next-badge {
+.clinical-queue-next-badge {
   animation: nextBadgePulse 2.8s ease-out infinite;
 }
 
@@ -28,8 +28,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .doctor-queue-next::before,
-  .doctor-queue-next-badge {
+  .clinical-queue-next::before,
+  .clinical-queue-next-badge {
     animation: none;
   }
 }
