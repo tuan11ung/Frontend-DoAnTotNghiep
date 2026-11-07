@@ -1,6 +1,7 @@
 import type { MockClinicalNote } from '@/src/features/doctor-consultation/clinical-exam.types';
 import type { ClsOrder } from '@/src/features/doctor-consultation/cls-orders/cls-orders.types';
 import type { ConclusionRecord } from '@/src/features/doctor-consultation/conclusion/conclusion.types';
+import type { NotableLedger } from '@/src/features/doctor-consultation/notable/notable.types';
 export type QueueStatus = 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'ABSENT' | 'AWAITING_CLS' | 'COMPLETED';
 export type QueueFilter = 'WAITING' | 'ABSENT' | 'AWAITING_CLS' | 'COMPLETED';
 export type QueueLabel = 'PRIORITY' | 'RETURN_AFTER_CLS' | 'ONLINE';
@@ -32,6 +33,7 @@ export interface DoctorQueueSnapshot {
   clinicalNotes?: Record<string, MockClinicalNote>;
   clsOrders?: Record<string, ClsOrder[]>;
   conclusions?: Record<string, ConclusionRecord>;
+  notable?: NotableLedger;
 }
 export interface DoctorDemoActor { role: 'DOCTOR'; doctorId: string; hospitalId: string }
 export const queueFilters: { id: QueueFilter; label: string }[] = [

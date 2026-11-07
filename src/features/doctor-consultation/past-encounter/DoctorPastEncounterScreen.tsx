@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { NotableEncounterAction } from '../notable/NotableEncounterAction';
 import { useCallback, useMemo } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { ArrowLeft, LockKeyhole } from 'lucide-react';
@@ -39,7 +40,7 @@ function PastEncounterContent({ assignmentId, patientId, historyId, grantId, ope
   const serviceId = query.get('service');
   const allergy = <AllergyAlert profile={currentProfile} loading={false} error="" onRetry={detail.retry} />;
   return <main className="min-h-svh bg-slate-50 px-4 py-4 text-slate-800 sm:px-6"><div className="mx-auto max-w-7xl space-y-5">{allergy}<div className="flex flex-wrap items-center justify-between gap-2"><Link href={backHref} className="inline-flex items-center gap-1.5 rounded-lg px-1 py-2 text-xs font-semibold text-teal-700"><ArrowLeft className="size-4" />{inProgress ? 'Quay lại màn Khám bệnh' : 'Về hàng chờ phòng'}</Link><p className="rounded-lg border border-teal-100 bg-teal-50 px-3 py-2 text-[10px] text-teal-800">Bác sĩ · Chỉ đọc · Quyền mở lúc {recordAccessTime(openedAt)}</p></div>
-    {serviceId !== null ? <PastReport key={serviceId} scope={scope} historyId={historyId} serviceId={serviceId} detail={detail.data} backHref={href({ tab: 'services', group: query.get('group') || undefined, status: query.get('status') || undefined })} allergy={allergy} /> : <EncounterDetail encounter={encounter} patient={patient} mode="doctor" navigation={{ backHref, href }} />}
+    <NotableEncounterAction kind="HISTORY" id={historyId} />{serviceId !== null ? <PastReport key={serviceId} scope={scope} historyId={historyId} serviceId={serviceId} detail={detail.data} backHref={href({ tab: 'services', group: query.get('group') || undefined, status: query.get('status') || undefined })} allergy={allergy} /> : <EncounterDetail encounter={encounter} patient={patient} mode="doctor" navigation={{ backHref, href }} />}
     <p className="pb-5 text-[10px] leading-6 text-slate-400">Phiên đã hoàn tất chỉ để tham khảo lịch sử. Dữ liệu minh họa; không chỉnh sửa, hủy chỉ định, kê đơn hay thanh toán từ màn này.</p>
   </div></main>;
 }

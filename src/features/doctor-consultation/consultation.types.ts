@@ -6,7 +6,7 @@ export interface ClinicalProfile {
 }
 export interface PastEncounter {
   id: string; queuePatientId: string; code: string; date: string;
-  facilityId: string; specialtyId: string; doctorName: string;
+  facilityId: string; specialtyId: string; doctorName: string; doctorId: string; hospitalId: string;
   diagnoses: { code: string; name: string }[]; reason: string; summary: string;
 }
 export interface HistoryFilters { facility: string; specialty: string; from: string; to: string; icd: string }

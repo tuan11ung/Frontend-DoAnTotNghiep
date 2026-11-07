@@ -5,6 +5,7 @@ import { doctorRecordAccess, recordAudit, validRecordAccess } from '../doctor-re
 import { isClinicalNote, validateClinicalExam, type ClinicalExamValues } from '@/src/features/doctor-consultation/clinical-exam.types';
 import { validClsOrderLedger } from '@/src/features/doctor-consultation/cls-orders/cls-orders-validation';
 import { validConclusionLedger } from '@/src/features/doctor-consultation/conclusion/conclusion-validation';
+import { validNotableLedger } from '@/src/features/doctor-consultation/notable/notable-validation';
 export const DOCTOR_QUEUE_KEY = 'medconnect.doctor-queue-demo.v2';
 const CHANGE_EVENT = 'medconnect:doctor-queue-demo-change';
 const statuses: QueueStatus[] = ['WAITING', 'CALLED', 'IN_PROGRESS', 'ABSENT', 'AWAITING_CLS', 'COMPLETED'];
@@ -35,6 +36,7 @@ export function parseDoctorQueue(value: string): DoctorQueueSnapshot | null {
     if ('clinicalNotes' in data && (!data.clinicalNotes || typeof data.clinicalNotes !== 'object' || Array.isArray(data.clinicalNotes) || !Object.entries(data.clinicalNotes).every(([id, note]) => isClinicalNote(note) && rows.some(p => p.id === id) && grants.some(g => g.id === note.grantId && g.patientId === id && g.doctorId === note.updatedBy)))) return null;
     if ('clsOrders' in data && !validClsOrderLedger(data.clsOrders, rows, grants)) return null;
     if ('conclusions' in data && !validConclusionLedger(data.conclusions, rows, grants)) return null;
+    if ('notable' in data && !validNotableLedger(data.notable, { ...data, patients: rows, recordGrants: grants, recordAudit: audit } as DoctorQueueSnapshot)) return null;
     return { ...data, patients: rows, recordGrants: grants, recordAudit: audit } as DoctorQueueSnapshot;
   } catch { return null; }
 }
@@ -50,8 +52,15 @@ export function requireDoctorAssignment(actor: DoctorDemoActor, assignmentId: st
 }
 async function update<T>(actor: DoctorDemoActor, assignmentId: string, action: (data: DoctorQueueSnapshot) => T): Promise<T> {
   requireDoctorAssignment(actor, assignmentId);
+  return updateMockDoctorData(actor, data => { requireDoctorAssignment(actor, assignmentId); return action(data); });
+}
+export async function updateMockDoctorData<T>(actor: DoctorDemoActor, action: (data: DoctorQueueSnapshot) => T): Promise<T> {
+  function requireActor() {
+    if (!DOCTOR_DEMO_ENABLED || actor.role !== 'DOCTOR' || !DOCTOR_ASSIGNMENTS.some(assignment => assignment.doctorId === actor.doctorId && assignment.hospitalId === actor.hospitalId)) throw new Error('Không có quyền bác sĩ tại cơ sở mô phỏng này.');
+  }
+  requireActor();
   const mutate = () => {
-    requireDoctorAssignment(actor, assignmentId);
+    requireActor();
     const data = parseDoctorQueue(doctorQueueSnapshot());
     if (!data) throw new Error('Không thể đọc dữ liệu hàng chờ. Vui lòng kiểm tra dữ liệu mô phỏng.');
     const result = action(data); data.revision++; data.updatedAt = new Date().toISOString();
