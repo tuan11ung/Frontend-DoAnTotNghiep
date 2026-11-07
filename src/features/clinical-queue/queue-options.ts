@@ -1,14 +1,4 @@
-import type { PatientTag, QueueStatus } from './types';
-
-export const QUEUE_FILTERS = ['waiting', 'absent', 'awaiting-results', 'completed'] as const;
-
-export const QUEUE_STATUS_LABELS: Record<QueueStatus, string> = {
-  waiting: 'Đang chờ',
-  absent: 'Vắng mặt',
-  'awaiting-results': 'Chờ kết quả CLS',
-  completed: 'Đã khám',
-  'in-room': 'Đang khám',
-};
+import type { PatientTag } from './types';
 
 export const PATIENT_TAG_KEYS = ['priority', 'return', 'online'] as const;
 
