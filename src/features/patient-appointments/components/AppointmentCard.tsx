@@ -95,14 +95,16 @@ export function AppointmentCard({
               </p>
             </div>
           </div>
-          {!isCheckedIn && !isCancelled && <div className="flex flex-wrap gap-2"><AppointmentTicketNumber appointment={appointment} room={queueRoom} queueError={queueError} />{isBooked && <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />}</div>}
+          <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />
         </div>
 
         {/* Thời gian & Bác sĩ */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/60 text-xs">
+        <div data-appointment-schedule className="grid grid-cols-[80px_minmax(0,1fr)] gap-3 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/60 text-xs sm:grid-cols-[100px_minmax(0,1fr)] sm:gap-4">
+          <AppointmentTicketNumber appointment={appointment} room={queueRoom} queueError={queueError} variant="prominent" />
+          <div className="min-w-0 space-y-3">
           <div className="space-y-1">
             <span className="text-slate-400 font-medium">Thời gian khám:</span>
-            <div className="flex items-center gap-1.5 font-bold text-slate-900">
+            <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-900">
               <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
               <span>{appointment.workDate}</span>
               <span className="text-blue-600 font-black">({appointment.timeSlot})</span>
@@ -111,10 +113,11 @@ export function AppointmentCard({
 
           <div className="space-y-1">
             <span className="text-slate-400 font-medium">Bác sĩ phụ trách:</span>
-            <div className="flex items-center gap-1.5 font-bold text-slate-900 truncate">
-              <Stethoscope className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="truncate">{appointment.doctorTitle} {appointment.doctorName}</span>
+            <div className="flex items-start gap-1.5 font-bold leading-relaxed text-slate-900">
+              <Stethoscope className="mt-0.5 w-4 h-4 text-emerald-600 shrink-0" />
+              <span className="min-w-0 break-words whitespace-normal">{appointment.doctorTitle} {appointment.doctorName}</span>
             </div>
+          </div>
           </div>
         </div>
 
