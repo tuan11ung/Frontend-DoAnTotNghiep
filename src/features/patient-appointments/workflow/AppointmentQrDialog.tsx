@@ -6,10 +6,12 @@ import type { PatientAppointment } from '../models/types/appointment.types';
 import { APPOINTMENT_STATUS_LABELS } from '../models/types/appointment.types';
 import { appointmentDate, appointmentRoomInfo } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQrCode } from '../components/AppointmentQrCode';
+import { AppointmentTicketNumber } from '../components/AppointmentTicketNumber';
+import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 
-interface AppointmentQrDialogProps { isOpen: boolean; appointment: PatientAppointment | null; onClose: () => void }
+interface AppointmentQrDialogProps { isOpen: boolean; appointment: PatientAppointment | null; onClose: () => void; queueRoom?: VisitQueueRoom; queueError?: boolean }
 
-export function AppointmentQrDialog({ isOpen, appointment, onClose }: AppointmentQrDialogProps) {
+export function AppointmentQrDialog({ isOpen, appointment, onClose, queueRoom, queueError }: AppointmentQrDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const appointmentId = appointment?.id;
@@ -29,6 +31,7 @@ export function AppointmentQrDialog({ isOpen, appointment, onClose }: Appointmen
     <div className="grid items-start gap-5 p-4 sm:p-6 md:grid-cols-[minmax(0,1fr)_280px]">
       <div className="min-w-0 space-y-5">
         <div><span className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-bold ${status.bgClass} ${status.colorClass}`}>{status.label}</span><h3 className="mt-3 text-lg font-extrabold text-slate-900">{appointment.patientName}</h3><p className="mt-1 text-xs text-slate-500">{appointment.patientRelationship || 'Bản thân'} · {appointmentDate(appointment.patientDob)}</p></div>
+        <AppointmentTicketNumber appointment={appointment} room={queueRoom} queueError={queueError} />
         <dl className="space-y-4 text-xs leading-relaxed">
           <div className="flex items-start gap-2.5"><Building2 className="mt-0.5 size-4 shrink-0 text-blue-600" /><div><dt className="text-slate-400">Cơ sở khám</dt><dd className="mt-1 font-bold text-slate-800">{appointment.hospitalName}</dd></div></div>
           <div className="flex items-start gap-2.5"><MapPin className="mt-0.5 size-4 shrink-0 text-blue-600" /><div><dt className="text-slate-400">Địa chỉ cơ sở</dt><dd className="mt-1 text-slate-700">{appointment.hospitalAddress}</dd></div></div>

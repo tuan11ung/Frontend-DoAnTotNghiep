@@ -74,6 +74,11 @@ Check-in thật trong luồng demo lễ tân tiếp tục dùng phòng đó và 
 Lỗi storage hiển thị lỗi, không diễn giải thành 0 người. Ô số lượng vẫn nhận
 cập nhật từ store dùng chung; chưa có WebSocket/SSE hoặc đồng bộ giữa các thiết bị.
 
+Thẻ lịch sắp tới ghi **Chưa cấp số thứ tự** trước khi lễ tân check-in. Sau check-in,
+lịch đang diễn ra hiển thị số được cấp trong phần hàng chờ. Modal **Xem chi tiết**
+cũng hiển thị số thứ tự của đúng lịch hẹn và cập nhật khi store thay đổi. Không lấy
+số từ mã lịch hẹn hoặc ticket của người khác; lịch đã hủy không hiển thị số.
+
 ## Kiểm tra và tích hợp
 
 - `node scripts/check-clinical-demo.mjs`: kiểm tra quyền, ownership, R8, audit,

@@ -265,6 +265,8 @@ export function PatientAppointmentsPage() {
 
       {/* Workflows */}
       <AppointmentQrDialog
+        queueRoom={qrAppointment ? findAppointmentQueue(rooms, qrAppointment) : undefined}
+        queueError={queueError}
         isOpen={Boolean(qrAppointment)}
         appointment={qrAppointment}
         onClose={() => setQrAppointmentId(null)}

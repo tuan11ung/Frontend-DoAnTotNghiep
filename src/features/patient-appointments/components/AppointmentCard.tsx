@@ -6,6 +6,7 @@ import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from './AppointmentQueueSummary';
 import { AppointmentRoomLoad } from './AppointmentRoomLoad';
+import { AppointmentTicketNumber } from './AppointmentTicketNumber';
 import {
   Calendar,
   Building2,
@@ -94,7 +95,7 @@ export function AppointmentCard({
               </p>
             </div>
           </div>
-          {isBooked && <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />}
+          {!isCheckedIn && !isCancelled && <div className="flex flex-wrap gap-2"><AppointmentTicketNumber appointment={appointment} room={queueRoom} queueError={queueError} />{isBooked && <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />}</div>}
         </div>
 
         {/* Thời gian & Bác sĩ */}
