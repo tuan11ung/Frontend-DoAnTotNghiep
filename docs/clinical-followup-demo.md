@@ -51,8 +51,8 @@ Khách được phép thử vai trò trong chế độ demo; session PATIENT b�
 
 `/patient/results` bỏ tên, CCCD, ngày/năm sinh, giới tính, diện điều trị và mã ca
 khám trong thẻ, phần chi tiết và phiếu kết quả. Chọn thành viên bằng quan hệ
-(Bản thân/Mẹ/Con); nhóm thông tin gần nhau theo ngày khám, cơ sở, chuyên khoa,
-bác sĩ, địa điểm. Giữ tìm cơ sở/chuyên khoa/bác sĩ, lọc trạng thái, chia sẻ và
+(Bản thân/Mẹ/Con); nhóm thông tin gần nhau theo ngày khám dạng dòng chữ, cơ sở,
+chuyên khoa và bác sĩ; không hiển thị địa điểm phòng trong thẻ patient. Giữ tìm cơ sở/chuyên khoa/bác sĩ, lọc trạng thái, chia sẻ và
 hỗ trợ. Mã phiếu kết quả vẫn hiển thị để phân biệt các phiếu, khác mã ca khám.
 
 Component chi tiết/phiếu dùng chung vẫn giữ thông tin người bệnh đã masking
@@ -61,18 +61,18 @@ tab doctor tiếp tục dùng cùng component; chế độ không lấy từ tha
 
 ### Hàng chờ trước check-in
 
-`/patient/appointments` hiển thị số người đang chờ, số đang khám, thời gian chờ
-ước tính và thời điểm cập nhật cho lịch **Đã đặt lịch**. Phạm vi room key gồm
+`/patient/appointments` hiển thị một ô nhỏ cạnh thông tin cơ sở, chỉ chứa số người
+đang chờ cho lịch **Đã đặt lịch**. Bỏ khung thông tin lớn, số người đang khám,
+thời gian ước tính, thời điểm cập nhật và nút mô phỏng trên thẻ. Phạm vi room key gồm
 cơ sở, khoa, phòng và ngày khám; không yêu cầu có ticket của bệnh nhân mới xem
 được độ đông phòng. Các màn dùng cùng store hàng chờ hiện có, cập nhật qua
 storage/custom event giữa các tab cùng trình duyệt.
 
 Trong demo, nếu phòng chưa có dữ liệu thì tạo bốn ticket ẩn danh: một đang khám,
 một đã gọi và hai đang chờ. Không tạo ticket cho lịch hẹn, không check-in tự động.
-Nút **Mô phỏng: chuyển lượt tại phòng** thử thay đổi số lượng và ước tính ở các tab.
 Check-in thật trong luồng demo lễ tân tiếp tục dùng phòng đó và chỉ cấp một ticket.
-Lỗi storage hiển thị lỗi, không diễn giải thành 0 người. Thời gian chờ chỉ là
-tham khảo; chưa có WebSocket/SSE hoặc đồng bộ giữa các thiết bị.
+Lỗi storage hiển thị lỗi, không diễn giải thành 0 người. Ô số lượng vẫn nhận
+cập nhật từ store dùng chung; chưa có WebSocket/SSE hoặc đồng bộ giữa các thiết bị.
 
 ## Kiểm tra và tích hợp
 
