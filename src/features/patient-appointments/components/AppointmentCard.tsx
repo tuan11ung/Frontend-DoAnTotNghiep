@@ -11,7 +11,6 @@ import { AppointmentRoomLoad } from './AppointmentRoomLoad';
 import { AppointmentTicketNumber } from './AppointmentTicketNumber';
 import {
   Building2,
-  MapPin,
   QrCode,
   AlertCircle,
   FileText,
@@ -89,10 +88,7 @@ export function AppointmentCard({
               <h3 className="font-bold text-slate-900 text-base leading-snug">
                 {appointment.hospitalName}
               </h3>
-              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{appointment.roomName} · {appointment.departmentName}</span>
-              </p>
+              <p className="mt-0.5 text-xs text-slate-500">{appointment.departmentName}</p>
             </div>
           </div>
           <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />
@@ -105,6 +101,7 @@ export function AppointmentCard({
             <div data-schedule-row="date" className="overflow-x-auto whitespace-nowrap"><dt className="inline font-medium text-slate-500">Ngày khám: </dt><dd className="inline font-bold text-slate-900">{formatDisplayDate(appointment.workDate)}</dd></div>
             <div data-schedule-row="time" className="overflow-x-auto whitespace-nowrap"><dt className="inline font-medium text-slate-500">Khung giờ: </dt><dd className="inline font-bold text-slate-900">{appointmentTimeRange(appointment)}</dd></div>
             <div data-schedule-row="doctor" className="overflow-x-auto whitespace-nowrap" title={appointmentDoctorLabel(appointment)}><dt className="inline font-medium text-slate-500">Bác sĩ phụ trách: </dt><dd className="inline font-bold text-slate-900">{appointmentDoctorLabel(appointment)}</dd></div>
+            <div data-schedule-row="room" className="overflow-x-auto whitespace-nowrap" title={appointment.roomName}><dt className="inline font-medium text-slate-500">Phòng khám: </dt><dd className="inline font-bold text-slate-900">{appointment.roomName}</dd></div>
           </dl>
         </div>
 
