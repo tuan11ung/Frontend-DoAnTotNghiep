@@ -21,7 +21,6 @@ export function AppointmentFilterTabs({
 }: AppointmentFilterTabsProps) {
   const tabs: { key: AppointmentFilterTab; label: string; count: number }[] = [
     { key: 'UPCOMING', label: 'Lịch sắp tới', count: counts.upcoming },
-    { key: 'ONGOING', label: 'Đang diễn ra', count: counts.ongoing },
     { key: 'HISTORY', label: 'Lịch sử khám', count: counts.history },
     { key: 'CANCELLED', label: 'Lịch đã hủy', count: counts.cancelled },
   ];
