@@ -64,6 +64,7 @@ export interface PatientAppointment {
   specialtyName: string;
   workDate: string; // YYYY-MM-DD
   timeSlot: string; // HH:mm
+  timeSlotEnd?: string; // HH:mm; supplied by the booked slot when available
   session: 'morning' | 'afternoon';
   symptoms: string;
   price: number;

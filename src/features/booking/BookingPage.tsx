@@ -20,6 +20,7 @@ import {
   findHospitalById,
   findDoctorById,
   findSpecialtyById,
+  mockBookingSlotEnd,
 } from './data/booking-mock-data';
 import { BookingStepper } from './components/BookingStepper';
 import { BookingTargetSelector } from './components/BookingTargetSelector';
@@ -271,6 +272,7 @@ const DemandBookingPage: React.FC = () => {
       specialtyName: bookingState.specialty.name,
       workDate: '2026-11-05',
       timeSlot: bookingState.selectedSlot,
+      timeSlotEnd: mockBookingSlotEnd(bookingState.selectedSlot),
       session: parseInt(bookingState.selectedSlot.split(':')[0], 10) < 12 ? 'morning' : 'afternoon',
       symptoms: bookingState.symptoms,
       price: finalPrice,

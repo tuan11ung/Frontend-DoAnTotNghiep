@@ -105,5 +105,25 @@ function pass(label) { passed++; console.log(`PASS ${label}`); }
   assert.equal(rooms[0].tickets.filter(t => t.appointmentId === appointment.id).length, 1);
   assert.equal(tracking.effectiveAppointment(appointment, rooms).status, 'CHECKED_IN');
   pass('Room preview updates waiting counts without checking patient in; later check-in reuses room');
+  const patientStorage = requireModule(path.join(output, 'shared/utils/patient-storage'));
+  const defaults = JSON.parse(patientStorage.DEFAULT_APPOINTMENTS_SNAPSHOT);
+  const legacy = structuredClone(defaults); delete legacy[0].timeSlotEnd;
+  const restored = patientStorage.parseAppointmentsSnapshot(JSON.stringify(legacy));
+  assert.equal(restored.error, false); assert.equal(restored.appointments[0].timeSlotEnd, '08:45');
+  assert.equal(tracking.appointmentTimeRange(restored.appointments[0]), '08:30 - 08:45');
+  assert.equal(tracking.appointmentDoctorLabel(defaults[0]), 'PGS.TS.BS Trần Quốc Tuấn');
+  assert.equal(tracking.appointmentDoctorLabel({ ...defaults[0], doctorName: 'Nguyễn Văn A', doctorTitle: 'Học vị: Bác sĩ Chuyên khoa II' }), 'Bác sĩ Chuyên khoa II Nguyễn Văn A');
+  legacy[0].timeSlot = '08:00';
+  const changedSlot = patientStorage.parseAppointmentsSnapshot(JSON.stringify(legacy));
+  assert.equal(changedSlot.appointments[0].timeSlotEnd, undefined);
+  assert.equal(tracking.appointmentTimeRange(changedSlot.appointments[0]), '08:00 - Chưa cập nhật');
+  for (const invalid of ['08:00', '08:30', '25:00', 123]) {
+    const bad = structuredClone(defaults); bad[0].timeSlotEnd = invalid;
+    assert.equal(patientStorage.parseAppointmentsSnapshot(JSON.stringify(bad)).error, true);
+  }
+  const mockBooking = load('booking/utils/booking-mock-data');
+  assert.equal(mockBooking.mockBookingSlotEnd('16:30'), '16:45');
+  assert.equal(mockBooking.mockBookingSlotEnd('23:50'), undefined);
+  pass('Appointment ranges restore matching legacy fixtures, validate endpoints and avoid duplicated qualifications');
   console.log(`${passed} integration groups passed`);
 })().catch(error => { console.error(error); process.exitCode = 1; });

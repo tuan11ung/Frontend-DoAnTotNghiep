@@ -91,6 +91,7 @@ const DEFAULT_APPOINTMENTS: PatientAppointment[] = [
     specialtyName: 'Tim mạch Can thiệp',
     workDate: '2026-11-02',
     timeSlot: '08:30',
+    timeSlotEnd: '08:45',
     session: 'morning',
     symptoms: 'Thường xuyên tức ngực trái khi vận động mạnh, kèm khó thở về đêm',
     price: 350000,
@@ -126,6 +127,7 @@ const DEFAULT_APPOINTMENTS: PatientAppointment[] = [
     specialtyName: 'Nội Tiết & Lão Khoa',
     workDate: '2026-11-05',
     timeSlot: '14:00',
+    timeSlotEnd: '14:15',
     session: 'afternoon',
     symptoms: 'Tái khám định kỳ huyết áp, đường huyết buổi sáng có dao động thất thường',
     price: 150000,
@@ -160,6 +162,7 @@ const DEFAULT_APPOINTMENTS: PatientAppointment[] = [
     specialtyName: 'Hô Hấp Nhi',
     workDate: '2026-10-15',
     timeSlot: '09:00',
+    timeSlotEnd: '09:15',
     session: 'morning',
     symptoms: 'Ho có đờm, thở khò khè kéo dài 4 ngày',
     price: 300000,
@@ -191,6 +194,7 @@ const DEFAULT_APPOINTMENTS: PatientAppointment[] = [
     specialtyName: 'Tiêu hóa',
     workDate: '2026-10-20',
     timeSlot: '10:00',
+    timeSlotEnd: '10:15',
     session: 'morning',
     symptoms: 'Đau tức vùng thượng vị sau khi ăn',
     price: 250000,
@@ -281,6 +285,7 @@ function storageDate(value: string) {
 
 function validAppointmentMetadata(appointment: PatientAppointment) {
   if (!storageDate(appointment.workDate) || !storageDate(appointment.patientDob) || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(appointment.timeSlot)) return false;
+  if (appointment.timeSlotEnd !== undefined && (typeof appointment.timeSlotEnd !== 'string' || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(appointment.timeSlotEnd) || appointment.timeSlotEnd <= appointment.timeSlot)) return false;
   if (!['MALE', 'FEMALE', 'OTHER'].includes(appointment.patientGender) || !['bhyt', 'demand'].includes(appointment.bookingMode) || !['morning', 'afternoon'].includes(appointment.session)) return false;
   if (appointment.roomInfo && (!storageRecord(appointment.roomInfo) || !['building', 'floor', 'number'].every((key) => typeof (appointment.roomInfo as unknown as Record<string, unknown>)[key] === 'string'))) return false;
   const policy = appointment.cancellationPolicy;
@@ -303,7 +308,8 @@ export function parseAppointmentsSnapshot(raw: string): { appointments: PatientA
     if (!value.every((item) => validAppointmentMetadata(item as PatientAppointment)) || new Set(value.map((item) => item.id)).size !== value.length) throw new Error('Invalid appointment metadata');
     const appointments = (value as PatientAppointment[]).map((appointment) => {
       const demo = DEFAULT_APPOINTMENTS.find((item) => item.id === appointment.id && item.code === appointment.code && item.hospitalId === appointment.hospitalId && item.roomName === appointment.roomName);
-      return { ...appointment, roomInfo: appointment.roomInfo || demo?.roomInfo, cancellationPolicy: appointment.cancellationPolicy || demo?.cancellationPolicy };
+      const sameDemoSlot = demo?.workDate === appointment.workDate && demo.timeSlot === appointment.timeSlot;
+      return { ...appointment, timeSlotEnd: appointment.timeSlotEnd ?? (sameDemoSlot ? demo?.timeSlotEnd : undefined), roomInfo: appointment.roomInfo || demo?.roomInfo, cancellationPolicy: appointment.cancellationPolicy || demo?.cancellationPolicy };
     });
     return { appointments, error: false };
   } catch { return { appointments: [], error: true }; }

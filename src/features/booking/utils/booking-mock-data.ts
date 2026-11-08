@@ -418,6 +418,15 @@ export const MOCK_DATE_OPTIONS: DateOption[] = [
   },
 ];
 
+// The local booking preview uses explicit 15-minute mock slots.
+export function mockBookingSlotEnd(start: string): string | undefined {
+  if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(start)) return undefined;
+  const [hour, minute] = start.split(':').map(Number);
+  const end = hour * 60 + minute + 15;
+  if (end >= 24 * 60) return undefined;
+  return `${String(Math.floor(end / 60)).padStart(2, '0')}:${String(end % 60).padStart(2, '0')}`;
+}
+
 export const MOCK_MORNING_SLOTS = [
   '06:30',
   '06:45',
