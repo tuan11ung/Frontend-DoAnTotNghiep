@@ -14,11 +14,15 @@ export const DOCTOR_ASSIGNMENTS: DoctorAssignment[] = DOCTOR_QUEUE_DEMO.shifts.m
 }));
 const statuses: Record<string, QueueStatus> = { waiting: 'WAITING', absent: 'ABSENT', 'awaiting-results': 'AWAITING_CLS', completed: 'COMPLETED' };
 const labels: Record<string, QueueLabel> = { priority: 'PRIORITY', return: 'RETURN_AFTER_CLS', online: 'ONLINE' };
+function requireDemoBirthYear(value: number | null, patientName: string): number {
+  if (value === null) throw new Error(`Thiếu năm sinh của bệnh nhân demo ${patientName}.`);
+  return value;
+}
 export const INITIAL_DOCTOR_QUEUE: DoctorQueueSnapshot = {
   version: 1, revision: 0, updatedAt: DOCTOR_DEMO_TIME, recordGrants: [], recordAudit: [],
   patients: DOCTOR_QUEUE_DEMO.shifts.flatMap(shift => shift.patients.map(patient => ({
     id: patient.id, assignmentId: shift.id, encounterCode: `LK-DEMO-${patient.id.toUpperCase()}`,
-    ticket: patient.number, fullName: patient.name, birthYear: patient.birthYear, reason: patient.detail,
+    ticket: patient.number, fullName: patient.name, birthYear: requireDemoBirthYear(patient.birthYear, patient.name), reason: patient.detail,
     checkedInAt: `${DOCTOR_QUEUE_DEMO.date}T${patient.checkIn}:00+07:00`, status: statuses[patient.status] ?? 'WAITING',
     labels: patient.tags.map(tag => labels[tag]), photo: patient.avatar, callCount: 0, lastCalledAt: null, enteredAt: null,
   }))),

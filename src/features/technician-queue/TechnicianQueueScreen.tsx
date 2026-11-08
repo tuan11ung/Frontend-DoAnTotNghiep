@@ -1,17 +1,16 @@
 import Link from 'next/link';
 import { CalendarDays, ChevronRight, HeartPulse } from 'lucide-react';
-import { TechnicianSidebar } from './components/TechnicianSidebar';
+import { ClinicLogoutButton } from '@/src/features/auth/components/ClinicLogoutButton';
 import { TechnicianQueueWorkspace } from './TechnicianQueueWorkspace';
 import type { TechnicianQueueData } from './types';
 
 export function TechnicianQueueScreen({ data }: { data: TechnicianQueueData }) {
   return (
     <div className="min-h-screen bg-[#f4f7f7] text-slate-800">
-      <TechnicianSidebar facility={data.facility} technician={data.technician} />
-      <div className="min-w-0 lg:pl-[280px]">
+      <div className="min-w-0">
         <header className="flex min-h-20 items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8 xl:px-10">
           <div className="flex min-w-0 items-center gap-2 text-xs">
-            <Link aria-label="MedConnect — Về trang chủ" className="mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700 lg:hidden" href="/"><HeartPulse aria-hidden="true" className="h-5 w-5" /></Link>
+            <Link aria-label="MedConnect — Về trang chủ" className="mr-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700" href="/"><HeartPulse aria-hidden="true" className="h-5 w-5" /></Link>
             <span className="hidden text-slate-400 sm:inline">Không gian kỹ thuật viên</span>
             <ChevronRight aria-hidden="true" className="hidden h-3.5 w-3.5 text-slate-300 sm:block" />
             <span className="font-bold text-slate-700">Hàng chờ phòng CLS</span>
@@ -22,6 +21,7 @@ export function TechnicianQueueScreen({ data }: { data: TechnicianQueueData }) {
               <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-xs font-extrabold text-blue-700">{data.technician.initials}</span>
               <div className="hidden xl:block"><p className="text-xs font-bold text-slate-800">KTV. {data.technician.name}</p><p className="mt-1 text-[10px] text-slate-400">{data.technician.specialty}</p></div>
             </div>
+            <ClinicLogoutButton />
           </div>
         </header>
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">

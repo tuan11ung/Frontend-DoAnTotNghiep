@@ -1,4 +1,4 @@
-export type QueueStatus = 'waiting' | 'absent' | 'awaiting-results' | 'completed' | 'in-room';
+export type QueueStatus = 'waiting' | 'return-ready' | 'absent' | 'awaiting-results' | 'completed' | 'in-room';
 export type QueueFilterStatus = Exclude<QueueStatus, 'in-room'>;
 export type PatientTag = 'priority' | 'return' | 'online';
 
@@ -6,9 +6,9 @@ export interface QueuePatient {
   id: string;
   number: number;
   name: string;
-  birthYear: number;
+  birthYear: number | null;
   maskedCitizenId: string;
-  gender: 'Nam' | 'Nữ';
+  gender: 'Nam' | 'Nữ' | 'Khác';
   avatar: string | null;
   detail: string;
   checkIn: string;

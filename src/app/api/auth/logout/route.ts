@@ -5,15 +5,20 @@ const NO_STORE_HEADERS = { 'Cache-Control': 'no-store' };
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('Authorization');
+  const scope = new URL(request.url).searchParams.get('scope');
+  const logoutPath = scope === 'clinic' ? 'clinic/auth/logout' : 'patient/auth/logout';
+  const requestText = await request.text();
+  const requestBody = requestText || JSON.stringify({ refreshToken: null, allSessions: false });
 
   try {
-    const backendResponse = await fetch(`${BACKEND_API_URL}/patient/auth/logout`, {
+    const backendResponse = await fetch(`${BACKEND_API_URL}/${logoutPath}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
         ...(authHeader ? { Authorization: authHeader } : {}),
       },
+      body: requestBody,
       cache: 'no-store',
     });
 

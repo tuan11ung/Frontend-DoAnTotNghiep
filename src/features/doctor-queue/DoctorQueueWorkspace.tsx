@@ -71,7 +71,7 @@ export function DoctorQueueWorkspace({ shifts }: { shifts: QueueShift[] }) {
         </div>
         <QueueToolbar
           filters={["waiting", "absent", "awaiting-results", "completed"]}
-          statusLabels={{ waiting: "Đang chờ", absent: "Vắng mặt", "awaiting-results": "Chờ kết quả CLS", completed: "Đã khám", "in-room": "Đang khám" }}
+          statusLabels={{ waiting: "Đang chờ", "return-ready": "Quay lại sau CLS", absent: "Vắng mặt", "awaiting-results": "Chờ kết quả CLS", completed: "Đã khám", "in-room": "Đang khám" }}
           counts={state.counts}
           onQuery={state.setQuery}
           onStatus={state.setStatusFilter}

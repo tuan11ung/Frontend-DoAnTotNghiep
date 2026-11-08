@@ -8,12 +8,16 @@ interface QueuePatientListProps {
   nextId?: string;
   filtered: boolean;
   detailLabel: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  selectedId?: string;
+  onSelect?: (patient: QueuePatient) => void;
   onResetFilters: () => void;
 }
 
-export function QueuePatientList({ patients, nextId, filtered, detailLabel, onResetFilters }: QueuePatientListProps) {
+export function QueuePatientList({ patients, nextId, filtered, detailLabel, emptyTitle, emptyDescription, selectedId, onSelect, onResetFilters }: QueuePatientListProps) {
   if (!patients.length) {
-    return <div className="flex flex-col items-center px-6 py-16 text-center"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400"><SearchX aria-hidden="true" className="h-7 w-7" /></span><h3 className="mt-4 text-sm font-bold text-slate-800">{filtered ? 'Không tìm thấy bệnh nhân phù hợp' : 'Chưa có bệnh nhân trong danh sách này'}</h3><p className="mt-2 max-w-sm text-xs leading-5 text-slate-500">{filtered ? 'Thử tìm theo tên, số thứ tự hoặc chọn nhãn khác.' : 'Bệnh nhân sẽ xuất hiện tại đây sau khi check-in.'}</p>{filtered && <button className="mt-4 rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={onResetFilters} type="button">Xóa bộ lọc</button>}</div>;
+    return <div className="flex flex-col items-center px-6 py-16 text-center"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400"><SearchX aria-hidden="true" className="h-7 w-7" /></span><h3 className="mt-4 text-sm font-bold text-slate-800">{filtered ? 'Không tìm thấy bệnh nhân phù hợp' : emptyTitle || 'Chưa có bệnh nhân trong danh sách này'}</h3><p className="mt-2 max-w-sm text-xs leading-5 text-slate-500">{filtered ? 'Thử tìm theo tên, số thứ tự hoặc chọn nhãn khác.' : emptyDescription || 'Bệnh nhân sẽ xuất hiện tại đây sau khi check-in.'}</p>{filtered && <button className="mt-4 rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={onResetFilters} type="button">Xóa bộ lọc</button>}</div>;
   }
 
   return (
@@ -24,14 +28,15 @@ export function QueuePatientList({ patients, nextId, filtered, detailLabel, onRe
       <ul className="divide-y divide-slate-100">
         {patients.map((patient) => {
           const isNext = patient.id === nextId;
-          return (
-            <li className={`grid grid-cols-[42px_minmax(0,1fr)] items-start gap-x-3 gap-y-3 px-4 py-5 transition-colors sm:px-6 xl:grid-cols-[52px_minmax(190px,1.5fr)_minmax(180px,1fr)_100px] xl:items-center xl:gap-4 ${isNext ? 'clinical-queue-next bg-medblue-100 shadow-[inset_4px_0_0_#1d4ed8] [&_h3]:font-extrabold [&_h3]:text-medblue-800' : 'hover:bg-slate-50/70'}`} data-next={isNext || undefined} key={patient.id}>
+          const selected = patient.id === selectedId;
+          const rowClass = `grid w-full grid-cols-[42px_minmax(0,1fr)] items-start gap-x-3 gap-y-3 px-4 py-5 text-left transition-colors sm:px-6 xl:grid-cols-[52px_minmax(190px,1.5fr)_minmax(180px,1fr)_100px] xl:items-center xl:gap-4 ${selected ? 'bg-emerald-50 shadow-[inset_4px_0_0_#059669] ring-1 ring-inset ring-emerald-200 [&_h3]:text-emerald-900' : isNext ? 'clinical-queue-next bg-medblue-100 shadow-[inset_4px_0_0_#1d4ed8] [&_h3]:font-extrabold [&_h3]:text-medblue-800' : 'hover:bg-slate-50/70'}`;
+          const content = <>
               <div className="pt-0.5 xl:pt-0"><span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl text-sm font-extrabold tabular-nums ${isNext ? 'bg-blue-700 text-white shadow-sm' : 'bg-slate-100/80 text-slate-600'}`}>{String(patient.number).padStart(3, '0')}</span>{isNext && <span className="clinical-queue-next-badge mt-2 block rounded bg-medblue-600 py-1 text-center text-[9px] font-extrabold uppercase leading-3 text-white">Tiếp theo</span>}</div>
               <PatientIdentity patient={patient} />
               <p className="col-start-2 text-xs leading-5 text-slate-600 xl:col-start-auto"><span className="mb-1 block text-[10px] font-bold uppercase tracking-wide text-slate-400 xl:hidden">{detailLabel}</span>{patient.detail}</p>
               <div className="col-start-2 flex items-center gap-1.5 text-xs font-semibold tabular-nums text-slate-500 xl:col-start-auto"><Clock3 aria-hidden="true" className="h-3.5 w-3.5 text-slate-400" /><span className="sr-only">Check-in lúc </span>{patient.checkIn}</div>
-            </li>
-          );
+            </>;
+          return <li data-next={isNext || undefined} key={patient.id}>{onSelect ? <button aria-pressed={selected} className={`${rowClass} focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-emerald-600`} onClick={() => onSelect(patient)} type="button">{content}<span className="sr-only">{selected ? 'Đã chọn' : 'Chọn'} {patient.name}</span></button> : <div className={rowClass}>{content}</div>}</li>;
         })}
       </ul>
     </div>

@@ -20,5 +20,6 @@ export function getPostLoginDestination(roles: string[], returnTo?: string | nul
   if (roles.includes('SUPER_ADMIN')) return '/admin/system';
   if (roles.includes('HOSPITAL_ADMIN')) return '/admin/facility';
   if (roles.includes('DOCTOR')) return '/doctor/queue';
+  if (roles.includes('PARACLINICAL_TECHNICIAN')) return '/technician/queue';
   return roles.includes('PATIENT') ? getBookingReturnTo(returnTo) || '/' : '/';
 }
