@@ -10,9 +10,6 @@ import {
   BookingTarget,
   DateOption,
   DemandSubtype,
-  DoctorItem,
-  HospitalItem,
-  InsuranceRouteType,
 } from './types';
 import {
   MOCK_HOSPITALS,
@@ -33,8 +30,14 @@ import { BookingStep3Schedule } from './components/BookingStep3Schedule';
 import { BookingStep4Confirm } from './components/BookingStep4Confirm';
 import { BookingStepSuccess } from './components/BookingStepSuccess';
 import { INITIAL_PATIENT_PROFILE, saveAppointment } from '@/src/shared/utils/patient-storage';
+import { BhytBookingPage } from './BhytBookingPage';
 
 export const BookingPage: React.FC = () => {
+  const searchParams = useSearchParams();
+  return searchParams.get('mode') === 'bhyt' ? <BhytBookingPage /> : <DemandBookingPage />;
+};
+
+const DemandBookingPage: React.FC = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -116,6 +119,7 @@ export const BookingPage: React.FC = () => {
 
   // Synchronize when URL search params change
   useEffect(() => {
+    const synchronization = window.setTimeout(() => {
     const sStep = searchParams.get('step');
     const sMode = searchParams.get('mode') as BookingMode | null;
     const sHospId = searchParams.get('hospitalId');
@@ -185,25 +189,22 @@ export const BookingPage: React.FC = () => {
         demandType,
       };
     });
+    }, 0);
+    return () => window.clearTimeout(synchronization);
   }, [searchParams]);
 
   // Sync step changes with URL search params without page reload
   const navigateToStep = (newStep: 1 | 2 | 3 | 4 | 5, modeToUse = bookingState.mode) => {
-    setBookingState((prev) => {
-      const updated = { ...prev, step: newStep, mode: modeToUse };
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('step', newStep.toString());
-      params.set('mode', modeToUse);
-      if (updated.hospital?.id) {
-        params.set('hospitalId', updated.hospital.id);
-      }
-      if (updated.doctor && modeToUse === 'demand' && updated.demandType === 'doctor') {
-        params.set('doctorId', updated.doctor.id);
-        params.set('demandType', 'doctor');
-      }
-      router.replace(`/booking?${params.toString()}`, { scroll: false });
-      return updated;
-    });
+    setBookingState((prev) => ({ ...prev, step: newStep, mode: modeToUse }));
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('step', newStep.toString());
+    params.set('mode', modeToUse);
+    if (bookingState.hospital?.id) params.set('hospitalId', bookingState.hospital.id);
+    if (bookingState.doctor && modeToUse === 'demand' && bookingState.demandType === 'doctor') {
+      params.set('doctorId', bookingState.doctor.id);
+      params.set('demandType', 'doctor');
+    }
+    router.replace(`/booking?${params.toString()}`, { scroll: false });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

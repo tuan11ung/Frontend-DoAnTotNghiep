@@ -33,7 +33,7 @@ function getSystemSession() {
   return authSession;
 }
 
-export async function systemAdminRequest<T>(path: string, body: unknown): Promise<T> {
+export async function systemAdminRequest<T>(path: string, body: unknown, options: { preserveSessionOnForbidden?: boolean } = {}): Promise<T> {
   const authSession = getSystemSession();
   const isFormData = body instanceof FormData;
   const response = await fetch(`/api/admin/system/${path}`, {
@@ -46,7 +46,7 @@ export async function systemAdminRequest<T>(path: string, body: unknown): Promis
   });
   const result = (await response.json().catch(() => null)) as ApiResponse<T> | null;
 
-  if (response.status === 401 || response.status === 403) clearStoredAuthSession();
+  if (response.status === 401 || (response.status === 403 && !options.preserveSessionOnForbidden)) clearStoredAuthSession();
   if (!response.ok || !result?.success || result.data === undefined || result.data === null) {
     throw new SystemAdminApiError(
       result?.message || 'Không thể xử lý yêu cầu. Vui lòng thử lại.',

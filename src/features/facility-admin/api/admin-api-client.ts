@@ -49,7 +49,7 @@ export async function adminRequest<T>(path: string, body: unknown, signal?: Abor
   });
   const result = (await response.json().catch(() => null)) as ApiResponse<T> | null;
 
-  if (response.status === 401 || response.status === 403) {
+  if (response.status === 401 || (response.status === 403 && result?.strCode !== 'STAFF_ADMIN_STATUS_CHANGE_FORBIDDEN')) {
     clearStoredAuthSession();
   }
   if (!response.ok || !result?.success || result.data === undefined || result.data === null) {

@@ -9,6 +9,7 @@ import {
   changeArticlePublication,
   changeServiceCategoryStatus,
   createHospital,
+  createHospitalAdmin,
   exportSystemLogs,
   getArticleDetail,
   getHospitalDetail,
@@ -44,6 +45,7 @@ import type {
   EditableSection,
   EditorState,
   HospitalSummary,
+  HospitalAdminFormValues,
   IngredientItem,
   MedicineItem,
   PageResponse,
@@ -109,7 +111,50 @@ const EMPTY_STATS: SystemDashboardStats = {
   recentLogs: 0,
 };
 
-export function SystemAdminPage() {
+const PREVIEW_HOSPITALS: HospitalSummary[] = [
+  { id: 1, code: 'BV-DEMO-01', name: 'Bệnh viện mẫu A', level: 'PROVINCIAL', province: 'Hà Nội', status: 'ACTIVE' },
+  { id: 2, code: 'BV-DEMO-02', name: 'Bệnh viện mẫu B', level: 'DISTRICT', province: 'Đà Nẵng', status: 'SUSPENDED' },
+];
+
+export function SystemAdminPage({ preview = false }: { preview?: boolean }) {
+  return preview ? <HospitalAdminPreview /> : <SystemAdminLiveScreen />;
+}
+
+function HospitalAdminPreview() {
+  const [hospital, setHospital] = useState<HospitalSummary | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [notice, setNotice] = useState('');
+  const unavailable = () => setNotice('Bản xem trước này dành cho thao tác cấp tài khoản quản trị tại từng bệnh viện.');
+
+  const submit = async (values: HospitalAdminFormValues) => {
+    await new Promise<void>((resolve) => window.setTimeout(resolve, 500));
+    setNotice(`Xem trước thành công: ${values.corporateEmail} tại ${hospital?.name}. Chưa tạo tài khoản thực tế.`);
+    setHospital(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
+      <SystemAdminSidebar activeSection="hospitals" counts={{}} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={unavailable} onOpenMobile={() => setMobileOpen(true)} onSelect={unavailable} />
+      <div className="lg:pl-[280px]">
+        <header className="border-b border-slate-200 bg-white px-4 py-5 pl-20 sm:px-6 sm:pl-20 lg:px-8">
+          <p className="text-xs font-bold uppercase tracking-wide text-blue-700">Quản trị hệ thống · Xem trước</p>
+          <h1 className="mt-1 text-xl font-extrabold text-slate-950">Cơ sở y tế</h1>
+        </header>
+        <main className="mx-auto max-w-[1600px] p-4 sm:p-6 lg:p-8">
+          <p className="mb-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">Dữ liệu mẫu. Chọn “Cấp tài khoản quản trị” tại bệnh viện đang hoạt động để xem form và thử thao tác.</p>
+          <SystemResourceView section="hospitals" items={PREVIEW_HOSPITALS} loading={false} page={0} size={20} totalElements={PREVIEW_HOSPITALS.length} totalPages={1}
+            onCreateHospitalAdmin={(item) => { if (item.status === 'ACTIVE') { setNotice(''); setHospital(item); } }}
+            onAdd={unavailable} onEdit={unavailable} onToggle={unavailable} onRefresh={() => setNotice('Đang hiển thị dữ liệu bệnh viện mẫu.')}
+            onPageChange={unavailable} onPageSizeChange={unavailable} />
+          {notice && <p className="mt-4 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700" role="status">{notice}</p>}
+        </main>
+      </div>
+      {hospital && <SystemEditorModal key={hospital.id} mode="hospital-admin" hospital={hospital} preview onClose={() => setHospital(null)} onCreateHospitalAdmin={submit} />}
+    </div>
+  );
+}
+
+function SystemAdminLiveScreen() {
   const router = useRouter();
   const loadedSections = useRef(new Set<SystemSection>());
   const [ready, setReady] = useState(false);
@@ -254,6 +299,24 @@ export function SystemAdminPage() {
     setEditor({ section });
   };
 
+  const openHospitalAdmin = (hospital: HospitalSummary) => {
+    if (hospital.status !== 'ACTIVE') return;
+    setNotice('');
+    setEditor({ mode: 'hospital-admin', hospital });
+  };
+
+  const submitHospitalAdmin = async (hospital: HospitalSummary, values: HospitalAdminFormValues) => {
+    try {
+      const account = await createHospitalAdmin(hospital.id, values);
+      setEditor(null);
+      setNotice(`Đã cấp tài khoản ${account.username} cho ${account.hospitalName}. Vui lòng bàn giao mật khẩu ban đầu cho quản trị viên.`);
+    } catch (caught) {
+      if (caught instanceof SystemAdminApiError && caught.status === 401) router.replace('/patient/login');
+      // Keep the form open, including its values, for validation, conflict and business errors.
+      throw caught;
+    }
+  };
+
   const openEdit = async (section: EditableSection, item: SystemResource) => {
     setError('');
     try {
@@ -384,13 +447,14 @@ export function SystemAdminPage() {
           {error && <div className="mb-5 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert"><span className="flex-1">{error}</span><button aria-label="Đóng thông báo lỗi" onClick={() => setError('')} type="button"><X className="h-4 w-4" /></button></div>}
           {activeSection === 'overview' && loadingSection === 'overview' && !overviewLoaded ? <div className="flex min-h-[55vh] items-center justify-center"><RefreshCw className="h-7 w-7 animate-spin text-blue-700" /></div> : null}
           {activeSection === 'overview' && (overviewLoaded || loadingSection !== 'overview') && <SystemOverview onNavigate={setActiveSection} stats={stats} />}
-          {resourceSection && <SystemResourceView items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
+          {resourceSection && <SystemResourceView onCreateHospitalAdmin={openHospitalAdmin} items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
           {activeSection === 'system-logs' && <SystemLogView items={logs} loading={loadingSection === 'system-logs'} onExport={downloadLogs} onPageChange={(page) => filterLogs(logFilters, page, logPagination.size)} onPageSizeChange={(size) => filterLogs(logFilters, 0, size)} onSearch={filterLogs} page={logPagination.page} size={logPagination.size} totalElements={logPagination.totalElements} totalPages={logPagination.totalPages} />}
         </main>
       </div>
 
-      {notice && <div className="fixed bottom-5 right-5 z-[90] flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-700 shadow-xl"><span className="h-2 w-2 rounded-full bg-emerald-500" />{notice}</div>}
-      {editor && <SystemEditorModal ingredients={resources.ingredients as IngredientItem[]} item={editor.item} key={`${editor.section}-${editor.item?.id ?? 'new'}`} onClose={() => setEditor(null)} onSave={saveEditor} section={editor.section} serviceCategories={resources['service-categories'] as ServiceCategoryItem[]} specialties={resources.specialties as SpecialtyItem[]} />}
+      {notice && <div role="status" className="fixed bottom-5 right-5 z-[90] flex max-w-[calc(100vw-2.5rem)] items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-700 shadow-xl"><span className="h-2 w-2 rounded-full bg-emerald-500" />{notice}</div>}
+      {editor?.mode === 'hospital-admin' && <SystemEditorModal hospital={editor.hospital} key={`hospital-admin-${editor.hospital.id}`} mode="hospital-admin" onClose={() => setEditor(null)} onCreateHospitalAdmin={(values) => submitHospitalAdmin(editor.hospital, values)} />}
+      {editor && editor.mode !== 'hospital-admin' && <SystemEditorModal ingredients={resources.ingredients as IngredientItem[]} item={editor.item} key={`${editor.section}-${editor.item?.id ?? 'new'}`} onClose={() => setEditor(null)} onSave={saveEditor} section={editor.section} serviceCategories={resources['service-categories'] as ServiceCategoryItem[]} specialties={resources.specialties as SpecialtyItem[]} />}
     </div>
   );
 }

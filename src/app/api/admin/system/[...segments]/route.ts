@@ -37,7 +37,10 @@ export async function POST(
   { params }: { params: Promise<{ segments: string[] }> },
 ) {
   const { segments } = await params;
-  const endpoint = ENDPOINTS[segments.join('/')];
+  const path = segments.join('/');
+  // Only allow this specific nested resource, never arbitrary backend paths.
+  const hospitalAdmins = /^hospitals\/([1-9]\d*)\/admins$/.exec(path);
+  const endpoint = ENDPOINTS[path] ?? (hospitalAdmins ? `/hospitals/${hospitalAdmins[1]}/admins` : undefined);
   const authorization = request.headers.get('authorization');
 
   if (!endpoint) {

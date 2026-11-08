@@ -153,14 +153,6 @@ export function FacilityAdminPage() {
     return () => window.clearTimeout(initialization);
   }, [loadFacilityData, router]);
 
-  const counts = {
-    departments: departments.length,
-    specialties: specialties.length,
-    rooms: rooms.length,
-    staff: staff.length,
-    services: services.length,
-  };
-
   const getItems = (kind: EntityKind): AdminEntity[] => {
     if (kind === 'department') return departments;
     if (kind === 'specialty') return specialties;
@@ -218,6 +210,10 @@ export function FacilityAdminPage() {
       } else if (kind === 'staff') {
         const target = staff.find((item) => item.id === id);
         if (!target) return;
+        if (target.roles.includes('HOSPITAL_ADMIN')) {
+          showToast({ type: 'warning', message: 'Không được khóa hoặc vô hiệu hóa tài khoản quản trị cơ sở.' });
+          return;
+        }
         if (target.status === 'DEACTIVATED') {
           showToast({ type: 'warning', message: 'Nhân viên đã nghỉ việc không thể kích hoạt lại theo quy định backend.' });
           return;
@@ -283,7 +279,6 @@ export function FacilityAdminPage() {
     <div className="min-h-screen bg-[#f4f7f7] text-slate-800">
       <AdminSidebar
         activeSection={activeSection}
-        counts={counts}
         facility={facility}
         mobileOpen={mobileNavOpen}
         onCloseMobile={() => setMobileNavOpen(false)}
@@ -320,6 +315,7 @@ export function FacilityAdminPage() {
             {activeSection === 'work-schedules' && <WorkScheduleScreen />}
             {currentKind && (
               <ResourceListView
+                key={currentKind}
                 departments={departments}
                 specialties={specialties}
                 items={getItems(currentKind)}
@@ -327,6 +323,7 @@ export function FacilityAdminPage() {
                 onAdd={(kind) => setEditor({ kind })}
                 onEdit={(kind, id) => setEditor({ kind, id })}
                 onToggle={toggleEntity}
+                specialties={specialties}
                 staff={staff}
               />
             )}

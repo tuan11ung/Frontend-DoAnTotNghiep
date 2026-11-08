@@ -252,7 +252,7 @@ export function ResourceListView({ kind, items, departments, specialties, staff,
                   <td className="px-4 py-4"><p className="font-medium text-slate-700">{departmentName(item.departmentId)}</p><p className="mt-1 text-xs text-slate-500">{item.rankName || 'Không có chức danh bác sĩ'}</p></td>
                   <td className="px-4 py-4 font-medium text-slate-700">{item.email}</td>
                   <td className="px-4 py-4"><StaffStatusBadge status={item.status} /></td>
-                  <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.fullName}`} onClick={() => onEdit('staff', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><Toggle active={item.active} disabled={item.status === 'DEACTIVATED'} label={`Đổi trạng thái ${item.fullName}`} onClick={() => void onToggle('staff', item.id)} /></div></td>
+                  <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.fullName}`} onClick={() => onEdit('staff', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><span className="inline-flex flex-col items-end gap-1"><Toggle active={item.active} disabled={item.status === 'DEACTIVATED' || item.roles.includes('HOSPITAL_ADMIN')} label={`Đổi trạng thái ${item.fullName}`} onClick={() => void onToggle('staff', item.id)} />{item.roles.includes('HOSPITAL_ADMIN') && <span className="max-w-48 text-right text-xs text-slate-500">Không được khóa hoặc vô hiệu hóa tài khoản quản trị cơ sở.</span>}</span></div></td>
                 </tr>
               ))}
             </tbody>
