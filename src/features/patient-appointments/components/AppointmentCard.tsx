@@ -79,8 +79,8 @@ export function AppointmentCard({
       {/* Body Card */}
       <div className="p-5 space-y-4 flex-1">
         {/* Cơ sở y tế & Chuyên khoa */}
-        <div>
-          <div className="flex items-start gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-1 basis-full items-start gap-3 sm:basis-0">
             <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 flex items-center justify-center shrink-0 mt-0.5">
               <Building2 className="w-5 h-5" />
             </div>
@@ -94,6 +94,7 @@ export function AppointmentCard({
               </p>
             </div>
           </div>
+          {isBooked && <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />}
         </div>
 
         {/* Thời gian & Bác sĩ */}
@@ -124,7 +125,6 @@ export function AppointmentCard({
           </div>
         )}
 
-        {isBooked && <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />}
         {isCheckedIn && <AppointmentQueueSummary appointment={appointment} room={queueRoom} />}
 
         {/* Lý do hủy nếu đã hủy */}
