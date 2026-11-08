@@ -1,13 +1,11 @@
-const dateFormat = new Intl.DateTimeFormat('vi-VN', {
-  timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric',
-});
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 const timeFormat = new Intl.DateTimeFormat('vi-VN', {
   timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', hour12: false,
 });
 
 export function formatResultDate(value: string) {
-  return dateFormat.format(new Date(value));
+  return formatDisplayDate(value);
 }
 
 export function formatResultTime(value: string) {

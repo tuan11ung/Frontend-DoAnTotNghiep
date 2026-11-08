@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { bookingApi } from '../api/booking-api';
@@ -76,7 +77,7 @@ export function BhytBookingCalendar({ hospitalId, roomId, date, minDate, maxDate
 
         return <button key={key} type="button" disabled={!enabled} onClick={() => onDate(key)}
           aria-current={today ? 'date' : undefined} aria-pressed={selected}
-          aria-label={`${day.getUTCDate()}/${day.getUTCMonth() + 1}/${day.getUTCFullYear()}${inMonth && label ? `, ${label}` : ''}`}
+          aria-label={`${formatDisplayDate(key)}${inMonth && label ? `, ${label}` : ''}`}
           className={`flex min-h-14 flex-col items-center justify-center rounded-lg border px-0.5 py-1 text-xs focus-visible:outline-2 focus-visible:outline-blue-600 sm:text-sm ${color} ${selected ? 'border-blue-600 ring-1 ring-blue-600' : 'border-slate-100'} ${inMonth ? '' : 'opacity-50'}`}>
           <span className="font-semibold">{day.getUTCDate()}</span>
           {inMonth && label && <span className="text-[9px] leading-tight sm:text-[11px]">{label}</span>}

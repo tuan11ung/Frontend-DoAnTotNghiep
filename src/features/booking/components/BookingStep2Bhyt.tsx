@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState } from 'react';
 import {
   Building2,
@@ -162,7 +164,7 @@ export const BookingStep2Bhyt: React.FC<BookingStep2BhytProps> = ({
                   {patient.bhytNumber}{' '}
                   <span className="text-slate-400 font-sans font-normal mx-1">•</span>{' '}
                   <span className="text-slate-600 font-sans font-medium text-xs sm:text-sm">
-                    Hạn: {patient.expiryDate}
+                    Hạn: {formatDisplayDate(patient.expiryDate)}
                   </span>
                 </div>
               </div>

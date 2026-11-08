@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import { useState } from 'react';
 import {
   ArrowUpRight,
@@ -111,7 +113,7 @@ export function DashboardOverview({ departments, specialties, rooms, staff, serv
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-extrabold text-slate-900">Bác sĩ trực khám hôm nay</h2>
                 <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-xs">
-                  Hôm nay · {todayScheduleDay.label} {todayScheduleDay.date}
+                  Hôm nay · {todayScheduleDay.label} {formatDisplayDate(todayScheduleDay.id)}
                 </span>
               </div>
               <p className="mt-0.5 text-xs text-slate-500">
@@ -197,7 +199,7 @@ export function DashboardOverview({ departments, specialties, rooms, staff, serv
                               {todayScheduleDay.label}
                             </span>
                             <span className="rounded-full bg-slate-200/80 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
-                              Hôm nay · {todayScheduleDay.date}
+                              Hôm nay · {formatDisplayDate(todayScheduleDay.id)}
                             </span>
                           </div>
                         </th>

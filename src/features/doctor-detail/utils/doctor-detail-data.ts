@@ -44,12 +44,12 @@ export const DEFAULT_DOCTOR_DETAIL: DoctorDetail = {
     },
   ],
   schedules: [
-    { id: 'date-1', dayText: 'Thứ 5', dateText: '15-10', slotCountText: '18 khung giờ' },
-    { id: 'date-2', dayText: 'Thứ 6', dateText: '16-10', slotCountText: '18 khung giờ' },
-    { id: 'date-3', dayText: 'Thứ 7', dateText: '17-10', slotCountText: '18 khung giờ' },
-    { id: 'date-4', dayText: 'CN', dateText: '18-10', slotCountText: '16 khung giờ' },
-    { id: 'date-5', dayText: 'Thứ 2', dateText: '19-10', slotCountText: '18 khung giờ' },
-    { id: 'date-6', dayText: 'Thứ 3', dateText: '20-10', slotCountText: '20 khung giờ' },
+    { id: 'date-1', dayText: 'Thứ 5', dateText: '15/10/2026', slotCountText: '18 khung giờ' },
+    { id: 'date-2', dayText: 'Thứ 6', dateText: '16/10/2026', slotCountText: '18 khung giờ' },
+    { id: 'date-3', dayText: 'Thứ 7', dateText: '17/10/2026', slotCountText: '18 khung giờ' },
+    { id: 'date-4', dayText: 'CN', dateText: '18/10/2026', slotCountText: '16 khung giờ' },
+    { id: 'date-5', dayText: 'Thứ 2', dateText: '19/10/2026', slotCountText: '18 khung giờ' },
+    { id: 'date-6', dayText: 'Thứ 3', dateText: '20/10/2026', slotCountText: '20 khung giờ' },
   ],
   morningSlots: [
     '08:00 - 08:30',

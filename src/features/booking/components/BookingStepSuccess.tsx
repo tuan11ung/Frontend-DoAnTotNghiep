@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import {
@@ -268,7 +270,7 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
             <span className="text-xs text-slate-500">Thời gian khám</span>
             <div className="text-left sm:text-right">
               <span className="font-mono text-sm font-bold text-slate-900">{selectedSlot}</span>
-              <span className="text-xs text-slate-500 block">{selectedDate.fullDate}</span>
+              <span className="text-xs text-slate-500 block">{formatDisplayDate(selectedDate.fullDate)}</span>
             </div>
           </div>
 

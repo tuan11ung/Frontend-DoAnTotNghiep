@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { MockClinicalNote } from '@/src/features/doctor-consultation/clinical-exam.types';
 import type { ClsOrder } from '@/src/features/doctor-consultation/cls-orders/cls-orders.types';
 import type { ConclusionRecord } from '@/src/features/doctor-consultation/conclusion/conclusion.types';
@@ -43,6 +44,6 @@ export const queueFilters: { id: QueueFilter; label: string }[] = [
 export const queueLabels: Record<QueueLabel, string> = { PRIORITY: 'Ưu tiên', RETURN_AFTER_CLS: 'Quay lại sau CLS', ONLINE: 'Đặt online' };
 export const statusLabels: Record<QueueStatus, string> = { WAITING: 'Đang chờ', CALLED: 'Đang gọi', IN_PROGRESS: 'Đang khám', ABSENT: 'Vắng mặt', AWAITING_CLS: 'Chờ kết quả CLS', COMPLETED: 'Đã khám' };
 export function queueTime(value: string) { return new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(value)); }
-export function queueDate(value: string) { return value.split('-').reverse().join('/'); }
+export function queueDate(value: string) { return formatDisplayDate(value); }
 export function ticketNumber(value: number) { return String(value).padStart(3, '0'); }
 export function normalizeQueueSearch(value: string) { return value.toLocaleLowerCase('vi-VN').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').trim(); }

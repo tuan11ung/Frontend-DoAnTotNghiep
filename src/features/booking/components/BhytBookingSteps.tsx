@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import { QRCodeSVG } from 'qrcode.react';
 import { BhytBookingCalendar } from './BhytBookingCalendar';
 import type { BhytRoom, BhytSlot, BookedAppointment, BookingHospital, SelfPatientProfile } from '../models/types/bhyt.types';
@@ -9,8 +11,7 @@ export const bookingButtonClass = 'rounded-lg bg-blue-700 px-5 py-3 text-sm font
 export const bookingBackClass = 'rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50';
 
 export function displayBookingDate(date: string) {
-  const [year, month, day] = date.split('-');
-  return `${day}/${month}/${year}`;
+  return formatDisplayDate(date);
 }
 
 export function BookingSummary({ patient, hospital, room, slot, date }: {

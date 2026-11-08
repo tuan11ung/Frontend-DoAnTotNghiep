@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React from 'react';
 import {
   User,
@@ -83,7 +85,7 @@ export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardP
             <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
             <span>Ngày sinh / Tuổi:</span>
             <span className="font-semibold text-slate-800 ml-auto font-mono">
-              {member.dob}
+              {formatDisplayDate(member.dob)}
               {age !== null ? ` (${age} tuổi)` : ''}
             </span>
           </div>

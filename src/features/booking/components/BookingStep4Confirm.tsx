@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState } from 'react';
 import {
   FileText,
@@ -161,7 +163,7 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
                 {target?.type === 'FAMILY'
                   ? `Người nhà (${target.relationshipLabel || 'Thân nhân'})`
                   : 'Bản thân (Chính chủ)'}
-                {target?.dob ? ` • NS: ${target.dob}` : ''}
+                {target?.dob ? ` • NS: ${formatDisplayDate(target.dob)}` : ''}
               </span>
             </div>
           </div>
@@ -185,7 +187,7 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1.5 border-b border-slate-100">
             <span className="text-slate-500 font-medium">Ngày khám:</span>
-            <span className="font-semibold text-slate-900 font-mono">{selectedDate.fullDate}</span>
+            <span className="font-semibold text-slate-900 font-mono">{formatDisplayDate(selectedDate.fullDate)}</span>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-1.5 border-b border-slate-100">

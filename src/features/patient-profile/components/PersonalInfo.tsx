@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import { useState, type FormEvent } from 'react';
 import { Check, Pencil, UserRound } from 'lucide-react';
 import type { PersonalProfile, ProfileInput } from '../profile.types';
@@ -31,7 +33,7 @@ export function PersonalInfo({ profile, onSave }: { profile: PersonalProfile; on
     catch (e) { setError(e instanceof Error ? e.message : 'Không thể lưu thông tin. Vui lòng thử lại.'); }
     finally { setBusy(false); }
   }
-  const birthDate = profile.dob.split('-').reverse().join('/');
+  const birthDate = formatDisplayDate(profile.dob);
   return <section id="personal" aria-labelledby="personal-heading" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-5 sm:px-6"><div className="flex items-center gap-3"><span className="rounded-xl bg-blue-50 p-2.5 text-blue-600"><UserRound className="size-5" /></span><div><h2 id="personal-heading" className="font-bold text-slate-900">Thông tin cá nhân</h2><p className="mt-1 text-xs text-slate-500">Thông tin của chủ tài khoản</p></div></div>{!editing && <button type="button" className={`${secondaryClass} shrink-0`} onClick={() => { setEditing(true); setError(''); setSuccess(''); }}><Pencil className="size-3.5" /><span className="sr-only sm:not-sr-only">Chỉnh sửa</span></button>}</div>
     <div className="space-y-5 p-5 sm:p-6"><Feedback error={error} success={success} />

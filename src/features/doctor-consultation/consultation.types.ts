@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 export interface ClinicalAllergy { name: string; kind: 'Thuốc' | 'Thực phẩm'; reaction: string; severity: 'Nặng' | 'Trung bình'; source: string }
 export interface ClinicalProfile {
   queuePatientId: string; patientCode: string; fullName: string; birthYear: number; gender: string;
@@ -14,4 +15,4 @@ export const EMPTY_HISTORY_FILTERS: HistoryFilters = { facility: 'ALL', specialt
 export function consultationHref(assignmentId: string, encounterId: string) {
   return `/doctor/encounters/${encodeURIComponent(encounterId)}?${new URLSearchParams({ demo: '1', assignment: assignmentId })}`;
 }
-export function historyDate(value: string) { return value.split('-').reverse().join('/'); }
+export function historyDate(value: string) { return formatDisplayDate(value); }

@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState, useEffect } from 'react';
 import { User, Users, Plus, Check, ShieldCheck, Heart, Sparkles, ChevronDown } from 'lucide-react';
 import { BookingTarget } from '../types';
@@ -189,7 +191,7 @@ export const BookingTargetSelector: React.FC<BookingTargetSelectorProps> = ({
                 )}
               </div>
               <div className="mt-2.5 pt-2 border-t border-slate-200/60 text-[11px] text-slate-500 flex items-center justify-between">
-                <span>{m.dob}</span>
+                <span>{formatDisplayDate(m.dob)}</span>
                 <span className="text-slate-600 font-medium">{m.gender === 'MALE' ? 'Nam' : 'Nữ'}</span>
               </div>
             </div>

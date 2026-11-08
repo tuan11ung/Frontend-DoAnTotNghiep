@@ -8,7 +8,6 @@ export function EncounterCard({ encounter, patient, detail = false, readOnly = f
   const completed = encounter.status === 'COMPLETED';
   const readyCount = encounter.services.filter((service) => service.status === 'RESULT_READY').length;
   const formattedDate = formatResultDate(encounter.visitDate);
-  const [day, month, year] = formattedDate.split('/');
   const href = patientResultsHref(encounter.patientId, encounter.id);
 
   if (!readOnly) return <article data-encounter={encounter.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-6">
@@ -27,7 +26,7 @@ export function EncounterCard({ encounter, patient, detail = false, readOnly = f
   return (
     <article data-encounter={encounter.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs transition-shadow hover:shadow-md sm:p-6">
       <div className="flex items-start gap-3 sm:gap-5">
-        <div className="flex w-14 shrink-0 flex-col items-center rounded-xl border border-blue-100 bg-blue-50 py-2 text-medblue-600 sm:w-18"><span className="text-[10px] font-bold uppercase">Tháng {month}</span><span className="text-3xl leading-tight font-extrabold tabular-nums">{day}</span><span className="text-[10px] font-semibold text-blue-500">{year}</span></div>
+        <div className="flex shrink-0 flex-col items-center rounded-xl border border-blue-100 bg-blue-50 p-2 text-medblue-600"><span className="text-[10px] font-bold">Ngày khám</span><time dateTime={encounter.visitDate} className="mt-1 text-xs font-bold tabular-nums">{formattedDate}</time></div>
         <div className="grid min-w-0 flex-1 gap-3 min-[480px]:grid-cols-[minmax(0,1fr)_auto]">
           <div className="min-w-0">
             <h2 className="break-words text-lg leading-snug font-extrabold text-slate-900 sm:text-xl">{detail ? patient.name : <Link href={href} className="rounded-sm hover:text-medblue-600 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600">{patient.name}</Link>}</h2>

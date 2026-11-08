@@ -1,7 +1,8 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { ReceptionEncounter, ReceptionPatient } from '../models/reception.types';
 
 export const receptionMoney = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
-export const receptionDate = (value: string) => new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(`${value.slice(0, 10)}T12:00:00+07:00`));
+export const receptionDate = (value: string) => formatDisplayDate(value);
 export const receptionSearch = (value: string) => value.toLocaleLowerCase('vi-VN').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').trim();
 export const maskNationalId = (value: string) => `${value.slice(0, 3)}••••••${value.slice(-3)}`;
 export const maskPhone = (value: string) => `•••••••${value.slice(-3)}`;

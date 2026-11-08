@@ -1,12 +1,11 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import { useEffect, useState } from 'react';
 
 const clockFormat = new Intl.DateTimeFormat('vi-VN', {
   timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
-});
-const dateFormat = new Intl.DateTimeFormat('vi-VN', {
-  timeZone: 'Asia/Ho_Chi_Minh', weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric',
 });
 
 export function QueueClock() {
@@ -23,7 +22,7 @@ export function QueueClock() {
         {now ? clockFormat.format(now) : '--:--:--'}
       </time>
       <p className="mt-0.5 text-xs font-medium capitalize text-slate-500 sm:text-sm">
-        {now ? dateFormat.format(now) : 'Giờ Việt Nam · GMT+7'}
+        {now ? formatDisplayDate(now) : 'Giờ Việt Nam · GMT+7'}
       </p>
     </div>
   );

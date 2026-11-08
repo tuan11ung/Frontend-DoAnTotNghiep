@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, CalendarDays, LoaderCircle, RefreshCw, ShieldCheck, X } from 'lucide-react';
@@ -425,7 +427,7 @@ function SystemAdminLiveScreen() {
 
   if (!ready) return <div className="flex min-h-screen items-center justify-center bg-slate-50"><LoaderCircle className="h-8 w-8 animate-spin text-blue-700" /></div>;
 
-  const today = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+  const today = formatDisplayDate(new Date());
   const resourceSection: ResourceSection | null = activeSection !== 'overview' && activeSection !== 'system-logs' ? activeSection : null;
 
   return (

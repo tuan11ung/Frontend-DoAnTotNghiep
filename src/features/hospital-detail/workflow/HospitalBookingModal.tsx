@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState, useEffect } from 'react';
 import {
   Hospital,
@@ -122,7 +124,7 @@ export const HospitalBookingModal: React.FC<HospitalBookingModalProps> = ({
                 <strong>Dịch vụ:</strong> {selectedService}
               </p>
               <p>
-                <strong>Ngày khám:</strong> {bookingDate}
+                <strong>Ngày khám:</strong> {formatDisplayDate(bookingDate)}
               </p>
               <p>
                 <strong>SĐT nhận SMS:</strong> {phone}

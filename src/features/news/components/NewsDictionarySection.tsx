@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -287,7 +289,7 @@ export const NewsDictionarySection: React.FC<NewsDictionarySectionProps> = ({
 
                   <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] text-slate-500">
                     <p className="font-medium text-slate-700">{item.author}</p>
-                    <p className="text-slate-400">Ngày đăng: {item.publishDate}</p>
+                    <p className="text-slate-400">Ngày đăng: {formatDisplayDate(item.publishDate)}</p>
                   </div>
                 </article>
               ))}
@@ -371,7 +373,7 @@ export const NewsDictionarySection: React.FC<NewsDictionarySectionProps> = ({
                     </div>
                   )}
                   <div className="text-xs text-slate-500 pt-1">
-                    Tham vấn y khoa: <span className="font-semibold text-slate-700">{selectedItem.author}</span> • {selectedItem.publishDate}
+                    Tham vấn y khoa: <span className="font-semibold text-slate-700">{selectedItem.author}</span> • {formatDisplayDate(selectedItem.publishDate)}
                   </div>
                 </div>
               </div>
