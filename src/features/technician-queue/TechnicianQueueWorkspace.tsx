@@ -16,6 +16,7 @@ const TECHNICIAN_QUEUE_COPY: QueueWorkspaceCopy = {
   filters: ['waiting', 'absent', 'completed'],
   statusLabels: {
     waiting: 'Đang chờ',
+    'return-ready': 'Quay lại sau CLS',
     absent: 'Vắng mặt',
     'awaiting-results': 'Chờ kết quả',
     completed: 'Đã thực hiện',

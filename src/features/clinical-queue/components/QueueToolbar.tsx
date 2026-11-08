@@ -10,6 +10,8 @@ interface QueueToolbarProps {
   query: string;
   tag: PatientTag | '';
   resultCount: number;
+  tagKeys?: readonly PatientTag[];
+  showPatientFilters?: boolean;
   onStatus: (status: QueueFilterStatus) => void;
   onQuery: (query: string) => void;
   onTag: (tag: PatientTag | '') => void;
@@ -17,7 +19,7 @@ interface QueueToolbarProps {
 
 const controlClass = 'h-10 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
 
-export function QueueToolbar({ counts, filters, statusLabels, status, query, tag, resultCount, onStatus, onQuery, onTag }: QueueToolbarProps) {
+export function QueueToolbar({ counts, filters, statusLabels, status, query, tag, resultCount, tagKeys = PATIENT_TAG_KEYS, showPatientFilters = true, onStatus, onQuery, onTag }: QueueToolbarProps) {
   return (
     <>
       <div aria-label="Lọc theo trạng thái" className="flex gap-5 overflow-x-auto border-b border-slate-200 px-4 sm:gap-6 sm:px-6">
@@ -34,7 +36,7 @@ export function QueueToolbar({ counts, filters, statusLabels, status, query, tag
           </button>
         ))}
       </div>
-      <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:px-6">
+      {showPatientFilters && <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:px-6">
         <div className="relative flex-1 sm:max-w-sm">
           <label className="sr-only" htmlFor="patient-search">Tìm bệnh nhân theo tên hoặc số thứ tự</label>
           <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
@@ -44,13 +46,13 @@ export function QueueToolbar({ counts, filters, statusLabels, status, query, tag
         <div className="relative">
           <label className="sr-only" htmlFor="patient-tag">Lọc nhãn bệnh nhân</label>
           <SlidersHorizontal aria-hidden="true" className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
-          <select className={`${controlClass} w-full cursor-pointer pl-9 pr-7 sm:w-auto`} id="patient-tag" name="patient-tag" onChange={(event) => onTag(PATIENT_TAG_KEYS.find((item) => item === event.target.value) ?? '')} value={tag}>
+          <select className={`${controlClass} w-full cursor-pointer pl-9 pr-7 sm:w-auto`} id="patient-tag" name="patient-tag" onChange={(event) => onTag(tagKeys.find((item) => item === event.target.value) ?? '')} value={tag}>
             <option value="">Tất cả nhãn</option>
-            {PATIENT_TAG_KEYS.map((item) => <option key={item} value={item}>{PATIENT_TAGS[item].label}</option>)}
+            {tagKeys.map((item) => <option key={item} value={item}>{PATIENT_TAGS[item].label}</option>)}
           </select>
         </div>
         <p aria-live="polite" className="text-[11px] text-slate-400 sm:ml-auto">{resultCount} bệnh nhân</p>
-      </div>
+      </div>}
     </>
   );
 }

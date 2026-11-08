@@ -9,5 +9,12 @@ function snapshot() { try { return JSON.stringify(getStoredAuthSession()); } cat
 export function useDoctorAccess() {
   const owner = useSyncExternalStore(subscribe, snapshot, () => 'loading');
   const session = useMemo(() => owner === 'loading' ? null : JSON.parse(owner) as AuthSession | null, [owner]);
-  return { owner, loading: owner === 'loading', session, isDoctor: session?.roles.includes('DOCTOR') ?? false };
+  const isDoctor = session?.roles.includes('DOCTOR') ?? false;
+  return {
+    owner,
+    loading: owner === 'loading',
+    session,
+    isDoctor,
+    isEmergencyDoctor: isDoctor && session?.departmentType === 'EMERGENCY',
+  };
 }

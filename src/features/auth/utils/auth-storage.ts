@@ -8,12 +8,18 @@ export interface AuthSession {
   roles: string[];
   hospitalId?: number;
   staffId?: number;
+  departmentType?: 'CLINICAL' | 'PARACLINICAL' | 'EMERGENCY' | 'ADMINISTRATIVE';
 }
 
 interface JwtPayload {
   roles?: unknown;
   hid?: unknown;
   sid?: unknown;
+  dpt?: unknown;
+}
+
+function isDepartmentType(value: unknown): value is NonNullable<AuthSession['departmentType']> {
+  return value === 'CLINICAL' || value === 'PARACLINICAL' || value === 'EMERGENCY' || value === 'ADMINISTRATIVE';
 }
 
 function decodeJwtPayload(token: string): JwtPayload | null {
@@ -42,6 +48,7 @@ export function createAuthSession(accessToken: string, refreshToken: string): Au
     roles,
     hospitalId: typeof payload?.hid === 'number' ? payload.hid : undefined,
     staffId: typeof payload?.sid === 'number' ? payload.sid : undefined,
+    departmentType: isDepartmentType(payload?.dpt) ? payload.dpt : undefined,
   };
 }
 
@@ -61,12 +68,17 @@ export function getStoredAuthSession(): AuthSession | null {
         return createAuthSession(parsedAuth.accessToken, parsedAuth.refreshToken);
       }
 
+      const tokenSession = createAuthSession(parsedAuth.accessToken, parsedAuth.refreshToken);
+
       return {
         accessToken: parsedAuth.accessToken,
         refreshToken: parsedAuth.refreshToken,
         roles: parsedAuth.roles.filter((role): role is string => typeof role === 'string'),
-        hospitalId: typeof parsedAuth.hospitalId === 'number' ? parsedAuth.hospitalId : undefined,
-        staffId: typeof parsedAuth.staffId === 'number' ? parsedAuth.staffId : undefined,
+        hospitalId: typeof parsedAuth.hospitalId === 'number' ? parsedAuth.hospitalId : tokenSession.hospitalId,
+        staffId: typeof parsedAuth.staffId === 'number' ? parsedAuth.staffId : tokenSession.staffId,
+        departmentType: isDepartmentType(parsedAuth.departmentType)
+          ? parsedAuth.departmentType
+          : tokenSession.departmentType,
       };
     } catch {
       continue;
