@@ -59,23 +59,24 @@ Component chi tiết/phiếu dùng chung vẫn giữ thông tin người bệnh 
 trong `mode="doctor"`, navigation theo scope và chỉ đọc. Bốn tab patient và ba
 tab doctor tiếp tục dùng cùng component; chế độ không lấy từ tham số URL.
 
-### Hàng chờ trước check-in
+### Số thứ tự và hàng chờ trong lịch khám
 
 `/patient/appointments` hiển thị một ô nhỏ cạnh thông tin cơ sở, chỉ chứa số người
-đang chờ cho lịch **Đã đặt lịch**. Bỏ khung thông tin lớn, số người đang khám,
+đang chờ khi lịch đã được cấp số thứ tự. Chưa có ticket của đúng lịch thì vùng
+cạnh tên bệnh viện để trống. Bỏ khung thông tin lớn, số người đang khám,
 thời gian ước tính, thời điểm cập nhật và nút mô phỏng trên thẻ. Phạm vi room key gồm
-cơ sở, khoa, phòng và ngày khám; không yêu cầu có ticket của bệnh nhân mới xem
-được độ đông phòng. Các màn dùng cùng store hàng chờ hiện có, cập nhật qua
+cơ sở, khoa, phòng và ngày khám; chỉ hiện khi tìm được ticket của chính lịch hẹn.
+Các màn dùng cùng store hàng chờ hiện có, cập nhật qua
 storage/custom event giữa các tab cùng trình duyệt.
 
-Trong demo, nếu phòng chưa có dữ liệu thì tạo bốn ticket ẩn danh: một đang khám,
-một đã gọi và hai đang chờ. Không tạo ticket cho lịch hẹn, không check-in tự động.
-Check-in thật trong luồng demo lễ tân tiếp tục dùng phòng đó và chỉ cấp một ticket.
-Lỗi storage hiển thị lỗi, không diễn giải thành 0 người. Ô số lượng vẫn nhận
+Thẻ không khởi tạo hàng chờ hoặc check-in tự động. Lễ tân cấp ticket qua luồng
+check-in mô phỏng. Khi không đọc được dữ liệu thì ẩn ô số người chờ và hiển thị
+trạng thái dữ liệu trong phần số thứ tự, không diễn giải thành 0 người. Ô số lượng vẫn nhận
 cập nhật từ store dùng chung; chưa có WebSocket/SSE hoặc đồng bộ giữa các thiết bị.
 
-Thẻ lịch sắp tới ghi **Chưa cấp số thứ tự** trước khi lễ tân check-in. Sau check-in,
-lịch đang diễn ra hiển thị số được cấp trong phần hàng chờ. Modal **Xem chi tiết**
+Khung thông tin lịch khám có số thứ tự to ở cột trái (ghi **Chưa cấp** trước khi
+check-in), thời gian khám và bác sĩ ở chung cột phải. Tên bác sĩ dài tự xuống dòng.
+Sau check-in, lịch đang diễn ra hiển thị số được cấp. Modal **Xem chi tiết**
 cũng hiển thị số thứ tự của đúng lịch hẹn và cập nhật khi store thay đổi. Không lấy
 số từ mã lịch hẹn hoặc ticket của người khác; lịch đã hủy không hiển thị số.
 
