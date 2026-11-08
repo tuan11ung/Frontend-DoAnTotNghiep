@@ -2,6 +2,18 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
 import type { VisitQueueRoom } from '../types';
 
+export function appointmentTimeRange(appointment: PatientAppointment) {
+  return `${appointment.timeSlot} - ${appointment.timeSlotEnd || 'Chưa cập nhật'}`;
+}
+
+export function appointmentDoctorLabel(appointment: PatientAppointment) {
+  const name = appointment.doctorName.trim();
+  // Some sources already include qualifications in the doctor's display name.
+  if (/^(?:PGS|GS|TS|ThS|BS|BSCK)(?:[.\s]|$)/i.test(name)) return name;
+  const qualification = appointment.doctorTitle.replace(/^Học vị:\s*/i, '').trim();
+  return [qualification, name].filter(Boolean).join(' ');
+}
+
 export function appointmentQueueKey(appointment: PatientAppointment) {
   return JSON.stringify([appointment.hospitalId, appointment.departmentName, appointment.roomName, appointment.workDate]);
 }

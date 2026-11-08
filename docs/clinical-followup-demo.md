@@ -75,7 +75,13 @@ trạng thái dữ liệu trong phần số thứ tự, không diễn giải th�
 cập nhật từ store dùng chung; chưa có WebSocket/SSE hoặc đồng bộ giữa các thiết bị.
 
 Khung thông tin lịch khám có số thứ tự to ở cột trái (ghi **Chưa cấp** trước khi
-check-in), thời gian khám và bác sĩ ở chung cột phải. Tên bác sĩ dài tự xuống dòng.
+check-in), cột phải gồm ba dòng: **Ngày khám: DD/MM/YYYY**, **Khung giờ:
+HH:mm - HH:mm**, **Bác sĩ phụ trách: trình độ + tên**. Nhãn và giá trị ở cùng
+một dòng; dòng dài có thể cuộn ngang trong cột, không cắt mất tên bác sĩ.
+Tên đã có học hàm/học vị thì không ghép lặp chức vụ từ trường mô tả bác sĩ.
+Giờ kết thúc nằm trong trường tùy chọn `timeSlotEnd`; các slot mẫu dùng 15 phút.
+Lịch mẫu cũ được bổ sung giờ kết thúc khi khớp ngày và giờ bắt đầu. Lịch không
+có dữ liệu giờ kết thúc hiển thị **Chưa cập nhật**, không tự suy đoán.
 Sau check-in, lịch đang diễn ra hiển thị số được cấp. Modal **Xem chi tiết**
 cũng hiển thị số thứ tự của đúng lịch hẹn và cập nhật khi store thay đổi. Không lấy
 số từ mã lịch hẹn hoặc ticket của người khác; lịch đã hủy không hiển thị số.

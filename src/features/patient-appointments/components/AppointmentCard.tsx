@@ -5,15 +5,13 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import React from 'react';
 import Link from 'next/link';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
-import { canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
+import { appointmentDoctorLabel, appointmentTimeRange, canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from './AppointmentQueueSummary';
 import { AppointmentRoomLoad } from './AppointmentRoomLoad';
 import { AppointmentTicketNumber } from './AppointmentTicketNumber';
 import {
-  Calendar,
   Building2,
   MapPin,
-  Stethoscope,
   QrCode,
   AlertCircle,
   FileText,
@@ -103,24 +101,11 @@ export function AppointmentCard({
         {/* Thời gian & Bác sĩ */}
         <div data-appointment-schedule className="grid grid-cols-[80px_minmax(0,1fr)] gap-3 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/60 text-xs sm:grid-cols-[100px_minmax(0,1fr)] sm:gap-4">
           <AppointmentTicketNumber appointment={appointment} room={queueRoom} queueError={queueError} variant="prominent" />
-          <div className="min-w-0 space-y-3">
-          <div className="space-y-1">
-            <span className="text-slate-400 font-medium">Thời gian khám:</span>
-            <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-900">
-              <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>{formatDisplayDate(appointment.workDate)}</span>
-              <span className="text-blue-600 font-black">({appointment.timeSlot})</span>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            <span className="text-slate-400 font-medium">Bác sĩ phụ trách:</span>
-            <div className="flex items-start gap-1.5 font-bold leading-relaxed text-slate-900">
-              <Stethoscope className="mt-0.5 w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="min-w-0 break-words whitespace-normal">{appointment.doctorTitle} {appointment.doctorName}</span>
-            </div>
-          </div>
-          </div>
+          <dl className="min-w-0 space-y-2 leading-6">
+            <div data-schedule-row="date" className="overflow-x-auto whitespace-nowrap"><dt className="inline font-medium text-slate-500">Ngày khám: </dt><dd className="inline font-bold text-slate-900">{formatDisplayDate(appointment.workDate)}</dd></div>
+            <div data-schedule-row="time" className="overflow-x-auto whitespace-nowrap"><dt className="inline font-medium text-slate-500">Khung giờ: </dt><dd className="inline font-bold text-slate-900">{appointmentTimeRange(appointment)}</dd></div>
+            <div data-schedule-row="doctor" className="overflow-x-auto whitespace-nowrap" title={appointmentDoctorLabel(appointment)}><dt className="inline font-medium text-slate-500">Bác sĩ phụ trách: </dt><dd className="inline font-bold text-slate-900">{appointmentDoctorLabel(appointment)}</dd></div>
+          </dl>
         </div>
 
         {/* Triệu chứng đăng ký */}
