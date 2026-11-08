@@ -146,10 +146,33 @@ export type SystemResource =
   | MedicineItem
   | ArticleItem;
 
-export interface EditorState {
+export interface HospitalAdminFormValues {
+  corporateEmail: string;
+  initialPassword: string;
+  fullName: string;
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  staffCode: string;
+}
+
+export interface HospitalAdminResponse extends Omit<HospitalAdminFormValues, 'initialPassword'> {
+  accountId: number;
+  staffId: number;
+  hospitalId: number;
+  hospitalName: string;
+  username: string;
+  roles: Array<'HOSPITAL_ADMIN'>;
+  accountStatus: 'PENDING' | 'ACTIVE' | 'LOCKED' | 'DISABLED';
+  staffStatus: 'ACTIVE' | 'LOCKED' | 'DEACTIVATED';
+}
+
+export type EditorState = {
+  mode?: 'resource';
   section: EditableSection;
   item?: SystemResource;
-}
+} | {
+  mode: 'hospital-admin';
+  hospital: HospitalSummary;
+};
 
 export interface SystemDashboardStats {
   hospitals: number;

@@ -124,7 +124,7 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold border border-emerald-200">
-                    Tiết kiệm chi phí
+                    Khám BHYT
                   </span>
                   <div
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
@@ -144,22 +144,22 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
 
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">1. Khám theo BHYT</h3>
               <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-                Chế độ tiếp nhận bảo hiểm y tế nhà nước đúng tuyến hoặc thông tuyến. Hưởng tối đa quyền lợi chi trả danh mục KCB theo quy định của Bộ Y tế.
+                Chọn chuyên khoa và phòng khám, sau đó chọn ngày và khung giờ dự kiến có mặt tại bệnh viện.
               </p>
 
               {/* Feature Points */}
               <div className="space-y-3 pt-4 border-t border-slate-200/80">
                 <div className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700 font-medium">Hỗ trợ đúng tuyến &amp; thông tuyến toàn quốc</span>
+                  <span className="text-sm text-slate-700 font-medium">Chọn chuyên khoa – phòng khám BHYT</span>
                 </div>
                 <div className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700 font-medium">Giảm thiểu tối đa chi phí y tế &amp; thuốc kê đơn</span>
+                  <span className="text-sm text-slate-700 font-medium">Đặt khung giờ dự kiến check-in theo lịch bệnh viện</span>
                 </div>
                 <div className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700 font-medium">Áp dụng thẻ BHYT &amp; CCCD gắn chip (VssID / VNeID)</span>
+                  <span className="text-sm text-slate-700 font-medium">Thông tin BHYT được kiểm tra tại quầy tiếp đón</span>
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
         <div className="mt-8 p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3 text-slate-700">
           <Lightbulb className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
           <p className="text-xs sm:text-sm leading-relaxed">
-            <strong className="text-slate-900">Mẹo chọn:</strong> Nếu bạn có giấy chuyển tuyến hoặc muốn tối ưu chi phí điều trị bảo trợ, hãy chọn <em className="font-semibold text-emerald-700">Khám theo BHYT</em>. Nếu bạn cần tiết kiệm thời gian, khám ngoài giờ hoặc đích danh chuyên gia đầu ngành, hãy chọn <em className="font-semibold text-blue-700">Khám theo yêu cầu</em>.
+            <strong className="text-slate-900">Mẹo chọn:</strong> Để đặt lịch khám BHYT theo chuyên khoa và phòng, hãy chọn <em className="font-semibold text-emerald-700">Khám theo BHYT</em>. Nếu bạn cần tiết kiệm thời gian, khám ngoài giờ hoặc đích danh chuyên gia đầu ngành, hãy chọn <em className="font-semibold text-blue-700">Khám theo yêu cầu</em>.
           </p>
         </div>
       </section>

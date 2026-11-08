@@ -20,7 +20,6 @@ import type { AdminSection, FacilityInfo } from '../types';
 interface AdminSidebarProps {
   activeSection: AdminSection;
   mobileOpen: boolean;
-  counts: Partial<Record<AdminSection, number>>;
   facility: FacilityInfo;
   onCloseMobile: () => void;
   onOpenMobile: () => void;
@@ -62,12 +61,11 @@ const NAVIGATION_GROUPS: { label: string; items: NavigationItem[] }[] = [
 
 function SidebarContent({
   activeSection,
-  counts,
   onCloseMobile,
   onSelect,
   facility,
   onLogout,
-}: Pick<AdminSidebarProps, 'activeSection' | 'counts' | 'facility' | 'onCloseMobile' | 'onLogout' | 'onSelect'>) {
+}: Pick<AdminSidebarProps, 'activeSection' | 'facility' | 'onCloseMobile' | 'onLogout' | 'onSelect'>) {
   const handleSelect = (section: AdminSection) => {
     onSelect(section);
     onCloseMobile();
@@ -115,7 +113,6 @@ function SidebarContent({
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeSection === item.id;
-                const count = counts[item.id];
 
                 return (
                   <button
@@ -131,13 +128,7 @@ function SidebarContent({
                   >
                     <Icon className={`h-[18px] w-[18px] ${isActive ? 'text-blue-700' : 'text-emerald-100/65'}`} />
                     <span className="flex-1">{item.label}</span>
-                    {typeof count === 'number' ? (
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] ${isActive ? 'bg-blue-50 text-blue-700' : 'bg-white/10 text-white/70'}`}>
-                        {count}
-                      </span>
-                    ) : (
-                      <ChevronRight className={`h-4 w-4 ${isActive ? 'text-slate-400' : 'text-white/25'}`} />
-                    )}
+                    <ChevronRight className={`h-4 w-4 ${isActive ? 'text-slate-400' : 'text-white/25'}`} />
                   </button>
                 );
               })}

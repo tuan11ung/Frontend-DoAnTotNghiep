@@ -3,6 +3,8 @@ import type {
   ArticleItem,
   HospitalDetail,
   HospitalSummary,
+  HospitalAdminFormValues,
+  HospitalAdminResponse,
   Icd10Item,
   IngredientItem,
   MedicineItem,
@@ -26,6 +28,14 @@ export const suspendHospital = (id: number, reason: string) =>
   systemAdminRequest<HospitalDetail>('hospitals/suspend', { id, reason });
 export const activateHospital = (id: number) =>
   systemAdminRequest<HospitalDetail>('hospitals/activate', { id });
+
+export const createHospitalAdmin = (hospitalId: number, payload: HospitalAdminFormValues) => {
+  if (!Number.isSafeInteger(hospitalId) || hospitalId <= 0) throw new Error('Cơ sở y tế không hợp lệ.');
+  return systemAdminRequest<HospitalAdminResponse>(`hospitals/${hospitalId}/admins`, payload, {
+    // A suspended hospital also returns 403; that does not invalidate the super admin's session.
+    preserveSessionOnForbidden: true,
+  });
+};
 
 export const searchSpecialties = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
   systemAdminRequest<PageResponse<SpecialtyItem>>('specialties/search', { keyword, pageable });

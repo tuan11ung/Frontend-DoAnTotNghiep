@@ -14,6 +14,7 @@ import {
   Stethoscope,
   Tags,
   UserCog,
+  UserPlus,
 } from 'lucide-react';
 import type {
   ArticleItem,
@@ -46,6 +47,7 @@ interface SystemResourceViewProps {
   onPageSizeChange: (size: number) => void;
   onRefresh: () => void;
   onToggle: (section: EditableSection, item: SystemResource) => void;
+  onCreateHospitalAdmin: (hospital: HospitalSummary) => void;
 }
 
 interface SectionMeta {
@@ -108,9 +110,10 @@ function Toggle({ active, label, onClick }: { active: boolean; label: string; on
   );
 }
 
-function RowActions({ active, item, section, onEdit, onToggle }: { active?: boolean; item: SystemResource; section: EditableSection; onEdit: SystemResourceViewProps['onEdit']; onToggle: SystemResourceViewProps['onToggle'] }) {
+function RowActions({ active, item, section, onEdit, onToggle, children }: { active?: boolean; item: SystemResource; section: EditableSection; onEdit: SystemResourceViewProps['onEdit']; onToggle: SystemResourceViewProps['onToggle']; children?: ReactNode }) {
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      {children}
       <button className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" onClick={() => onEdit(section, item)} type="button">
         <Pencil className="h-3.5 w-3.5" /> Sửa
       </button>
@@ -119,11 +122,16 @@ function RowActions({ active, item, section, onEdit, onToggle }: { active?: bool
   );
 }
 
-function renderCells(section: ResourceSection, item: SystemResource, items: SystemResource[], onEdit: SystemResourceViewProps['onEdit'], onToggle: SystemResourceViewProps['onToggle']): ReactNode {
+function renderCells(section: ResourceSection, item: SystemResource, items: SystemResource[], onEdit: SystemResourceViewProps['onEdit'], onToggle: SystemResourceViewProps['onToggle'], onCreateHospitalAdmin: SystemResourceViewProps['onCreateHospitalAdmin']): ReactNode {
   if (section === 'hospitals') {
     const hospital = item as HospitalSummary;
     const active = hospital.status === 'ACTIVE';
-    return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{hospital.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{hospital.code}</p></td><td className="px-4 py-4"><span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{LEVEL_LABELS[hospital.level]}</span></td><td className="px-4 py-4 font-medium text-slate-600">{hospital.province || 'Chưa cập nhật'}</td><td className="px-4 py-4"><StatusBadge active={active} inactiveLabel="Đã tạm ngừng" /></td><td className="px-5 py-4"><RowActions active={active} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+    return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{hospital.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{hospital.code}</p></td><td className="px-4 py-4"><span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{LEVEL_LABELS[hospital.level]}</span></td><td className="px-4 py-4 font-medium text-slate-600">{hospital.province || 'Chưa cập nhật'}</td><td className="px-4 py-4"><StatusBadge active={active} inactiveLabel="Đã tạm ngừng" /></td><td className="px-5 py-4"><RowActions active={active} item={item} onEdit={onEdit} onToggle={onToggle} section={section}>
+      <span className="inline-flex flex-col items-end gap-1">
+        <button aria-label={`Cấp tài khoản quản trị cho ${hospital.name}`} className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 text-xs font-bold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400" disabled={!active} onClick={() => onCreateHospitalAdmin(hospital)} type="button"><UserPlus aria-hidden="true" className="h-3.5 w-3.5" /> Cấp tài khoản quản trị</button>
+        {!active && <span className="text-xs text-slate-500">Cơ sở đang tạm ngừng</span>}
+      </span>
+    </RowActions></td></>;
   }
   if (section === 'specialties') {
     const specialty = item as SpecialtyItem;
@@ -154,7 +162,7 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
   return <><td className="max-w-md px-5 py-4"><p className="line-clamp-2 font-bold text-slate-900">{article.title}</p><p className="mt-1 line-clamp-1 text-xs text-slate-500">{article.summary || 'Chưa có tóm tắt'}</p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600">{article.specialtyName || 'Tin chung'}</td><td className="px-4 py-4 text-xs text-slate-500">{new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(article.updatedAt))}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
 }
 
-export function SystemResourceView({ section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle }: SystemResourceViewProps) {
+export function SystemResourceView({ section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle, onCreateHospitalAdmin }: SystemResourceViewProps) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const meta = SECTION_META[section];
@@ -191,7 +199,7 @@ export function SystemResourceView({ section, items, loading, page, size, totalE
       <div className="overflow-x-auto">
         <table className="min-w-[920px] w-full text-left text-sm">
           <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr>{meta.columns.map((column, index) => <th className={`${index === 0 ? 'px-5' : 'px-4'} py-3 ${index === meta.columns.length - 1 ? 'pr-5 text-right' : ''}`} key={column}>{column}</th>)}</tr></thead>
-          <tbody className="divide-y divide-slate-100">{filteredItems.map((item) => <tr className={getActive(item) === false ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>{renderCells(section, item, items, onEdit, onToggle)}</tr>)}</tbody>
+          <tbody className="divide-y divide-slate-100">{filteredItems.map((item) => <tr className={getActive(item) === false ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>{renderCells(section, item, items, onEdit, onToggle, onCreateHospitalAdmin)}</tr>)}</tbody>
         </table>
         {!loading && filteredItems.length === 0 && <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center"><Search className="h-9 w-9 text-slate-300" /><p className="mt-3 font-bold text-slate-700">Không tìm thấy dữ liệu phù hợp</p><p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc tải lại dữ liệu.</p></div>}
         {loading && <div className="flex min-h-56 items-center justify-center text-sm font-semibold text-slate-500">Đang tải dữ liệu...</div>}
