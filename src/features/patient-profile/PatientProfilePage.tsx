@@ -9,6 +9,7 @@ import { useProfile } from './use-profile';
 import { PersonalInfo } from './components/PersonalInfo';
 import { HealthInfo } from './components/HealthInfo';
 import { PasswordInfo } from './components/PasswordInfo';
+import { MedicalHistoryAccess } from './history-access/MedicalHistoryAccess';
 import { primaryClass, secondaryClass } from './components/ProfileFields';
 
 function subscribeAuth(callback: () => void) {
@@ -36,10 +37,10 @@ function ProfileContent({ isPreview, token }: { isPreview: boolean; token: strin
     {isPreview && <div role="note" className="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs leading-relaxed text-blue-700"><strong>Chế độ mô phỏng.</strong> Thông tin và sức khỏe được lưu trên trình duyệt này để thử giao diện. Chỉ dùng dữ liệu mẫu khi thử.</div>}
     <div className="grid items-start gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
       <aside className="space-y-4 lg:sticky lg:top-24"><div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:block lg:p-6 lg:text-center"><div className="flex size-16 shrink-0 items-center justify-center rounded-full border-4 border-blue-50 bg-blue-100 text-xl font-bold text-blue-600 lg:mx-auto lg:mb-4 lg:size-20 lg:text-2xl" aria-hidden="true">{initials}</div><div className="min-w-0"><h2 className="break-words text-lg font-bold text-slate-900 lg:text-xl">{data.profile.fullName}</h2><p className="mt-1.5 break-all font-mono text-xs text-slate-400">{data.profile.patientCode}</p><span className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600"><UserRound className="size-3.5" />Hồ sơ của tôi</span></div></div>
-        <nav aria-label="Các phần hồ sơ" className="grid gap-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-3 lg:grid-cols-1">{[{ id: 'personal', label: 'Thông tin cá nhân', Icon: UserRound }, { id: 'health', label: 'Thông tin sức khỏe', Icon: HeartPulse }, { id: 'password', label: 'Đổi mật khẩu', Icon: LockKeyhole }].map(({ id, label, Icon }) => <a key={id} href={`#${id}`} className="flex items-center gap-2.5 rounded-lg px-3 py-3 text-xs font-medium text-slate-600 transition hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 lg:text-sm"><Icon className="size-4 shrink-0" />{label}<ChevronRight className="ml-auto size-3.5 shrink-0 text-slate-300" /></a>)}</nav>
+        <nav aria-label="Các phần hồ sơ" className="grid gap-1 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-1">{[{ id: 'personal', label: 'Thông tin cá nhân', Icon: UserRound }, { id: 'health', label: 'Thông tin sức khỏe', Icon: HeartPulse }, { id: 'history-access', label: 'Quyền truy cập bệnh sử', Icon: ShieldCheck }, { id: 'password', label: 'Đổi mật khẩu', Icon: LockKeyhole }].map(({ id, label, Icon }) => <a key={id} href={`#${id}`} className="flex items-center gap-2.5 rounded-lg px-3 py-3 text-xs font-medium text-slate-600 transition hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 lg:text-sm"><Icon className="size-4 shrink-0" />{label}<ChevronRight className="ml-auto size-3.5 shrink-0 text-slate-300" /></a>)}</nav>
         <p className="hidden gap-2 px-2 text-xs leading-relaxed text-slate-400 lg:flex"><ShieldCheck className="mt-0.5 size-4 shrink-0 text-blue-500" />Thông tin này dành riêng cho chủ tài khoản. Hồ sơ người thân được quản lý trong mục Hồ sơ gia đình.</p>
       </aside>
-      <div className="min-w-0 space-y-6"><PersonalInfo profile={data.profile} onSave={actions.savePersonal} /><HealthInfo data={data} actions={actions} /><PasswordInfo isPreview={isPreview} /></div>
+      <div className="min-w-0 space-y-6"><PersonalInfo profile={data.profile} onSave={actions.savePersonal} /><HealthInfo data={data} actions={actions} /><MedicalHistoryAccess isPreview={isPreview} patientId={data.profile.id} /><PasswordInfo isPreview={isPreview} /></div>
     </div>
   </div>;
 }
