@@ -11,7 +11,7 @@ export function getBookingReturnTo(value: string | null | undefined): string | n
   }
 }
 
-export function getPatientAuthHref(page: 'login' | 'register', returnTo?: string | null): string {
+export function getPatientAuthHref(page: 'login' | 'register' | 'forgot-password', returnTo?: string | null): string {
   const destination = getBookingReturnTo(returnTo);
   return `/patient/${page}${destination ? `?${new URLSearchParams({ next: destination })}` : ''}`;
 }

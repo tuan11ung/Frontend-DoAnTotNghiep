@@ -7,7 +7,7 @@ import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react'
 import { createAuthSession, storeAuthSession } from '../utils/auth-storage';
 import { loginPatient, LoginApiError } from '../api/auth-api';
 import { useBookingReturnTo } from '../hooks/use-booking-return-to';
-import { getPostLoginDestination } from '../utils/booking-return';
+import { getPatientAuthHref, getPostLoginDestination } from '../utils/booking-return';
 
 export function LoginForm() {
   const router = useRouter();
@@ -121,7 +121,7 @@ export function LoginForm() {
           </label>
           <Link
             className="text-sm font-semibold text-blue-700 transition-colors hover:text-blue-800 hover:underline"
-            href="#forgot-password"
+            href={getPatientAuthHref('forgot-password', returnTo)}
           >
             Quên mật khẩu?
           </Link>
