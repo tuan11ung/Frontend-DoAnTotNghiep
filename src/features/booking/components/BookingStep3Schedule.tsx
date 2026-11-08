@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState, useRef } from 'react';
 import {
   Calendar as CalendarIcon,
@@ -163,7 +165,7 @@ export const BookingStep3Schedule: React.FC<BookingStep3ScheduleProps> = ({
                 >
                   {item.dayOfWeek}
                 </span>
-                <span className="text-base sm:text-lg font-bold mt-0.5">{item.dateStr}</span>
+                <span className="text-base sm:text-lg font-bold mt-0.5">{formatDisplayDate(item.fullDate)}</span>
                 <span
                   className={`text-[11px] mt-1 px-2 py-0.5 rounded-full font-medium ${
                     isSelected
@@ -409,7 +411,7 @@ export const BookingStep3Schedule: React.FC<BookingStep3ScheduleProps> = ({
             <div className="flex items-baseline gap-2">
               <span className="text-xs text-slate-500 font-medium">Ca khám đã chọn:</span>
               <span className="text-base font-bold text-emerald-700 tracking-tight">
-                {selectedSlot} - {selectedDate.fullDate}
+                {selectedSlot} - {formatDisplayDate(selectedDate.fullDate)}
               </span>
             </div>
             {mode === 'demand' && (

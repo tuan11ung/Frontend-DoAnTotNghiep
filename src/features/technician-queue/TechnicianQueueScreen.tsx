@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import Link from 'next/link';
 import { CalendarDays, ChevronRight, HeartPulse } from 'lucide-react';
 import { ClinicLogoutButton } from '@/src/features/auth/components/ClinicLogoutButton';
@@ -16,7 +17,7 @@ export function TechnicianQueueScreen({ data }: { data: TechnicianQueueData }) {
             <span className="font-bold text-slate-700">Hàng chờ phòng CLS</span>
           </div>
           <div className="flex shrink-0 items-center gap-5">
-            <time className="hidden items-center gap-2 text-xs font-medium text-slate-500 md:flex" dateTime={data.date}><CalendarDays aria-hidden="true" className="h-4 w-4 text-slate-400" />{data.dateLabel}</time>
+            <time className="hidden items-center gap-2 text-xs font-medium text-slate-500 md:flex" dateTime={data.date}><CalendarDays aria-hidden="true" className="h-4 w-4 text-slate-400" />{formatDisplayDate(data.date)}</time>
             <div className="flex items-center gap-2.5 md:border-l md:border-slate-200 md:pl-5">
               <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-xs font-extrabold text-blue-700">{data.technician.initials}</span>
               <div className="hidden xl:block"><p className="text-xs font-bold text-slate-800">KTV. {data.technician.name}</p><p className="mt-1 text-[10px] text-slate-400">{data.technician.specialty}</p></div>

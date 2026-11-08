@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDateTime } from '@/src/shared/utils/date-format';
+
 import { useState, type FormEvent } from 'react';
 import { ClipboardList, Download, Filter, Search, ShieldAlert } from 'lucide-react';
 import type { SystemLogFilters } from '../api/system-admin-api';
@@ -86,7 +88,7 @@ export function SystemLogView({ items, loading, page, size, totalElements, total
           <tbody className="divide-y divide-slate-100">
             {items.map((item) => {
               const denied = item.eventType === 'RECORD_ACCESS_DENIED';
-              return <tr className={denied ? 'bg-rose-50/40' : 'hover:bg-blue-50/20'} key={item.id}><td className="whitespace-nowrap px-5 py-4 font-medium text-slate-600">{new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'medium' }).format(new Date(item.loggedDate))}</td><td className="px-4 py-4"><span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${denied ? 'bg-rose-100 text-rose-700' : 'bg-blue-50 text-blue-700'}`}>{denied && <ShieldAlert className="h-3.5 w-3.5" />}{item.eventLabel}</span></td><td className="px-4 py-4"><p className="font-semibold text-slate-800">{item.accountName || 'Không xác định'}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.accountId ? `#${item.accountId}` : '—'}</p></td><td className="px-4 py-4 font-mono text-xs text-slate-500">{item.encounterId ? `#${item.encounterId}` : '—'}</td><td className="max-w-md px-4 py-4"><code className="line-clamp-2 break-all text-xs text-slate-500">{Object.keys(item.detail).length ? JSON.stringify(item.detail) : 'Không có dữ liệu bổ sung'}</code></td><td className="px-5 py-4 text-right font-mono text-xs text-slate-400">#{item.id}</td></tr>;
+              return <tr className={denied ? 'bg-rose-50/40' : 'hover:bg-blue-50/20'} key={item.id}><td className="whitespace-nowrap px-5 py-4 font-medium text-slate-600">{formatDisplayDateTime(item.loggedDate, true)}</td><td className="px-4 py-4"><span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${denied ? 'bg-rose-100 text-rose-700' : 'bg-blue-50 text-blue-700'}`}>{denied && <ShieldAlert className="h-3.5 w-3.5" />}{item.eventLabel}</span></td><td className="px-4 py-4"><p className="font-semibold text-slate-800">{item.accountName || 'Không xác định'}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.accountId ? `#${item.accountId}` : '—'}</p></td><td className="px-4 py-4 font-mono text-xs text-slate-500">{item.encounterId ? `#${item.encounterId}` : '—'}</td><td className="max-w-md px-4 py-4"><code className="line-clamp-2 break-all text-xs text-slate-500">{Object.keys(item.detail).length ? JSON.stringify(item.detail) : 'Không có dữ liệu bổ sung'}</code></td><td className="px-5 py-4 text-right font-mono text-xs text-slate-400">#{item.id}</td></tr>;
             })}
           </tbody>
         </table>

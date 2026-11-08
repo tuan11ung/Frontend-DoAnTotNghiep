@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React from 'react';
 import Link from 'next/link';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
@@ -106,7 +108,7 @@ export function AppointmentCard({
             <span className="text-slate-400 font-medium">Thời gian khám:</span>
             <div className="flex flex-wrap items-center gap-1.5 font-bold text-slate-900">
               <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>{appointment.workDate}</span>
+              <span>{formatDisplayDate(appointment.workDate)}</span>
               <span className="text-blue-600 font-black">({appointment.timeSlot})</span>
             </div>
           </div>
@@ -136,7 +138,7 @@ export function AppointmentCard({
           <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-xs text-rose-800 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-rose-700">
               <AlertCircle className="w-4 h-4" />
-              <span>Đã hủy vào {appointment.cancelledAt ? new Date(appointment.cancelledAt).toLocaleDateString('vi-VN') : ''}</span>
+              <span>Đã hủy vào {appointment.cancelledAt ? formatDisplayDate(appointment.cancelledAt) : ''}</span>
             </div>
             <p className="text-[11px] leading-relaxed text-rose-700/90">
               <strong>Lý do:</strong> {appointment.cancelReason}

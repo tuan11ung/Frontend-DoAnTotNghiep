@@ -1,3 +1,4 @@
+import { formatDisplayDateTime } from '@/src/shared/utils/date-format';
 import { DOCTOR_ASSIGNMENTS, DOCTOR_DEMO_ENABLED } from './data/doctor-queue-demo';
 import type { DoctorDemoActor, DoctorQueuePatient, DoctorQueueSnapshot, DoctorRecordAudit, DoctorRecordGrant } from './doctor-queue.types';
 import { DOCTOR_TARGETED_VIEW_RESOURCES, DOCTOR_VIEW_RESOURCES } from './doctor-queue.types';
@@ -42,5 +43,5 @@ export function recordAudit(data: DoctorQueueSnapshot, grant: DoctorRecordGrant,
   data.recordAudit.push({ id: crypto.randomUUID(), grantId: grant.id, action, occurredAt, assignmentId: grant.assignmentId, patientId: grant.patientId, encounterCode: grant.encounterCode, doctorId: grant.doctorId, hospitalId: grant.hospitalId, ...metadata });
 }
 export function recordAccessTime(value: string) {
-  return new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(value));
+  return formatDisplayDateTime(value, true);
 }

@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { DraftChange, DraftEdits, ScheduleSession, WorkScheduleCell, WorkScheduleWeek } from '../models/types/work-schedule.types';
 
 export function getScheduleToday(now = new Date()): string {
@@ -27,9 +28,10 @@ export function getScheduleMonday(date = getScheduleToday()): string {
   return addScheduleDays(date, -(day === 0 ? 6 : day - 1));
 }
 export function scheduleDateLabel(date: string, weekday = false): string {
-  return new Intl.DateTimeFormat('vi-VN', {
-    timeZone: 'UTC', day: '2-digit', month: '2-digit', ...(weekday ? { weekday: 'short' } : {}),
-  }).format(new Date(`${date}T12:00:00Z`));
+  const label = formatDisplayDate(date);
+  if (!weekday || label === '—') return label;
+  const day = new Intl.DateTimeFormat('vi-VN', { timeZone: 'UTC', weekday: 'short' }).format(new Date(`${date}T12:00:00Z`));
+  return `${day}, ${label}`;
 }
 export const cellKey = (roomId: number, date: string, session: ScheduleSession) => `${roomId}:${date}:${session}`;
 export function displayedCell(cell: WorkScheduleCell, date: string, edits: DraftEdits): WorkScheduleCell {

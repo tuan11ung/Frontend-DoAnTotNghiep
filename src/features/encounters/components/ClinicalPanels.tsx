@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { useState } from 'react';
 import { Check, X } from 'lucide-react';
 import {
@@ -66,14 +67,14 @@ export function HistoryPanel({
         <div className="grid gap-3 sm:grid-cols-2">
           {visitHistory.map((item, i) => (
             <button
-              key={item.date}
+              key={formatDisplayDate(item.date)}
               type="button"
               aria-pressed={selected === i}
               onClick={() => setSelected(i)}
               className={`cursor-pointer rounded-lg border p-3.5 text-left focus-visible:outline-2 focus-visible:outline-medblue-brand ${selected === i ? 'border-medblue-200 bg-medblue-50' : 'border-slate-200 hover:bg-slate-50'}`}
             >
               <strong className="block text-xs">
-                {item.date} · {item.specialty}
+                {formatDisplayDate(item.date)} · {item.specialty}
               </strong>
               <span className="mt-2 block text-[11px] text-slate-500">
                 {item.hospital} · {item.diagnosis.split(' – ')[1]}
@@ -84,7 +85,7 @@ export function HistoryPanel({
         {visit && (
           <div className="space-y-2 rounded-lg bg-medblue-50 p-4 text-xs leading-6">
             <strong>
-              {visit.date} · {visit.specialty}
+              {formatDisplayDate(visit.date)} · {visit.specialty}
             </strong>
             <p>Chẩn đoán: {visit.diagnosis}</p>
             <p>Đơn thuốc: {visit.drug}</p>

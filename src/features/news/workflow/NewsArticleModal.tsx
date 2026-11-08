@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React from 'react';
 import Image from 'next/image';
 import { X, Calendar, User, Clock, Share2, Bookmark, CheckCircle2 } from 'lucide-react';
@@ -56,7 +58,7 @@ export const NewsArticleModal: React.FC<NewsArticleModalProps> = ({ article, onC
             </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              {article.publishDate}
+              {formatDisplayDate(article.publishDate)}
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-slate-400" />

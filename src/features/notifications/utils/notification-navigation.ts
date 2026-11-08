@@ -1,3 +1,4 @@
+import { formatDisplayDateTime } from '@/src/shared/utils/date-format';
 import type { PatientNotification } from '../types';
 
 const patientRoutes = new Set(['/patient/results', '/patient/appointments', '/patient/profile', '/patient/family', '/patient/notifications', '/patient/payments', '/booking']);
@@ -37,6 +38,5 @@ export function notificationLabel(type: string) {
   }
 }
 export function notificationTime(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
+  return formatDisplayDateTime(value);
 }

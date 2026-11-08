@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDateTime } from '@/src/shared/utils/date-format';
+
 import { useMemo, useState, type ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -159,7 +161,7 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
     return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{medicine.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{medicine.code}</p></td><td className="px-4 py-4"><p className="font-semibold text-slate-700">{medicine.strength || 'Chưa cập nhật'}</p><p className="mt-1 text-xs text-slate-500">{medicine.route || 'Chưa có đường dùng'}</p></td><td className="max-w-sm px-4 py-4"><div className="flex flex-wrap gap-1.5">{medicine.ingredients.map((entry) => <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700" key={`${entry.ingredientId}-${entry.strength}`}>{entry.ingredientName}{entry.strength ? ` ${entry.strength}` : ''}</span>)}</div></td><td className="px-4 py-4"><StatusBadge active={medicine.active} /></td><td className="px-5 py-4"><RowActions active={medicine.active} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
   }
   const article = item as ArticleItem;
-  return <><td className="max-w-md px-5 py-4"><p className="line-clamp-2 font-bold text-slate-900">{article.title}</p><p className="mt-1 line-clamp-1 text-xs text-slate-500">{article.summary || 'Chưa có tóm tắt'}</p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600">{article.specialtyName || 'Tin chung'}</td><td className="px-4 py-4 text-xs text-slate-500">{new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(article.updatedAt))}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+  return <><td className="max-w-md px-5 py-4"><p className="line-clamp-2 font-bold text-slate-900">{article.title}</p><p className="mt-1 line-clamp-1 text-xs text-slate-500">{article.summary || 'Chưa có tóm tắt'}</p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600">{article.specialtyName || 'Tin chung'}</td><td className="px-4 py-4 text-xs text-slate-500">{formatDisplayDateTime(article.updatedAt)}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
 }
 
 export function SystemResourceView({ section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle, onCreateHospitalAdmin }: SystemResourceViewProps) {

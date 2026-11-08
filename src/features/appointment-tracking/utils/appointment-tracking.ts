@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
 import type { VisitQueueRoom } from '../types';
 
@@ -42,7 +43,7 @@ export function vietnamDate() {
 }
 
 export function appointmentDate(date: string) {
-  return new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(`${date}T12:00:00+07:00`));
+  return formatDisplayDate(date);
 }
 
 export function canCancelAppointment(appointment: PatientAppointment, now = Date.now()) {

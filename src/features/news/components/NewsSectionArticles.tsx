@@ -1,3 +1,4 @@
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -70,7 +71,7 @@ export const NewsSectionArticles: React.FC<NewsSectionArticlesProps> = ({
 
           <div className="px-5 sm:px-6 pb-5 text-xs text-slate-400 border-t border-slate-100/70 pt-3 flex items-center justify-between">
             <span>{featuredArticle.author}</span>
-            <span>Ngày đăng: {featuredArticle.publishDate}</span>
+            <span>Ngày đăng: {formatDisplayDate(featuredArticle.publishDate)}</span>
           </div>
         </article>
 
@@ -95,7 +96,7 @@ export const NewsSectionArticles: React.FC<NewsSectionArticlesProps> = ({
                   {art.excerpt}
                 </p>
                 <div className="text-xs text-slate-400 mt-3">
-                  {art.author} • Ngày đăng: {art.publishDate}
+                  {art.author} • Ngày đăng: {formatDisplayDate(art.publishDate)}
                 </div>
               </div>
 

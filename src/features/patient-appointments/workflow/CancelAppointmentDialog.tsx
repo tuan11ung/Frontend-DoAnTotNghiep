@@ -1,5 +1,7 @@
 'use client';
 
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
+
 import React, { useState } from 'react';
 import { X, AlertTriangle, ShieldCheck, Calendar, Building2, User } from 'lucide-react';
 import { PatientAppointment } from '../models/types/appointment.types';
@@ -90,7 +92,7 @@ export function CancelAppointmentDialog({
 
             <div className="flex items-center gap-2 text-slate-700">
               <Calendar className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>Thời gian: <strong>{appointment.timeSlot}</strong> ngày <strong>{appointment.workDate}</strong></span>
+              <span>Thời gian: <strong>{appointment.timeSlot}</strong> ngày <strong>{formatDisplayDate(appointment.workDate)}</strong></span>
             </div>
 
             <div className="flex items-center gap-2 text-slate-700">
