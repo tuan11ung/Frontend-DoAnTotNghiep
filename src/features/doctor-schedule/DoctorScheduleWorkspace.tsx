@@ -1,24 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarDays, CalendarOff, CheckCheck, ChevronLeft, ChevronRight, Clock3, DoorOpen, LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
+import { AlertCircle, LoaderCircle, RefreshCw, CalendarDays, CalendarOff, CheckCheck, ChevronLeft, ChevronRight, Clock3, DoorOpen, LayoutGrid, List, SlidersHorizontal } from 'lucide-react';
 import { addScheduleDays, getScheduleMonday } from '@/src/features/work-schedules/utils/schedule-utils';
-import { DOCTOR_SCHEDULE_SESSIONS } from './data/doctor-schedule-demo';
-import type { DoctorScheduleShift } from './doctor-schedule.types';
+import { useDoctorSchedule } from './hooks/use-doctor-schedule';
 import { doctorScheduleDateLabel } from './doctor-schedule-format';
 import { ScheduleDayList, ScheduleWeekGrid } from './components/ScheduleWeekGrid';
 import { ScheduleShiftDetail } from './components/ScheduleShiftDetail';
 
 interface DoctorScheduleWorkspaceProps {
-  shifts: DoctorScheduleShift[];
+  token: string;
   today: string;
 }
 
 const controlClass = 'inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600';
 const selectClass = 'h-9 min-w-0 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-600 outline-none focus-visible:ring-2 focus-visible:ring-blue-600';
 
-export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspaceProps) {
+export function DoctorScheduleWorkspace({ token, today }: DoctorScheduleWorkspaceProps) {
   const [weekStart, setWeekStart] = useState(() => getScheduleMonday(today));
+  const { shifts, loading, error, reload } = useDoctorSchedule(weekStart, token);
   const [roomId, setRoomId] = useState('ALL');
   const [view, setView] = useState<'week' | 'list'>('week');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -28,7 +28,7 @@ export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspa
   const visibleShifts = weekShifts.filter(shift => roomId === 'ALL' || shift.roomId === roomId);
   const selectedShift = visibleShifts.find(shift => shift.id === selectedId) ?? visibleShifts[0] ?? null;
   const rooms = [...new Map(shifts.map(shift => [shift.roomId, shift.room])).entries()];
-  const totalHours = weekShifts.reduce((total, shift) => total + DOCTOR_SCHEDULE_SESSIONS.find(session => session.id === shift.session)!.duration, 0);
+  const totalHours = weekShifts.reduce((total, shift) => total + shift.duration, 0);
   const morningCount = weekShifts.filter(shift => shift.session === 'MORNING').length;
   const assignedRooms = new Set(weekShifts.map(shift => shift.roomId));
   const workingDays = new Set(weekShifts.map(shift => shift.date)).size;
@@ -38,6 +38,7 @@ export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspa
     if (!date) return;
     setWeekStart(getScheduleMonday(date));
     setSelectedId(null);
+    setRoomId('ALL');
   }
 
   function clearRoomFilter() {
@@ -57,12 +58,12 @@ export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspa
   }
 
   return (
-    <div className="space-y-6">
+    <div aria-busy={loading} className="space-y-6">
       <section aria-label="Tổng quan lịch phân công trong tuần" className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
-          { label: 'Ca làm việc', value: weekShifts.length, unit: 'ca', description: `${morningCount} ca sáng · ${weekShifts.length - morningCount} ca chiều`, icon: CalendarDays, color: 'bg-blue-50 text-blue-700 ring-blue-100' },
-          { label: 'Thời gian làm việc', value: totalHours.toLocaleString('vi-VN'), unit: 'giờ', description: `Trong ${workingDays} ngày được phân công`, icon: Clock3, color: 'bg-teal-50 text-teal-700 ring-teal-100' },
-          { label: 'Phòng được phân công', value: assignedRooms.size, unit: 'phòng', description: [...assignedRooms].map(room => `P.${room}`).join(' · ') || 'Chưa có phòng được phân công', icon: DoorOpen, color: 'bg-violet-50 text-violet-700 ring-violet-100' },
+          { label: 'Ca làm việc', value: loading || error ? '—' : weekShifts.length, unit: 'ca', description: `${morningCount} ca sáng · ${weekShifts.length - morningCount} ca chiều`, icon: CalendarDays, color: 'bg-blue-50 text-blue-700 ring-blue-100' },
+          { label: 'Thời gian làm việc', value: loading || error ? '—' : totalHours.toLocaleString('vi-VN', { maximumFractionDigits: 2 }), unit: 'giờ', description: `Trong ${workingDays} ngày được phân công`, icon: Clock3, color: 'bg-teal-50 text-teal-700 ring-teal-100' },
+          { label: 'Phòng được phân công', value: loading || error ? '—' : assignedRooms.size, unit: 'phòng', description: [...assignedRooms].map(room => rooms.find(([id]) => id === room)?.[1] ?? room).join(' · ') || 'Chưa có phòng được phân công', icon: DoorOpen, color: 'bg-violet-50 text-violet-700 ring-violet-100' },
         ].map(({ label, value, unit, description, icon: Icon, color }) => (
           <div className="flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-4 shadow-sm sm:gap-4 sm:px-5 sm:py-5" key={label}>
             <div className="min-w-0"><p className="min-h-7 text-[10px] font-semibold leading-4 text-slate-500 sm:min-h-0 sm:text-xs">{label}</p><p className="mt-2 whitespace-nowrap text-xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">{value}<span className="ml-1 text-[10px] font-semibold tracking-normal text-slate-400 sm:ml-1.5 sm:text-xs">{unit}</span></p><p className="mt-2 hidden text-[11px] text-slate-500 sm:block">{description}</p></div>
@@ -79,6 +80,7 @@ export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspa
               <h2 aria-live="polite" className="text-base font-extrabold tabular-nums tracking-tight text-slate-900 sm:text-lg" id="schedule-week-heading">{doctorScheduleDateLabel(weekStart)}{weekStart.slice(0, 4) !== weekEnd.slice(0, 4) ? `/${weekStart.slice(0, 4)}` : ''} – {doctorScheduleDateLabel(weekEnd)}/{weekEnd.slice(0, 4)}</h2>
             </div>
             <div className="flex flex-wrap items-center gap-2">
+              <button aria-label="Tải lại lịch làm việc" className={controlClass} disabled={loading} onClick={reload} type="button"><RefreshCw aria-hidden="true" className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />Tải lại</button>
               <button className={controlClass} onClick={() => changeWeek(today)} type="button">Tuần này</button>
               <div className="flex items-center gap-1">
                 <button aria-label="Tuần trước" className={`${controlClass} w-9 px-0`} onClick={() => changeWeek(addScheduleDays(weekStart, -7))} type="button"><ChevronLeft aria-hidden="true" className="h-4 w-4" /></button>
@@ -105,7 +107,9 @@ export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspa
             </div>
           </div>
 
-          {visibleShifts.length ? <>
+          {loading ? <div className="flex min-h-[350px] items-center justify-center gap-2 px-5 text-sm text-slate-500" role="status"><LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin" />Đang tải lịch làm việc…</div>
+            : error ? <div className="flex min-h-[350px] flex-col items-center justify-center gap-3 px-5 py-10 text-center" role="alert"><AlertCircle aria-hidden="true" className="h-7 w-7 text-rose-600" /><h3 className="font-bold text-slate-800">Không thể tải lịch làm việc</h3><p className="text-sm text-slate-500">{error}</p><button className={controlClass} onClick={reload} type="button">Thử lại</button></div>
+            : visibleShifts.length ? <>
             {view === 'week' && <div className="hidden md:block"><ScheduleWeekGrid days={days} onSelect={selectShift} selectedId={selectedShift?.id} shifts={visibleShifts} today={today} /></div>}
             <div className={view === 'list' ? '' : 'md:hidden'}><ScheduleDayList days={days} onSelect={selectShift} selectedId={selectedShift?.id} shifts={visibleShifts} today={today} /></div>
           </> : <div className="flex min-h-[350px] flex-col items-center justify-center px-5 py-12 text-center"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50"><CalendarOff aria-hidden="true" className="h-7 w-7 text-slate-400" /></span><h3 className="mt-4 text-base font-extrabold text-slate-800">{weekShifts.length ? 'Không có ca phù hợp' : 'Tuần này chưa có lịch phân công'}</h3><p className="mt-2 max-w-sm text-xs leading-6 text-slate-500">{weekShifts.length ? 'Thử chọn phòng khám khác để xem lịch của bạn.' : 'Bạn có thể chuyển sang tuần khác để xem các ca được phân công.'}</p><button className={`${controlClass} mt-5`} onClick={hasFilter ? clearRoomFilter : () => changeWeek(today)} type="button">{hasFilter ? 'Xóa bộ lọc' : 'Về tuần hiện tại'}</button></div>}
@@ -117,7 +121,6 @@ export function DoctorScheduleWorkspace({ shifts, today }: DoctorScheduleWorkspa
         </section>
         <ScheduleShiftDetail shift={selectedShift} today={today} />
       </div>
-      <p className="text-center text-[10px] leading-5 text-slate-400">Lịch mẫu từ 02/11 đến 22/11/2026 · Ngày mô phỏng: 09/11/2026</p>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { AccountName } from '@/src/shared/components/layout/AccountName';
+
 import type { LucideIcon } from 'lucide-react';
 import {
   Activity,
@@ -143,7 +145,7 @@ function SidebarContent({
         <div className="mb-2 flex items-center gap-3 rounded-lg px-3 py-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-xs font-extrabold text-emerald-100">SA</div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">Quản trị hệ thống</p>
+            <p className="truncate text-sm font-semibold"><AccountName /></p>
             <p className="truncate text-xs text-emerald-100/55">SUPER_ADMIN</p>
           </div>
         </div>

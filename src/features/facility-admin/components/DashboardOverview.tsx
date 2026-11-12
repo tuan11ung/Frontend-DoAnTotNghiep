@@ -5,7 +5,7 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { useState } from 'react';
 import {
   ArrowUpRight,
-  Building2,
+  ClipboardList,
   CalendarClock,
   CalendarDays,
   CircleAlert,
@@ -33,17 +33,16 @@ interface DashboardOverviewProps {
   onNavigate: (section: AdminSection) => void;
 }
 
-export function DashboardOverview({ departments, specialties, rooms, staff, services, onNavigate }: DashboardOverviewProps) {
+export function DashboardOverview({ specialties, rooms, staff, services, onNavigate }: DashboardOverviewProps) {
   const [selectedSpecialty, setSelectedSpecialty] = useState('respiratory');
 
   const cards = [
-    { label: 'Khoa đang hoạt động', value: departments.filter((item) => item.active).length, total: departments.length, icon: Building2, color: 'blue', target: 'departments' as const },
+    { label: 'Dịch vụ đang hoạt động', value: services.filter((item) => item.active).length, total: services.length, icon: ClipboardList, color: 'blue', target: 'services' as const },
     { label: 'Chuyên khoa', value: specialties.filter((item) => item.active).length, total: specialties.length, icon: Stethoscope, color: 'emerald', target: 'specialties' as const },
     { label: 'Phòng chức năng', value: rooms.filter((item) => item.active).length, total: rooms.length, icon: DoorOpen, color: 'amber', target: 'rooms' as const },
     { label: 'Nhân viên hoạt động', value: staff.filter((item) => item.active).length, total: staff.length, icon: UsersRound, color: 'violet', target: 'staff' as const },
   ];
 
-  const unassignedDepartments = departments.filter((department) => department.active && !staff.some((member) => member.active && member.departmentId === department.id && member.roles.includes('DEPARTMENT_HEAD'))).length;
   const inactiveRooms = rooms.filter((item) => !item.active).length;
   const inactiveServices = services.filter((item) => !item.active).length;
 
@@ -372,7 +371,6 @@ export function DashboardOverview({ departments, specialties, rooms, staff, serv
           </div>
           <div className="mt-5 divide-y divide-slate-100">
             {[
-              { count: unassignedDepartments, label: 'khoa chưa có trưởng khoa', target: 'departments' as const },
               { count: inactiveRooms, label: 'phòng đang tạm ngừng', target: 'rooms' as const },
               { count: inactiveServices, label: 'dịch vụ đang tạm ngừng', target: 'services' as const },
             ].map((item) => (

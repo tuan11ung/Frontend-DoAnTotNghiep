@@ -1,5 +1,4 @@
 import type {
-  Department,
   FacilityInfo,
   Room,
   Specialty,
@@ -31,15 +30,6 @@ interface HospitalResponse {
   refundPercent: number;
   policyText?: string | null;
   status: FacilityInfo['status'];
-}
-
-interface DepartmentResponse {
-  id: number;
-  code: string;
-  name: string;
-  type: Department['type'];
-  description?: string | null;
-  isActive: boolean;
 }
 
 interface SpecialtyResponse {
@@ -105,15 +95,6 @@ function toFacility(data: HospitalResponse): FacilityInfo {
   };
 }
 
-const toDepartment = (data: DepartmentResponse): Department => ({
-  id: data.id,
-  code: data.code,
-  name: data.name,
-  type: data.type,
-  description: data.description ?? '',
-  active: data.isActive,
-});
-
 const toSpecialty = (data: SpecialtyResponse): Specialty => ({
   id: data.id,
   specialtyId: data.specialtyId,
@@ -169,31 +150,6 @@ export const facilityAdminApi = {
     const formData = new FormData();
     formData.append('file', file);
     return adminRequest<LogoResponse>('hospital/upload-logo', formData);
-  },
-
-  async searchDepartments() {
-    const page = await adminRequest<PageResponse<DepartmentResponse>>('departments/search', {
-      keyword: null,
-      type: null,
-      active: null,
-      pageable: { ...ADMIN_PAGEABLE, sortBy: 'name' },
-    });
-    return page.content.map(toDepartment);
-  },
-
-  async saveDepartment(department: Department) {
-    const data = await adminRequest<DepartmentResponse>('departments/save', {
-      id: department.id > 0 ? department.id : null,
-      code: department.code,
-      name: department.name,
-      type: department.type,
-      description: department.description || null,
-    });
-    return toDepartment(data);
-  },
-
-  async changeDepartmentStatus(id: number, active: boolean) {
-    return toDepartment(await adminRequest<DepartmentResponse>('departments/change-status', { id, active }));
   },
 
   async searchSpecialties() {

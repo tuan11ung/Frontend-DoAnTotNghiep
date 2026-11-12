@@ -9,7 +9,6 @@ interface StaffResponse {
   staffCode: string;
   rankId?: number | null;
   rankName?: string | null;
-  departmentId?: number | null;
   specialtyId?: number | null;
   roles: StaffRole[];
   status: StaffAccount['status'];
@@ -29,7 +28,6 @@ const toStaff = (data: StaffResponse): StaffAccount => ({
   email: data.corporateEmail,
   gender: data.gender,
   roles: data.roles,
-  departmentId: data.departmentId ?? undefined,
   specialtyId: data.specialtyId ?? undefined,
   rankId: data.rankId ?? undefined,
   rankName: data.rankName ?? undefined,
@@ -42,7 +40,6 @@ export const staffAdminApi = {
     const page = await adminRequest<PageResponse<StaffResponse>>('staff/search', {
       keyword: null,
       status: null,
-      departmentId: null,
       rankId: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'staffCode' },
     });
@@ -70,7 +67,6 @@ export const staffAdminApi = {
       gender: staff.gender,
       staffCode: staff.staffCode,
       rankId: staff.rankId ?? null,
-      departmentId: staff.departmentId ?? null,
       specialtyId: staff.specialtyId ?? null,
       roles: staff.roles,
     };

@@ -6,4 +6,5 @@ export interface LoginRequest {
 export interface LoginSession {
   accessToken: string;
   refreshToken: string;
+  fullName?: string;
 }

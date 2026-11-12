@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 
 const ENDPOINTS: Record<string, string> = {
+  'work-schedules/my-search': '/clinic/work-schedules/my-search',
   'work-schedules/my-queue-rooms': '/clinic/work-schedules/my-queue-rooms',
   'encounters/doctor-queue': '/clinic/encounters/doctor-queue',
   'encounters/call': '/clinic/encounters/call',

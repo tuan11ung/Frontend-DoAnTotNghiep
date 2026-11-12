@@ -1,5 +1,7 @@
 'use client';
 
+import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
+
 import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -46,7 +48,6 @@ const SECTION_CONTENT: Record<AdminSection, { eyebrow: string; title: string; de
   overview: { eyebrow: 'Điều hành', title: 'Tổng quan cơ sở', description: 'Theo dõi nhanh cấu hình tổ chức, nguồn lực và tình trạng vận hành của bệnh viện.' },
   facility: { eyebrow: 'Điều hành', title: 'Thông tin cơ sở y tế', description: 'Quản lý hồ sơ công khai, giờ làm việc và chính sách đặt hoặc hủy lịch khám.' },
   'work-schedules': { eyebrow: 'Điều hành', title: 'Phân công lịch làm việc', description: 'Sắp xếp bác sĩ theo phòng và ca khám để chủ động điều phối lịch làm việc trong tuần.' },
-  departments: { eyebrow: 'Cơ cấu chuyên môn', title: 'Khoa', description: 'Quản lý các đơn vị chuyên môn của cơ sở y tế.' },
   specialties: { eyebrow: 'Cơ cấu chuyên môn', title: 'Chuyên khoa', description: 'Bật, tắt hoặc bổ sung chuyên khoa từ danh mục chung của hệ thống.' },
   rooms: { eyebrow: 'Cơ cấu chuyên môn', title: 'Phòng', description: 'Quản lý phòng khám, phòng chức năng và năng lực tiếp nhận.' },
   staff: { eyebrow: 'Nguồn lực', title: 'Tài khoản nhân viên', description: 'Quản lý tài khoản và vai trò của nhân sự thuộc cơ sở.' },
@@ -54,7 +55,6 @@ const SECTION_CONTENT: Record<AdminSection, { eyebrow: string; title: string; de
 };
 
 const SECTION_TO_KIND: Partial<Record<AdminSection, EntityKind>> = {
-  departments: 'department',
   specialties: 'specialty',
   rooms: 'room',
   staff: 'staff',
@@ -78,7 +78,7 @@ export function FacilityAdminPage() {
     : (Object.keys(SECTION_CONTENT) as AdminSection[]).find((section) => section !== 'work-schedules' && section === searchParams.get('section')) ?? 'overview';
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [facility, setFacility] = useState<FacilityInfo>(INITIAL_FACILITY);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const departments: Department[] = [];
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
   const [specialtyCatalog, setSpecialtyCatalog] = useState<SpecialtyCatalogItem[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -112,9 +112,8 @@ export function FacilityAdminPage() {
     setLoading(true);
     setLoadError('');
     try {
-      const [hospital, departmentItems, specialtyItems, catalogItems, roomItems, staffItems, ranks, serviceItems, categories] = await Promise.all([
+      const [hospital, specialtyItems, catalogItems, roomItems, staffItems, ranks, serviceItems, categories] = await Promise.all([
         facilityAdminApi.getHospital(),
-        facilityAdminApi.searchDepartments(),
         facilityAdminApi.searchSpecialties(),
         facilityAdminApi.searchSpecialtyCatalog(),
         facilityAdminApi.searchRooms(),
@@ -124,7 +123,6 @@ export function FacilityAdminPage() {
         medicalServiceAdminApi.searchCategories(),
       ]);
       setFacility(hospital);
-      setDepartments(departmentItems);
       setSpecialties(specialtyItems);
       setSpecialtyCatalog(catalogItems);
       setRooms(roomItems);
@@ -182,8 +180,7 @@ export function FacilityAdminPage() {
       const saved = await facilityAdminApi.addSpecialty(entity.specialtyId);
       setSpecialties((items) => replaceOrAppend(items, saved));
     } else {
-      const saved = await facilityAdminApi.saveDepartment(entity);
-      setDepartments((items) => replaceOrAppend(items, saved));
+      throw new Error('Loại dữ liệu này không được backend hỗ trợ.');
     }
 
     setEditor(null);
@@ -192,12 +189,7 @@ export function FacilityAdminPage() {
 
   const toggleEntity = async (kind: EntityKind, id: number) => {
     try {
-      if (kind === 'department') {
-        const target = departments.find((item) => item.id === id);
-        if (!target) return;
-        const saved = await facilityAdminApi.changeDepartmentStatus(id, !target.active);
-        setDepartments((items) => replaceOrAppend(items, saved));
-      } else if (kind === 'specialty') {
+      if (kind === 'specialty') {
         const target = specialties.find((item) => item.id === id);
         if (!target) return;
         const saved = await facilityAdminApi.changeSpecialtyStatus(id, !target.active);
@@ -297,6 +289,7 @@ export function FacilityAdminPage() {
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100" placeholder="Tìm nhanh chức năng..." type="search" />
             </div>
+            <ClinicalAccountMenu />
             <button aria-label="Trợ giúp" className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50" type="button"><HelpCircle className="h-5 w-5" /></button>
             <button aria-label="Thông báo" className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50" type="button"><Bell className="h-5 w-5" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" /></button>
           </div>
@@ -323,7 +316,6 @@ export function FacilityAdminPage() {
                 onAdd={(kind) => setEditor({ kind })}
                 onEdit={(kind, id) => setEditor({ kind, id })}
                 onToggle={toggleEntity}
-                specialties={specialties}
                 staff={staff}
               />
             )}

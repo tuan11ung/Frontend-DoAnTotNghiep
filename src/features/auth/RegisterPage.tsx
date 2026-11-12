@@ -15,7 +15,7 @@ import { RegisterSuccessStep } from './components/RegisterSuccessStep';
 import { ShieldCheck } from 'lucide-react';
 import { BookingContinuationNotice } from './components/AuthContinuation';
 import { useBookingReturnTo } from './hooks/use-booking-return-to';
-import { loginPatient } from './api/auth-api';
+import { loginAccount } from './api/auth-api';
 import { createAuthSession, storeAuthSession } from './utils/auth-storage';
 import { getPostLoginDestination } from './utils/booking-return';
 
@@ -103,7 +103,7 @@ export function RegisterPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/register/verify-otp', {
+      const response = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accountId, otp: otpCode }),
@@ -117,11 +117,11 @@ export function RegisterPage() {
 
       if (returnTo) {
         try {
-          const { accessToken, refreshToken } = await loginPatient({
+          const { accessToken, refreshToken, fullName } = await loginAccount({
             login: formValues.email.trim() || formValues.phone.replace(/[\s.-]/g, ''),
             password: formValues.password,
           });
-          const session = createAuthSession(accessToken, refreshToken);
+          const session = createAuthSession(accessToken, refreshToken, fullName);
           storeAuthSession(session, false);
           setFormValues((values) => ({ ...values, password: '', confirmPassword: '' }));
           router.replace(getPostLoginDestination(session.roles, returnTo));
@@ -152,7 +152,7 @@ export function RegisterPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/register/resend-otp', {
+      const response = await fetch('/api/auth/resend-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accountId }),

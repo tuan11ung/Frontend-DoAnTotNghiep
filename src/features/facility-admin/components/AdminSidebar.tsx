@@ -1,3 +1,4 @@
+import { AccountName } from '@/src/shared/components/layout/AccountName';
 import type { LucideIcon } from 'lucide-react';
 import {
   BadgeDollarSign,
@@ -10,7 +11,6 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
-  Network,
   Stethoscope,
   UsersRound,
   X,
@@ -45,7 +45,6 @@ const NAVIGATION_GROUPS: { label: string; items: NavigationItem[] }[] = [
   {
     label: 'Cơ cấu chuyên môn',
     items: [
-      { id: 'departments', label: 'Khoa', icon: Network },
       { id: 'specialties', label: 'Chuyên khoa', icon: Stethoscope },
       { id: 'rooms', label: 'Phòng', icon: DoorOpen },
     ],
@@ -143,7 +142,7 @@ function SidebarContent({
             <CircleUserRound className="h-5 w-5 text-emerald-100" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">Nguyễn Minh Anh</p>
+            <p className="truncate text-sm font-semibold"><AccountName /></p>
             <p className="truncate text-xs text-emerald-100/55">Quản trị cơ sở</p>
           </div>
         </div>

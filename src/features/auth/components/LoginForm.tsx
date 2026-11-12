@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react';
 import { createAuthSession, storeAuthSession } from '../utils/auth-storage';
-import { loginPatient, LoginApiError } from '../api/auth-api';
+import { loginAccount, LoginApiError } from '../api/auth-api';
 import { useBookingReturnTo } from '../hooks/use-booking-return-to';
 import { getPatientAuthHref, getPostLoginDestination } from '../utils/booking-return';
 
@@ -33,9 +33,9 @@ export function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const { accessToken, refreshToken } = await loginPatient({ login, password });
+      const { accessToken, refreshToken, fullName } = await loginAccount({ login, password });
 
-      const authSession = createAuthSession(accessToken, refreshToken);
+      const authSession = createAuthSession(accessToken, refreshToken, fullName);
       storeAuthSession(authSession, rememberMe);
       router.replace(getPostLoginDestination(authSession.roles, returnTo));
     } catch (error) {

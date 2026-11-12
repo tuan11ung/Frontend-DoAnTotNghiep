@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { updateStoredAccountName } from '@/src/features/auth/utils/auth-storage';
 import { accountRequest, loadProfile, saveAllergy, saveCondition, updateProfile } from './profile-api';
 import { DEFAULT_DEMO_SNAPSHOT, parseDemo, readDemoSnapshot, subscribeDemo, updateDemo } from './profile-demo';
 import { canEditHealth, type AllergyInput, type ConditionInput, type ProfileData, type ProfileInput } from './profile.types';
@@ -36,6 +37,7 @@ export function useProfile(isPreview: boolean, token: string | null) {
       if (isPreview) updateDemo(d => ({ ...d, profile: { ...d.profile, ...input } }));
       else {
         const profile = await updateProfile(token!, id, input);
+        updateStoredAccountName(token!, profile.fullName);
         if (active.current) setRemote(d => d ? { ...d, profile } : d);
       }
     },
