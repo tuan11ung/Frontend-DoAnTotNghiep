@@ -15,6 +15,9 @@ Chưa đăng nhập chỉ thấy lời mời đăng nhập. Tham số hồ sơ/h
 - Modal có bảng tổng quan người khám, cơ sở, ngày lập, trạng thái, tổng chi phí, giảm trừ, số đã trả/còn phải trả; phần Chi tiết có bảng Khám bệnh, Cận lâm sàng, Thuốc với số lượng, đơn giá và tổng sau giảm trừ. Tab Lịch sử giao dịch chỉ hiển thị giao dịch của hóa đơn đang mở.
 - Chọn phương thức VNPay, MoMo, Thẻ trong dropdown và bấm **Thanh toán ngay**; bước xác nhận riêng trước khi cập nhật trạng thái mô phỏng. Modal chi tiết được tạm gỡ khi mở xác nhận/biên lai để chỉ có một modal hoạt động. Đóng hoặc Escape trở lại thông tin hóa đơn; đóng chi tiết trở lại danh sách.
 - Lịch sử bao gồm Thành công, Đang chờ, Thất bại, Đã hủy; chỉ giao dịch thành công được xem biên lai/xác nhận.
+- Lịch sử hiển thị bảng theo bố cục tham khảo: TT, mã giao dịch, nội dung/hóa đơn, số tiền, hình thức, trạng thái, người khám, thời điểm thực hiện/hoàn thành và thao tác xem biên lai. Cột Người khám dùng tên hồ sơ, không giả lập tên người thao tác thu ngân khi dữ liệu chưa có.
+- Hai ô tổng quan hiển thị **Tổng tiền đã thanh toán** (chỉ cộng giao dịch SUCCESS) và **Số tiền còn phải trả** (tổng hóa đơn UNPAID trong phạm vi đang xem). Không giả lập số dư ví. Số tổng quan không đổi khi lọc bảng; trong modal hóa đơn chỉ tính hóa đơn đó.
+- Tìm giao dịch theo mã giao dịch, mã hóa đơn, cơ sở hoặc nội dung dịch vụ; lọc nhanh theo trạng thái và Bộ lọc theo hình thức. Bấm tiêu đề Số tiền hoặc Thực hiện để đổi chiều sắp xếp. Mặc định giao dịch mới nhất trước. Tải lại ở trang lịch sử dùng luồng tải dữ liệu hiện có, không xóa lịch sử mô phỏng. Bảng cuộn ngang riêng trên điện thoại.
 - Biên lai mẫu có người khám, hóa đơn, ca khám, phương thức, mã giao dịch, thời điểm và số đã trả. Tải tài liệu HTML độc lập hoặc dùng In / Lưu PDF của trình duyệt. Biên lai có nhãn mô phỏng và không phải hóa đơn điện tử chính thức.
 
 ## Thử không cần backend
