@@ -2,8 +2,8 @@ import type { ClinicalService, Diagnosis, EncounterTab, OrderedService } from '.
 
 // Fixtures for the static preview only; no API or persisted patient records.
 export const encounterTabs: { id: EncounterTab; label: string }[] = [
-  { id: 'overview', label: 'Tổng quan' }, { id: 'history', label: 'Bệnh sử' },
-  { id: 'cls', label: 'Chỉ định CLS' }, { id: 'results', label: 'Kết quả CLS' },
+  { id: 'overview', label: 'Tổng quan & Chỉ định CLS' },
+  { id: 'history', label: 'Bệnh sử' }, { id: 'results', label: 'Kết quả CLS' },
   { id: 'diagnosis', label: 'Chẩn đoán' }, { id: 'rx', label: 'Kê thuốc' },
   { id: 'finish', label: 'Tổng kết' },
 ];
