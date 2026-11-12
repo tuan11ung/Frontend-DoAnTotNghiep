@@ -10,9 +10,10 @@ Chưa đăng nhập chỉ thấy lời mời đăng nhập. Tham số hồ sơ/h
 
 ## Giao diện
 
-- Hóa đơn lượt khám: lọc Chưa trả/Đã trả, tìm mã hóa đơn/ca khám/cơ sở trên desktop; bộ chọn hóa đơn gọn trên điện thoại.
-- Chi tiết chi phí theo Khám bệnh, Cận lâm sàng, Thuốc; số lượng, đơn giá, tổng chi phí, giảm trừ và số tiền phải trả.
-- Thẻ phương thức VNPay, MoMo, Thẻ; bước xác nhận riêng trước khi cập nhật trạng thái mô phỏng.
+- Hóa đơn lượt khám hiển thị dạng bảng: TT, mã HĐ, lượt khám/cơ sở, khoản thu, trạng thái, số phải trả, số đã trả và thao tác. Thanh công cụ có tìm mã hóa đơn/ca khám/cơ sở, Bộ lọc trạng thái, Tải lại và tổng số kết quả. Điện thoại cuộn ngang trong bảng; tìm kiếm và bộ lọc vẫn dùng được.
+- Bấm mã HĐ hoặc biểu tượng Thao tác để mở modal **Thông tin thanh toán**. Danh sách không tự mở hóa đơn đầu tiên; URL truyền hóa đơn/ca khám hợp lệ mở đúng modal tương ứng.
+- Modal có bảng tổng quan người khám, cơ sở, ngày lập, trạng thái, tổng chi phí, giảm trừ, số đã trả/còn phải trả; phần Chi tiết có bảng Khám bệnh, Cận lâm sàng, Thuốc với số lượng, đơn giá và tổng sau giảm trừ. Tab Lịch sử giao dịch chỉ hiển thị giao dịch của hóa đơn đang mở.
+- Chọn phương thức VNPay, MoMo, Thẻ trong dropdown và bấm **Thanh toán ngay**; bước xác nhận riêng trước khi cập nhật trạng thái mô phỏng. Modal chi tiết được tạm gỡ khi mở xác nhận/biên lai để chỉ có một modal hoạt động. Đóng hoặc Escape trở lại thông tin hóa đơn; đóng chi tiết trở lại danh sách.
 - Lịch sử bao gồm Thành công, Đang chờ, Thất bại, Đã hủy; chỉ giao dịch thành công được xem biên lai/xác nhận.
 - Biên lai mẫu có người khám, hóa đơn, ca khám, phương thức, mã giao dịch, thời điểm và số đã trả. Tải tài liệu HTML độc lập hoặc dùng In / Lưu PDF của trình duyệt. Biên lai có nhãn mô phỏng và không phải hóa đơn điện tử chính thức.
 
@@ -29,9 +30,9 @@ Chạy `pnpm dev`, ở trang chủ chọn **Đã đăng nhập** trên thanh xem
 
 Danh tính/ca khám mẫu lấy từ fixtures của module Kết quả khám để liên kết đúng ca; không phải dữ liệu thanh toán thật của chủ tài khoản. Khoản BHYT/ưu đãi và giá dịch vụ chỉ là số liệu thử, không phải chính sách hoặc giá áp dụng của một bệnh viện.
 
-1. Chọn VNPay, MoMo hoặc Thẻ, bấm Thanh toán. Chỉ tạo giao dịch `PENDING`, chưa đổi hóa đơn thành đã trả.
+1. Mở chi tiết hóa đơn, chọn VNPay, MoMo hoặc Thẻ, bấm **Thanh toán ngay**. Chỉ tạo giao dịch `PENDING`, chưa đổi hóa đơn thành đã trả.
 2. Trong modal, tích xác nhận đúng hóa đơn/số tiền. Bấm **Xác nhận mô phỏng** để thành công, **Mô phỏng thất bại** để thử lỗi hoặc **Hủy giao dịch** để hủy.
-3. Đóng modal/Escape sẽ giữ trạng thái chờ. Bấm **Tiếp tục giao dịch đang chờ** để mở lại, không tạo giao dịch thứ hai.
+3. Đóng modal/Escape sẽ giữ trạng thái chờ. Bấm **Tiếp tục thanh toán** trong chi tiết hóa đơn để mở lại, không tạo giao dịch thứ hai.
 4. Thành công đổi hóa đơn thành `PAID`, hiện biên lai và cập nhật lịch sử. Không thanh toán lại hóa đơn đã trả.
 5. Mở hai tab cùng hóa đơn để thử đồng bộ: Web Locks bảo vệ cập nhật, một giao dịch chờ được dùng chung, thành công chỉ ghi nhận một lần. Nhánh fallback khi trình duyệt không có Web Locks chỉ dùng cho mô phỏng, không dùng bảo đảm giao dịch thật.
 
