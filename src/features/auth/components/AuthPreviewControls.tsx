@@ -5,12 +5,14 @@ import { CircleUserRound, Monitor, RotateCcw, UserRound } from 'lucide-react';
 import { AUTH_PREVIEW_ENABLED, setAuthPreviewMode } from '../utils/auth-preview';
 import type { AuthPreviewMode } from '../utils/auth-preview';
 import { usePatientNavigation } from '../hooks/use-patient-navigation';
+import { useAccountIdentity } from '../hooks/use-account-identity';
 
 export function AuthPreviewControls() {
   const { isAuthenticated, isPreview } = usePatientNavigation();
+  const clinicalNavigation = useAccountIdentity();
   const [error, setError] = useState('');
 
-  if (!AUTH_PREVIEW_ENABLED) return null;
+  if (!AUTH_PREVIEW_ENABLED || (clinicalNavigation.isAuthenticated && clinicalNavigation.roles.some(role => role !== 'PATIENT') && !isPreview)) return null;
 
   function changeMode(mode: AuthPreviewMode | null) {
     setError(setAuthPreviewMode(mode) ? '' : 'Trình duyệt chưa cho phép lưu lựa chọn. Vui lòng cho phép lưu trữ để dùng mô phỏng.');

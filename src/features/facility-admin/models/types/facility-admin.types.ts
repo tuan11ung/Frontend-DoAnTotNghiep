@@ -2,7 +2,6 @@ export type AdminSection =
   | 'overview'
   | 'facility'
   | 'work-schedules'
-  | 'departments'
   | 'specialties'
   | 'rooms'
   | 'staff'

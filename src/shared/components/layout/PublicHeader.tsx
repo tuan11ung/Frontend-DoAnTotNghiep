@@ -5,13 +5,16 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Activity, Building2, CalendarClock, Menu, Newspaper, Stethoscope, User, X } from 'lucide-react';
 import type { AppointmentTabType } from '@/src/shared/types/medical';
-import { clearPatientSession, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
+import { clearPatientSession } from '@/src/features/auth/utils/auth-storage';
 import { setAuthPreviewMode } from '@/src/features/auth/utils/auth-preview';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AuthContinuationLink } from '@/src/features/auth/components/AuthContinuation';
 import { PatientNotificationBell } from '@/src/features/notifications/components/PatientNotificationBell';
 import { HeaderSearch } from '@/src/features/site-search/components/HeaderSearch';
 import { PatientAccountDropdown } from './PatientAccountDropdown';
+import { ClinicalAccountMenu } from './ClinicalAccountMenu';
+import { logoutAccount } from '@/src/features/auth/api/auth-api';
+import { useAccountIdentity } from '@/src/features/auth/hooks/use-account-identity';
 
 interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
@@ -63,6 +66,8 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { state, isAuthenticated, isPreview } = usePatientNavigation();
+  const identity = useAccountIdentity();
+  const isClinicalStaff = !isPreview && identity.isAuthenticated && identity.roles.some(role => role !== 'PATIENT');
 
   async function handleLogout() {
     if (isLoggingOut) return;
@@ -74,13 +79,8 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
     }
 
     setIsLoggingOut(true);
-    const token = getStoredPatientToken();
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        cache: 'no-store',
-      });
+      await logoutAccount();
     } catch {
       // Clear the local session even when the logout endpoint is unavailable.
     } finally {
@@ -103,8 +103,12 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <HeaderSearch onOpen={() => setMobileMenuOpen(false)} />
-          {isAuthenticated && <PatientNotificationBell key={state} onOpen={() => setMobileMenuOpen(false)} />}
-          {isAuthenticated ? (
+          {isAuthenticated && !isClinicalStaff && <PatientNotificationBell key={state} onOpen={() => setMobileMenuOpen(false)} />}
+          {isClinicalStaff ? (
+            <>
+              <Suspense fallback={<span aria-hidden="true" className="size-10 rounded-lg bg-blue-50" />}><ClinicalAccountMenu /></Suspense>
+            </>
+          ) : isAuthenticated ? (
             <Suspense fallback={<span aria-hidden="true" className="size-10 rounded-lg bg-blue-50" />}>
               <PatientAccountDropdown key={state} isPreview={isPreview} isLoggingOut={isLoggingOut} onLogout={() => void handleLogout()} />
             </Suspense>

@@ -136,7 +136,6 @@ export function ResourceListView({ kind, items, departments, specialties, staff,
     });
   }, [items, query, status, kind, specialtyFilter]);
 
-  const departmentName = (id?: number) => departments.find((item) => item.id === id)?.name ?? 'Chưa phân khoa';
   const departmentHeadNames = (departmentId: number) => staff
     .filter((item) => item.active && item.departmentId === departmentId && item.roles.includes('DEPARTMENT_HEAD'))
     .map((item) => item.fullName);
@@ -243,13 +242,13 @@ export function ResourceListView({ kind, items, departments, specialties, staff,
 
         {kind === 'staff' && (
           <table className="min-w-[1020px] w-full text-left text-sm">
-            <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Nhân viên</th><th className="px-4 py-3">Vai trò</th><th className="px-4 py-3">Khoa / Chức danh</th><th className="px-4 py-3">Email cơ quan</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
+            <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Nhân viên</th><th className="px-4 py-3">Vai trò</th><th className="px-4 py-3">Chuyên khoa / Chức danh</th><th className="px-4 py-3">Email cơ quan</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {(filteredItems as StaffAccount[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
                   <td className="px-5 py-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xs font-extrabold text-blue-700">{item.fullName.split(' ').slice(-2).map((word) => word[0]).join('')}</div><div><p className="font-bold text-slate-900">{item.fullName}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.staffCode}</p></div></div></td>
                   <td className="px-4 py-4"><div className="flex max-w-xs flex-wrap gap-1.5">{item.roles.map((role) => <span className="rounded-md bg-violet-50 px-2 py-1 text-xs font-bold text-violet-700" key={role}>{STAFF_ROLE_LABELS[role]}</span>)}</div></td>
-                  <td className="px-4 py-4"><p className="font-medium text-slate-700">{departmentName(item.departmentId)}</p><p className="mt-1 text-xs text-slate-500">{item.rankName || 'Không có chức danh bác sĩ'}</p></td>
+                  <td className="px-4 py-4"><p className="font-medium text-slate-700">{specialties.find(specialty => specialty.specialtyId === item.specialtyId)?.name ?? 'Chưa gán chuyên khoa'}</p><p className="mt-1 text-xs text-slate-500">{item.rankName || 'Không có chức danh bác sĩ'}</p></td>
                   <td className="px-4 py-4 font-medium text-slate-700">{item.email}</td>
                   <td className="px-4 py-4"><StaffStatusBadge status={item.status} /></td>
                   <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.fullName}`} onClick={() => onEdit('staff', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><span className="inline-flex flex-col items-end gap-1"><Toggle active={item.active} disabled={item.status === 'DEACTIVATED' || item.roles.includes('HOSPITAL_ADMIN')} label={`Đổi trạng thái ${item.fullName}`} onClick={() => void onToggle('staff', item.id)} />{item.roles.includes('HOSPITAL_ADMIN') && <span className="max-w-48 text-right text-xs text-slate-500">Không được khóa hoặc vô hiệu hóa tài khoản quản trị cơ sở.</span>}</span></div></td>

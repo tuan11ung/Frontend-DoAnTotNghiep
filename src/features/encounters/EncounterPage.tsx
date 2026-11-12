@@ -1,5 +1,7 @@
 'use client';
 
+import { AccountName } from '@/src/shared/components/layout/AccountName';
+
 import { useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronRight, Flag, Plus, X } from 'lucide-react';
 import { encounterTabs, icdCatalog, initialServices } from './data/encounter-demo';
@@ -33,7 +35,7 @@ export function EncounterPage() {
     setNotice('Đã cập nhật kết quả giả lập.');
   }
   return <div className="min-h-screen bg-[#f6f8fc] text-[13px] text-slate-800">
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 sm:px-6"><div className="flex min-w-0 items-center gap-3"><span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-medblue-brand text-white"><Plus strokeWidth={4} className="h-5 w-5" /></span><span className="text-[17px] font-extrabold text-slate-900">MedConnect</span><span className="hidden text-xs text-slate-500 sm:inline">/ Không gian khám bệnh</span></div><div className="flex shrink-0 items-center gap-3"><span className="hidden text-xs text-slate-500 md:inline">Phòng 203 · Nội tổng quát</span><span className="flex h-8 w-8 items-center justify-center rounded-full bg-medblue-100 text-xs font-extrabold text-medblue-700">BS</span><b className="hidden text-xs min-[420px]:inline">BS. Trần Minh</b></div></header>
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 sm:px-6"><div className="flex min-w-0 items-center gap-3"><span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-medblue-brand text-white"><Plus strokeWidth={4} className="h-5 w-5" /></span><span className="text-[17px] font-extrabold text-slate-900">MedConnect</span><span className="hidden text-xs text-slate-500 sm:inline">/ Không gian khám bệnh</span></div><div className="flex shrink-0 items-center gap-3"><span className="hidden text-xs text-slate-500 md:inline">Phòng 203 · Nội tổng quát</span><span className="flex h-8 w-8 items-center justify-center rounded-full bg-medblue-100 text-xs font-extrabold text-medblue-700">BS</span><b className="hidden text-xs min-[420px]:inline"><AccountName fallback="Bác sĩ" /></b></div></header>
     <main className="mx-auto max-w-[1440px] p-3 sm:px-6 sm:py-5">
       <nav aria-label="Breadcrumb" className="mb-3 flex flex-wrap items-center gap-1 text-xs text-slate-500"><span>Quản lý khám bệnh</span><ChevronRight className="h-3 w-3" /><button type="button" className="cursor-pointer rounded-lg px-1 py-1 hover:text-medblue-700 focus-visible:outline-2 focus-visible:outline-medblue-brand" onClick={() => setQueueOpen(true)}>Danh sách chờ</button><ChevronRight className="h-3 w-3" /><span aria-current="page" className="font-bold text-slate-800">Chi tiết lượt khám</span></nav>
       <section aria-label="Thông tin bệnh nhân" className="mb-4 rounded-[14px] border border-slate-200 bg-white px-5 py-[18px] shadow-sm md:sticky md:top-16 md:z-20">

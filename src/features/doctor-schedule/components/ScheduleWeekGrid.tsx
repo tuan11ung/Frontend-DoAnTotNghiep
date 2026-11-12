@@ -1,6 +1,6 @@
 import { Coffee, Moon, Sun } from 'lucide-react';
 import { doctorScheduleDateLabel } from '../doctor-schedule-format';
-import { DOCTOR_SCHEDULE_SESSIONS } from '../data/doctor-schedule-demo';
+import { DOCTOR_SCHEDULE_SESSIONS } from '../doctor-schedule.constants';
 import type { DoctorScheduleShift } from '../doctor-schedule.types';
 import { ScheduleShiftCard } from './ScheduleShiftCard';
 
@@ -38,7 +38,7 @@ export function ScheduleWeekGrid({ days, shifts, today, selectedId, onSelect }: 
               <th className="border-b border-r border-slate-100 bg-slate-50/70 px-3 py-5 align-top last:border-b-0" scope="row">
                 {session.id === 'MORNING' ? <Sun aria-hidden="true" className="mb-2.5 h-5 w-5 text-amber-500" /> : <Moon aria-hidden="true" className="mb-2.5 h-5 w-5 text-blue-400" />}
                 <span className="block text-xs font-bold text-slate-700">{session.label}</span>
-                <span className="mt-2 block text-[10px] font-medium leading-5 text-slate-400">{session.hours.split(' – ').map(time => <span className="block" key={time}>{time}</span>)}</span>
+                <span className="mt-2 block text-[10px] font-medium leading-5 text-slate-400">Theo phân công</span>
               </th>
               {days.map((day, index) => {
                 const assigned = shifts.filter(shift => shift.date === day && shift.session === session.id);

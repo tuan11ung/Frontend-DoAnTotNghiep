@@ -74,7 +74,7 @@ function initialForm(kind: EntityKind, entity?: AdminEntity): FormState {
     return {
       staffCode: item?.staffCode ?? '', fullName: item?.fullName ?? '', email: item?.email ?? '',
       gender: item?.gender ?? 'MALE', roles: item?.roles ?? ['DOCTOR'],
-      departmentId: String(item?.departmentId ?? ''), specialtyId: String(item?.specialtyId ?? ''), rankId: String(item?.rankId ?? ''), initialPassword: '',
+      specialtyId: String(item?.specialtyId ?? ''), rankId: String(item?.rankId ?? ''), initialPassword: '',
     };
   }
   const item = entity as MedicalService | undefined;
@@ -88,7 +88,6 @@ function initialForm(kind: EntityKind, entity?: AdminEntity): FormState {
 export function EntityEditorModal({
   kind,
   entity,
-  departments,
   specialtyCatalog,
   specialties,
   rankCatalog,
@@ -155,7 +154,6 @@ export function EntityEditorModal({
           email: String(form.email).trim(),
           gender: form.gender as StaffAccount['gender'],
           roles,
-          departmentId: form.departmentId ? Number(form.departmentId) : undefined,
           specialtyId: form.specialtyId ? Number(form.specialtyId) : undefined,
           rankId: form.rankId ? Number(form.rankId) : undefined,
           status: (entity as StaffAccount | undefined)?.status ?? 'ACTIVE',
@@ -226,11 +224,9 @@ export function EntityEditorModal({
               <>
                 <label><span className={labelClass}>Email cơ quan <span className="text-rose-600">*</span></span><input className={inputClass} maxLength={255} onChange={(event) => update('email', event.target.value)} required type="email" value={String(form.email)} /><span className="mt-1 block text-xs text-slate-400">Backend không chấp nhận địa chỉ @gmail.com.</span></label>
                 <label><span className={labelClass}>Giới tính <span className="text-rose-600">*</span></span><select className={inputClass} onChange={(event) => update('gender', event.target.value)} value={String(form.gender)}><option value="MALE">Nam</option><option value="FEMALE">Nữ</option><option value="OTHER">Khác</option></select></label>
-                <label><span className={labelClass}>Khoa công tác</span><select className={inputClass} onChange={(event) => update('departmentId', event.target.value)} value={String(form.departmentId)}><option value="">Không phân khoa</option>{departments.filter((item) => item.active).map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
                 <label><span className={labelClass}>Chức danh bác sĩ</span><select className={inputClass} onChange={(event) => update('rankId', event.target.value)} value={String(form.rankId)}><option value="">Không áp dụng</option>{rankCatalog.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.name}</option>)}</select></label>
                 <label><span className={labelClass}>Chuyên khoa bác sĩ{(form.roles as string[]).includes('DOCTOR') && ' *'}</span><select name="specialtyId" className={inputClass} onChange={(event) => update('specialtyId', event.target.value)} required={(form.roles as string[]).includes('DOCTOR')} value={String(form.specialtyId)}><option value="">Chọn chuyên khoa</option>{specialties.filter((item) => item.active || item.specialtyId === Number(form.specialtyId)).map((item) => <option disabled={!item.active} key={item.specialtyId} value={item.specialtyId}>{item.name}{!item.active && ' (tạm ngừng)'}</option>)}</select></label>
                 <fieldset className="sm:col-span-2"><legend className={labelClass}>Vai trò <span className="text-rose-600">*</span></legend><div className="grid gap-2 sm:grid-cols-2">{STAFF_ROLES.map((role) => <label className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm font-medium text-slate-700" key={role}><input checked={(form.roles as string[]).includes(role)} className="h-4 w-4 accent-blue-700" onChange={() => toggleRole(role)} type="checkbox" />{STAFF_ROLE_LABELS[role]}</label>)}</div></fieldset>
-                <p className="sm:col-span-2 rounded-lg bg-blue-50 px-3 py-2 text-xs leading-5 text-blue-800">Để phân công trưởng khoa, chọn vai trò “Trưởng khoa” và chọn khoa công tác tương ứng.</p>
                 {!isEditing && <label className="sm:col-span-2"><span className={labelClass}>Mật khẩu ban đầu <span className="text-rose-600">*</span></span><input autoComplete="new-password" className={inputClass} minLength={8} onChange={(event) => update('initialPassword', event.target.value)} pattern="(?=.*[A-Za-z])(?=.*\d).{8,}" required type="password" value={String(form.initialPassword)} /><span className="mt-1 block text-xs text-slate-400">Tối thiểu 8 ký tự, có ít nhất một chữ cái và một chữ số.</span></label>}
               </>
             )}

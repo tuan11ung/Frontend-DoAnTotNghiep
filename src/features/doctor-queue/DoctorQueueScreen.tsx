@@ -1,19 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { ClinicLogoutButton } from '@/src/features/auth/components/ClinicLogoutButton';
-import { DoctorHeader } from './components/DoctorHeader';
 import { DoctorQueueWorkspaceLive } from './DoctorQueueWorkspaceLive';
 import { useDoctorAccess } from './hooks/use-doctor-access';
-import type { DoctorQueueData } from './types';
 
-export function DoctorQueueScreen({ data }: { data: Pick<DoctorQueueData, 'doctor' | 'facility'> }) {
+export function DoctorQueueScreen() {
   const access = useDoctorAccess();
 
   return (
     <div className="min-h-screen bg-[#f4f7f7] text-slate-800">
       <div className="min-w-0">
-        <DoctorHeader activePage="queue" doctor={data.doctor} actions={<ClinicLogoutButton />} />
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10">
           <div className="mx-auto max-w-[1500px] space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">

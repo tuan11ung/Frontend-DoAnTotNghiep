@@ -21,6 +21,7 @@ export interface DoctorQueueRoomResponse {
 }
 
 export interface DoctorQueuePatientResponse {
+  patientId: number;
   encounterId: number;
   encounterCode: string;
   queueNumber: number;

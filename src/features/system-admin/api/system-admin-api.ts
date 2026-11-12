@@ -1,4 +1,4 @@
-import { SYSTEM_PAGEABLE, systemAdminCommand, systemAdminDownload, systemAdminRequest, type SystemPageable } from './system-admin-client';
+import { SYSTEM_PAGEABLE, systemAdminDownload, systemAdminRequest, type SystemPageable } from './system-admin-client';
 import type {
   ArticleItem,
   HospitalDetail,
@@ -105,6 +105,3 @@ export const searchSystemLogs = (filters: SystemLogFilters = {}, pageable: Syste
   systemAdminRequest<PageResponse<SystemLogItem>>('system-logs/search', { ...filters, pageable: { ...pageable, sortDirection: 'DESC' } });
 export const exportSystemLogs = (filters: SystemLogFilters = {}) =>
   systemAdminDownload('system-logs/export', filters);
-
-export const logoutSystemAdmin = (refreshToken: string, allSessions = false) =>
-  systemAdminCommand('auth/logout', { refreshToken, allSessions });

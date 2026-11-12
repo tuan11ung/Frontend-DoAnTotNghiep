@@ -1,3 +1,4 @@
+import { AccountName } from '@/src/shared/components/layout/AccountName';
 import Link from 'next/link';
 import { Building2, ChevronRight, HeartPulse, ListOrdered, Stethoscope } from 'lucide-react';
 import type { DoctorQueueData } from '../types';
@@ -29,7 +30,7 @@ export function DoctorSidebar({ doctor, facility, showEmergencyLookup = false }:
         )}
       </nav>
       <div className="border-t border-white/10 p-5">
-        <div className="flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100/10 text-emerald-100"><Stethoscope aria-hidden="true" className="h-5 w-5" /></span><div><p className="text-sm font-bold">BS. {doctor.name}</p><p className="mt-1 text-xs text-emerald-100/55">Bác sĩ · {doctor.specialty}</p></div></div>
+        <div className="flex items-center gap-3"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100/10 text-emerald-100"><Stethoscope aria-hidden="true" className="h-5 w-5" /></span><div><p className="text-sm font-bold"><AccountName fallback="Bác sĩ" /></p><p className="mt-1 text-xs text-emerald-100/55">Bác sĩ · {doctor.specialty}</p></div></div>
       </div>
     </aside>
   );

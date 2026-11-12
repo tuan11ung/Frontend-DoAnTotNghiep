@@ -29,7 +29,6 @@ const ENDPOINTS: Record<string, string> = {
   'articles/upload-thumbnail': '/system/articles/upload-thumbnail',
   'system-logs/search': '/system/system-logs/search',
   'system-logs/export': '/system/system-logs/export',
-  'auth/logout': '/system/auth/logout',
 };
 
 export async function POST(

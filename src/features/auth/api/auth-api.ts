@@ -1,3 +1,4 @@
+import { getStoredAuthSession, type AuthSession } from '../utils/auth-storage';
 import type { LoginRequest, LoginSession } from '../login/login.types';
 
 const INVALID_LOGIN_MESSAGE = 'Thông tin đăng nhập không chính xác. Vui lòng kiểm tra lại.';
@@ -14,7 +15,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export async function loginPatient({ login, password }: LoginRequest): Promise<LoginSession> {
+export async function loginAccount({ login, password }: LoginRequest): Promise<LoginSession> {
   let response: Response;
 
   try {
@@ -47,5 +48,16 @@ export async function loginPatient({ login, password }: LoginRequest): Promise<L
     throw new LoginApiError(message);
   }
 
-  return { accessToken: data.accessToken, refreshToken: data.refreshToken };
+  return { accessToken: data.accessToken, refreshToken: data.refreshToken, fullName: typeof data.fullName === 'string' ? data.fullName.trim() || undefined : undefined };
+}
+
+export async function logoutAccount(session: AuthSession | null = getStoredAuthSession(), allSessions = false): Promise<void> {
+  if (!session?.accessToken) return;
+  const response = await fetch('/api/auth/logout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.accessToken}` },
+    body: JSON.stringify({ refreshToken: session.refreshToken, allSessions }),
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error('Không thể thu hồi phiên đăng nhập trên máy chủ.');
 }

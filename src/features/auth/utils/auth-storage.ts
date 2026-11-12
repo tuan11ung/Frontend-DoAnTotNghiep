@@ -6,6 +6,7 @@ export interface AuthSession {
   accessToken: string;
   refreshToken: string;
   roles: string[];
+  fullName?: string;
   hospitalId?: number;
   staffId?: number;
   departmentType?: 'CLINICAL' | 'PARACLINICAL' | 'EMERGENCY' | 'ADMINISTRATIVE';
@@ -36,7 +37,7 @@ function decodeJwtPayload(token: string): JwtPayload | null {
   }
 }
 
-export function createAuthSession(accessToken: string, refreshToken: string): AuthSession {
+export function createAuthSession(accessToken: string, refreshToken: string, fullName?: string): AuthSession {
   const payload = decodeJwtPayload(accessToken);
   const roles = Array.isArray(payload?.roles)
     ? payload.roles.filter((role): role is string => typeof role === 'string')
@@ -46,6 +47,7 @@ export function createAuthSession(accessToken: string, refreshToken: string): Au
     accessToken,
     refreshToken,
     roles,
+    fullName: typeof fullName === 'string' ? fullName.trim() || undefined : undefined,
     hospitalId: typeof payload?.hid === 'number' ? payload.hid : undefined,
     staffId: typeof payload?.sid === 'number' ? payload.sid : undefined,
     departmentType: isDepartmentType(payload?.dpt) ? payload.dpt : undefined,
@@ -65,7 +67,7 @@ export function getStoredAuthSession(): AuthSession | null {
       if (typeof parsedAuth.refreshToken !== 'string' || !parsedAuth.refreshToken) continue;
 
       if (!Array.isArray(parsedAuth.roles)) {
-        return createAuthSession(parsedAuth.accessToken, parsedAuth.refreshToken);
+        return createAuthSession(parsedAuth.accessToken, parsedAuth.refreshToken, parsedAuth.fullName);
       }
 
       const tokenSession = createAuthSession(parsedAuth.accessToken, parsedAuth.refreshToken);
@@ -73,6 +75,7 @@ export function getStoredAuthSession(): AuthSession | null {
       return {
         accessToken: parsedAuth.accessToken,
         refreshToken: parsedAuth.refreshToken,
+        fullName: typeof parsedAuth.fullName === 'string' ? parsedAuth.fullName.trim() || undefined : undefined,
         roles: parsedAuth.roles.filter((role): role is string => typeof role === 'string'),
         hospitalId: typeof parsedAuth.hospitalId === 'number' ? parsedAuth.hospitalId : tokenSession.hospitalId,
         staffId: typeof parsedAuth.staffId === 'number' ? parsedAuth.staffId : tokenSession.staffId,
@@ -139,4 +142,20 @@ export function clearPatientSession(): void {
 
 export function hasStoredPatientSession() {
   return getStoredAuthSession()?.roles.includes('PATIENT') ?? false;
+}
+
+/** Update only the matching current session, keeping its original storage choice. */
+export function updateStoredAccountName(accessToken: string, fullName: string): void {
+  if (typeof window === 'undefined' || !fullName.trim() || getStoredAuthSession()?.accessToken !== accessToken) return;
+  for (const storage of [window.localStorage, window.sessionStorage]) {
+    const raw = storage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) continue;
+    try {
+      const stored = JSON.parse(raw) as Partial<AuthSession>;
+      if (stored.accessToken !== accessToken) continue;
+      storage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ ...stored, fullName: fullName.trim() }));
+      window.dispatchEvent(new StorageEvent('storage', { key: AUTH_STORAGE_KEY }));
+      return;
+    } catch { continue; }
+  }
 }

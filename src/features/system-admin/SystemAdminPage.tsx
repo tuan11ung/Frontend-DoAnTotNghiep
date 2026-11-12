@@ -1,10 +1,13 @@
 'use client';
 
+import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
+
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, CalendarDays, LoaderCircle, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { logoutAccount } from '../auth/api/auth-api';
 import { clearStoredAuthSession, getStoredAuthSession } from '../auth/auth-storage';
 import {
   activateHospital,
@@ -15,7 +18,6 @@ import {
   exportSystemLogs,
   getArticleDetail,
   getHospitalDetail,
-  logoutSystemAdmin,
   saveArticle,
   saveIcd10,
   saveIngredient,
@@ -414,9 +416,8 @@ function SystemAdminLiveScreen() {
   };
 
   const logout = async () => {
-    const session = getStoredAuthSession();
     try {
-      if (session?.refreshToken) await logoutSystemAdmin(session.refreshToken);
+      await logoutAccount();
     } catch {
       // Phiên phía client vẫn phải được xóa nếu Backend không phản hồi.
     } finally {
@@ -440,7 +441,7 @@ function SystemAdminLiveScreen() {
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-2 text-xs font-semibold text-slate-500 md:flex"><CalendarDays className="h-4 w-4" /><span className="capitalize">{today}</span></div>
               <button aria-label="Thông báo" className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50" type="button"><Bell className="h-4 w-4" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" /></button>
-              <div className="hidden h-10 items-center gap-2 rounded-xl bg-emerald-50 px-3 text-xs font-bold text-emerald-700 sm:flex"><ShieldCheck className="h-4 w-4" /> SUPER_ADMIN</div>
+              <ClinicalAccountMenu />
             </div>
           </div>
         </header>

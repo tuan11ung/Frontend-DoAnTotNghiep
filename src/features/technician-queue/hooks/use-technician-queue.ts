@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { AUTH_STORAGE_KEY, getStoredAuthSession, type AuthSession } from '@/src/features/auth/utils/auth-storage';
+import { DISPLAY_TIME_ZONE } from '@/src/shared/utils/date-format';
 import { technicianApi, TECHNICIAN_ROLE } from '../api/technician-api';
 import type { OrderedService, TechnicianMedicalService, TechnicianPage, TechnicianQueueFilters } from '../technician-api.types';
 
@@ -24,8 +25,17 @@ export function technicianErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Không thể xử lý yêu cầu. Vui lòng thử lại.';
 }
 
+function defaultQueueFilters(): TechnicianQueueFilters {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: DISPLAY_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date());
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value;
+  const today = `${part('year')}-${part('month')}-${part('day')}`;
+  return { status: 'ALL', serviceId: '', fromDate: today, toDate: today, page: 0 };
+}
+
 export function useTechnicianQueue() {
-  const [filters, setFilters] = useState<TechnicianQueueFilters>({ status: 'ORDERED', serviceId: '', fromDate: '', toDate: '', page: 0 });
+  const [filters, setFilters] = useState<TechnicianQueueFilters>(defaultQueueFilters);
   const [refreshVersion, setRefreshVersion] = useState(0);
   const [catalogVersion, setCatalogVersion] = useState(0);
   const [catalog, setCatalog] = useState<{ data: TechnicianMedicalService[]; error: string; version: number }>({ data: [], error: '', version: -1 });
@@ -76,7 +86,7 @@ export function useTechnicianQueue() {
   return {
     filters,
     changeFilters: (next: Partial<TechnicianQueueFilters>) => setFilters(current => ({ ...current, ...next, page: next.page ?? 0 })),
-    resetFilters: () => setFilters({ status: 'ORDERED', serviceId: '', fromDate: '', toDate: '', page: 0 }),
+    resetFilters: () => setFilters(defaultQueueFilters()),
     data: current && !invalidDates ? snapshot.data : null,
     loading: !invalidDates && (!current || !snapshot.data && !snapshot.error),
     refreshing: current && snapshot.version !== refreshVersion,

@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { DoctorQueueScreen } from '@/src/features/doctor-queue/DoctorQueueScreen';
-import { DOCTOR_QUEUE_SHELL } from '@/src/features/doctor-queue/data/doctor-queue-shell';
 
 export const metadata: Metadata = {
   title: 'Hàng chờ phòng khám | MedConnect',
@@ -8,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function DoctorQueuePage() {
-  return <DoctorQueueScreen data={DOCTOR_QUEUE_SHELL} />;
+  return <DoctorQueueScreen />;
 }

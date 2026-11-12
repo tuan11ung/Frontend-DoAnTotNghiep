@@ -1,3 +1,4 @@
+import { AccountName } from '@/src/shared/components/layout/AccountName';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { CalendarDays, ChevronRight, HeartPulse, ListOrdered } from 'lucide-react';
@@ -32,7 +33,7 @@ export function DoctorHeader({ doctor, activePage, actions }: DoctorHeaderProps)
           <div className="flex items-center gap-2.5 md:border-l md:border-slate-200 md:pl-5">
             <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-xs font-extrabold text-blue-700">{doctor.initials}</span>
             <div className="hidden xl:block">
-              <p className="text-xs font-bold text-slate-800">BS. {doctor.name}</p>
+              <p className="text-xs font-bold text-slate-800"><AccountName fallback="Bác sĩ" /></p>
               <p className="mt-1 text-[10px] text-slate-400">{doctor.specialty}</p>
             </div>
           </div>

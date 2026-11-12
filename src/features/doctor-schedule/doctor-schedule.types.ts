@@ -8,5 +8,8 @@ export interface DoctorScheduleShift {
   room: string;
   location: string;
   specialty: string;
-  note: string;
+  hospitalName: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
 }
