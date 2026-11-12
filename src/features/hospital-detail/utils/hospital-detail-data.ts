@@ -1,4 +1,5 @@
 import { HospitalDetail } from '../types';
+import { SEARCH_FACILITIES_DATA } from '@/src/features/search/data/search-facilities';
 
 export const NHI_DONG_2_DETAIL: HospitalDetail = {
   id: 'hosp-1',
@@ -189,6 +190,33 @@ const HOSPITAL_DETAILS_MAP: Record<string, Partial<HospitalDetail>> = {
 export function getHospitalDetailById(id: string): HospitalDetail {
   const custom = HOSPITAL_DETAILS_MAP[id];
   if (!custom) {
+    const facility = SEARCH_FACILITIES_DATA.find(item => item.id === id && item.type === 'hospital');
+    if (facility) return {
+      id: facility.id,
+      name: facility.name,
+      tierBadge: facility.tierBadge || 'Cơ sở y tế',
+      slogan: 'Thông tin giới thiệu minh họa trên MedConnect',
+      bedsCount: 'Đang cập nhật',
+      address: facility.address,
+      mainGate: facility.address,
+      districtCity: [facility.district, facility.city].filter(Boolean).join(', '),
+      mapImageUrl: '/images/home/medical-campus.svg',
+      googleMapQuery: `${facility.name}, ${facility.address}`,
+      feeRange: facility.feeRange,
+      introP1: `${facility.name} nằm trong danh mục cơ sở y tế trên MedConnect.`,
+      introP2: 'Thông tin đang sử dụng dữ liệu mẫu. Vui lòng liên hệ cơ sở để xác nhận lịch khám và dịch vụ.',
+      expandableIntro: [],
+      specialties: facility.specialties,
+      featuredServices: facility.specialties,
+      workingHours: [{ dayLabel: 'Giờ làm việc', timeRange: facility.workingHours }],
+      bookingNotice: 'Vui lòng chọn chuyên khoa và lịch khám phù hợp.',
+      cancellationPolicy: 'Liên hệ cơ sở để xác nhận chính sách hủy lịch.',
+      hospitalHotline: facility.phone,
+      medconnectHotline: NHI_DONG_2_DETAIL.medconnectHotline,
+      insurancePolicy: { description: facility.insuranceBadge, acceptedBadges: facility.hasInsurance ? ['Hỗ trợ BHYT'] : [] },
+      gallery: [{ id: `${id}-preview`, url: '/images/home/medical-campus.svg', title: facility.name, subtitle: 'Ảnh minh họa', alt: `Minh họa ${facility.name}`, isMain: true }],
+      servicesList: facility.specialties.map((specialty, index) => ({ id: `${id}-service-${index}`, title: `Khám ${specialty}`, location: 'Liên hệ cơ sở để biết phòng khám', description: 'Dịch vụ trong danh mục minh họa.', price: facility.feeRange, iconType: 'default' })),
+    };
     return {
       ...NHI_DONG_2_DETAIL,
       id,
