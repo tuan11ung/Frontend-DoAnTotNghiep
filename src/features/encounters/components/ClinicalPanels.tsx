@@ -1,6 +1,6 @@
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { useState } from 'react';
-import { Check, X } from 'lucide-react';
+import { Check, ChevronDown, Search, X } from 'lucide-react';
 import {
   drugCatalog,
   icdCatalog,
@@ -21,32 +21,41 @@ import {
 
 export function OverviewPanel() {
   return (
-    <div className="space-y-4">
-      <PanelHeading
-        title="Khám tổng quan"
-        description="Ghi nhận thông tin khám lâm sàng và dấu hiệu sinh tồn của bệnh nhân."
-      />
-      <EncounterSection title="Thông tin ca khám">
-        <EncounterField label="Lý do khám" value="Đau tức ngực, hồi hộp" />
-        <EncounterField
-          label="Bệnh sử / triệu chứng hiện tại"
-          value="Đau tức ngực từng cơn, hồi hộp, mệt mỏi."
-          multiline
-        />
-      </EncounterSection>
-      <EncounterSection title="Dấu hiệu sinh tồn">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {vitalFields.map((field) => (
-            <EncounterField
-              key={field.id}
-              label={field.label}
-              value={field.value}
-              inputMode={field.id === 'blood-pressure' ? 'text' : 'decimal'}
-            />
-          ))}
-        </div>
-      </EncounterSection>
-    </div>
+    <details open className="group rounded-xl border border-slate-200">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 py-3 focus-visible:outline-2 focus-visible:outline-medblue-brand [&::-webkit-details-marker]:hidden">
+        <span className="text-lg font-extrabold">Khám tổng quan</span>
+        <span className="flex shrink-0 items-center gap-2 text-xs font-bold text-medblue-700">
+          <span className="group-open:hidden">Mở rộng</span>
+          <span className="hidden group-open:inline">Thu gọn</span>
+          <ChevronDown aria-hidden="true" className="h-4 w-4 group-open:rotate-180" />
+        </span>
+      </summary>
+      <div className="space-y-4 px-4 pb-4">
+        <p className="text-[13px] leading-6 text-slate-500">
+          Ghi nhận thông tin khám lâm sàng và dấu hiệu sinh tồn của bệnh nhân.
+        </p>
+        <EncounterSection title="Thông tin ca khám">
+          <EncounterField label="Lý do khám" value="Đau tức ngực, hồi hộp" />
+          <EncounterField
+            label="Khám thực thể"
+            value="Đau tức ngực từng cơn, hồi hộp, mệt mỏi."
+            multiline
+          />
+        </EncounterSection>
+        <EncounterSection title="Dấu hiệu sinh tồn">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {vitalFields.map((field) => (
+              <EncounterField
+                key={field.id}
+                label={field.label}
+                value={field.value}
+                inputMode={field.id === 'blood-pressure' ? 'text' : 'decimal'}
+              />
+            ))}
+          </div>
+        </EncounterSection>
+      </div>
+    </details>
   );
 }
 
@@ -108,6 +117,35 @@ export function HistoryPanel({
   );
 }
 
+const lookupGridClass =
+  'grid min-w-0 items-start gap-4 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]';
+const lookupScrollClass =
+  'h-[300px] space-y-2 overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 focus-visible:outline-2 focus-visible:outline-medblue-brand md:h-[380px]';
+
+function SearchPlaceholder({
+  hasQuery,
+  subject,
+}: {
+  hasQuery: boolean;
+  subject: string;
+}) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-xs text-slate-500">
+      <Search aria-hidden="true" className="mb-1 h-7 w-7 text-slate-400" />
+      <strong className="text-slate-600">
+        {hasQuery
+          ? `Không tìm thấy ${subject} phù hợp`
+          : 'Kết quả tìm kiếm sẽ hiển thị ở đây'}
+      </strong>
+      <span className="leading-6">
+        {hasQuery
+          ? 'Thử tìm kiếm bằng từ khóa khác.'
+          : `Nhập từ khóa ${subject} vào ô tìm kiếm phía trên.`}
+      </span>
+    </div>
+  );
+}
+
 export function DiagnosisPanel({
   diagnoses,
   onChange,
@@ -131,7 +169,7 @@ export function DiagnosisPanel({
     <div className="space-y-4">
       <PanelHeading
         title="Chẩn đoán"
-        description="Tìm và chọn mã ICD-10, phân biệt chẩn đoán chính và chẩn đoán kèm theo."
+        description="Tìm và chọn mã ICD-10 cho lượt khám."
       />
       <EncounterNotice>
         <div className="flex flex-wrap items-center gap-3">
@@ -139,89 +177,105 @@ export function DiagnosisPanel({
           <EncounterButton onClick={onResults}>Xem kết quả CLS</EncounterButton>
         </div>
       </EncounterNotice>
-      <div>
-        <label
-          htmlFor="icd-search"
-          className="mb-2 block text-[11px] font-bold"
-        >
-          Tìm theo mã ICD-10 hoặc tên bệnh
-        </label>
-        <input
-          id="icd-search"
-          name="icd-search"
-          className={controlClass}
-          placeholder="Nhập I10, R07.4, đau ngực..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        {matches.map((d) => (
-          <div
-            key={d.code}
-            className="mt-2 flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 text-xs"
+      <div className={lookupGridClass}>
+        <div className="min-w-0">
+          <label
+            htmlFor="icd-search"
+            className="mb-2 block text-[11px] font-bold"
           >
-            <span>
-              <b>{d.code}</b> · {d.name}
-            </span>
-            <EncounterButton
-              variant="light"
-              onClick={() => {
-                onChange([...diagnoses, d]);
-                setQuery('');
-              }}
-            >
-              + Chọn
-            </EncounterButton>
-          </div>
-        ))}
-        {query.trim() && !matches.length && (
-          <p className="mt-2 text-xs text-slate-500">
-            Không có mã ICD-10 phù hợp để thêm.
-          </p>
-        )}
-      </div>
-      <EncounterSection title="Chẩn đoán đã chọn">
-        {diagnoses.length ? (
-          diagnoses.map((d, i) => (
-            <div
-              key={d.code}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3"
-            >
-              <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs">
-                <EncounterBadge>
-                  {i === 0 ? 'Chính' : 'Kèm theo'}
-                </EncounterBadge>
-                <span>
+            Tìm theo mã ICD-10 hoặc tên bệnh
+          </label>
+          <input
+            id="icd-search"
+            name="icd-search"
+            className={controlClass}
+            placeholder="Nhập I10, R07.4, đau ngực..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <h3 className="my-3 flex items-center gap-2 text-[13px] font-extrabold">
+            Kết quả tìm kiếm{' '}
+            {query.trim() && (
+              <EncounterBadge>{matches.length} kết quả</EncounterBadge>
+            )}
+          </h3>
+          <div
+            key={query.trim()}
+            role="region"
+            aria-label="Kết quả tìm kiếm chẩn đoán"
+            tabIndex={0}
+            className={lookupScrollClass}
+          >
+            {matches.map((d) => (
+              <div
+                key={d.code}
+                className="flex min-w-0 items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-xs"
+              >
+                <span className="min-w-0 flex-1 leading-5 wrap-anywhere">
                   <b>{d.code}</b> · {d.name}
                 </span>
-              </div>
-              <div className="flex gap-2">
-                {i > 0 && (
-                  <EncounterButton
-                    onClick={() =>
-                      onChange([
-                        d,
-                        ...diagnoses.filter((item) => item.code !== d.code),
-                      ])
-                    }
-                  >
-                    Đặt làm chính
-                  </EncounterButton>
-                )}
                 <EncounterButton
-                  aria-label={`Xóa chẩn đoán ${d.code}`}
-                  onClick={() =>
-                    onChange(diagnoses.filter((item) => item.code !== d.code))
-                  }
+                  variant="light"
+                  onClick={() => {
+                    onChange([...diagnoses, d]);
+                    setQuery('');
+                  }}
                 >
-                  Xóa
+                  + Chọn
                 </EncounterButton>
               </div>
-            </div>
-          ))
-        ) : (
-          <EncounterEmpty>Chưa có chẩn đoán</EncounterEmpty>
-        )}
-      </EncounterSection>
+            ))}
+            {!matches.length && (
+              <SearchPlaceholder
+                hasQuery={Boolean(query.trim())}
+                subject="chẩn đoán"
+              />
+            )}
+          </div>
+        </div>
+        <div className="min-w-0">
+          <h3 className="mb-3 flex min-h-6 items-center gap-2 text-[13px] font-extrabold">
+            Chẩn đoán đã chọn{' '}
+            <EncounterBadge>{diagnoses.length}</EncounterBadge>
+          </h3>
+          <div
+            role="region"
+            aria-label="Chẩn đoán đã chọn"
+            tabIndex={0}
+            className={lookupScrollClass}
+          >
+            {diagnoses.length ? (
+              diagnoses.map((d) => (
+                <div
+                  key={d.code}
+                  className="flex min-w-0 items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3"
+                >
+                  <div className="min-w-0 flex-1 text-xs leading-5 wrap-anywhere">
+                    <span>
+                      <b>{d.code}</b> · {d.name}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <EncounterButton
+                      variant="danger"
+                      aria-label={`Xóa chẩn đoán ${d.code}`}
+                      onClick={() =>
+                        onChange(
+                          diagnoses.filter((item) => item.code !== d.code),
+                        )
+                      }
+                    >
+                      Xóa
+                    </EncounterButton>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <EncounterEmpty>Chưa có chẩn đoán</EncounterEmpty>
+            )}
+          </div>
+        </div>
+      </div>
       <EncounterField
         label="Ghi chú, diễn giải và kết luận"
         placeholder="Nhập kết luận lâm sàng và diễn giải..."
@@ -257,113 +311,141 @@ export function PrescriptionPanel({
         Bệnh nền: Tăng huyết áp, Đái tháo đường type 2 · HA 145/90 mmHg · Mạch
         88 lần/phút · SpO₂ 98% · Nhiệt độ 36,8°C · 70 kg.
       </EncounterNotice>
-      <EncounterSection title="Thêm thuốc vào đơn">
-        <label htmlFor="drug-search" className="block text-[11px] font-bold">
-          Tìm thuốc
-        </label>
-        <input
-          id="drug-search"
-          name="drug-search"
-          className={controlClass}
-          placeholder="Ví dụ: Amlodipin, Metformin..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        {matches.map((name) => (
-          <div
-            key={name}
-            className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 text-xs"
+      <div className={lookupGridClass}>
+        <div className="min-w-0">
+          <label
+            htmlFor="drug-search"
+            className="mb-2 block text-[11px] font-bold"
           >
-            <span>{name}</span>
-            <EncounterButton
-              variant="light"
-              disabled={drugs.some((d) => d.name === name)}
-              onClick={() => {
-                onChange([...drugs, { id: nextId, name }]);
-                setNextId(nextId + 1);
-                setQuery('');
-              }}
-            >
-              {drugs.some((d) => d.name === name) ? 'Đã thêm' : '+ Thêm'}
-            </EncounterButton>
-          </div>
-        ))}
-        {query.trim() && !matches.length && (
-          <p className="text-xs text-slate-500">
-            Không tìm thấy thuốc phù hợp.
-          </p>
-        )}
-      </EncounterSection>
-      <EncounterSection
-        title={
-          <>
-            Thuốc đã kê{' '}
-            <EncounterBadge tone="gray">{drugs.length}</EncounterBadge>
-          </>
-        }
-      >
-        {drugs.length ? (
-          drugs.map((drug, i) => (
-            <div
-              key={drug.id}
-              className="rounded-lg border border-slate-200 p-3"
-            >
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <strong className="text-xs">
-                  {i + 1}. {drug.name}
-                </strong>
+            Tìm thuốc
+          </label>
+          <input
+            id="drug-search"
+            name="drug-search"
+            className={controlClass}
+            placeholder="Ví dụ: Amlodipin, Metformin..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <h3 className="my-3 flex items-center gap-2 text-[13px] font-extrabold">
+            Kết quả tìm kiếm{' '}
+            {query.trim() && (
+              <EncounterBadge>{matches.length} kết quả</EncounterBadge>
+            )}
+          </h3>
+          <div
+            key={query.trim()}
+            role="region"
+            aria-label="Kết quả tìm kiếm thuốc"
+            tabIndex={0}
+            className={lookupScrollClass}
+          >
+            {matches.map((name) => (
+              <div
+                key={name}
+                className="flex min-w-0 items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white p-3 text-xs"
+              >
+                <span className="min-w-0 flex-1 leading-5 wrap-anywhere">
+                  {name}
+                </span>
                 <EncounterButton
-                  aria-label={`Xóa ${drug.name}`}
-                  onClick={() =>
-                    onChange(drugs.filter((d) => d.id !== drug.id))
-                  }
+                  variant="light"
+                  disabled={drugs.some((d) => d.name === name)}
+                  onClick={() => {
+                    onChange([...drugs, { id: nextId, name }]);
+                    setNextId(nextId + 1);
+                    setQuery('');
+                  }}
                 >
-                  <X className="h-3.5 w-3.5" />
-                  Xóa
+                  {drugs.some((d) => d.name === name) ? 'Đã thêm' : '+ Thêm'}
                 </EncounterButton>
               </div>
-              <div className="grid gap-3 sm:grid-cols-3">
-                <EncounterField label="Liều dùng" placeholder="Theo chỉ định" />
-                <div>
-                  <label
-                    htmlFor={`route-${drug.id}`}
-                    className="mb-2 block text-[11px] font-bold"
-                  >
-                    Đường dùng
-                  </label>
-                  <select
-                    id={`route-${drug.id}`}
-                    name={`route-${drug.id}`}
-                    className={controlClass}
-                  >
-                    <option>Uống</option>
-                    <option>Khác</option>
-                  </select>
+            ))}
+            {!matches.length && (
+              <SearchPlaceholder
+                hasQuery={Boolean(query.trim())}
+                subject="thuốc"
+              />
+            )}
+          </div>
+        </div>
+        <div className="min-w-0">
+          <h3 className="mb-3 flex min-h-6 items-center gap-2 text-[13px] font-extrabold">
+            Thuốc đã kê <EncounterBadge>{drugs.length}</EncounterBadge>
+          </h3>
+          <div
+            role="region"
+            aria-label="Thuốc đã kê"
+            tabIndex={0}
+            className={lookupScrollClass}
+          >
+            {drugs.length ? (
+              drugs.map((drug, i) => (
+                <div
+                  key={drug.id}
+                  className="min-w-0 rounded-lg border border-slate-200 bg-white p-3"
+                >
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <strong className="min-w-0 text-xs leading-5 wrap-anywhere">
+                      {i + 1}. {drug.name}
+                    </strong>
+                    <EncounterButton
+                      aria-label={`Xóa ${drug.name}`}
+                      onClick={() =>
+                        onChange(drugs.filter((d) => d.id !== drug.id))
+                      }
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      Xóa
+                    </EncounterButton>
+                  </div>
+                  <div className="grid gap-3 min-[480px]:grid-cols-2 xl:grid-cols-3">
+                    <EncounterField
+                      label="Liều dùng"
+                      placeholder="Theo chỉ định"
+                    />
+                    <div>
+                      <label
+                        htmlFor={`route-${drug.id}`}
+                        className="mb-2 block text-[11px] font-bold"
+                      >
+                        Đường dùng
+                      </label>
+                      <select
+                        id={`route-${drug.id}`}
+                        name={`route-${drug.id}`}
+                        className={controlClass}
+                      >
+                        <option>Uống</option>
+                        <option>Khác</option>
+                      </select>
+                    </div>
+                    <EncounterField label="Tần suất" placeholder="Lần/ngày" />
+                    <EncounterField
+                      label="Số ngày"
+                      placeholder="Số ngày"
+                      inputMode="decimal"
+                    />
+                    <EncounterField
+                      label="Số lượng"
+                      placeholder="Số viên"
+                      inputMode="decimal"
+                    />
+                    <EncounterField
+                      label="Hướng dẫn"
+                      placeholder="Trước/sau ăn..."
+                    />
+                  </div>
                 </div>
-                <EncounterField label="Tần suất" placeholder="Lần/ngày" />
-                <EncounterField
-                  label="Số ngày"
-                  placeholder="Số ngày"
-                  inputMode="decimal"
-                />
-                <EncounterField
-                  label="Số lượng"
-                  placeholder="Số viên"
-                  inputMode="decimal"
-                />
-                <EncounterField
-                  label="Hướng dẫn"
-                  placeholder="Trước/sau ăn..."
-                />
-              </div>
-            </div>
-          ))
-        ) : (
-          <EncounterEmpty>Chưa có thuốc trong đơn</EncounterEmpty>
-        )}
-      </EncounterSection>
+              ))
+            ) : (
+              <EncounterEmpty>Chưa có thuốc trong đơn</EncounterEmpty>
+            )}
+          </div>
+        </div>
+      </div>
       <EncounterField
-        label="Lời dặn và hướng dẫn dùng thuốc"
+        label="Hướng dẫn dùng thuốc"
         placeholder="Nhập lời dặn dành cho bệnh nhân..."
         multiline
       />

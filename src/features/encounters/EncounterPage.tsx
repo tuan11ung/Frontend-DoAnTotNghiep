@@ -51,15 +51,23 @@ export function EncounterPage() {
       <section aria-label="Chi tiết lượt khám" className="min-w-0 overflow-hidden rounded-[14px] border border-slate-200 bg-white">
         <div role="tablist" aria-label="Nội dung khám bệnh" className="flex gap-1 overflow-x-auto border-b border-slate-200 px-3 py-3">{encounterTabs.map((item, i) => <button key={item.id} ref={el => { tabRefs.current[i] = el; }} id={`tab-${item.id}`} type="button" role="tab" aria-selected={tab === item.id} aria-controls={`panel-${item.id}`} tabIndex={tab === item.id ? 0 : -1} onClick={() => switchTab(item.id)} onKeyDown={e => { let index = i; if (e.key === 'ArrowRight') index = (i + 1) % encounterTabs.length; else if (e.key === 'ArrowLeft') index = (i + encounterTabs.length - 1) % encounterTabs.length; else if (e.key === 'Home') index = 0; else if (e.key === 'End') index = encounterTabs.length - 1; else return; e.preventDefault(); switchTab(encounterTabs[index].id); tabRefs.current[index]?.focus(); }} className={`shrink-0 cursor-pointer rounded-lg px-3 py-2.5 text-xs font-bold whitespace-nowrap focus-visible:outline-2 focus-visible:outline-medblue-brand ${tab === item.id ? 'bg-medblue-50 text-medblue-700' : 'text-slate-500 hover:bg-slate-50'}`}>{item.label}</button>)}</div>
         <div className="min-h-[570px] p-4 sm:p-[23px]">{encounterTabs.map(item => <div key={item.id} id={`panel-${item.id}`} role="tabpanel" aria-labelledby={`tab-${item.id}`} tabIndex={0} hidden={tab !== item.id} className="outline-none focus-visible:ring-2 focus-visible:ring-medblue-200">
-          {item.id === 'overview' && <OverviewPanel />}
+          {item.id === 'overview' && (
+            <div className="space-y-6">
+              <OverviewPanel />
+              <OrdersPanel
+                services={services}
+                onChange={setServices}
+                onConfirm={confirmOrder}
+              />
+            </div>
+          )}
           {item.id === 'history' && <HistoryPanel notify={setNotice} />}
-          {item.id === 'cls' && <OrdersPanel services={services} onChange={setServices} onConfirm={confirmOrder} />}
           {item.id === 'results' && <ResultsPanel services={services} onSimulate={simulateResults} />}
           {item.id === 'diagnosis' && <DiagnosisPanel diagnoses={diagnoses} onChange={setDiagnoses} onResults={() => switchTab('results')} />}
           {item.id === 'rx' && <PrescriptionPanel drugs={drugs} onChange={setDrugs} />}
           {item.id === 'finish' && <SummaryPanel services={services} diagnoses={diagnoses} drugs={drugs} notify={setNotice} />}
         </div>)}</div>
-        {tab !== 'cls' && <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 sm:px-[22px]"><span className="text-[11px] text-slate-500">Bản xem trước · Dữ liệu giả lập, chưa lưu máy chủ</span><div className="flex flex-wrap gap-2"><EncounterButton variant="light" onClick={() => setQueueOpen(true)}><ArrowLeft className="h-3.5 w-3.5" />Danh sách bệnh nhân</EncounterButton><EncounterButton onClick={() => setNotice('Minh họa lưu nháp. Dữ liệu chỉ được giữ khi trang còn mở, chưa lưu lên máy chủ.')}>Lưu nháp</EncounterButton>{tab !== 'finish' && <EncounterButton variant="primary" onClick={() => switchTab(encounterTabs[encounterTabs.findIndex(item => item.id === tab) + 1].id)}>Tiếp tục<ArrowRight className="h-3.5 w-3.5" /></EncounterButton>}</div></footer>}
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 px-4 py-3 sm:px-[22px]"><span className="text-[11px] text-slate-500">Bản xem trước · Dữ liệu giả lập, chưa lưu máy chủ</span><div className="flex flex-wrap gap-2"><EncounterButton variant="light" onClick={() => setQueueOpen(true)}><ArrowLeft className="h-3.5 w-3.5" />Danh sách bệnh nhân</EncounterButton><EncounterButton onClick={() => setNotice('Minh họa lưu nháp. Dữ liệu chỉ được giữ khi trang còn mở, chưa lưu lên máy chủ.')}>Lưu nháp</EncounterButton>{tab !== 'finish' && <EncounterButton variant="primary" onClick={() => switchTab(encounterTabs[encounterTabs.findIndex(item => item.id === tab) + 1].id)}>Tiếp tục<ArrowRight className="h-3.5 w-3.5" /></EncounterButton>}</div></footer>
       </section>
     </main>
     {queueOpen && <PatientQueueDialog status={queueStatus} onClose={() => setQueueOpen(false)} onOpen={() => { setQueueOpen(false); switchTab('results'); }} notify={setNotice} />}
