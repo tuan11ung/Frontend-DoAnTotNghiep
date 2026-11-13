@@ -3,7 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, Building2, MapPin, Phone, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { HospitalItem } from '../types';
-import { MOCK_HOSPITALS } from '../data/booking-mock-data';
+import { MOCK_HOSPITALS } from '../utils/booking-mock-data';
+import { matchesHospital } from './hospital-search';
 
 interface HospitalSelectModalProps {
   isOpen: boolean;
@@ -31,10 +32,7 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
 
   const filteredHospitals = useMemo(() => {
     return MOCK_HOSPITALS.filter((h) => {
-      const matchQuery =
-        h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        h.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        h.code.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchQuery = matchesHospital(h, searchQuery);
 
       const matchTier =
         activeTier === 'all' ||
@@ -63,7 +61,7 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
           <div>
-            <h3 className="text-lg font-bold text-slate-900">Chọn cơ sở y tế tiếp nhận</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Chọn cơ sở y tế tiếp nhận</h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Lựa chọn cơ sở y tế đúng tuyến ban đầu hoặc có tiếp nhận thông tuyến điện tử.
             </p>
@@ -86,7 +84,8 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
               <Search className="w-4 h-4" />
             </span>
             <input
-              type="text"
+              type="search"
+              aria-label="Tìm cơ sở y tế theo tên, địa chỉ hoặc mã"
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -140,9 +139,9 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
                       <span className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0">
                         <Building2 className="w-4 h-4" />
                       </span>
-                      <h4 className="text-sm sm:text-base font-bold text-slate-900">{hosp.name}</h4>
+                      <h4 className="text-base font-bold text-slate-900">{hosp.name}</h4>
                       {hosp.tag && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                           {hosp.tag}
                         </span>
                       )}
@@ -158,7 +157,7 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
                         Hotline: {hosp.hotline}
                       </span>
                       <span className="text-slate-300">•</span>
-                      <span className="text-blue-700 font-semibold bg-blue-100/70 px-1.5 py-0.5 rounded text-[11px]">
+                      <span className="text-blue-700 font-semibold bg-blue-100/70 px-1.5 py-0.5 rounded text-xs">
                         Mã: {hosp.code}
                       </span>
                     </p>
@@ -172,7 +171,7 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
                     ) : (
                       <button
                         type="button"
-                        className="px-3.5 py-1.5 rounded-lg border border-blue-600 bg-white text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                        className="px-3.5 py-1.5 rounded-lg border border-blue-600 bg-white text-blue-600 hover:bg-blue-600 hover:text-white text-sm font-bold transition shadow-xs cursor-pointer"
                       >
                         Chọn cơ sở
                       </button>
@@ -220,7 +219,7 @@ export const HospitalSelectModal: React.FC<HospitalSelectModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="ml-3 px-4 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold transition"
+              className="ml-3 px-4 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 text-sm font-bold transition"
             >
               Đóng
             </button>

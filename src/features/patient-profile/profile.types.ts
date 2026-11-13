@@ -11,7 +11,10 @@ export interface PersonalProfile {
   maskedPhone: string | null;
   relationship: 'SELF';
 }
-export type ProfileInput = Pick<PersonalProfile, 'fullName' | 'dob' | 'gender' | 'address' | 'insuranceNo'>;
+export type ProfileInput = Pick<PersonalProfile, 'fullName' | 'dob' | 'gender' | 'address' | 'insuranceNo'> & {
+  nationalId?: string;
+  phone?: string;
+};
 export interface HealthEntry {
   id: number;
   patientId: number;

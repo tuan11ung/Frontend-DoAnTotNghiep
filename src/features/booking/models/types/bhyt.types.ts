@@ -8,34 +8,34 @@ export interface BookingHospital {
   policyText?: string;
 }
 
-export interface SelfPatientProfile {
+export interface BookingPatientProfile {
   id: number;
   patientCode: string;
   fullName: string;
+  dob?: string | null;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER' | null;
+  insuranceNo?: string | null;
+  maskedNationalId?: string | null;
+  maskedPhone?: string | null;
   relationship: string;
   status: string;
 }
 
-export interface BhytRoom {
-  roomId: number;
-  roomCode: string;
-  roomName: string;
-  roomLocation?: string;
+export interface BhytSpecialty {
   specialtyId: number;
   specialtyName: string;
 }
 
-export interface BhytSlot {
-  timeSlotId: number;
-  hospitalId: number;
-  roomId: number;
-  specialtyId: number;
-  serviceType: 'BHYT';
+export interface BhytBookingWindow {
   appointmentDate: string;
   session: 'MORNING' | 'AFTERNOON';
   startTime: string;
   endTime: string;
-  remainingCapacity: number;
+}
+
+export interface BhytSlot {
+  window: BhytBookingWindow;
+  remainingCapacity?: number;
 }
 
 export interface BookedAppointment {
@@ -49,13 +49,13 @@ export interface BookedAppointment {
   patientMaskedPhone?: string | null;
   hospitalId: number;
   hospitalName: string;
-  roomId: number;
-  roomName: string;
+  roomId?: number;
+  roomName?: string;
   roomLocation?: string;
   appointmentDate: string;
   startTime: string;
   endTime: string;
   appointReason: string;
   status: string;
-  qrToken: string;
+  qrToken?: string;
 }

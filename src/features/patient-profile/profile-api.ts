@@ -35,32 +35,63 @@ export function isCondition(value: unknown, patientId: number): value is Conditi
   return isHealth(value, patientId) && (value.diagnosedYear === null || Number.isInteger(value.diagnosedYear)) && typeof value.recovered === 'boolean';
 }
 const invalid = () => new Error('Dữ liệu hồ sơ không hợp lệ. Vui lòng tải lại hoặc liên hệ cơ sở y tế.');
+
+function readProfile(value: unknown): PersonalProfile {
+  if (!isObject(value)) throw invalid();
+  const profile = {
+    ...value,
+    address: value.address ?? null,
+    insuranceNo: value.insuranceNo ?? null,
+    maskedNationalId: value.maskedNationalId ?? null,
+    maskedPhone: value.maskedPhone ?? null,
+  };
+  if (!isProfile(profile)) throw invalid();
+  return profile;
+}
+
+function readAllergy(value: unknown, patientId: number): Allergy {
+  if (!isObject(value)) throw invalid();
+  const allergy = { ...value, reaction: value.reaction ?? null };
+  if (!isAllergy(allergy, patientId)) throw invalid();
+  return allergy;
+}
+
+function readCondition(value: unknown, patientId: number): Condition {
+  if (!isObject(value)) throw invalid();
+  const condition = { ...value, diagnosedYear: value.diagnosedYear ?? null };
+  if (!isCondition(condition, patientId)) throw invalid();
+  return condition;
+}
+
 export async function loadProfile(token: string, signal: AbortSignal): Promise<ProfileData> {
   const profiles = await accountRequest('profiles/list', token, {}, signal);
   if (!Array.isArray(profiles)) throw invalid();
   const own = profiles.filter((p: unknown) => isObject(p) && p.relationship === 'SELF');
-  if (own.length !== 1 || !isProfile(own[0])) throw invalid();
-  const profile = own[0];
+  if (own.length !== 1) throw invalid();
+  const profile = readProfile(own[0]);
   const [allergies, conditions] = await Promise.all([
     accountRequest('allergies/list', token, { patientId: profile.id }, signal),
     accountRequest('conditions/list', token, { patientId: profile.id }, signal),
   ]);
-  if (!Array.isArray(allergies) || !allergies.every(a => isAllergy(a, profile.id))
-    || !Array.isArray(conditions) || !conditions.every(c => isCondition(c, profile.id))) throw invalid();
-  return { profile, allergies, conditions };
+  if (!Array.isArray(allergies) || !Array.isArray(conditions)) throw invalid();
+  return {
+    profile,
+    allergies: allergies.map(value => readAllergy(value, profile.id)),
+    conditions: conditions.map(value => readCondition(value, profile.id)),
+  };
 }
 export async function updateProfile(token: string, patientId: number, input: ProfileInput) {
-  const value = await accountRequest('profiles/update', token, { patientId, ...input });
-  if (!isProfile(value) || value.id !== patientId) throw invalid();
+  const value = readProfile(await accountRequest('profiles/update', token, { patientId, ...input }));
+  if (value.id !== patientId) throw invalid();
   return value;
 }
 export async function saveAllergy(token: string, patientId: number, input: AllergyInput) {
-  const value = await accountRequest('allergies/save', token, { patientId, ...input });
-  if (!isAllergy(value, patientId) || (input.id !== undefined && value.id !== input.id)) throw invalid();
+  const value = readAllergy(await accountRequest('allergies/save', token, { patientId, ...input }), patientId);
+  if (input.id !== undefined && value.id !== input.id) throw invalid();
   return value;
 }
 export async function saveCondition(token: string, patientId: number, input: ConditionInput) {
-  const value = await accountRequest('conditions/save', token, { patientId, ...input });
-  if (!isCondition(value, patientId) || (input.id !== undefined && value.id !== input.id)) throw invalid();
+  const value = readCondition(await accountRequest('conditions/save', token, { patientId, ...input }), patientId);
+  if (input.id !== undefined && value.id !== input.id) throw invalid();
   return value;
 }

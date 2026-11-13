@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { Search, X, UserCheck, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DoctorItem } from '../types';
-import { MOCK_DOCTORS } from '../data/booking-mock-data';
+import { MOCK_DOCTORS } from '../utils/booking-mock-data';
 
 interface DoctorSelectModalProps {
   isOpen: boolean;
@@ -55,7 +55,7 @@ export const DoctorSelectModal: React.FC<DoctorSelectModalProps> = ({
               <UserCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Chọn Bác sĩ tiếp nhận</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Chọn Bác sĩ tiếp nhận</h3>
               <p className="text-xs text-slate-500">Đội ngũ bác sĩ chuyên khoa đầu ngành giàu kinh nghiệm</p>
             </div>
           </div>
@@ -117,14 +117,14 @@ export const DoctorSelectModal: React.FC<DoctorSelectModalProps> = ({
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm sm:text-base font-bold text-slate-900 uppercase tracking-tight">
+                        <span className="text-sm font-bold text-slate-900 uppercase tracking-tight">
                           {dr.name}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-xs text-blue-600 font-semibold">{dr.role}</span>
                         <span
-                          className="text-[11px] font-bold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded border border-blue-200"
+                          className="text-xs font-bold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded border border-blue-200"
                           title={dr.degreeTitle}
                         >
                           {dr.degree}
@@ -136,7 +136,7 @@ export const DoctorSelectModal: React.FC<DoctorSelectModalProps> = ({
 
                   <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 pl-0 sm:pl-3 sm:border-l sm:border-slate-100">
                     <div className="text-left sm:text-right">
-                      <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+                      <span className="text-xs text-slate-400 uppercase font-bold tracking-wider block">
                         Phí khám
                       </span>
                       <span className="text-sm font-bold text-blue-600 block">{dr.priceFormatted}</span>
@@ -149,7 +149,7 @@ export const DoctorSelectModal: React.FC<DoctorSelectModalProps> = ({
                     ) : (
                       <button
                         type="button"
-                        className="px-3 py-1 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-bold transition"
+                        className="px-3 py-1 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm font-bold transition"
                       >
                         Chọn
                       </button>
@@ -197,7 +197,7 @@ export const DoctorSelectModal: React.FC<DoctorSelectModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="ml-3 px-4 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold transition"
+              className="ml-3 px-4 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 text-sm font-bold transition"
             >
               Đóng
             </button>

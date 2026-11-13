@@ -74,7 +74,7 @@ export interface ReceptionState {
   encounters: ReceptionEncounter[];
 }
 
-export type ReceptionSection = 'patients' | 'registration' | 'checkin' | 'checkout';
+export type ReceptionSection = 'patients' | 'registration' | 'pending-specialty' | 'checkin' | 'checkout';
 
 export interface RegistrationInput {
   patientId: string;

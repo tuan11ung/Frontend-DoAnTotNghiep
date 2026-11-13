@@ -1,245 +1,157 @@
 'use client';
 
-import { formatDisplayDate } from '@/src/shared/utils/date-format';
-
-import React, { useState, useEffect } from 'react';
-import { User, Users, Plus, Check, ShieldCheck, Heart, Sparkles, ChevronDown } from 'lucide-react';
+import { useEffect, useId, useRef, useState, type FC, type KeyboardEvent } from 'react';
+import { Check, ChevronDown, Users } from 'lucide-react';
 import { BookingTarget } from '../types';
-import {
-  INITIAL_PATIENT_PROFILE,
-  getStoredFamilyMembers,
-} from '@/src/shared/utils/patient-storage';
-import { FamilyMember, RELATIONSHIP_LABELS } from '@/src/shared/types/family';
-import { AddFamilyMemberDialog } from '@/src/features/patient-family/workflow/AddFamilyMemberDialog';
+import { BookingSectionHeading } from './BookingSectionHeading';
 
 interface BookingTargetSelectorProps {
-  currentTarget: BookingTarget;
+  options: BookingTarget[];
+  currentTarget?: BookingTarget;
   onSelectTarget: (target: BookingTarget) => void;
 }
 
-export const BookingTargetSelector: React.FC<BookingTargetSelectorProps> = ({
+export const BookingTargetSelector: FC<BookingTargetSelectorProps> = ({
+  options,
   currentTarget,
   onSelectTarget,
 }) => {
-  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const loadMembers = () => {
-    setFamilyMembers(getStoredFamilyMembers());
-  };
+  const id = useId();
+  const labelId = `${id}-label`;
+  const valueId = `${id}-value`;
+  const listId = `${id}-options`;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const selectedIndex = options.findIndex((option) =>
+    option.id === currentTarget?.id,
+  );
+  const selected = options[selectedIndex] ?? currentTarget;
+  const active = Math.min(activeIndex, options.length - 1);
+  const activeId = `${listId}-${active}`;
 
   useEffect(() => {
-    loadMembers();
-    const handleStorageUpdate = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (!customEvent.detail || customEvent.detail.key === 'medconnect.patient_family') {
-        loadMembers();
+    if (!open) return;
+    function closeOutside(event: PointerEvent) {
+      if (event.target instanceof Node && !rootRef.current?.contains(event.target)) setOpen(false);
+    }
+    document.addEventListener('pointerdown', closeOutside);
+    return () => document.removeEventListener('pointerdown', closeOutside);
+  }, [open]);
+
+  useEffect(() => {
+    if (open) document.getElementById(activeId)?.scrollIntoView({ block: 'nearest' });
+  }, [activeId, open]);
+
+  function showOptions() {
+    if (!options.length) return;
+    setActiveIndex(Math.max(0, selectedIndex));
+    setOpen(true);
+  }
+
+  function choose(index: number) {
+    if (index !== selectedIndex) onSelectTarget(options[index]);
+    setOpen(false);
+  }
+
+  function onKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'ArrowUp': {
+        event.preventDefault();
+        if (!open) showOptions();
+        else {
+          const direction = event.key === 'ArrowDown' ? 1 : -1;
+          setActiveIndex(Math.max(0, Math.min(options.length - 1, active + direction)));
+        }
+        break;
       }
-    };
-    window.addEventListener('medconnect:storage_update', handleStorageUpdate);
-    return () => window.removeEventListener('medconnect:storage_update', handleStorageUpdate);
-  }, []);
-
-  const selectSelf = () => {
-    onSelectTarget({
-      type: 'SELF',
-      id: INITIAL_PATIENT_PROFILE.id,
-      name: INITIAL_PATIENT_PROFILE.fullName,
-      gender: INITIAL_PATIENT_PROFILE.gender,
-      dob: INITIAL_PATIENT_PROFILE.dob,
-      nationalId: INITIAL_PATIENT_PROFILE.nationalId,
-      phone: INITIAL_PATIENT_PROFILE.phone,
-      bhytNumber: INITIAL_PATIENT_PROFILE.bhytNumber,
-    });
-  };
-
-  const selectMember = (m: FamilyMember) => {
-    onSelectTarget({
-      type: 'FAMILY',
-      id: m.id,
-      name: m.fullName,
-      relationshipLabel: RELATIONSHIP_LABELS[m.relationship] || 'Người nhà',
-      gender: m.gender,
-      dob: m.dob,
-      nationalId: m.nationalId,
-      phone: m.phone || INITIAL_PATIENT_PROFILE.phone,
-      bhytNumber: m.bhytNumber,
-      note: m.note,
-    });
-  };
-
-  const handleCreatedSuccess = (newMember: FamilyMember) => {
-    loadMembers();
-    selectMember(newMember);
-  };
-
-  const isSelf = currentTarget.type === 'SELF';
+      case 'Home':
+      case 'End':
+        if (!open) break;
+        event.preventDefault();
+        setActiveIndex(event.key === 'Home' ? 0 : options.length - 1);
+        break;
+      case 'Enter':
+      case ' ':
+        if (!open) break;
+        event.preventDefault();
+        choose(active);
+        break;
+      case 'Escape':
+        if (!open) break;
+        event.preventDefault();
+        event.stopPropagation();
+        setOpen(false);
+        break;
+    }
+  }
 
   return (
-    <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm mb-6">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-slate-100 gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold border border-blue-100">
-            <Users className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              Đối tượng khám bệnh
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Đang chọn: {isSelf ? 'Bản thân' : `${currentTarget.relationshipLabel} - ${currentTarget.name}`}
-              </span>
-            </h3>
-            <p className="text-xs text-slate-500">
-              Bạn có thể đặt lịch cho chính mình hoặc đặt hộ cho người thân trong gia đình
-            </p>
-          </div>
-        </div>
-
+    <div className="space-y-4">
+      <BookingSectionHeading icon={<Users />}>
+        <span id={labelId}>Đối tượng khám bệnh</span>
+      </BookingSectionHeading>
+      <div className="relative w-full sm:max-w-md" ref={rootRef}>
         <button
           type="button"
-          onClick={() => setIsAddModalOpen(true)}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100/80 rounded-xl transition cursor-pointer border border-blue-200/60 self-start sm:self-auto"
+          disabled={!options.length}
+          role="combobox"
+          aria-labelledby={`${labelId} ${valueId}`}
+          aria-expanded={open}
+          aria-controls={open ? listId : undefined}
+          aria-activedescendant={open ? activeId : undefined}
+          onBlur={() => setOpen(false)}
+          onClick={() => {
+            if (open) setOpen(false);
+            else showOptions();
+          }}
+          onKeyDown={onKeyDown}
+          className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border bg-white py-2.5 pr-4 pl-5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${open ? 'border-blue-600' : 'border-slate-200 hover:border-slate-400'}`}
         >
-          <Plus className="w-3.5 h-3.5" />
-          <span>+ Thêm người nhà</span>
+          <span id={valueId} className="min-w-0">
+            {selected ? <TargetText target={selected} /> : <span className="text-sm text-slate-500">Chọn người khám</span>}
+          </span>
+          <ChevronDown aria-hidden="true" className={`size-4 shrink-0 text-slate-500 ${open ? 'rotate-180' : ''}`} />
         </button>
-      </div>
 
-      {/* Target selection list / pills */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-        {/* Bản thân */}
-        <div
-          onClick={selectSelf}
-          className={`cursor-pointer rounded-2xl p-3.5 border-2 transition-all relative flex flex-col justify-between ${
-            isSelf
-              ? 'border-blue-600 bg-blue-50/50 shadow-sm shadow-blue-500/10'
-              : 'border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-white'
-          }`}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2.5">
-              <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm ${
-                  isSelf
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-slate-200 text-slate-700'
-                }`}
+        {open && (
+          <div
+            id={listId}
+            role="listbox"
+            aria-labelledby={labelId}
+            className="absolute inset-x-0 top-full z-30 mt-1 max-h-[min(18rem,50dvh)] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
+          >
+            {options.map((option, index) => (
+              <button
+                key={`${option.type}:${option.id}`}
+                id={`${listId}-${index}`}
+                type="button"
+                role="option"
+                tabIndex={-1}
+                aria-selected={index === selectedIndex}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => choose(index)}
+                className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-left hover:bg-slate-100 aria-selected:bg-blue-50 ${active === index ? 'ring-2 ring-inset ring-blue-400' : ''}`}
               >
-                <User className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-[10px] uppercase font-bold tracking-wider text-blue-700 bg-blue-100/70 px-1.5 py-0.5 rounded">
-                  Bản thân
-                </span>
-                <p className="text-sm font-bold text-slate-900 line-clamp-1 mt-0.5">
-                  {INITIAL_PATIENT_PROFILE.fullName}
-                </p>
-              </div>
-            </div>
-            {isSelf && (
-              <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0">
-                <Check className="w-3.5 h-3.5" />
-              </span>
-            )}
+                <TargetText target={option} />
+                {index === selectedIndex && <Check aria-hidden="true" className="size-4 shrink-0 text-blue-600" />}
+              </button>
+            ))}
           </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-200/60 text-[11px] text-slate-500 font-mono flex items-center justify-between">
-            <span>CCCD: ••••{INITIAL_PATIENT_PROFILE.nationalId.slice(-4)}</span>
-            <span className="text-emerald-700 font-medium">BHYT sẵn sàng</span>
-          </div>
-        </div>
-
-        {/* Danh sách người nhà */}
-        {familyMembers.map((m) => {
-          const isSelected = !isSelf && currentTarget.id === m.id;
-          const relText = RELATIONSHIP_LABELS[m.relationship] || 'Người nhà';
-
-          return (
-            <div
-              key={m.id}
-              onClick={() => selectMember(m)}
-              className={`cursor-pointer rounded-2xl p-3.5 border-2 transition-all relative flex flex-col justify-between ${
-                isSelected
-                  ? 'border-emerald-600 bg-emerald-50/40 shadow-sm shadow-emerald-500/10'
-                  : 'border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-white'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm ${
-                      isSelected
-                        ? 'bg-emerald-600 text-white shadow-xs'
-                        : 'bg-emerald-100 text-emerald-800'
-                    }`}
-                  >
-                    <Heart className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 bg-emerald-100/70 px-1.5 py-0.5 rounded">
-                      {relText}
-                    </span>
-                    <p className="text-sm font-bold text-slate-900 line-clamp-1 mt-0.5">
-                      {m.fullName}
-                    </p>
-                  </div>
-                </div>
-                {isSelected && (
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
-                    <Check className="w-3.5 h-3.5" />
-                  </span>
-                )}
-              </div>
-              <div className="mt-2.5 pt-2 border-t border-slate-200/60 text-[11px] text-slate-500 flex items-center justify-between">
-                <span>{formatDisplayDate(m.dob)}</span>
-                <span className="text-slate-600 font-medium">{m.gender === 'MALE' ? 'Nam' : 'Nữ'}</span>
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Nút card thêm người nhà trực tiếp */}
-        <div
-          onClick={() => setIsAddModalOpen(true)}
-          className="cursor-pointer rounded-2xl p-3.5 border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50/30 transition-all flex flex-col items-center justify-center text-center group min-h-[95px]"
-        >
-          <div className="w-8 h-8 rounded-full bg-slate-100 group-hover:bg-blue-100 text-slate-500 group-hover:text-blue-600 flex items-center justify-center transition">
-            <Plus className="w-4 h-4" />
-          </div>
-          <span className="text-xs font-semibold text-slate-600 group-hover:text-blue-700 mt-1.5">
-            Thêm người thân mới
-          </span>
-          <span className="text-[10px] text-slate-400">Đặt lịch cho bố mẹ, con cái...</span>
-        </div>
+        )}
       </div>
-
-      {/* Thông tin đối tượng đang chọn */}
-      <div className="mt-4 p-3 bg-slate-50/80 rounded-xl border border-slate-200/60 flex flex-wrap items-center justify-between text-xs text-slate-600 gap-2">
-        <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>
-            Hồ sơ y tế khám:{' '}
-            <strong className="text-slate-900 font-bold">{currentTarget.name}</strong>
-            {currentTarget.relationshipLabel ? ` (${currentTarget.relationshipLabel})` : ' (Chính chủ)'}
-            {' • '}CCCD: <span className="font-mono">{currentTarget.nationalId || 'Chưa cập nhật'}</span>
-            {currentTarget.bhytNumber && (
-              <>
-                {' • '}Mã BHYT: <span className="font-mono text-blue-700 font-semibold">{currentTarget.bhytNumber}</span>
-              </>
-            )}
-          </span>
-        </div>
-        <span className="text-[11px] text-slate-400 italic">
-          Được bảo mật theo hồ sơ sức khỏe điện tử cá nhân
-        </span>
-      </div>
-
-      {/* Modal thêm người nhà nhanh */}
-      <AddFamilyMemberDialog
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onCreatedSuccess={handleCreatedSuccess}
-      />
     </div>
   );
 };
+
+function TargetText({ target }: { target: BookingTarget }) {
+  return (
+    <span className="block min-w-0 wrap-anywhere">
+      <span className="block text-sm font-semibold text-slate-900">{target.name}</span>
+      <span className="block text-xs text-slate-600">
+        {target.type === 'SELF' ? 'Bản thân' : target.relationshipLabel || 'Người nhà'}
+      </span>
+    </span>
+  );
+}

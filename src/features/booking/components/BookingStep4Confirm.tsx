@@ -33,6 +33,7 @@ interface BookingStep4ConfirmProps {
   hospital: HospitalItem;
   specialty: SpecialtyItem;
   doctor: DoctorItem | null;
+  qualificationLabel?: string;
   patient: PatientInfo;
   selectedDate: DateOption;
   selectedSlot: string;
@@ -48,6 +49,7 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
   hospital,
   specialty,
   doctor,
+  qualificationLabel,
   patient,
   selectedDate,
   selectedSlot,
@@ -104,7 +106,7 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-amber-600" />
-            <label htmlFor="symptoms-input" className="text-sm sm:text-base font-bold text-slate-900">
+            <label htmlFor="symptoms-input" className="text-sm font-bold text-slate-900">
               Triệu chứng / Lý do khám: <span className="text-rose-500">*</span>
             </label>
           </div>
@@ -149,7 +151,7 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
           <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
             <Building2 className="w-4 h-4" />
           </div>
-          <h2 className="text-sm font-bold text-blue-700 uppercase tracking-wider">
+          <h2 className="text-base font-bold text-blue-700 uppercase tracking-wider">
             THÔNG TIN ĐẶT LỊCH
           </h2>
         </div>
@@ -196,11 +198,11 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-start justify-between py-1.5 border-b border-slate-100">
-            <span className="text-slate-500 font-medium">Phòng khám / Bác sĩ:</span>
+            <span className="text-slate-500 font-medium">{!isBhyt && qualificationLabel ? 'Trình độ bác sĩ:' : 'Phòng khám / Bác sĩ:'}</span>
             <span className="font-semibold text-slate-900 sm:text-right">
               {isBhyt
                 ? `${specialty.room} • Phân công tại chỗ`
-                : `${doctor?.room || specialty.room} • ${doctor ? doctor.name : 'Theo chuyên khoa'}`}
+                : qualificationLabel ?? `${doctor?.room || specialty.room} • ${doctor ? doctor.name : 'Theo chuyên khoa'}`}
             </span>
           </div>
 
@@ -237,9 +239,9 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
       <section className="bg-amber-50/60 border border-amber-200 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex items-center gap-2 mb-3 text-amber-800">
           <Info className="w-5 h-5" />
-          <h3 className="text-sm font-bold uppercase tracking-wider">LƯU Ý QUAN TRỌNG</h3>
+          <h3 className="text-base font-bold uppercase tracking-wider">LƯU Ý QUAN TRỌNG</h3>
         </div>
-        <ul className="space-y-2 text-xs sm:text-sm text-slate-700">
+        <ul className="space-y-2 text-sm text-slate-700">
           <li className="flex items-start gap-2">
             <span className="text-amber-600 font-bold leading-none mt-1">•</span>
             <span>Vui lòng có mặt trước 15 phút so với giờ hẹn để làm thủ tục tiếp đón</span>
@@ -278,7 +280,7 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm sm:text-base px-8 py-3 rounded-lg shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-[0.99] cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-sm px-8 py-3 rounded-lg shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-[0.99] cursor-pointer"
           >
             {isSubmitting ? (
               <>

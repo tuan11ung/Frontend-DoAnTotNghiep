@@ -73,14 +73,14 @@ export const BookingStepper: React.FC<BookingStepperProps> = ({ currentStep, mod
                   Bước {step.num}
                 </p>
                 <p
-                  className={`text-xs sm:text-sm font-bold truncate ${
+                  className={`text-sm font-bold truncate ${
                     isActive ? 'text-blue-900' : isCompleted ? 'text-slate-800' : 'text-slate-600'
                   }`}
                 >
                   {step.title}
                 </p>
                 <p
-                  className={`text-[11px] truncate font-medium ${
+                  className={`text-xs truncate font-medium ${
                     isActive ? 'text-slate-500' : isCompleted ? 'text-emerald-600' : 'text-slate-400'
                   }`}
                 >

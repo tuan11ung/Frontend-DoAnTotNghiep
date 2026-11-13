@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, Stethoscope, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SpecialtyItem } from '../types';
-import { MOCK_SPECIALTIES } from '../data/booking-mock-data';
+import { MOCK_SPECIALTIES } from '../utils/booking-mock-data';
 
 interface SpecialtySelectModalProps {
   isOpen: boolean;
@@ -54,7 +54,7 @@ export const SpecialtySelectModal: React.FC<SpecialtySelectModalProps> = ({
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900">Chọn Chuyên khoa tiếp nhận</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Chọn Chuyên khoa tiếp nhận</h3>
               <p className="text-xs text-slate-500">Lựa chọn chuyên khoa phù hợp với nhu cầu thăm khám</p>
             </div>
           </div>
@@ -104,14 +104,14 @@ export const SpecialtySelectModal: React.FC<SpecialtySelectModalProps> = ({
                   }`}
                 >
                   <div className="space-y-1 flex-1">
-                    <h4 className="text-sm sm:text-base font-bold text-slate-900">{spec.name}</h4>
+                    <h4 className="text-base font-bold text-slate-900">{spec.name}</h4>
                     <p className="text-xs text-blue-700 font-semibold">{spec.room}</p>
                     <p className="text-xs text-slate-500 leading-relaxed">{spec.desc}</p>
                   </div>
 
                   <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 pl-0 sm:pl-3 sm:border-l sm:border-slate-100">
                     <div className="text-left sm:text-right">
-                      <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+                      <span className="text-xs text-slate-400 uppercase font-bold tracking-wider block">
                         Phí khám
                       </span>
                       <span className="text-sm font-bold text-blue-600 block">{spec.priceFormatted}</span>
@@ -124,7 +124,7 @@ export const SpecialtySelectModal: React.FC<SpecialtySelectModalProps> = ({
                     ) : (
                       <button
                         type="button"
-                        className="px-3 py-1 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-bold transition"
+                        className="px-3 py-1 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm font-bold transition"
                       >
                         Chọn
                       </button>
@@ -172,7 +172,7 @@ export const SpecialtySelectModal: React.FC<SpecialtySelectModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="ml-3 px-4 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 text-xs font-bold transition"
+              className="ml-3 px-4 py-1.5 rounded-lg bg-slate-200 text-slate-700 hover:bg-slate-300 text-sm font-bold transition"
             >
               Đóng
             </button>
