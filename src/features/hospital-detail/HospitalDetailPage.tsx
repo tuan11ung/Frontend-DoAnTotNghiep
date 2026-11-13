@@ -1,116 +1,64 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getHospitalDetailById } from './data/hospital-detail-data';
-import { HospitalDetailHeader } from './components/HospitalDetailHeader';
-import { HospitalPhotoGallery } from './components/HospitalPhotoGallery';
-import { HospitalInfoTab } from './components/HospitalInfoTab';
-import { HospitalServicesTab } from './components/HospitalServicesTab';
-import { HospitalPricingModal } from './components/HospitalPricingModal';
-import { ClinicalServiceItem } from './types';
-import { BellRing, X } from 'lucide-react';
+import { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Building2, CalendarDays, ChevronLeft, ChevronRight, Clock3, FileText, Home, Mail, MapPin, Phone, Search, ShieldCheck, Stethoscope } from 'lucide-react';
+import type { PublicHospitalProfile } from './models/types/public-hospital.types';
+import { hospitalLevelLabels } from './data/public-hospital-data';
 
-export interface HospitalDetailPageProps {
-  hospitalId: string;
-}
+const panel = 'rounded-2xl border border-slate-200 bg-white p-5 sm:p-6';
+const empty = 'text-sm leading-7 text-slate-400';
+const dayLabels: Record<string, string> = { '1': 'Thứ 2', '2': 'Thứ 3', '3': 'Thứ 4', '4': 'Thứ 5', '5': 'Thứ 6', '6': 'Thứ 7', '7': 'Chủ nhật' };
+const currency = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 
-export const HospitalDetailPage: React.FC<HospitalDetailPageProps> = ({
-  hospitalId,
-}) => {
-  const router = useRouter();
-  const hospital = getHospitalDetailById(hospitalId);
-  const [activeTab, setActiveTab] = useState<'info' | 'services'>('info');
-  const [isPricingOpen, setIsPricingOpen] = useState(false);
-  const [scheduleNotice, setScheduleNotice] = useState<string | null>(null);
-
-  const handleOpenBooking = (_serviceName?: string) => {
-    router.push(`/booking?step=1&hospitalId=${encodeURIComponent(hospital.id)}`);
-  };
-
-  const handleBookService = (_service: ClinicalServiceItem) => {
-    router.push(`/booking?step=1&hospitalId=${encodeURIComponent(hospital.id)}`);
-  };
-
-  const handleScrollToMap = () => {
-    if (activeTab !== 'info') {
-      setActiveTab('info');
-    }
-    setTimeout(() => {
-      const mapSection = document.getElementById('hospital-map-section');
-      if (mapSection) {
-        mapSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-
-  const handleScheduleAlert = () => {
-    setScheduleNotice(
-      `Lịch bác sĩ ${hospital.name} trực tuần này đã cập nhật! Đã sẵn sàng các chuyên gia Khoa Hô hấp, Sơ sinh và Dinh dưỡng.`
-    );
-  };
-
-  return (
-    <div className="flex-grow bg-slate-50/40 min-h-screen">
-      {/* Schedule notice toast */}
-      {scheduleNotice && (
-        <div className="fixed top-24 right-4 z-50 max-w-md bg-white border border-blue-200 shadow-xl rounded-2xl p-4 flex items-start gap-3 animate-in slide-in-from-top-5 duration-200">
-          <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <BellRing className="w-4 h-4" />
-          </div>
-          <div className="flex-1">
-            <h5 className="font-bold text-xs sm:text-sm text-slate-900">Thông báo lịch trực</h5>
-            <p className="text-xs text-slate-600 mt-1 leading-relaxed">{scheduleNotice}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setScheduleNotice(null)}
-            className="text-slate-400 hover:text-slate-600 cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+export function HospitalDetailPage({ hospital }: { hospital: PublicHospitalProfile }) {
+  const [tab, setTab] = useState<'info' | 'services'>('info');
+  const [query, setQuery] = useState('');
+  const [category, setCategory] = useState('ALL');
+  const [page, setPage] = useState(1);
+  const [logoFailed, setLogoFailed] = useState(false);
+  const bookingHref = `/booking?step=1&hospitalId=${encodeURIComponent(hospital.id)}`;
+  const canBook = hospital.status !== 'SUSPENDED';
+  const days = hospital.workingDays?.split(',').map(day => dayLabels[day.trim()]).filter(Boolean).join(', ');
+  const services = hospital.services.filter(service => (category === 'ALL' || category === service.category) && `${service.name} ${service.code}`.toLocaleLowerCase('vi-VN').includes(query.trim().toLocaleLowerCase('vi-VN')));
+  const totalPages = Math.max(1, Math.ceil(services.length / 10));
+  const currentPage = Math.min(page, totalPages);
+  const mapHref = hospital.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hospital.name}, ${hospital.address}`)}` : null;
+  return <div data-hospital-detail className="flex-1 bg-slate-50 pb-12">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <nav aria-label="Đường dẫn" className="mb-5 flex flex-wrap items-center gap-2 text-xs text-slate-500"><Link href="/" className="inline-flex items-center gap-1 hover:text-blue-600"><Home className="size-3.5" />Trang chủ</Link><ChevronRight className="size-3" /><Link href="/hospitals" className="hover:text-blue-600">Bệnh viện</Link><ChevronRight className="size-3" /><span aria-current="page">{hospital.name}</span></nav>
+      <section className={`${panel} mb-5`}>
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div className="flex min-w-0 items-start gap-4"><div className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl border border-blue-100 bg-blue-50 text-blue-600 sm:size-20">{hospital.logoUrl && !logoFailed ? <Image src={hospital.logoUrl} alt={`Logo ${hospital.name}`} fill unoptimized className="object-contain p-2" onError={() => setLogoFailed(true)} /> : <Building2 aria-hidden="true" className="size-9" />}</div><div className="min-w-0"><div className="mb-2 flex flex-wrap items-center gap-2">{hospital.code && <span className="rounded bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-500">{hospital.code}</span>}{hospital.level && <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700">{hospitalLevelLabels[hospital.level]}</span>}{hospital.status && <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${canBook ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>{canBook ? 'Đang hoạt động' : 'Tạm ngừng'}</span>}</div><h1 className="text-xl leading-snug font-extrabold break-words text-slate-900 sm:text-3xl">{hospital.name}</h1>{hospital.province && <p className="mt-2 text-sm text-slate-500">{hospital.province}</p>}</div></div>
+          {canBook ? <Link href={bookingHref} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-700"><CalendarDays className="size-4" />Đặt khám ngay</Link> : <span className="text-sm text-amber-700">Cơ sở đang tạm ngừng nhận lịch.</span>}
         </div>
-      )}
-
-      {/* 1. Header & Identity */}
-      <HospitalDetailHeader
-        hospital={hospital}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onOpenBooking={() => handleOpenBooking()}
-        onScrollToMap={handleScrollToMap}
-      />
-
-      {/* Main Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 w-full">
-        {/* 2. Photo Gallery Grid Section */}
-        <HospitalPhotoGallery gallery={hospital.gallery} />
-
-        {/* 3. Tab Views */}
-        {activeTab === 'info' ? (
-          <HospitalInfoTab
-            hospital={hospital}
-            onOpenPricingModal={() => setIsPricingOpen(true)}
-            onScheduleAlert={handleScheduleAlert}
-          />
-        ) : (
-          <HospitalServicesTab
-            hospital={hospital}
-            onBackToInfo={() => setActiveTab('info')}
-            onBookService={handleBookService}
-          />
-        )}
-      </div>
-
-      {/* Modals */}
-
-      <HospitalPricingModal
-        isOpen={isPricingOpen}
-        onClose={() => setIsPricingOpen(false)}
-        hospital={hospital}
-      />
+        <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3 border-t border-slate-100 pt-4 text-sm text-slate-600"><p className="flex items-start gap-2"><MapPin className="mt-0.5 size-4 shrink-0 text-blue-500" />{hospital.address || 'Địa chỉ chưa cập nhật'}</p>{hospital.hotline && <a href={`tel:${hospital.hotline.replace(/\s/g, '')}`} className="inline-flex items-center gap-2 hover:text-blue-600"><Phone className="size-4 text-blue-500" />{hospital.hotline}</a>}{hospital.email && <a href={`mailto:${hospital.email}`} className="inline-flex items-center gap-2 break-all hover:text-blue-600"><Mail className="size-4 shrink-0 text-blue-500" />{hospital.email}</a>}</div>
+      </section>
+      <p className="mb-5 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-xs leading-6 text-blue-700">Dữ liệu minh họa. Vui lòng liên hệ cơ sở để xác nhận thông tin, lịch tiếp nhận và giá dịch vụ trước khi đặt khám.</p>
+      <div role="group" aria-label="Thông tin bệnh viện" className="mb-6 flex gap-6 border-b border-slate-200">{[{ id: 'info' as const, label: 'Thông tin chung' }, { id: 'services' as const, label: `Dịch vụ & bảng giá (${hospital.services.length})` }].map(item => <button key={item.id} type="button" aria-pressed={tab === item.id} onClick={() => setTab(item.id)} className={`border-b-2 px-1 pb-3 text-sm font-semibold ${tab === item.id ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-500 hover:text-blue-600'}`}>{item.label}</button>)}</div>
+      {tab === 'info' ? <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+        <div className="space-y-5">
+          <section className={panel}><h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900"><FileText className="size-5 text-blue-600" />Giới thiệu</h2><p className={`${hospital.introduction ? 'text-slate-600' : 'text-slate-400'} text-sm leading-7 whitespace-pre-line`}>{hospital.introduction || 'Cơ sở chưa cập nhật thông tin giới thiệu.'}</p></section>
+          <section className={panel}><h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900"><Stethoscope className="size-5 text-blue-600" />Chuyên khoa</h2>{hospital.specialties.length ? <ul className="flex flex-wrap gap-2">{hospital.specialties.map(specialty => <li key={specialty.id} className="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-800">{specialty.name}</li>)}</ul> : <p className={empty}>Chưa có thông tin chuyên khoa.</p>}</section>
+          <section className={panel}><h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900"><MapPin className="size-5 text-blue-600" />Địa chỉ & liên hệ</h2><dl className="space-y-3 text-sm"><div><dt className="text-xs text-slate-400">Địa chỉ</dt><dd className="mt-1 leading-6 text-slate-700">{hospital.address || 'Chưa cập nhật'}</dd></div><div><dt className="text-xs text-slate-400">Hotline</dt><dd className="mt-1 text-slate-700">{hospital.hotline ? <a href={`tel:${hospital.hotline.replace(/\s/g, '')}`} className="hover:text-blue-600">{hospital.hotline}</a> : 'Chưa cập nhật'}</dd></div><div><dt className="text-xs text-slate-400">Email</dt><dd className="mt-1 break-all text-slate-700">{hospital.email ? <a href={`mailto:${hospital.email}`} className="hover:text-blue-600">{hospital.email}</a> : 'Chưa cập nhật'}</dd></div></dl>{mapHref && <a href={mapHref} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-lg border border-blue-200 px-4 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50"><MapPin className="size-4" />Mở chỉ đường trên bản đồ</a>}</section>
+        </div>
+        <div className="space-y-5">
+          <section className={panel}><h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900"><Clock3 className="size-5 text-blue-600" />Thời gian làm việc</h2><p className="mb-4 text-sm leading-6 text-slate-600">{days || 'Ngày làm việc chưa cập nhật.'}</p><dl className="space-y-2 text-sm">{[{ label: 'Buổi sáng', start: hospital.morningStart, end: hospital.morningEnd }, { label: 'Buổi chiều', start: hospital.afternoonStart, end: hospital.afternoonEnd }].map(shift => <div key={shift.label} className="flex flex-wrap justify-between gap-2 rounded-lg bg-slate-50 p-3"><dt className="text-slate-500">{shift.label}</dt><dd className="font-semibold text-slate-800">{shift.start && shift.end ? `${shift.start.slice(0, 5)} – ${shift.end.slice(0, 5)}` : 'Chưa cập nhật'}</dd></div>)}</dl></section>
+          <section className={panel}><h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-slate-900"><ShieldCheck className="size-5 text-blue-600" />Đặt khám & chính sách</h2><dl className="space-y-4 text-sm">{[
+            ['Đặt lịch trước', hospital.bookingWeeksAhead === null ? 'Chưa cập nhật' : hospital.bookingWeeksAhead === 0 ? 'Trong tuần hiện tại' : `Tối đa ${hospital.bookingWeeksAhead} tuần`],
+            ['Độ dài khung giờ', hospital.slotMinutes === null ? 'Chưa cập nhật' : `${hospital.slotMinutes} phút`],
+            ['Thời hạn hủy lịch', hospital.cancelBeforeHours === null ? 'Chưa cập nhật' : `Trước giờ khám ít nhất ${hospital.cancelBeforeHours} giờ`],
+            ['Tỷ lệ hoàn tiền theo cấu hình', hospital.refundPercent === null ? 'Chưa cập nhật' : `${hospital.refundPercent}%`],
+          ].map(([label, value]) => <div key={label}><dt className="text-xs text-slate-400">{label}</dt><dd className="mt-1 font-medium leading-6 text-slate-700">{value}</dd></div>)}</dl><div className="mt-5 border-t border-slate-100 pt-4"><h3 className="text-xs font-semibold text-slate-600">Chính sách của cơ sở</h3><p className="mt-2 text-xs leading-6 whitespace-pre-line text-slate-500">{hospital.policyText || 'Chưa có nội dung chính sách chi tiết. Liên hệ cơ sở để xác nhận điều kiện hủy và hoàn tiền.'}</p></div></section>
+        </div>
+      </div> : <section className={panel}>
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-900">Danh mục dịch vụ</h2><p className="mt-1 text-xs text-slate-500">Giá tham khảo của từng dịch vụ tại cơ sở.</p></div><div className="flex w-full flex-wrap gap-2 sm:w-auto"><div className="relative w-full sm:w-64"><Search className="absolute top-3 left-3 size-4 text-slate-400" /><input aria-label="Tìm dịch vụ" value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} placeholder="Tên hoặc mã dịch vụ…" className="w-full rounded-lg border border-slate-200 py-2.5 pr-3 pl-9 text-xs outline-none focus:border-blue-500" /></div><select aria-label="Nhóm dịch vụ" value={category} onChange={event => { setCategory(event.target.value); setPage(1); }} className="max-w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs"><option value="ALL">Tất cả nhóm</option>{[...new Set(hospital.services.map(service => service.category))].map(name => <option key={name}>{name}</option>)}</select></div></div>
+        <div role="region" aria-label="Bảng giá dịch vụ" tabIndex={0} className="overflow-x-auto"><table className="w-full min-w-[560px] border-collapse text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr>{['Mã dịch vụ', 'Tên dịch vụ', 'Nhóm', 'Đơn giá'].map(label => <th key={label} scope="col" className="border border-slate-200 px-3 py-3 font-semibold">{label}</th>)}</tr></thead><tbody>{services.slice((currentPage - 1) * 10, currentPage * 10).map(service => <tr key={service.id}><td className="border border-slate-200 px-3 py-3 text-xs text-slate-500">{service.code}</td><td className="border border-slate-200 px-3 py-3 text-slate-700">{service.name}</td><td className="border border-slate-200 px-3 py-3 text-xs text-slate-500">{service.category}</td><td className="border border-slate-200 px-3 py-3 text-right whitespace-nowrap font-semibold text-blue-700">{currency(service.price)}</td></tr>)}{!services.length && <tr><td colSpan={4} className="border border-slate-200 px-4 py-12 text-center text-sm text-slate-400">{hospital.services.length ? 'Không tìm thấy dịch vụ phù hợp.' : 'Cơ sở chưa cung cấp danh mục và giá dịch vụ.'}</td></tr>}</tbody></table></div>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500"><p role="status">{services.length} dịch vụ · Trang {currentPage}/{totalPages}</p><div className="flex gap-2"><button type="button" disabled={currentPage === 1} onClick={() => setPage(currentPage - 1)} aria-label="Trang trước" className="rounded-lg border border-slate-200 p-2 hover:bg-slate-50 disabled:opacity-30"><ChevronLeft className="size-4" /></button><button type="button" disabled={currentPage === totalPages} onClick={() => setPage(currentPage + 1)} aria-label="Trang tiếp theo" className="rounded-lg border border-slate-200 p-2 hover:bg-slate-50 disabled:opacity-30"><ChevronRight className="size-4" /></button></div></div>
+      </section>}
     </div>
-  );
-};
+  </div>;
+}
 
 export { HospitalDetailPage as HospitalDetailScreen };

@@ -1,0 +1,1233 @@
+{
+    "id":  "1",
+    "code":  "BV-DEMO",
+    "name":  "Bệnh viện Demo",
+    "level":  "PROVINCIAL",
+    "province":  "TP. Hồ Chí Minh",
+    "address":  "01 Đường Demo, TP. Hồ Chí Minh",
+    "hotline":  "0280000000",
+    "email":  "contact@benhviendemo.vn",
+    "logoUrl":  null,
+    "introduction":  null,
+    "morningStart":  "07:00:00",
+    "morningEnd":  "11:30:00",
+    "afternoonStart":  "13:30:00",
+    "afternoonEnd":  "17:00:00",
+    "workingDays":  "1,2,3,4,5,6",
+    "slotMinutes":  30,
+    "bookingWeeksAhead":  4,
+    "cancelBeforeHours":  24,
+    "refundPercent":  100.00,
+    "policyText":  null,
+    "status":  "ACTIVE",
+    "specialties":  [
+                        {
+                            "id":  "5",
+                            "code":  "05",
+                            "name":  "Da liễu",
+                            "description":  "Chương 05 - Phụ lục 01 Thông tư 23/2024/TT-BYT"
+                        }
+                    ],
+    "services":  [
+                     {
+                         "id":  "1",
+                         "code":  "18.67",
+                         "name":  "Chụp X-quang sọ thẳng hoặc nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.67. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "2",
+                         "code":  "18.68",
+                         "name":  "Chụp X-quang mặt thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.68. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "3",
+                         "code":  "18.69",
+                         "name":  "Chụp X-quang mặt thấp hoặc mặt cao",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.69. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "4",
+                         "code":  "18.70",
+                         "name":  "Chụp X-quang sọ tiếp tuyến",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.70. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "5",
+                         "code":  "18.71",
+                         "name":  "Chụp X-quang hốc mắt thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.71. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "6",
+                         "code":  "18.72",
+                         "name":  "Chụp X-quang Blondeau",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.72. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "7",
+                         "code":  "18.73",
+                         "name":  "Chụp X-quang Hirtz",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.73. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "8",
+                         "code":  "18.74",
+                         "name":  "Chụp X-quang hàm chếch một bên",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.74. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "9",
+                         "code":  "18.75",
+                         "name":  "Chụp X-quang xương chính mũi nghiêng hoặc tiếp tuyến",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.75. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "10",
+                         "code":  "18.76",
+                         "name":  "Chụp X-quang hố yên thẳng hoặc nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.76. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "11",
+                         "code":  "18.80",
+                         "name":  "Chụp X-quang khớp thái dương hàm",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.80. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "12",
+                         "code":  "18.81",
+                         "name":  "Chụp X-quang răng cận chóp (Periapical)",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.81. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "13",
+                         "code":  "18.82",
+                         "name":  "Chụp X-quang răng cánh cắn (Bite wing)",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.82. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "14",
+                         "code":  "18.83",
+                         "name":  "Chụp X-quang răng toàn cảnh",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.83. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "15",
+                         "code":  "18.84",
+                         "name":  "Chụp X-quang phim cắn (Occlusal)",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.84. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "16",
+                         "code":  "18.85",
+                         "name":  "Chụp X-quang mỏm trâm",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.85. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "17",
+                         "code":  "18.86",
+                         "name":  "Chụp X-quang cột sống cổ thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.86. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "18",
+                         "code":  "18.87",
+                         "name":  "Chụp X-quang cột sống cổ chếch hai bên",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.87. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "19",
+                         "code":  "18.88",
+                         "name":  "Chụp X-quang cột sống cổ động, nghiêng 3 tư thế",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.88. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "20",
+                         "code":  "18.89",
+                         "name":  "Chụp X-quang đốt sống cổ thứ nhất và thứ hai",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.89. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "21",
+                         "code":  "18.90",
+                         "name":  "Chụp X-quang cột sống ngực thẳng nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.90. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "22",
+                         "code":  "18.91",
+                         "name":  "Chụp X-quang cột sống thắt lưng thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.91. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "23",
+                         "code":  "18.92",
+                         "name":  "Chụp X-quang cột sống thắt lưng chếch hai bên",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.92. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "24",
+                         "code":  "18.93",
+                         "name":  "Chụp X-quang đốt sống thắt lưng thứ năm và đốt sống cùng thứ nhất thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.93. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "25",
+                         "code":  "18.94",
+                         "name":  "Chụp X-quang cột sống thắt lưng động, gập ưỡn",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.94. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "26",
+                         "code":  "18.96",
+                         "name":  "Chụp X-quang cột sống cùng cụt thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.96. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "27",
+                         "code":  "18.97",
+                         "name":  "Chụp X-quang khớp cùng chậu thẳng chếch hai bên",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.97. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "28",
+                         "code":  "18.98",
+                         "name":  "Chụp X-quang khung chậu thẳng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.98. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "29",
+                         "code":  "18.99",
+                         "name":  "Chụp X-quang xương đòn thẳng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.99. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "30",
+                         "code":  "18.100",
+                         "name":  "Chụp X-quang khớp vai thẳng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.100. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "31",
+                         "code":  "18.101",
+                         "name":  "Chụp X-quang khớp vai nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.101. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "32",
+                         "code":  "18.102",
+                         "name":  "Chụp X-quang xương bả vai thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.102. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "33",
+                         "code":  "18.103",
+                         "name":  "Chụp X-quang xương cánh tay thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.103. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "34",
+                         "code":  "18.104",
+                         "name":  "Chụp X-quang khớp khuỷu thẳng, nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.104. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "35",
+                         "code":  "18.105",
+                         "name":  "Chụp X-quang khớp khuỷu gập (Jones hoặc Coyle)",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.105. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "36",
+                         "code":  "18.106",
+                         "name":  "Chụp X-quang xương cẳng tay thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.106. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "37",
+                         "code":  "18.107",
+                         "name":  "Chụp X-quang xương cổ tay thẳng, nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.107. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "38",
+                         "code":  "18.108",
+                         "name":  "Chụp X-quang xương bàn ngón tay thẳng, nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.108. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "39",
+                         "code":  "18.109",
+                         "name":  "Chụp X-quang khớp háng thẳng hai bên",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.109. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "40",
+                         "code":  "18.110",
+                         "name":  "Chụp X-quang khớp háng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.110. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "41",
+                         "code":  "18.111",
+                         "name":  "Chụp X-quang xương đùi thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.111. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "42",
+                         "code":  "18.112",
+                         "name":  "Chụp X-quang khớp gối thẳng, nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.112. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "43",
+                         "code":  "18.113",
+                         "name":  "Chụp X-quang xương bánh chè và khớp đùi bánh chè",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.113. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "44",
+                         "code":  "18.114",
+                         "name":  "Chụp X-quang xương cẳng chân thẳng nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.114. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "45",
+                         "code":  "18.115",
+                         "name":  "Chụp X-quang xương cổ chân thẳng, nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.115. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "46",
+                         "code":  "18.116",
+                         "name":  "Chụp X-quang xương bàn, ngón chân thẳng, nghiêng hoặc chếch",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.116. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "47",
+                         "code":  "18.119",
+                         "name":  "Chụp X-quang ngực thẳng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.119. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "48",
+                         "code":  "18.120",
+                         "name":  "Chụp X-quang ngực nghiêng hoặc chếch mỗi bên",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.120. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "49",
+                         "code":  "18.125",
+                         "name":  "Chụp X-quang bụng không chuẩn bị thẳng hoặc nghiêng",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.125. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "50",
+                         "code":  "18.126",
+                         "name":  "Chụp X-quang tuyến vú",
+                         "price":  100000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.126. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "X-quang"
+                     },
+                     {
+                         "id":  "51",
+                         "code":  "18.149",
+                         "name":  "Chụp cắt lớp vi tính sọ não không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.149. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "52",
+                         "code":  "18.150",
+                         "name":  "Chụp cắt lớp vi tính sọ não có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.150. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "53",
+                         "code":  "18.151",
+                         "name":  "Chụp cắt lớp vi tính hệ động mạch cảnh có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.151. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "54",
+                         "code":  "18.152",
+                         "name":  "Chụp cắt lớp vi tính tưới máu não (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.152. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "55",
+                         "code":  "18.153",
+                         "name":  "Chụp cắt lớp vi tính mạch máu não (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.153. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "56",
+                         "code":  "18.154",
+                         "name":  "Chụp cắt lớp vi tính sọ não có dựng hình ba chiều (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.154. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "57",
+                         "code":  "18.155",
+                         "name":  "Chụp cắt lớp vi tính hàm - mặt không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.155. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "58",
+                         "code":  "18.156",
+                         "name":  "Chụp cắt lớp vi tính hàm - mặt có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.156. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "59",
+                         "code":  "18.157",
+                         "name":  "Chụp cắt lớp vi tính hàm mặt có ứng dụng phần mềm nha khoa (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.157. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "60",
+                         "code":  "18.158",
+                         "name":  "Chụp cắt lớp vi tính tai - xương đá không tiêm thuốc (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.158. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "61",
+                         "code":  "18.159",
+                         "name":  "Chụp cắt lớp vi tính tai - xương đá có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.159. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "62",
+                         "code":  "18.160",
+                         "name":  "Chụp cắt lớp vi tính hốc mắt (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.160. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "63",
+                         "code":  "18.161",
+                         "name":  "Chụp cắt lớp vi tính hàm mặt có dựng hình ba chiều (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.161. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "64",
+                         "code":  "18.162",
+                         "name":  "Chụp cắt lớp vi tính hàm mặt chùm tia hình nón hàm trên",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.162. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "65",
+                         "code":  "18.163",
+                         "name":  "Chụp cắt lớp vi tính hàm mặt chùm tia hình nón hàm dưới",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.163. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "66",
+                         "code":  "18.164",
+                         "name":  "Chụp cắt lớp vi tính hàm mặt chùm tia hình nón hàm trên hàm dưới",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.164. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "67",
+                         "code":  "18.191",
+                         "name":  "Chụp cắt lớp vi tính lồng ngực không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.191. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "68",
+                         "code":  "18.192",
+                         "name":  "Chụp cắt lớp vi tính lồng ngực có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.192. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "69",
+                         "code":  "18.193",
+                         "name":  "Chụp cắt lớp vi tính phổi độ phân giải cao (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.193. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "70",
+                         "code":  "18.194",
+                         "name":  "Chụp cắt lớp vi tính phổi liều thấp tầm soát u (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.194. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "71",
+                         "code":  "18.195",
+                         "name":  "Chụp cắt lớp vi tính nội soi ảo cây phế quản (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.195. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "72",
+                         "code":  "18.196",
+                         "name":  "Chụp cắt lớp vi tính động mạch phổi (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.196. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "73",
+                         "code":  "18.197",
+                         "name":  "Chụp cắt lớp vi tính động mạch chủ ngực (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.197. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "74",
+                         "code":  "18.198",
+                         "name":  "Chụp cắt lớp vi tính động mạch vành, tim (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.198. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "75",
+                         "code":  "18.199",
+                         "name":  "Chụp cắt lớp vi tính tính điểm vôi hóa mạch vành (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.199. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "76",
+                         "code":  "18.219",
+                         "name":  "Chụp cắt lớp vi tính tầng trên ổ bụng thường quy (gồm: chụp cắt lớp vi tính gan - mật, tụy, lách, dạ dày - tá tràng và các cơ quan khác) (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.219. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "77",
+                         "code":  "18.220",
+                         "name":  "Chụp cắt lớp vi tính bụng - tiểu khung thường quy (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.220. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "78",
+                         "code":  "18.221",
+                         "name":  "Chụp cắt lớp vi tính tiểu khung thường quy (gồm: chụp cắt lớp vi tính tử cung - buồng trứng, tiền liệt tuyến, các khối u vùng tiểu khung và các cơ quan khác) (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.221. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "79",
+                         "code":  "18.222",
+                         "name":  "Chụp cắt lớp vi tính hệ tiết niệu thường quy (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.222. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "80",
+                         "code":  "18.223",
+                         "name":  "Chụp cắt lớp vi tính tầng trên ổ bụng có khảo sát mạch các tạng (bao gồm mạch: gan, tụy, lách và mạch khối u) (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.223. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "81",
+                         "code":  "18.224",
+                         "name":  "Chụp cắt lớp vi tính hệ tiết niệu có khảo sát mạch thận và hoặc dựng hình đường bài xuất (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.224. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "82",
+                         "code":  "18.225",
+                         "name":  "Chụp cắt lớp vi tính gan có dựng hình đường mật (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.225. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "83",
+                         "code":  "18.226",
+                         "name":  "Chụp cắt lớp vi tính tạng khảo sát huyết động học khối u (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.226. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "84",
+                         "code":  "18.227",
+                         "name":  "Chụp cắt lớp vi tính ruột non (entero-scan) không dùng ống thông (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.227. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "85",
+                         "code":  "18.228",
+                         "name":  "Chụp cắt lớp vi tính ruột non (entero-scan) có dùng ống thông (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.228. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "86",
+                         "code":  "18.229",
+                         "name":  "Chụp cắt lớp vi tính đại tràng (colo-scan) dùng dịch hoặc hơi có nội soi ảo (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.229. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "87",
+                         "code":  "18.230",
+                         "name":  "Chụp cắt lớp vi tính động mạch chủ - chậu (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.230. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "88",
+                         "code":  "18.255",
+                         "name":  "Chụp cắt lớp vi tính cột sống cổ không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.255. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "89",
+                         "code":  "18.256",
+                         "name":  "Chụp cắt lớp vi tính cột sống cổ có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.256. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "90",
+                         "code":  "18.257",
+                         "name":  "Chụp cắt lớp vi tính cột sống ngực không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.257. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "91",
+                         "code":  "18.258",
+                         "name":  "Chụp cắt lớp vi tính cột sống ngực có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.258. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "92",
+                         "code":  "18.259",
+                         "name":  "Chụp cắt lớp vi tính cột sống thắt lưng không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.259. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "93",
+                         "code":  "18.260",
+                         "name":  "Chụp cắt lớp vi tính cột sống thắt lưng có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.260. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "94",
+                         "code":  "18.261",
+                         "name":  "Chụp cắt lớp vi tính khớp thường quy không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.261. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "95",
+                         "code":  "18.262",
+                         "name":  "Chụp cắt lớp vi tính khớp thường quy có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.262. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "96",
+                         "code":  "18.263",
+                         "name":  "Chụp cắt lớp vi tính khớp có tiêm thuốc cản quang vào ổ khớp (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.263. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "97",
+                         "code":  "18.264",
+                         "name":  "Chụp cắt lớp vi tính xương chi không tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.264. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "98",
+                         "code":  "18.265",
+                         "name":  "Chụp cắt lớp vi tính xương chi có tiêm thuốc cản quang (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.265. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "99",
+                         "code":  "18.266",
+                         "name":  "Chụp cắt lớp vi tính mạch máu chi trên (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.266. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "100",
+                         "code":  "18.267",
+                         "name":  "Chụp cắt lớp vi tính mạch máu chi dưới (từ 1 đến 32 dãy)",
+                         "price":  1000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.267. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cắt lớp vi tính"
+                     },
+                     {
+                         "id":  "101",
+                         "code":  "18.296",
+                         "name":  "Chụp cộng hưởng từ sọ não (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.296. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "102",
+                         "code":  "18.297",
+                         "name":  "Chụp cộng hưởng từ sọ não có tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.297. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "103",
+                         "code":  "18.298",
+                         "name":  "Chụp cộng hưởng từ não - mạch não không tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.298. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "104",
+                         "code":  "18.299",
+                         "name":  "Chụp cộng hưởng từ não - mạch não có tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.299. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "105",
+                         "code":  "18.300",
+                         "name":  "Chụp cộng hưởng từ hệ mạch cổ không tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.300. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "106",
+                         "code":  "18.301",
+                         "name":  "Chụp cộng hưởng từ hệ mạch cổ có tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.301. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "107",
+                         "code":  "18.302",
+                         "name":  "Chụp cộng hưởng từ tuyến yên có tiêm chất tương phản (khảo sát động học) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.302. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "108",
+                         "code":  "18.303",
+                         "name":  "Chụp cộng hưởng từ hốc mắt và thần kinh thị giác (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.303. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "109",
+                         "code":  "18.304",
+                         "name":  "Chụp cộng hưởng từ hốc mắt và thần kinh thị giác có tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.304. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "110",
+                         "code":  "18.305",
+                         "name":  "Chụp cộng hưởng từ tưới máu não (perfusion) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.305. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "111",
+                         "code":  "18.306",
+                         "name":  "Chụp cộng hưởng từ phổ não (spectrography) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.306. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "112",
+                         "code":  "18.307",
+                         "name":  "Chụp cộng hưởng từ các bó sợi thần kinh (tractography) hay chụp cộng hưởng từ khuếch tán sức căng (Diffusion Tensor Imaging) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.307. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "113",
+                         "code":  "18.308",
+                         "name":  "Chụp cộng hưởng từ khuếch tán (Diffusion-weighted Imaging) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.308. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "114",
+                         "code":  "18.309",
+                         "name":  "Chụp cộng hưởng từ đáy sọ và xương đá (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.309. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "115",
+                         "code":  "18.310",
+                         "name":  "Chụp cộng hưởng từ vùng mặt - cổ (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.310. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "116",
+                         "code":  "18.311",
+                         "name":  "Chụp cộng hưởng từ vùng mặt - cổ có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.311. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "117",
+                         "code":  "18.312",
+                         "name":  "Chụp cộng hưởng từ sọ não chức năng (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.312. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "118",
+                         "code":  "18.313",
+                         "name":  "Chụp cộng hưởng từ lồng ngực (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.313. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "119",
+                         "code":  "18.314",
+                         "name":  "Chụp cộng hưởng từ lồng ngực có tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.314. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "120",
+                         "code":  "18.315",
+                         "name":  "Chụp cộng hưởng từ thông khí phổi (Heli) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.315. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "121",
+                         "code":  "18.316",
+                         "name":  "Chụp cộng hưởng từ tuyến vú (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.316. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "122",
+                         "code":  "18.317",
+                         "name":  "Chụp cộng hưởng từ tuyến vú động học có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.317. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "123",
+                         "code":  "18.318",
+                         "name":  "Chụp cộng hưởng từ phổ tuyến vú (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.318. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "124",
+                         "code":  "18.319",
+                         "name":  "Chụp cộng hưởng từ tầng bụng không tiêm chất tương phản (gồm: chụp cộng hưởng từ gan - mật, tụy, lách, thận, dạ dày - tá tràng, và các cấu trúc khác) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.319. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "125",
+                         "code":  "18.320",
+                         "name":  "Chụp cộng hưởng từ tầng bụng có tiêm chất tương phản (gồm: chụp cộng hưởng từ gan - mật, tụy, lách, thận, dạ dày - tá tràng, và các cấu trúc khác) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.320. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "126",
+                         "code":  "18.321",
+                         "name":  "Chụp cộng hưởng từ vùng chậu (gồm: chụp cộng hưởng từ tử cung - phần phụ, tiền liệt tuyến, đại tràng chậu hông, trực tràng, các khối u vùng chậu, và các cấu trúc khác) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.321. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "127",
+                         "code":  "18.322",
+                         "name":  "Chụp cộng hưởng từ vùng chậu dò hậu môn (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.322. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "128",
+                         "code":  "18.323",
+                         "name":  "Chụp cộng hưởng từ vùng chậu có tiêm chất tương phản (gồm: chụp cộng hưởng từ tử cung - phần phụ, tiền liệt tuyến, đại tràng chậu hông, trực tràng, các khối u vùng chậu, và các cấu trúc khác) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.323. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "129",
+                         "code":  "18.324",
+                         "name":  "Chụp cộng hưởng từ bìu, dương vật (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.324. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "130",
+                         "code":  "18.325",
+                         "name":  "Chụp cộng hưởng từ bìu, dương vật có tiêm chất tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.325. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "131",
+                         "code":  "18.326",
+                         "name":  "Chụp cộng hưởng từ động học sàn chậu, tống phân (defecography bằng cộng hưởng từ) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.326. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "132",
+                         "code":  "18.327",
+                         "name":  "Chụp cộng hưởng từ ruột non (enteroclysis) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.327. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "133",
+                         "code":  "18.328",
+                         "name":  "Chụp cộng hưởng từ nội soi ảo khung đại tràng (virtual colonoscopy) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.328. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "134",
+                         "code":  "18.329",
+                         "name":  "Chụp cộng hưởng từ tuyến tiền liệt có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.329. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "135",
+                         "code":  "18.330",
+                         "name":  "Chụp cộng hưởng từ phổ tuyến tiền liệt (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.330. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "136",
+                         "code":  "18.331",
+                         "name":  "Chụp cộng hưởng từ đánh giá bánh nhau (rau) (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.331. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "137",
+                         "code":  "18.332",
+                         "name":  "Chụp cộng hưởng từ thai nhi (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.332. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "138",
+                         "code":  "18.333",
+                         "name":  "Chụp cộng hưởng từ gan với chất tương phản đặc hiệu mô (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.333. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "139",
+                         "code":  "18.334",
+                         "name":  "Chụp cộng hưởng từ cột sống cổ (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.334. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "140",
+                         "code":  "18.335",
+                         "name":  "Chụp cộng hưởng từ cột sống cổ có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.335. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "141",
+                         "code":  "18.336",
+                         "name":  "Chụp cộng hưởng từ cột sống ngực (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.336. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "142",
+                         "code":  "18.337",
+                         "name":  "Chụp cộng hưởng từ cột sống ngực có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.337. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "143",
+                         "code":  "18.338",
+                         "name":  "Chụp cộng hưởng từ cột sống thắt lưng - cùng (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.338. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "144",
+                         "code":  "18.339",
+                         "name":  "Chụp cộng hưởng từ cột sống thắt lưng - cùng có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.339. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "145",
+                         "code":  "18.340",
+                         "name":  "Chụp cộng hưởng từ khớp (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.340. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "146",
+                         "code":  "18.341",
+                         "name":  "Chụp cộng hưởng từ khớp có tiêm tương phản tĩnh mạch (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.341. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "147",
+                         "code":  "18.342",
+                         "name":  "Chụp cộng hưởng từ khớp có tiêm tương phản nội khớp (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.342. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "148",
+                         "code":  "18.343",
+                         "name":  "Chụp cộng hưởng từ xương và tủy xương (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.343. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "149",
+                         "code":  "18.344",
+                         "name":  "Chụp cộng hưởng từ xương và tủy xương có tiêm tương phản (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.344. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     },
+                     {
+                         "id":  "150",
+                         "code":  "18.345",
+                         "name":  "Chụp cộng hưởng từ phần mềm chi (từ 0,2 đến 1,5 tesla)",
+                         "price":  2000000,
+                         "description":  "Nguồn: Chương 18 - Điện quang, Phụ lục 01 Thông tư 23/2024/TT-BYT; mã kỹ thuật 18.345. Tên đã viết đầy đủ chữ viết tắt. Giá mẫu phục vụ phát triển, không phải giá do Bộ Y tế ban hành.",
+                         "category":  "Cộng hưởng từ"
+                     }
+                 ]
+}
