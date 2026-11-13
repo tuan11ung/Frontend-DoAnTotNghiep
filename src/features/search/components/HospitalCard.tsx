@@ -6,8 +6,6 @@ import {
   MapPin,
   Clock,
   Phone,
-  CreditCard,
-  CheckCircle2,
   Calendar,
   Hospital,
   Sparkles,
@@ -104,7 +102,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
         {/* Hospital Main Content */}
         <div className="flex-1 flex flex-col justify-between w-full min-w-0">
           <div>
-            {/* Header Row: Title & Tier Badge */}
+            {/* Header Row: Title */}
             <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
               <h2
                 onClick={() => onViewDetails?.(facility)}
@@ -113,12 +111,6 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
                 {facility.name}
               </h2>
 
-              {facility.tierBadge && (
-                <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-900 text-xs font-semibold shadow-xs">
-                  <Hospital className="w-3.5 h-3.5 text-blue-600" />
-                  <span>{facility.tierBadge}</span>
-                </div>
-              )}
             </div>
 
             {/* Department Badges Ribbon */}
@@ -138,7 +130,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
               )}
             </div>
 
-            {/* Key Information List (Location, Hours, Phone, Fee) */}
+            {/* Key Information List (Location, Hours, Phone) */}
             <div className="flex flex-col gap-1.5 pt-2 text-slate-600 text-xs sm:text-sm">
               {/* Address */}
               <div className="flex items-start gap-2">
@@ -159,50 +151,11 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
                 </div>
               </div>
 
-              {/* Fee & Insurance */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <CreditCard className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span className="font-semibold text-slate-800">
-                    Phí khám: {facility.feeRange}
-                  </span>
-                </div>
-                {facility.insuranceBadge && (
-                  <span className="text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
-                    {facility.insuranceBadge}
-                  </span>
-                )}
-              </div>
             </div>
           </div>
 
-          {/* Footer: Status & Call to Action Button */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 mt-3 border-t border-slate-100">
-            {/* Status availability badge */}
-            <div
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${
-                facility.statusBadge.availableToday
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'bg-blue-50 text-blue-800'
-              }`}
-            >
-              <CheckCircle2
-                className={`w-4 h-4 ${
-                  facility.statusBadge.availableToday ? 'text-emerald-600' : 'text-blue-600'
-                }`}
-              />
-              <span className="font-bold">{facility.statusBadge.text}</span>
-              {facility.statusBadge.subText && (
-                <span
-                  className={`text-xs ${
-                    facility.statusBadge.availableToday ? 'text-emerald-600' : 'text-blue-600'
-                  }`}
-                >
-                  {facility.statusBadge.subText}
-                </span>
-              )}
-            </div>
-
+          {/* Footer: Call to Action Buttons */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-3 pt-3 mt-3 border-t border-slate-100">
             {/* Action buttons */}
             <div className="flex items-center gap-2.5 w-full sm:w-auto">
               <button
