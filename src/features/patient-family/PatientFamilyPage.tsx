@@ -163,8 +163,7 @@ function FamilyContent({ token }: { token: string | null }) {
               </div>
               <p className="text-xs text-slate-500 mt-1 flex flex-wrap gap-x-4 gap-y-1">
                 <span>Ngày sinh: <strong>{formatDisplayDate(owner.dob)}</strong></span>
-                <span>CCCD: <strong className="font-mono">{owner.maskedNationalId || 'Chưa cập nhật'}</strong></span>
-                <span>BHYT: <strong className="font-mono text-emerald-700">{owner.insuranceNo || 'Chưa cập nhật'}</strong></span>
+                <span>BHYT: <strong className="text-emerald-700">{owner.insuranceNo || 'Chưa cập nhật'}</strong></span>
               </p>
             </div>
           </div>
@@ -211,7 +210,6 @@ function FamilyContent({ token }: { token: string | null }) {
               <FamilyMemberCard
                 key={member.id}
                 member={member}
-                maskedIdentifiers={Boolean(token)}
                 onEdit={token ? undefined : () => {
                   setEditingMember(preview.members.find(item => item.id === member.id) ?? null);
                 }}

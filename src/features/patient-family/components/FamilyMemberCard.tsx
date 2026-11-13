@@ -6,7 +6,6 @@ import React from 'react';
 import {
   User,
   Calendar,
-  CreditCard,
   Phone,
   Edit2,
   Trash2,
@@ -16,19 +15,12 @@ import { RELATIONSHIP_LABELS, type FamilyMemberSummary } from '../models/types/f
 
 interface FamilyMemberCardProps {
   member: FamilyMemberSummary;
-  maskedIdentifiers?: boolean;
   onEdit?: () => void;
   onDelete: () => void;
 }
 
-export function FamilyMemberCard({ member, maskedIdentifiers, onEdit, onDelete }: FamilyMemberCardProps) {
+export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardProps) {
   const relationshipText = RELATIONSHIP_LABELS[member.relationship] || 'Người thân';
-  const age = member.dob
-    ? new Date().getFullYear() - new Date(member.dob).getFullYear()
-    : null;
-  const nationalId = maskedIdentifiers || !member.nationalId
-    ? member.nationalId
-    : `${member.nationalId.slice(0, 3)}****${member.nationalId.slice(-3)}`;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 hover:border-blue-300 hover:shadow-lg transition-all p-5 flex flex-col justify-between group">
@@ -87,27 +79,18 @@ export function FamilyMemberCard({ member, maskedIdentifiers, onEdit, onDelete }
         {member.dob && (
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-            <span>Ngày sinh / Tuổi:</span>
-            <span className="font-semibold text-slate-800 ml-auto font-mono">
+            <span>Ngày sinh:</span>
+            <span className="font-semibold text-slate-800 ml-auto">
               {formatDisplayDate(member.dob)}
-              {age !== null ? ` (${age} tuổi)` : ''}
             </span>
           </div>
         )}
-
-        <div className="flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>CCCD / Mã ĐD:</span>
-          <span className="font-semibold text-slate-800 ml-auto font-mono">
-            {nationalId || 'Chưa cập nhật'}
-          </span>
-        </div>
 
         {member.bhytNumber && (
           <div className="flex items-center gap-2">
             <HeartHandshake className="w-4 h-4 text-emerald-500 shrink-0" />
             <span>Mã BHYT:</span>
-            <span className="font-semibold text-emerald-700 ml-auto font-mono">
+            <span className="font-semibold text-emerald-700 ml-auto">
               {member.bhytNumber}
             </span>
           </div>
@@ -117,7 +100,7 @@ export function FamilyMemberCard({ member, maskedIdentifiers, onEdit, onDelete }
           <div className="flex items-center gap-2">
             <Phone className="w-4 h-4 text-slate-400 shrink-0" />
             <span>Số điện thoại:</span>
-            <span className="font-semibold text-slate-800 ml-auto font-mono">
+            <span className="font-semibold text-slate-800 ml-auto">
               {member.phone}
             </span>
           </div>
