@@ -18,9 +18,15 @@ export function countQueuePatients(patients: QueuePatient[]) {
   return counts;
 }
 
-export function filterQueuePatients(patients: QueuePatient[], status: QueueFilterStatus, query: string, tag: PatientTag | '') {
+export function filterQueuePatients(
+  patients: QueuePatient[],
+  status: QueueFilterStatus,
+  query: string,
+  tag: PatientTag | '',
+  preserveServerOrder = false,
+) {
   const search = normalizeQueueSearch(query);
-  const candidates = status === 'waiting'
+  const candidates = status === 'waiting' && !preserveServerOrder
     ? sortWaitingPatients(patients)
     : patients.filter((patient) => patient.status === status);
   return candidates.filter((patient) => (
