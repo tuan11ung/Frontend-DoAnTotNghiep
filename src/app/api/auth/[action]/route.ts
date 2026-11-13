@@ -2,11 +2,11 @@ const BACKEND_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081')
   .replace(/\/$/, '')
   .replace(/\/api\/v1$/, '');
 const ENDPOINTS = new Map([
-  ['register', { path: '/api/v1/public/auth/register', requiresAuthentication: false }],
-  ['verify-otp', { path: '/api/v1/public/auth/verify-otp', requiresAuthentication: false }],
-  ['resend-otp', { path: '/api/v1/public/auth/resend-otp', requiresAuthentication: false }],
-  ['login', { path: '/api/v1/public/auth/login', requiresAuthentication: false }],
-  ['refresh', { path: '/api/v1/public/auth/refresh', requiresAuthentication: false }],
+  ['register', { path: '/api/v1/auth/register', requiresAuthentication: false }],
+  ['verify-otp', { path: '/api/v1/auth/verify-otp', requiresAuthentication: false }],
+  ['resend-otp', { path: '/api/v1/auth/resend-otp', requiresAuthentication: false }],
+  ['login', { path: '/api/v1/auth/login', requiresAuthentication: false }],
+  ['refresh', { path: '/api/v1/auth/refresh', requiresAuthentication: false }],
   ['me', { path: '/api/v1/auth/me', requiresAuthentication: true }],
   ['logout', { path: '/api/v1/auth/logout', requiresAuthentication: true }],
 ]);
