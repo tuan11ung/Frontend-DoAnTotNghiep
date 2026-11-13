@@ -26,7 +26,7 @@ Chạy `pnpm dev`, ở trang chủ chọn **Đã đăng nhập** trên thanh xem
 
 | Hồ sơ / Hóa đơn | Dữ liệu mẫu |
 | --- | --- |
-| Bản thân / `demo-invoice-1101` | Khám 200.000đ + CLS 550.000đ + thuốc mẫu 150.000đ = 900.000đ; giảm trừ 300.000đ; cần trả 600.000đ |
+| Bản thân / `demo-invoice-1101` | Khám 200.000đ + CLS 550.000đ + thuốc mẫu 150.000đ = 900.000đ; BHYT chi trả mẫu 250.000đ; cần trả 650.000đ |
 | Bản thân / `demo-invoice-1028` | Đã trả 500.000đ qua MoMo, có biên lai mẫu |
 | Mẹ / `demo-invoice-mother` | Chưa trả 350.000đ |
 | Con | Chưa có hóa đơn |
@@ -40,6 +40,8 @@ Danh tính/ca khám mẫu lấy từ fixtures của module Kết quả khám đ�
 5. Mở hai tab cùng hóa đơn để thử đồng bộ: Web Locks bảo vệ cập nhật, một giao dịch chờ được dùng chung, thành công chỉ ghi nhận một lần. Nhánh fallback khi trình duyệt không có Web Locks chỉ dùng cho mô phỏng, không dùng bảo đảm giao dịch thật.
 
 Trạng thái lưu riêng ở `medconnect.payments-demo.v1`, đồng bộ qua storage/custom event và giữ khi tải lại. Xóa key để khôi phục hóa đơn ban đầu. Dữ liệu sai cấu trúc hoặc sai quyền sở hữu hiện lỗi thay vì tự thay bằng mẫu khác. Không lưu số thẻ/CVV/OTP; lựa chọn Thẻ chỉ hiển thị thẻ mẫu `•••• 4242`.
+
+Đã bỏ khoản ưu đãi cơ sở khỏi hóa đơn mẫu. Snapshot cũ khớp chính xác hóa đơn mẫu có khoản 50.000đ này được chuyển sang tổng mới 650.000đ, đồng thời cập nhật số tiền giao dịch mô phỏng tương ứng và giữ trạng thái/lịch sử. Không áp dụng chuyển đổi cho dữ liệu API thật.
 
 Tham số URL như `status=SUCCESS`, `vnp_ResponseCode=00` không có quyền thay đổi trạng thái. Không gọi cổng thật hoặc API tạo thanh toán trong chế độ mô phỏng.
 

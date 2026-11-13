@@ -17,7 +17,7 @@ const invoices: Invoice[] = [
     { id: 'xray', group: 'CLS', name: 'Chụp X-quang ngực thẳng', quantity: 1, unit: 'lần', unitPrice: 150000 },
     { id: 'ultrasound', group: 'CLS', name: 'Siêu âm ổ bụng tổng quát', quantity: 1, unit: 'lần', unitPrice: 180000 },
     { id: 'medicine', group: 'MEDICINE', name: 'Thuốc theo đơn mẫu (không dùng làm hướng dẫn điều trị)', quantity: 1, unit: 'đơn', unitPrice: 150000 },
-  ], [{ label: 'BHYT chi trả (số liệu mô phỏng)', amount: 250000 }, { label: 'Ưu đãi của cơ sở', amount: 50000 }]),
+  ], [{ label: 'BHYT chi trả (số liệu mô phỏng)', amount: 250000 }]),
   invoice('demo-invoice-1028', 'demo-20261028', true, [
     { id: 'consult', group: 'CONSULTATION', name: 'Khám Tai Mũi Họng', quantity: 1, unit: 'lượt', unitPrice: 200000 },
     { id: 'cls', group: 'CLS', name: 'Nội soi Tai Mũi Họng', quantity: 1, unit: 'lần', unitPrice: 300000 },
@@ -38,9 +38,17 @@ export function parsePaymentSnapshot(snapshot: string): PaymentData | null {
   try {
     const value: unknown = JSON.parse(snapshot);
     if (typeof value !== 'object' || !value || !('invoices' in value) || !Array.isArray(value.invoices) || !('transactions' in value) || !Array.isArray(value.transactions)) return null;
+    let transactions = value.transactions;
+    // Upgrade only the exact former demo bill; never rewrite remote invoices.
+    const currentBill = initial.invoices[0];
+    const legacyBill = { ...currentBill, total: currentBill.total - 50000, discounts: [...currentBill.discounts!, { label: 'Ưu đãi của cơ sở', amount: 50000 }] };
+    const legacyIndex = value.invoices.findIndex(i => typeof i === 'object' && i && JSON.stringify({ ...i, status: legacyBill.status }) === JSON.stringify(legacyBill));
+    if (legacyIndex !== -1) {
+      value.invoices[legacyIndex] = { ...currentBill, status: value.invoices[legacyIndex].status };
+      transactions = transactions.map(t => typeof t === 'object' && t && t.invoiceId === currentBill.id && t.profileId === currentBill.profileId && t.amount === legacyBill.total ? { ...t, amount: currentBill.total } : t);
+    }
     // Only transaction state is mutable; bill contents and ownership always come from fixtures.
     if (value.invoices.length !== initial.invoices.length || !value.invoices.every(i => typeof i === 'object' && i && initial.invoices.some(expected => JSON.stringify({ ...i, status: expected.status }) === JSON.stringify(expected)) && ['UNPAID', 'PAID'].includes(i.status))) return null;
-    const transactions = value.transactions;
     if (new Set(transactions.map(t => t.id)).size !== transactions.length || !transactions.every(t => {
       const bill = initial.invoices.find(i => i.id === t.invoiceId && i.profileId === t.profileId);
       return bill && typeof t.id === 'string' && typeof t.reference === 'string' && ['VNPAY', 'MOMO', 'CARD', 'CASH'].includes(t.method) && ['PENDING', 'SUCCESS', 'FAILED', 'CANCELLED'].includes(t.status) && t.amount === bill.total && Number.isFinite(Date.parse(t.createdAt)) && (t.status === 'SUCCESS' ? typeof t.paidAt === 'string' && Number.isFinite(Date.parse(t.paidAt)) : t.paidAt === null);
