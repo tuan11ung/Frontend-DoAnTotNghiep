@@ -143,9 +143,6 @@ export function RegisterFormStep({
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
           Đăng ký tài khoản
         </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Khởi tạo hồ sơ người bệnh để đặt lịch khám và tra cứu viện phí
-        </p>
       </div>
 
       {serverError && (
