@@ -1,15 +1,24 @@
-const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
-const BACKEND_BASE = BACKEND_API_URL.endsWith('/api/v1') ? BACKEND_API_URL : `${BACKEND_API_URL}/api/v1`;
-const PUBLIC_ACTIONS = new Set(['register', 'verify-otp', 'resend-otp', 'login', 'refresh']);
-const AUTHENTICATED_ACTIONS = new Set(['me', 'logout']);
+const BACKEND_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081')
+  .replace(/\/$/, '')
+  .replace(/\/api\/v1$/, '');
+const ENDPOINTS = new Map([
+  ['register', { path: '/api/v1/public/auth/register', requiresAuthentication: false }],
+  ['verify-otp', { path: '/api/v1/public/auth/verify-otp', requiresAuthentication: false }],
+  ['resend-otp', { path: '/api/v1/public/auth/resend-otp', requiresAuthentication: false }],
+  ['login', { path: '/api/v1/public/auth/login', requiresAuthentication: false }],
+  ['refresh', { path: '/api/v1/public/auth/refresh', requiresAuthentication: false }],
+  ['me', { path: '/api/v1/auth/me', requiresAuthentication: true }],
+  ['logout', { path: '/api/v1/auth/logout', requiresAuthentication: true }],
+]);
 const NO_STORE = { 'Cache-Control': 'no-store' };
 
 export async function POST(request: Request, { params }: { params: Promise<{ action: string }> }) {
   const { action } = await params;
-  const requiresAuthentication = AUTHENTICATED_ACTIONS.has(action);
-  if (!requiresAuthentication && !PUBLIC_ACTIONS.has(action)) {
+  const endpoint = ENDPOINTS.get(action);
+  if (!endpoint) {
     return Response.json({ success: false, message: 'API xác thực không tồn tại.' }, { status: 404, headers: NO_STORE });
   }
+  const { path, requiresAuthentication } = endpoint;
   const authorization = request.headers.get('Authorization');
   if (requiresAuthentication && (!authorization?.startsWith('Bearer ') || !authorization.slice(7).trim())) {
     return Response.json({ success: false, message: 'Vui lòng đăng nhập.' }, { status: 401, headers: NO_STORE });
@@ -26,7 +35,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ act
     }
   }
   try {
-    const response = await fetch(`${BACKEND_BASE}/auth/${action}`, {
+    const response = await fetch(`${BACKEND_URL}${path}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json', 'Content-Type': 'application/json',

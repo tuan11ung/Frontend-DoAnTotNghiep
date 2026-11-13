@@ -1,18 +1,34 @@
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
-import { FamilyMember, RELATIONSHIP_LABELS } from '../models/types/family.types';
+import { RELATIONSHIP_LABELS, type FamilyMemberSummary } from '../models/types/family.types';
 
 interface DeleteFamilyMemberDialogProps {
   isOpen: boolean;
-  member: FamilyMember | null;
+  member: FamilyMemberSummary | null;
   onClose: () => void;
-  onConfirm: (id: string) => void;
+  onConfirm: (id: string) => Promise<void>;
 }
 
 export function DeleteFamilyMemberDialog({ isOpen, member, onClose, onConfirm }: DeleteFamilyMemberDialogProps) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   if (!isOpen || !member) return null;
+
+  async function confirm(id: string) {
+    if (busy) return;
+    setBusy(true);
+    setError('');
+    try {
+      await onConfirm(id);
+      onClose();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Không thể gỡ hồ sơ người thân.');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -20,10 +36,11 @@ export function DeleteFamilyMemberDialog({ isOpen, member, onClose, onConfirm }:
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2 text-rose-600 font-bold text-base">
             <AlertTriangle className="w-5 h-5 shrink-0" />
-            <span>Xác nhận xóa hồ sơ</span>
+            <span>Xác nhận gỡ hồ sơ</span>
           </div>
           <button
             onClick={onClose}
+            disabled={busy}
             type="button"
             className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
           >
@@ -33,12 +50,13 @@ export function DeleteFamilyMemberDialog({ isOpen, member, onClose, onConfirm }:
 
         <div className="py-4 text-sm text-slate-600 space-y-2">
           <p>
-            Bạn có chắc chắn muốn xóa hồ sơ của người thân{' '}
+            Bạn có chắc chắn muốn gỡ hồ sơ của người thân{' '}
             <strong className="text-slate-900 font-bold">
               {member.fullName} ({RELATIONSHIP_LABELS[member.relationship]})
             </strong>{' '}
             khỏi sổ gia đình?
           </p>
+          {error && <p role="alert" className="text-rose-700">{error}</p>}
           <p className="text-xs text-slate-500">
             Lịch sử các đợt khám đã hoàn tất trước đây của thành viên này vẫn được lưu trữ theo quy định bảo mật hồ sơ y tế.
           </p>
@@ -47,21 +65,20 @@ export function DeleteFamilyMemberDialog({ isOpen, member, onClose, onConfirm }:
         <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
           <button
             onClick={onClose}
+            disabled={busy}
             type="button"
             className="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
           >
             Hủy
           </button>
           <button
-            onClick={() => {
-              onConfirm(member.id);
-              onClose();
-            }}
+            onClick={() => void confirm(member.id)}
+            disabled={busy}
             type="button"
             className="inline-flex items-center gap-1.5 px-5 py-2 text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl shadow-md transition-all cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
-            <span>Xóa thành viên</span>
+            <span>{busy ? 'Đang gỡ…' : 'Gỡ thành viên'}</span>
           </button>
         </div>
       </div>

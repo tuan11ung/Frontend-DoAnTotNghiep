@@ -12,19 +12,23 @@ import {
   Trash2,
   HeartHandshake,
 } from 'lucide-react';
-import { FamilyMember, RELATIONSHIP_LABELS } from '../models/types/family.types';
+import { RELATIONSHIP_LABELS, type FamilyMemberSummary } from '../models/types/family.types';
 
 interface FamilyMemberCardProps {
-  member: FamilyMember;
-  onEdit: (member: FamilyMember) => void;
-  onDelete: (member: FamilyMember) => void;
+  member: FamilyMemberSummary;
+  maskedIdentifiers?: boolean;
+  onEdit?: () => void;
+  onDelete: () => void;
 }
 
-export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardProps) {
+export function FamilyMemberCard({ member, maskedIdentifiers, onEdit, onDelete }: FamilyMemberCardProps) {
   const relationshipText = RELATIONSHIP_LABELS[member.relationship] || 'Người thân';
   const age = member.dob
     ? new Date().getFullYear() - new Date(member.dob).getFullYear()
     : null;
+  const nationalId = maskedIdentifiers || !member.nationalId
+    ? member.nationalId
+    : `${member.nationalId.slice(0, 3)}****${member.nationalId.slice(-3)}`;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 hover:border-blue-300 hover:shadow-lg transition-all p-5 flex flex-col justify-between group">
@@ -51,19 +55,19 @@ export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardP
         </div>
 
         <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={() => onEdit(member)}
+          {onEdit && <button
+            onClick={onEdit}
             type="button"
             className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
             title="Chỉnh sửa thông tin"
           >
             <Edit2 className="w-4 h-4" />
-          </button>
+          </button>}
           <button
-            onClick={() => onDelete(member)}
+            onClick={onDelete}
             type="button"
             className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-            title="Xóa hồ sơ"
+            title="Gỡ hồ sơ"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -95,7 +99,7 @@ export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardP
           <CreditCard className="w-4 h-4 text-slate-400 shrink-0" />
           <span>CCCD / Mã ĐD:</span>
           <span className="font-semibold text-slate-800 ml-auto font-mono">
-            {member.nationalId ? `${member.nationalId.slice(0, 3)}****${member.nationalId.slice(-3)}` : 'Chưa cập nhật'}
+            {nationalId || 'Chưa cập nhật'}
           </span>
         </div>
 

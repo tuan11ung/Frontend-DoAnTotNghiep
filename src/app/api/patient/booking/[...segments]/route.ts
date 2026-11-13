@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 const ENDPOINTS: Record<string, string> = {
   'profiles/list': '/patient/profiles/list',
   'hospitals/search': '/patient/hospitals/search',
-  'appointments/rooms/search': '/patient/appointments/rooms/search',
-  'appointments/available-slots/search': '/patient/appointments/available-slots/search',
-  'appointments/create': '/patient/appointments/create',
+  'appointments/bhyt/specialties/search': '/patient/appointments/bhyt/specialties/search',
+  'appointments/bhyt/available-slots/search': '/patient/appointments/bhyt/available-slots/search',
+  'appointments/bhyt/create': '/patient/appointments/bhyt/create',
   'appointments/detail': '/patient/appointments/detail',
 };
 

@@ -41,7 +41,7 @@ export const MonthCalendarModal: React.FC<MonthCalendarModalProps> = ({
               <CalendarIcon className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900">Lịch khám theo tháng</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-900">Lịch khám theo tháng</h3>
               <p className="text-xs text-slate-500">{subtitle}</p>
             </div>
           </div>
@@ -114,7 +114,7 @@ export const MonthCalendarModal: React.FC<MonthCalendarModalProps> = ({
                     className="p-2 rounded-xl bg-slate-50 text-slate-400 opacity-60 flex flex-col items-center justify-center"
                   >
                     <span className="font-medium">{day}</span>
-                    <span className="text-[10px] text-slate-400">Qua hạn</span>
+                    <span className="text-xs text-slate-400">Qua hạn</span>
                   </div>
                 );
               }
@@ -126,7 +126,7 @@ export const MonthCalendarModal: React.FC<MonthCalendarModalProps> = ({
                     className="p-2 rounded-xl bg-slate-50 text-rose-400 opacity-60 flex flex-col items-center justify-center"
                   >
                     <span className="font-medium">{day}</span>
-                    <span className="text-[10px] text-rose-400">Nghỉ</span>
+                    <span className="text-xs text-rose-400">Nghỉ</span>
                   </div>
                 );
               }
@@ -154,7 +154,7 @@ export const MonthCalendarModal: React.FC<MonthCalendarModalProps> = ({
                 >
                   <span className="font-bold">{day}</span>
                   <span
-                    className={`text-[10px] font-medium ${
+                    className={`text-xs font-medium ${
                       isSelected ? 'text-emerald-100' : 'text-emerald-600'
                     }`}
                   >
@@ -171,7 +171,7 @@ export const MonthCalendarModal: React.FC<MonthCalendarModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition"
+            className="px-4 py-2 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-bold transition"
           >
             Đóng
           </button>

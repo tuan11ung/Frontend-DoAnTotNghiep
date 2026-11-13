@@ -34,7 +34,15 @@ export function useProfile(isPreview: boolean, token: string | null) {
     data, error: message, retry: () => { setError(''); setRevision(r => r + 1); },
     async savePersonal(input: ProfileInput) {
       const id = requirePatient();
-      if (isPreview) updateDemo(d => ({ ...d, profile: { ...d.profile, ...input } }));
+      if (isPreview) {
+        const { nationalId, phone, ...details } = input;
+        updateDemo(d => ({ ...d, profile: {
+          ...d.profile,
+          ...details,
+          maskedNationalId: nationalId ? `${nationalId.slice(0, 3)}******${nationalId.slice(-3)}` : d.profile.maskedNationalId,
+          maskedPhone: phone ? `******${phone.slice(-4)}` : d.profile.maskedPhone,
+        } }));
+      }
       else {
         const profile = await updateProfile(token!, id, input);
         updateStoredAccountName(token!, profile.fullName);

@@ -18,15 +18,25 @@ export function PersonalInfo({ profile, onSave }: { profile: PersonalProfile; on
     event.preventDefault();
     if (busy) return;
     const form = new FormData(event.currentTarget);
+    const nationalId = String(form.get('nationalId') ?? '').trim();
+    const phone = String(form.get('phone') ?? '').replace(/[\s.-]/g, '');
     const input: ProfileInput = {
       fullName: String(form.get('fullName') ?? '').trim(), dob: String(form.get('dob') ?? ''),
       gender: String(form.get('gender')) as ProfileInput['gender'],
       address: String(form.get('address') ?? '').trim() || null,
       insuranceNo: String(form.get('insuranceNo') ?? '').trim() || null,
+      nationalId: nationalId || undefined,
+      phone: phone || undefined,
     };
     const today = new Date().toLocaleDateString('en-CA');
     if (!input.fullName || input.fullName.length > 255 || !/^\d{4}-\d{2}-\d{2}$/.test(input.dob) || input.dob >= today) {
       setError('Vui lòng nhập họ tên hợp lệ và ngày sinh trước hôm nay.'); return;
+    }
+    if (nationalId && !/^\d{12}$/.test(nationalId)) {
+      setError('CCCD phải gồm đúng 12 chữ số.'); return;
+    }
+    if (phone && !/^(?:\+84|84|0)[35789]\d{8}$/.test(phone)) {
+      setError('Số điện thoại không đúng định dạng.'); return;
     }
     setBusy(true); setError(''); setSuccess('');
     try { await onSave(input); setEditing(false); setSuccess('Đã cập nhật thông tin cá nhân.'); }
@@ -42,10 +52,11 @@ export function PersonalInfo({ profile, onSave }: { profile: PersonalProfile; on
         <Field label="Ngày sinh *" id="dob"><input id="dob" name="dob" type="date" autoComplete="bday" required max={latestBirthDate} defaultValue={profile.dob} className={inputClass} /></Field>
         <Field label="Giới tính *" id="gender"><select id="gender" name="gender" autoComplete="sex" defaultValue={profile.gender} className={inputClass}>{Object.entries(genderLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
         <Field label="Số thẻ BHYT" id="insuranceNo"><input id="insuranceNo" name="insuranceNo" maxLength={20} defaultValue={profile.insuranceNo ?? ''} className={inputClass} /></Field>
+        <Field label="CCCD / Căn cước" id="nationalId"><input id="nationalId" name="nationalId" inputMode="numeric" maxLength={12} placeholder={profile.maskedNationalId ?? 'Nhập số CCCD'} className={inputClass} /></Field>
+        <Field label="Số điện thoại" id="phone"><input id="phone" name="phone" type="tel" autoComplete="tel" maxLength={20} placeholder={profile.maskedPhone ?? 'Nhập số điện thoại'} className={inputClass} /></Field>
         <div className="sm:col-span-2"><Field label="Địa chỉ liên hệ" id="address"><input id="address" name="address" autoComplete="street-address" maxLength={300} defaultValue={profile.address ?? ''} className={inputClass} /></Field></div>
       </fieldset><div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-5"><button type="button" disabled={busy} className={secondaryClass} onClick={() => { setEditing(false); setError(''); }}>Hủy thay đổi</button><button type="submit" disabled={busy} className={primaryClass}><Check className="size-4" />{busy ? 'Đang lưu…' : 'Lưu thay đổi'}</button></div></form>
-        : <dl className="grid gap-x-8 gap-y-6 text-sm sm:grid-cols-2">{[['Họ và tên', profile.fullName], ['Ngày sinh', birthDate], ['Giới tính', genderLabels[profile.gender]], ['Số thẻ BHYT', profile.insuranceNo], ['Địa chỉ liên hệ', profile.address]].map(([label, value]) => <div key={label} className={label === 'Địa chỉ liên hệ' ? 'sm:col-span-2' : ''}><dt className="mb-1.5 text-xs text-slate-500">{label}</dt><dd className="break-words font-medium text-slate-800">{value || 'Chưa cập nhật'}</dd></div>)}</dl>}
-      <div className="grid gap-4 rounded-xl bg-slate-50 p-4 text-sm sm:grid-cols-2"><div><p className="text-xs text-slate-500">CCCD / Căn cước</p><p className="mt-1 font-medium text-slate-700">{profile.maskedNationalId || 'Chưa cập nhật'}</p></div><div><p className="text-xs text-slate-500">Số điện thoại</p><p className="mt-1 font-medium text-slate-700">{profile.maskedPhone || 'Chưa cập nhật'}</p></div><p className="text-xs leading-relaxed text-slate-500 sm:col-span-2">Liên hệ cơ sở y tế để cập nhật số điện thoại hoặc giấy tờ định danh.</p></div>
+        : <dl className="grid gap-x-8 gap-y-6 text-sm sm:grid-cols-2">{[['Họ và tên', profile.fullName], ['Ngày sinh', birthDate], ['Giới tính', genderLabels[profile.gender]], ['Số thẻ BHYT', profile.insuranceNo], ['CCCD / Căn cước', profile.maskedNationalId], ['Số điện thoại', profile.maskedPhone], ['Địa chỉ liên hệ', profile.address]].map(([label, value]) => <div key={label} className={label === 'Địa chỉ liên hệ' ? 'sm:col-span-2' : ''}><dt className="mb-1.5 text-xs text-slate-500">{label}</dt><dd className="break-words font-medium text-slate-800">{value || 'Chưa cập nhật'}</dd></div>)}</dl>}
     </div>
   </section>;
 }

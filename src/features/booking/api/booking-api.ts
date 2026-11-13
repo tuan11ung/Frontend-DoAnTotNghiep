@@ -1,5 +1,5 @@
 import { clearStoredAuthSession, getStoredAuthSession } from '../../auth/auth-storage';
-import type { BhytRoom, BhytSlot, BookedAppointment, BookingHospital, SelfPatientProfile } from '../models/types/bhyt.types';
+import type { BhytBookingWindow, BhytSlot, BhytSpecialty, BookedAppointment, BookingHospital, BookingPatientProfile } from '../models/types/bhyt.types';
 
 export class BookingApiError extends Error {
   constructor(message: string, public status: number, public code?: string) {
@@ -25,7 +25,7 @@ async function request<T>(path: string, body: unknown, signal?: AbortSignal): Pr
 }
 
 export const bookingApi = {
-  profiles: (signal?: AbortSignal) => request<SelfPatientProfile[]>('profiles/list', {}, signal),
+  profiles: (signal?: AbortSignal) => request<BookingPatientProfile[]>('profiles/list', {}, signal),
   async hospitals(signal?: AbortSignal): Promise<BookingHospital[]> {
     const items: BookingHospital[] = [];
     for (let page = 0; ; page++) {
@@ -36,10 +36,11 @@ export const bookingApi = {
       if (data.last) return items;
     }
   },
-  rooms: (hospitalId: number, signal?: AbortSignal) => request<BhytRoom[]>('appointments/rooms/search', { hospitalId }, signal),
-  slots: (hospitalId: number, roomId: number, fromDate: string, toDate: string, signal?: AbortSignal) => request<BhytSlot[]>('appointments/available-slots/search', {
-    hospitalId, roomId, serviceType: 'BHYT', fromDate, toDate,
+  specialties: (hospitalId: number, signal?: AbortSignal) =>
+    request<BhytSpecialty[]>('appointments/bhyt/specialties/search', { hospitalId }, signal),
+  slots: (hospitalId: number, specialtyId: number | null, fromDate: string, toDate: string, signal?: AbortSignal) => request<BhytSlot[]>('appointments/bhyt/available-slots/search', {
+    hospitalId, specialtyId, fromDate, toDate,
   }, signal),
-  create: (body: { hospitalId: number; patientId: number; timeSlotId: number; appointReason: string }) =>
-    request<BookedAppointment>('appointments/create', { ...body, serviceType: 'BHYT' }),
+  create: (body: { hospitalId: number; patientId: number; specialtyId: number | null; window: BhytBookingWindow; appointReason: string }) =>
+    request<BookedAppointment>('appointments/bhyt/create', body),
 };

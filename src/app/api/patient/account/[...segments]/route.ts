@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 
 const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
-const endpoints = new Set(['profiles/list', 'profiles/update', 'allergies/list', 'allergies/save', 'allergies/delete', 'conditions/list', 'conditions/save', 'conditions/delete']);
+const endpoints = new Set([
+  'profiles/list', 'profiles/update', 'family-members/create', 'family-members/remove',
+  'allergies/list', 'allergies/save', 'allergies/delete', 'conditions/list', 'conditions/save', 'conditions/delete',
+]);
 
 export async function POST(request: Request, { params }: RouteContext<'/api/patient/account/[...segments]'>) {
   const { segments } = await params;

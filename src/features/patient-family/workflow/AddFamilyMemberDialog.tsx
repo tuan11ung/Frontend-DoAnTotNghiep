@@ -1,18 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, UserPlus, HeartHandshake, ShieldCheck, AlertCircle } from 'lucide-react';
-import { FamilyRelationship, RELATIONSHIP_LABELS, FamilyMember } from '../models/types/family.types';
-import { saveFamilyMember } from '@/src/shared/utils/patient-storage';
+import { X, UserPlus, AlertCircle } from 'lucide-react';
+import { RELATIONSHIP_LABELS, type FamilyMemberFormData, type FamilyRelationship } from '../models/types/family.types';
 
 interface AddFamilyMemberDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd?: (data: Omit<FamilyMember, 'id' | 'createdAt' | 'totalAppointments'>) => void;
-  onCreatedSuccess?: (newMember: FamilyMember) => void;
+  onAdd: (data: FamilyMemberFormData) => Promise<void>;
+  showNote: boolean;
 }
 
-export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess }: AddFamilyMemberDialogProps) {
+export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, showNote }: AddFamilyMemberDialogProps) {
   const [fullName, setFullName] = useState('');
   const [relationship, setRelationship] = useState<FamilyRelationship>('CON');
   const [gender, setGender] = useState<'MALE' | 'FEMALE' | 'OTHER'>('MALE');
@@ -23,11 +22,13 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (busy) return;
     if (!fullName.trim()) {
       setError('Vui lòng nhập họ và tên của người thân');
       return;
@@ -36,8 +37,8 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess
       setError('Vui lòng nhập ngày sinh');
       return;
     }
-    if (!nationalId.trim()) {
-      setError('Vui lòng nhập số CCCD hoặc mã định danh cá nhân');
+    if (!/^\d{12}$/.test(nationalId.trim())) {
+      setError('Số CCCD hoặc mã định danh cá nhân phải có 12 chữ số.');
       return;
     }
 
@@ -50,19 +51,19 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess
       phone: phone.trim() || undefined,
       bhytNumber: bhytNumber.trim() || undefined,
       address: address.trim() || undefined,
-      note: note.trim() || undefined,
+      note: showNote ? note.trim() || undefined : undefined,
     };
 
-    if (onAdd) {
-      onAdd(payload);
+    setBusy(true);
+    setError('');
+    try {
+      await onAdd(payload);
+      onClose();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Không thể thêm hồ sơ người thân.');
+    } finally {
+      setBusy(false);
     }
-
-    if (onCreatedSuccess) {
-      const created = saveFamilyMember(payload);
-      onCreatedSuccess(created);
-    }
-
-    onClose();
   };
 
   return (
@@ -81,6 +82,7 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess
           </div>
           <button
             onClick={onClose}
+            disabled={busy}
             type="button"
             className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
           >
@@ -91,143 +93,151 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
+            <div role="alert" className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-semibold flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Quan hệ với chủ tài khoản <span className="text-rose-500">*</span>
-            </label>
-            <select
-              value={relationship}
-              onChange={(e) => setRelationship(e.target.value as FamilyRelationship)}
-              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-semibold text-slate-800"
-            >
-              {Object.entries(RELATIONSHIP_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Họ và tên <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="VD: Trần Thị Mai"
-              value={fullName}
-              onChange={(e) => {
-                setFullName(e.target.value);
-                if (error) setError('');
-              }}
-              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
+          <fieldset disabled={busy} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Ngày sinh <span className="text-rose-500">*</span>
-              </label>
-              <input
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Giới tính <span className="text-rose-500">*</span>
+                Quan hệ với chủ tài khoản <span className="text-rose-500">*</span>
               </label>
               <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value as 'MALE' | 'FEMALE' | 'OTHER')}
-                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
+                value={relationship}
+                onChange={(e) => setRelationship(e.target.value as FamilyRelationship)}
+                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-semibold text-slate-800"
               >
-                <option value="MALE">Nam</option>
-                <option value="FEMALE">Nữ</option>
-                <option value="OTHER">Khác</option>
+                {Object.entries(RELATIONSHIP_LABELS).map(([key, label]) => (
+                  <option key={key} value={key}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Số CCCD / Mã định danh cá nhân <span className="text-rose-500">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="12 chữ số trên CCCD hoặc Giấy khai sinh"
-              value={nationalId}
-              onChange={(e) => setNationalId(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono text-slate-900"
-            />
-            <p className="text-[11px] text-slate-400 mt-1">Trẻ em dùng mã số định danh trên Giấy khai sinh</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Số điện thoại (nếu có)
-              </label>
-              <input
-                type="tel"
-                placeholder="0987xxxxxx"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Mã thẻ BHYT (nếu có)
+                Họ và tên <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
-                placeholder="VD: GD4010..."
-                value={bhytNumber}
-                onChange={(e) => setBhytNumber(e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono text-slate-900"
+                placeholder="VD: Trần Thị Mai"
+                maxLength={255}
+                value={fullName}
+                onChange={(e) => {
+                  setFullName(e.target.value);
+                  if (error) setError('');
+                }}
+                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Địa chỉ cư trú
-            </label>
-            <input
-              type="text"
-              placeholder="Số nhà, đường, quận/huyện, tỉnh/thành"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
-            />
-          </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Ngày sinh <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Giới tính <span className="text-rose-500">*</span>
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value as 'MALE' | 'FEMALE' | 'OTHER')}
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
+                >
+                  <option value="MALE">Nam</option>
+                  <option value="FEMALE">Nữ</option>
+                  <option value="OTHER">Khác</option>
+                </select>
+              </div>
+            </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
-              Tiền sử bệnh lý / Dị ứng thuốc (ghi chú)
-            </label>
-            <textarea
-              rows={2}
-              placeholder="VD: Dị ứng Penicillin, có tiền sử hen phế quản..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900 resize-none"
-            />
-          </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Số CCCD / Mã định danh cá nhân <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="12 chữ số trên CCCD hoặc Giấy khai sinh"
+                inputMode="numeric"
+                maxLength={12}
+                value={nationalId}
+                onChange={(e) => setNationalId(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono text-slate-900"
+              />
+              <p className="text-[11px] text-slate-400 mt-1">Trẻ em dùng mã số định danh trên Giấy khai sinh</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Số điện thoại (nếu có)
+                </label>
+                <input
+                  type="tel"
+                  placeholder="0987xxxxxx"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                  Mã thẻ BHYT (nếu có)
+                </label>
+                <input
+                  type="text"
+                  placeholder="VD: GD4010..."
+                  maxLength={20}
+                  value={bhytNumber}
+                  onChange={(e) => setBhytNumber(e.target.value.toUpperCase())}
+                  className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-mono text-slate-900"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Địa chỉ cư trú
+              </label>
+              <input
+                type="text"
+                placeholder="Số nhà, đường, quận/huyện, tỉnh/thành"
+                maxLength={300}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900"
+              />
+            </div>
+
+            {showNote && <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Tiền sử bệnh lý / Dị ứng thuốc (ghi chú)
+              </label>
+              <textarea
+                rows={2}
+                placeholder="VD: Dị ứng Penicillin, có tiền sử hen phế quản..."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900 resize-none"
+              />
+            </div>}
+          </fieldset>
 
           <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
             <button
               onClick={onClose}
+              disabled={busy}
               type="button"
               className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
             >
@@ -235,9 +245,10 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, onCreatedSuccess
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition-all cursor-pointer"
+              disabled={busy}
+              className="px-6 py-2.5 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
             >
-              Lưu hồ sơ
+              {busy ? 'Đang lưu…' : 'Lưu hồ sơ'}
             </button>
           </div>
         </form>

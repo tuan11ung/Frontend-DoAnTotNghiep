@@ -9,7 +9,7 @@ import {
   deleteStoredFamilyMember,
 } from '@/src/shared/utils/patient-storage';
 
-export function useFamilyMembers() {
+export function useFamilyMembers(enabled = true) {
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +19,8 @@ export function useFamilyMembers() {
   }, []);
 
   useEffect(() => {
-    refreshMembers();
+    if (!enabled) return;
+    const initialLoad = window.setTimeout(refreshMembers, 0);
 
     const handleStorageUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<{ key: string }>;
@@ -32,10 +33,11 @@ export function useFamilyMembers() {
     window.addEventListener('storage', handleStorageUpdate);
 
     return () => {
+      window.clearTimeout(initialLoad);
       window.removeEventListener('medconnect:storage_update', handleStorageUpdate);
       window.removeEventListener('storage', handleStorageUpdate);
     };
-  }, [refreshMembers]);
+  }, [enabled, refreshMembers]);
 
   const addMember = (data: Omit<FamilyMember, 'id' | 'createdAt' | 'totalAppointments'>) => {
     const created = saveFamilyMember(data);

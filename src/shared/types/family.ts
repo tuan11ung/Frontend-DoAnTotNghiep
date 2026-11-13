@@ -6,6 +6,7 @@ export type FamilyRelationship =
   | 'CON'
   | 'ANH_CHI_EM'
   | 'ONG_BA'
+  | 'CHAU'
   | 'KHAC';
 
 export const RELATIONSHIP_LABELS: Record<FamilyRelationship, string> = {
@@ -16,6 +17,7 @@ export const RELATIONSHIP_LABELS: Record<FamilyRelationship, string> = {
   CON: 'Con',
   ANH_CHI_EM: 'Anh / Chị / Em',
   ONG_BA: 'Ông / Bà',
+  CHAU: 'Cháu',
   KHAC: 'Khác',
 };
 

@@ -89,13 +89,13 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
         <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
           Đã đặt lịch thành công!
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1.5 max-w-md mx-auto">
+        <p className="text-sm text-slate-500 mt-1.5 max-w-md mx-auto">
           Cảm ơn bạn đã tin tưởng dịch vụ khám chữa bệnh tại MedConnect.
         </p>
 
         {/* Highlighted Appointment Code Box */}
         <div className="bg-slate-50 rounded-2xl py-3 px-6 my-5 inline-flex flex-col items-center justify-center border border-slate-200/80 shadow-xs">
-          <span className="text-[11px] tracking-wider font-semibold text-blue-700 uppercase">
+          <span className="text-xs tracking-wider font-semibold text-blue-700 uppercase">
             MÃ LỊCH HẸN TRỰC TUYẾN
           </span>
           <div className="flex items-center gap-2 mt-0.5">
@@ -112,7 +112,7 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
-          {copied && <span className="text-[10px] text-emerald-600 font-semibold mt-0.5">Đã sao chép vào bộ nhớ tạm!</span>}
+          {copied && <span className="text-xs text-emerald-600 font-semibold mt-0.5">Đã sao chép vào bộ nhớ tạm!</span>}
         </div>
 
         {/* QR Code Section */}
@@ -284,7 +284,7 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
                 {priceDisplay}
               </div>
               {isBhyt && (
-                <div className="text-[11px] text-slate-500 font-medium mt-0.5">
+                <div className="text-xs text-slate-500 font-medium mt-0.5">
                   (BHYT chi trả: 30.960 VNĐ)
                 </div>
               )}
@@ -342,7 +342,7 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-800 transition cursor-pointer"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>Đặt thêm lịch khám mới</span>
@@ -356,7 +356,7 @@ export const BookingStepSuccess: React.FC<BookingStepSuccessProps> = ({
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
           <span>Hệ thống lưu trữ tuân thủ tiêu chuẩn an toàn dữ liệu y tế MOH &amp; HIPAA</span>
         </div>
-        <p className="text-xs text-slate-400">
+        <p className="text-sm text-slate-400">
           Cần hỗ trợ đổi giờ hẹn? Vui lòng liên hệ Hotline:{' '}
           <strong className="text-slate-600">1900 888 866</strong>
         </p>
