@@ -22,15 +22,18 @@ export interface DoctorQueueRoomResponse {
 
 export interface DoctorQueuePatientResponse {
   patientId: number;
-  encounterId: number;
-  encounterCode: string;
+  appointmentId: number;
+  workScheduleId: number;
+  nextToCall: boolean;
+  encounterId: number | null;
+  encounterCode: string | null;
   queueNumber: number;
   patientName: string;
   birthYear: number | null;
   gender: 'MALE' | 'FEMALE' | 'OTHER' | null;
   maskedNationalId: string | null;
   appointmentTime: string;
-  checkedInAt: string;
+  checkedInAt: string | null;
   appointReason: string | null;
   online: boolean;
   status: 'WAITING' | 'IN_PROGRESS' | 'ABSENT' | 'COMPLETED';
@@ -83,7 +86,7 @@ async function doctorQueueRequest<T>(path: string, body: unknown, signal?: Abort
 
 export const doctorQueueApi = {
   getRooms: (signal?: AbortSignal) => doctorQueueRequest<DoctorQueueRoomResponse[]>('work-schedules/my-queue-rooms', {}, signal),
-  getQueue: (roomId: number, signal?: AbortSignal) => doctorQueueRequest<DoctorQueuePatientResponse[]>('encounters/doctor-queue', { roomId }, signal),
+  getQueue: (roomId: number, workScheduleId: number, signal?: AbortSignal) => doctorQueueRequest<DoctorQueuePatientResponse[]>('encounters/doctor-queue', { roomId, workScheduleId }, signal),
   call: (encounterCode: string) => doctorQueueRequest<DoctorQueuePatientResponse>('encounters/call', { encounterCode }),
   markAbsent: (encounterCode: string) => doctorQueueRequest<DoctorQueuePatientResponse>('encounters/absent', { encounterCode }),
   start: (encounterCode: string) => doctorQueueRequest<unknown>('encounters/start', { encounterCode }),

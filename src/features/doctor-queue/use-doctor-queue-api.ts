@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { countQueuePatients, filterQueuePatients, sortWaitingPatients } from '@/src/features/clinical-queue/queue-utils';
+import { countQueuePatients, filterQueuePatients } from '@/src/features/clinical-queue/queue-utils';
 import type { PatientTag, QueueFilterStatus, QueuePatient, QueueShift, QueueStatus } from '@/src/features/clinical-queue/types';
 import { doctorQueueApi, type DoctorQueuePatientResponse, type DoctorQueueRoomResponse } from './api/doctor-queue-api';
 
@@ -44,7 +44,7 @@ function mapPatient(patient: DoctorQueuePatientResponse): QueuePatient {
     ...(patient.online ? ['online' as const] : []),
   ];
   return {
-    id: patient.encounterCode,
+    id: patient.encounterCode || `appointment-${patient.appointmentId}`,
     number: patient.queueNumber,
     name: patient.patientName || 'Bệnh nhân',
     birthYear: patient.birthYear,
@@ -52,7 +52,7 @@ function mapPatient(patient: DoctorQueuePatientResponse): QueuePatient {
     gender,
     avatar: null,
     detail,
-    checkIn: formatTime(patient.checkedInAt),
+    checkIn: patient.checkedInAt ? formatTime(patient.checkedInAt) : 'Chưa check-in',
     status,
     tags,
   };
@@ -94,7 +94,7 @@ export function useDoctorQueueApi() {
   const loadQueue = useCallback(async (room: DoctorQueueRoomResponse, signal?: AbortSignal, showRefresh = false) => {
     if (showRefresh) setRefreshing(true);
     try {
-      const nextRecords = await doctorQueueApi.getQueue(room.roomId, signal);
+      const nextRecords = await doctorQueueApi.getQueue(room.roomId, room.scheduleId, signal);
       if (selectedScheduleRef.current === String(room.scheduleId)) {
         setRecords(nextRecords);
         setError('');
@@ -163,13 +163,14 @@ export function useDoctorQueueApi() {
   const shift = shifts.find((item) => item.id === selectedScheduleId);
   const counts = countQueuePatients(patients);
   const returnQueueActive = statusFilter === 'return-ready';
-  const nextPatient = sortWaitingPatients(patients)[0];
+  const nextRecord = records.find((record) => record.nextToCall && record.encounterCode);
+  const nextPatient = nextRecord ? mapPatient(nextRecord) : undefined;
   const currentPatient = patients.find((patient) => patient.status === 'in-room');
   const callingPatient = callingRecord ? mapPatient(callingRecord) : null;
   const selectedReturnPatient = records.find((record) => (
     record.encounterCode === selectedReturnId && record.clsQueueStatus === 'RETURN_READY'
   ));
-  const visiblePatients = filterQueuePatients(patients, statusFilter, query, tagFilter);
+  const visiblePatients = filterQueuePatients(patients, statusFilter, query, tagFilter, true);
 
   async function changeShift(id: string) {
     const room = rooms.find((item) => String(item.scheduleId) === id);
@@ -202,7 +203,7 @@ export function useDoctorQueueApi() {
   }
 
   async function recallPatient() {
-    if (!callingRecord) return 0;
+    if (!callingRecord?.encounterCode) return 0;
     const called = await doctorQueueApi.call(callingRecord.encounterCode);
     setCallingRecord(called);
     setRecords((previous) => previous.map((item) => item.encounterCode === called.encounterCode ? called : item));
@@ -210,7 +211,7 @@ export function useDoctorQueueApi() {
   }
 
   async function admitPatient() {
-    if (!callingRecord || !selectedRoom) return;
+    if (!callingRecord?.encounterCode || !selectedRoom) return;
     const patientName = callingRecord.patientName;
     await doctorQueueApi.start(callingRecord.encounterCode);
     setCallingRecord(null);
@@ -219,7 +220,7 @@ export function useDoctorQueueApi() {
   }
 
   async function markAbsent() {
-    if (!callingRecord || !selectedRoom) return;
+    if (!callingRecord?.encounterCode || !selectedRoom) return;
     const patientName = callingRecord.patientName;
     const absent = await doctorQueueApi.markAbsent(callingRecord.encounterCode);
     setCallingRecord(null);
@@ -229,7 +230,7 @@ export function useDoctorQueueApi() {
   }
 
   async function continueDiagnosis() {
-    if (!selectedReturnPatient || !selectedRoom || currentPatient) return;
+    if (!selectedReturnPatient?.encounterCode || !selectedRoom || currentPatient) return;
     setContinuing(true);
     try {
       const resumed = await doctorQueueApi.resumeAfterCls(selectedReturnPatient.encounterCode);
