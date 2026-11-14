@@ -6,7 +6,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Activity, Building2, CalendarClock, Menu, Newspaper, Stethoscope, User, X } from 'lucide-react';
 import type { AppointmentTabType } from '@/src/shared/types/medical';
 import { clearPatientSession } from '@/src/features/auth/utils/auth-storage';
-import { setAuthPreviewMode } from '@/src/features/auth/utils/auth-preview';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AuthContinuationLink } from '@/src/features/auth/components/AuthContinuation';
 import { PatientNotificationBell } from '@/src/features/notifications/components/PatientNotificationBell';
@@ -65,18 +64,12 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const { state, isAuthenticated, isPreview } = usePatientNavigation();
+  const { state, isAuthenticated } = usePatientNavigation();
   const identity = useAccountIdentity();
-  const isClinicalStaff = !isPreview && identity.isAuthenticated && identity.roles.some(role => role !== 'PATIENT');
+  const isClinicalStaff = identity.isAuthenticated && identity.roles.some(role => role !== 'PATIENT');
 
   async function handleLogout() {
     if (isLoggingOut) return;
-    if (isPreview) {
-      setAuthPreviewMode('guest');
-      setMobileMenuOpen(false);
-      router.replace('/');
-      return;
-    }
 
     setIsLoggingOut(true);
     try {
@@ -110,11 +103,11 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
             </>
           ) : isAuthenticated ? (
             <Suspense fallback={<span aria-hidden="true" className="size-10 rounded-lg bg-blue-50" />}>
-              <PatientAccountDropdown key={state} isPreview={isPreview} isLoggingOut={isLoggingOut} onLogout={() => void handleLogout()} />
+              <PatientAccountDropdown key={state} isLoggingOut={isLoggingOut} onLogout={() => void handleLogout()} />
             </Suspense>
           ) : (
             <Suspense fallback={<span aria-hidden="true" className="h-10 w-10 rounded-lg bg-blue-50 sm:w-32" />}>
-              <AuthContinuationLink page="login" onClick={() => { setAuthPreviewMode(null); setMobileMenuOpen(false); }} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-200/80 bg-blue-50/80 px-2.5 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4" aria-label="Đăng nhập"><User className="size-4" /><span className="hidden sm:inline">Đăng nhập</span></AuthContinuationLink>
+              <AuthContinuationLink page="login" onClick={() => { setMobileMenuOpen(false); }} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-blue-200/80 bg-blue-50/80 px-2.5 text-sm font-bold text-blue-600 transition-colors hover:bg-blue-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:px-4" aria-label="Đăng nhập"><User className="size-4" /><span className="hidden sm:inline">Đăng nhập</span></AuthContinuationLink>
             </Suspense>
           )}
           <button type="button" className="rounded-lg p-1.5 text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600 sm:p-2 xl:hidden" aria-label={mobileMenuOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng'} aria-expanded={mobileMenuOpen} aria-controls="mobile-navigation" onClick={() => setMobileMenuOpen((value) => !value)}>{mobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}</button>

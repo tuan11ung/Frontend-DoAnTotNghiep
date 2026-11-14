@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
-import { useFamilyMembers } from './hooks/useFamilyMembers';
 import { patientFamilyApi, type FamilyProfiles } from './api/patient-family-api';
 import type { FamilyMember, FamilyMemberFormData, FamilyMemberSummary } from './models/types/family.types';
 import { FamilyMemberCard } from './components/FamilyMemberCard';
@@ -19,7 +18,6 @@ import { DeleteFamilyMemberDialog } from './workflow/DeleteFamilyMemberDialog';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
-import { INITIAL_PATIENT_PROFILE } from '@/src/shared/utils/patient-storage';
 
 function subscribeToSession(onChange: () => void) {
   const listener = (event: StorageEvent) => {
@@ -33,18 +31,17 @@ export function PatientFamilyPage() {
   const auth = usePatientNavigation();
   const token = useSyncExternalStore(subscribeToSession, getStoredPatientToken, () => null);
   if (!auth.isReady) return <p role="status" className="py-20 text-center text-sm">Đang tải hồ sơ gia đình…</p>;
-  if (!auth.isAuthenticated || (!auth.isPreview && !token)) {
+  if (!auth.isAuthenticated || !token) {
     return <div className="py-20 text-center">
       <h1 className="text-xl font-bold">Quản lý hồ sơ gia đình</h1>
       <p className="my-3 text-sm text-slate-600">Đăng nhập để xem và quản lý hồ sơ người thân.</p>
       <Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link>
     </div>;
   }
-  return <FamilyContent key={auth.isPreview ? 'preview' : token} token={auth.isPreview ? null : token} />;
+  return <FamilyContent key={token} token={token} />;
 }
 
-function FamilyContent({ token }: { token: string | null }) {
-  const preview = useFamilyMembers(!token);
+function FamilyContent({ token }: { token: string }) {
   const [profiles, setProfiles] = useState<FamilyProfiles | null>(null);
   const [loadError, setLoadError] = useState('');
   const [revision, setRevision] = useState(0);
@@ -55,7 +52,6 @@ function FamilyContent({ token }: { token: string | null }) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) return;
     const controller = new AbortController();
     patientFamilyApi.getProfiles(token, controller.signal).then(result => {
       if (!controller.signal.aborted) setProfiles(result);
@@ -71,39 +67,27 @@ function FamilyContent({ token }: { token: string | null }) {
     return () => clearTimeout(timer);
   }, [toastMessage]);
 
-  const members = token ? profiles?.members ?? [] : preview.members;
-  const loading = token ? !profiles && !loadError : preview.loading;
-  const owner = token ? profiles?.owner : {
-    ...INITIAL_PATIENT_PROFILE,
-    maskedNationalId: '001090****45',
-    insuranceNo: INITIAL_PATIENT_PROFILE.bhytNumber,
-  };
+  const members = profiles?.members ?? [];
+  const loading = !profiles && !loadError;
+  const owner = profiles?.owner;
 
   async function handleAddMember(data: FamilyMemberFormData) {
-    if (token) {
-      const created = await patientFamilyApi.createMember(token, data);
-      setProfiles(current => current && {
-        ...current,
-        members: [...current.members.filter(member => member.relationId !== created.relationId), created],
-      });
-    } else {
-      preview.addMember(data);
-    }
+    const created = await patientFamilyApi.createMember(token, data);
+    setProfiles(current => current && {
+      ...current,
+      members: [...current.members.filter(member => member.relationId !== created.relationId), created],
+    });
     setToastMessage(`Đã thêm hồ sơ người thân "${data.fullName}".`);
   }
 
   async function handleDeleteMember(id: string) {
-    if (token) {
-      const member = profiles?.members.find(item => item.id === id);
-      if (!member) throw new Error('Không tìm thấy hồ sơ người thân.');
-      await patientFamilyApi.removeMember(token, member.relationId);
-      setProfiles(current => current && {
-        ...current,
-        members: current.members.filter(item => item.relationId !== member.relationId),
-      });
-    } else if (!preview.removeMember(id)) {
-      throw new Error('Không thể gỡ hồ sơ người thân.');
-    }
+    const member = profiles?.members.find(item => item.id === id);
+    if (!member) throw new Error('Không tìm thấy hồ sơ người thân.');
+    await patientFamilyApi.removeMember(token, member.relationId);
+    setProfiles(current => current && {
+      ...current,
+      members: current.members.filter(item => item.relationId !== member.relationId),
+    });
     setToastMessage('Đã gỡ hồ sơ người thân khỏi sổ gia đình.');
   }
 
@@ -111,7 +95,7 @@ function FamilyContent({ token }: { token: string | null }) {
     if (openingEdit) return;
     setOpeningEdit(true);
     try {
-      const member = token ? await patientFamilyApi.getMember(token, Number(id)) : preview.members.find(item => item.id === id);
+      const member = await patientFamilyApi.getMember(token, Number(id));
       if (!member) throw new Error('Không tìm thấy hồ sơ người thân.');
       setEditingMember(member);
     } catch (error) { setToastMessage(error instanceof Error ? error.message : 'Không thể tải hồ sơ.'); }
@@ -119,10 +103,8 @@ function FamilyContent({ token }: { token: string | null }) {
   }
 
   async function handleUpdateMember(id: string, updates: Partial<FamilyMember>) {
-    if (token) {
-      const updated = await patientFamilyApi.updateMember(token, Number(id), updates);
-      setProfiles(current => current && { ...current, members: current.members.map(item => item.id === id ? updated : item) });
-    } else if (!preview.updateMember(id, updates)) throw new Error('Không thể cập nhật hồ sơ.');
+    const updated = await patientFamilyApi.updateMember(token, Number(id), updates);
+    setProfiles(current => current && { ...current, members: current.members.map(item => item.id === id ? updated : item) });
     setToastMessage('Đã cập nhật thông tin hồ sơ người thân.');
   }
 

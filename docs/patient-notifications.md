@@ -1,5 +1,7 @@
 # Thông báo trên cổng bệnh nhân
 
+> Cập nhật: chế độ mô phỏng bệnh nhân đã được gỡ. Các hướng dẫn mô phỏng bên dưới là tài liệu lịch sử; xem [luồng xác thực hiện tại](auth-backend-only.md).
+
 Chuông nằm bên phải ô tìm kiếm, trước menu tài khoản. Chỉ hiển thị khi đăng nhập bệnh nhân hoặc chọn **Đã đăng nhập** trên thanh xem thử ở trang chủ. Khách không thấy chuông và cần đăng nhập để mở trang `/patient/notifications`.
 
 ## Giao diện và thao tác

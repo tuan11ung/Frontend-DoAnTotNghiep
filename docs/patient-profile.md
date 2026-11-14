@@ -1,5 +1,7 @@
 # Hồ sơ cá nhân
 
+> Cập nhật: chế độ mô phỏng bệnh nhân đã được gỡ. Các hướng dẫn mô phỏng bên dưới là tài liệu lịch sử; xem [luồng xác thực hiện tại](auth-backend-only.md).
+
 Đường dẫn: `/patient/profile`, qua mục **Hồ sơ cá nhân** trong dropdown **Tài khoản**.
 
 ## Thử không cần backend

@@ -1,5 +1,7 @@
 # Quyền truy cập bệnh sử trong Hồ sơ cá nhân
 
+> Cập nhật: chế độ mô phỏng bệnh nhân đã được gỡ. Các hướng dẫn mô phỏng bên dưới là tài liệu lịch sử; xem [luồng xác thực hiện tại](auth-backend-only.md).
+
 Mở `/patient/profile#history-access` từ menu **Hồ sơ cá nhân**, hoặc chọn mục
 **Quyền truy cập bệnh sử** ở thanh điều hướng trong trang.
 

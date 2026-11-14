@@ -15,7 +15,6 @@ import {
   PlusCircle,
 } from 'lucide-react';
 import { usePatientAppointments } from './hooks/usePatientAppointments';
-import { useFamilyMembers } from '@/src/features/patient-family/hooks/useFamilyMembers';
 import { AppointmentCard } from './components/AppointmentCard';
 import { AppointmentFilterTabs } from './components/AppointmentFilterTabs';
 import { CancelAppointmentDialog } from './workflow/CancelAppointmentDialog';
@@ -29,7 +28,6 @@ export function PatientAppointmentsPage() {
   const initialTarget = searchParams.get('target') || 'ALL';
 
   const { auth, appointments, profiles, loading, storageError, queueError, rooms, cancelAppointment, refresh } = usePatientAppointments();
-  const { members } = useFamilyMembers(auth.isPreview);
 
   // Filters state
   const [currentTab, setCurrentTab] = useState<AppointmentFilterTab>(searchParams.get('tab') === 'ongoing' ? 'ONGOING' : 'UPCOMING');
@@ -174,7 +172,7 @@ export function PatientAppointmentsPage() {
             >
               <option value="ALL">Toàn bộ gia đình (Tất cả)</option>
               <option value="SELF">Bản thân{profiles.find(p => p.relationship === 'SELF')?.fullName ? ` (${profiles.find(p => p.relationship === 'SELF')?.fullName})` : ''}</option>
-              {(auth.isPreview ? members : profiles.filter(p => p.relationship !== 'SELF').map(p => ({ id: String(p.id), fullName: p.fullName, relationship: 'KHAC' }))).map((m) => (
+              {(profiles.filter(p => p.relationship !== 'SELF').map(p => ({ id: String(p.id), fullName: p.fullName, relationship: 'KHAC' }))).map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.fullName} ({m.relationship === 'ME' ? 'Mẹ' : m.relationship === 'CHA' ? 'Cha' : m.relationship === 'CON' ? 'Con' : 'Người thân'})
                 </option>

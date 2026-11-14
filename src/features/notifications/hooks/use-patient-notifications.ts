@@ -15,7 +15,7 @@ const getEmpty = () => EMPTY_NOTIFICATIONS;
 export function usePatientNotifications() {
   const auth = usePatientNavigation();
   const token = useSyncExternalStore(subscribeAuth, getStoredPatientToken, () => null);
-  const owner = auth.isAuthenticated ? auth.isPreview ? 'demo' : token : null;
+  const owner = auth.isAuthenticated ? token : null;
   const feed = useMemo(() => owner ? getNotificationFeed(owner) : null, [owner]);
   const data = useSyncExternalStore(feed?.subscribe ?? noSubscription, feed?.getSnapshot ?? getEmpty, getEmpty);
   return { ...data, ...auth, feed };

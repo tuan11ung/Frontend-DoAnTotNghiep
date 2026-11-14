@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { useDoctorAccess } from '@/src/features/doctor-queue/hooks/use-doctor-access';
 import { bookingApi } from '@/src/features/booking/api/booking-api';
-import { PATIENT_RESULTS_DEMO } from './data/patient-results-demo';
 import { PatientResultsScreen } from './PatientResultsScreen';
 import { loadPatientResults } from './api/patient-results-api';
 import type { PatientResultsData } from './models/types/patient-results.types';
@@ -15,7 +14,6 @@ export function PatientResultsPage() {
   const auth = usePatientNavigation(); const session = useDoctorAccess(); const params = useSearchParams();
   if (!auth.isReady || session.loading) return <p role="status" className="p-8 text-center">Đang kiểm tra phiên đăng nhập…</p>;
   if (!auth.isAuthenticated) return <main className="p-10 text-center"><h1 className="text-xl font-bold">Kết quả khám bệnh</h1><p className="my-4">Đăng nhập để xem kết quả khám của bạn và người thân.</p><Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link></main>;
-  if (auth.isPreview) return <PatientResultsScreen data={PATIENT_RESULTS_DEMO} />;
   if (params.get('service')) return <PatientPublishedResult key={`${session.owner}:${params.get('profile')}:${params.get('service')}:${params.get('encounter')}`} profileId={params.get('profile')} serviceId={Number(params.get('service'))} encounterId={params.get('encounter') ? Number(params.get('encounter')) : null} />;
   return <LiveResults key={`${session.owner}:${params.get('profile')}:${params.get('encounter')}`} profileId={params.get('profile')} encounterId={params.get('encounter')} />;
 }

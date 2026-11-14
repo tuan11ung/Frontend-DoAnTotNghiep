@@ -1,6 +1,5 @@
 import type { PatientNotification } from '../types';
 import { notificationApi } from './notification-api';
-import { NOTIFICATION_DEMO_EVENT, NOTIFICATION_DEMO_KEY, markDemoNotifications, readDemoNotifications } from './notification-demo';
 import { connectPatientNotificationSocket } from '../utils/notification-socket';
 
 interface NotificationState {
@@ -48,19 +47,9 @@ class NotificationFeed {
       }
     };
   };
-  private readDemo = () => {
-    try { const items = readDemoNotifications(); this.update({ items, unreadCount: items.filter(item => !item.readAt).length, loading: false, error: '', hasMore: false }); }
-    catch { this.update({ items: [], unreadCount: 0, loading: false, error: 'Không thể đọc thông báo mô phỏng đã lưu. Vui lòng kiểm tra dữ liệu trình duyệt.' }); }
-  };
   private start() {
     feeds.set(this.owner, this);
-    if (this.owner === 'demo') {
-      this.readDemo();
-      const onStorage = (event: StorageEvent) => { if (event.key === NOTIFICATION_DEMO_KEY || event.key === null) this.readDemo(); };
-      window.addEventListener('storage', onStorage); window.addEventListener(NOTIFICATION_DEMO_EVENT, this.readDemo);
-      this.cleanup = () => { window.removeEventListener('storage', onStorage); window.removeEventListener(NOTIFICATION_DEMO_EVENT, this.readDemo); };
-      return;
-    }
+
     void this.refresh();
     const disconnect = connectPatientNotificationSocket(this.owner, item => {
       const existing = this.state.items.find(current => current.id === item.id);
@@ -75,7 +64,7 @@ class NotificationFeed {
     this.cleanup = () => { disconnect(); window.clearInterval(timer); window.removeEventListener('focus', onVisible); document.removeEventListener('visibilitychange', onVisible); };
   }
   refresh = async () => {
-    if (this.owner === 'demo') { this.readDemo(); return; }
+
     if (this.state.refreshing || this.state.loadingMore || this.state.markingAll || this.pendingReads.size || !this.listeners.size) return;
     const version = this.revision;
     const controller = new AbortController(); this.controller = controller;
@@ -92,7 +81,7 @@ class NotificationFeed {
     finally { if (!controller.signal.aborted) { this.update({ refreshing: false }); if (changed) void this.refresh(); } }
   };
   loadMore = async () => {
-    if (this.owner === 'demo' || !this.state.hasMore || this.state.loadingMore || this.state.refreshing || this.state.markingAll || this.pendingReads.size) return;
+    if (!this.state.hasMore || this.state.loadingMore || this.state.refreshing || this.state.markingAll || this.pendingReads.size) return;
     const version = this.revision;
     const controller = new AbortController(); this.controller = controller;
     this.update({ loadingMore: true });
@@ -110,12 +99,12 @@ class NotificationFeed {
     if (item.readAt || this.pendingReads.has(item.id) || this.state.markingAll) return;
     this.pendingReads.add(item.id); this.revision++;
     try {
-      if (this.owner === 'demo') { markDemoNotifications([item.id]); return; }
+
       const saved = await notificationApi.markRead(this.owner, item.id);
       const wasUnread = this.state.items.some(current => current.id === saved.id && !current.readAt);
       this.update({ items: this.state.items.map(current => current.id === saved.id ? saved : current), unreadCount: Math.max(0, this.state.unreadCount - (wasUnread ? 1 : 0)), actionError: '' });
     } catch { this.update({ actionError: 'Chưa thể đánh dấu đã đọc. Bạn vẫn có thể mở thông tin liên quan.' }); }
-    finally { this.revision++; this.pendingReads.delete(item.id); if (this.owner !== 'demo') void this.refresh(); }
+    finally { this.revision++; this.pendingReads.delete(item.id); void this.refresh(); }
   };
   markAllRead = async () => {
     if (this.state.markingAll || !this.state.unreadCount || this.pendingReads.size) return;
@@ -123,11 +112,11 @@ class NotificationFeed {
     const unreadBefore = this.state.unreadCount;
     this.revision++; this.update({ markingAll: true, actionError: '' });
     try {
-      if (this.owner === 'demo') { markDemoNotifications(this.state.items.map(item => item.id)); return; }
+
       await notificationApi.markAllRead(this.owner);
       const readAt = new Date().toISOString();
       this.update({ items: this.state.items.map(item => ids.has(item.id) ? { ...item, readAt: item.readAt ?? readAt } : item), unreadCount: Math.max(0, this.state.unreadCount - unreadBefore) });
     } catch { this.update({ actionError: 'Không thể đánh dấu tất cả đã đọc. Vui lòng thử lại.' }); }
-    finally { this.revision++; this.update({ markingAll: false }); if (this.owner !== 'demo') void this.refresh(); }
+    finally { this.revision++; this.update({ markingAll: false }); void this.refresh(); }
   };
 }

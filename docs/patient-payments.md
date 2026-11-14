@@ -1,5 +1,7 @@
 # Thanh toán & hóa đơn
 
+> Cập nhật: chế độ mô phỏng bệnh nhân đã được gỡ. Các hướng dẫn mô phỏng bên dưới là tài liệu lịch sử; xem [luồng xác thực hiện tại](auth-backend-only.md).
+
 Trang `/patient/payments` có ba lối vào:
 
 1. **Tài khoản → Thanh toán & hóa đơn**: xem tổng quan hóa đơn và lịch sử của thành viên đang chọn.
