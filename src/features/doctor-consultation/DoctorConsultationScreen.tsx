@@ -20,8 +20,19 @@ import { AllergyAlert } from './components/AllergyAlert';
 import { ClinicalPersonalInfo } from './components/ClinicalPersonalInfo';
 import { ClinicalHistory } from './components/ClinicalHistory';
 import { historyFiltersFromQuery } from './past-encounter/past-encounter-navigation';
+import { DoctorConsultationLive } from './DoctorConsultationLive';
 
 export function DoctorConsultationScreen() {
+  const auth = useDoctorAccess();
+  const params = useParams<{ encounterId: string }>();
+  const query = useSearchParams();
+  if (query.get('demo') === '1') return <DoctorConsultationDemoScreen />;
+  if (auth.loading) return <p role="status" className="p-8">Đang kiểm tra phiên đăng nhập…</p>;
+  if (!auth.isDoctor) return <main className="p-8"><h1 className="text-xl font-bold">Không thể mở bệnh án</h1><p className="my-4">Vui lòng đăng nhập bằng tài khoản bác sĩ điều trị.</p><Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link></main>;
+  return <DoctorConsultationLive key={`${auth.owner}:${params.encounterId}:${query.get('patientId')}`} encounterId={Number(params.encounterId)} patientId={Number(query.get('patientId'))} />;
+}
+
+function DoctorConsultationDemoScreen() {
   const auth = useDoctorAccess(); const { data, error } = useDoctorQueue();
   const params = useParams<{ encounterId: string }>(); const query = useSearchParams();
   const assignmentId = query.get('assignment');

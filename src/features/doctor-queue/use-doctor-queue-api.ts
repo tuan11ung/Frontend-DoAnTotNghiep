@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { countQueuePatients, filterQueuePatients } from '@/src/features/clinical-queue/queue-utils';
 import type { PatientTag, QueueFilterStatus, QueuePatient, QueueShift, QueueStatus } from '@/src/features/clinical-queue/types';
 import { doctorQueueApi, type DoctorQueuePatientResponse, type DoctorQueueRoomResponse } from './api/doctor-queue-api';
@@ -75,6 +76,7 @@ function errorMessage(error: unknown) {
 }
 
 export function useDoctorQueueApi() {
+  const router = useRouter();
   const [rooms, setRooms] = useState<DoctorQueueRoomResponse[]>([]);
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [records, setRecords] = useState<DoctorQueuePatientResponse[]>([]);
@@ -213,10 +215,11 @@ export function useDoctorQueueApi() {
   async function admitPatient() {
     if (!callingRecord?.encounterCode || !selectedRoom) return;
     const patientName = callingRecord.patientName;
-    await doctorQueueApi.start(callingRecord.encounterCode);
+    const started = await doctorQueueApi.start(callingRecord.encounterCode);
     setCallingRecord(null);
     setNotice(`${patientName} đã vào phòng.`);
     await loadQueue(selectedRoom);
+    router.push(`/doctor/encounters/${started.encounterId}?patientId=${started.patientId}`);
   }
 
   async function markAbsent() {
@@ -241,6 +244,7 @@ export function useDoctorQueueApi() {
       setError('');
       setNotice(`Đã tiếp tục lượt khám của ${selectedReturnPatient.patientName}.`);
       await loadQueue(selectedRoom);
+      if (resumed.encounterId) router.push(`/doctor/encounters/${resumed.encounterId}?patientId=${resumed.patientId}`);
     } catch (continueError) {
       setError(errorMessage(continueError));
     } finally {
@@ -260,6 +264,7 @@ export function useDoctorQueueApi() {
 
   return {
     shifts, shift, patients, counts, nextPatient, currentPatient, callingPatient,
+    currentEncounterHref: (() => { const record = records.find(item => item.encounterCode === currentPatient?.id); return record?.encounterId ? `/doctor/encounters/${record.encounterId}?patientId=${record.patientId}` : null; })(),
     initialCallCount: callingRecord?.callCount ?? 1, returnQueueActive,
     selectedReturnId, selectedReturnPatient, setSelectedReturnId, continueDiagnosis,
     visiblePatients, statusFilter, setStatusFilter: changeStatusFilter, query, setQuery, tagFilter, setTagFilter,

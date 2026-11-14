@@ -89,6 +89,6 @@ export const doctorQueueApi = {
   getQueue: (roomId: number, workScheduleId: number, signal?: AbortSignal) => doctorQueueRequest<DoctorQueuePatientResponse[]>('encounters/doctor-queue', { roomId, workScheduleId }, signal),
   call: (encounterCode: string) => doctorQueueRequest<DoctorQueuePatientResponse>('encounters/call', { encounterCode }),
   markAbsent: (encounterCode: string) => doctorQueueRequest<DoctorQueuePatientResponse>('encounters/absent', { encounterCode }),
-  start: (encounterCode: string) => doctorQueueRequest<unknown>('encounters/start', { encounterCode }),
+  start: (encounterCode: string) => doctorQueueRequest<{ encounterId: number; patientId: number }>('encounters/start', { encounterCode }),
   resumeAfterCls: (encounterCode: string) => doctorQueueRequest<DoctorQueuePatientResponse>('encounters/resume-after-cls', { encounterCode }),
 };
