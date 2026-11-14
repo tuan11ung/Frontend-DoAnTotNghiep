@@ -6,13 +6,14 @@ import { historyAccessSnapshot, INITIAL_HISTORY_ACCESS, parseHistoryAccess, refr
 import type { HistoryAccessGrant } from './history-access.types';
 import { RevokeHistoryAccessDialog } from './RevokeHistoryAccessDialog';
 import { secondaryClass } from '../components/ProfileFields';
+import { MedicalHistoryAccessLive } from './MedicalHistoryAccessLive';
 
 const reasons = { PATIENT: 'Bạn đã thu hồi', VISIT_COMPLETED: 'Đã kết thúc lượt khám', EXPIRED: 'Quyền đã hết hạn' };
 const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[đĐ]/g, 'd').toLowerCase();
 export function MedicalHistoryAccess({ isPreview, patientId }: { isPreview: boolean; patientId: number }) {
   return <section id="history-access" aria-labelledby="history-access-heading" className="scroll-mt-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="flex items-center gap-3 border-b border-slate-100 p-5 sm:px-6"><span className="rounded-xl bg-teal-50 p-2.5 text-teal-700"><ShieldCheck className="size-5" /></span><div><h2 id="history-access-heading" className="font-bold text-slate-900">Quyền truy cập bệnh sử</h2><p className="mt-1 text-xs leading-5 text-slate-500">Theo dõi quyền và các phiên khám bác sĩ đã xem.</p></div></div>
-    {isPreview ? <HistoryAccessPreview key={patientId} patientId={patientId} /> : <div role="status" className="p-5 text-sm leading-7 text-slate-600 sm:p-6">Chức năng đang chờ kết nối dịch vụ quản lý quyền bệnh sử. Dữ liệu của tài khoản thật sẽ hiển thị khi dịch vụ được tích hợp.</div>}
+    {isPreview ? <HistoryAccessPreview key={patientId} patientId={patientId} /> : <MedicalHistoryAccessLive key={patientId} patientId={patientId} />}
   </section>;
 }
 function HistoryAccessPreview({ patientId }: { patientId: number }) {

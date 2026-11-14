@@ -49,7 +49,8 @@ function FamilyContent({ token }: { token: string | null }) {
   const [loadError, setLoadError] = useState('');
   const [revision, setRevision] = useState(0);
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [editingMember, setEditingMember] = useState<FamilyMember | null>(null);
+  const [editingMember, setEditingMember] = useState<FamilyMemberSummary | null>(null);
+  const [openingEdit, setOpeningEdit] = useState(false);
   const [deletingMember, setDeletingMember] = useState<FamilyMemberSummary | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -104,6 +105,25 @@ function FamilyContent({ token }: { token: string | null }) {
       throw new Error('Không thể gỡ hồ sơ người thân.');
     }
     setToastMessage('Đã gỡ hồ sơ người thân khỏi sổ gia đình.');
+  }
+
+  async function handleEditMember(id: string) {
+    if (openingEdit) return;
+    setOpeningEdit(true);
+    try {
+      const member = token ? await patientFamilyApi.getMember(token, Number(id)) : preview.members.find(item => item.id === id);
+      if (!member) throw new Error('Không tìm thấy hồ sơ người thân.');
+      setEditingMember(member);
+    } catch (error) { setToastMessage(error instanceof Error ? error.message : 'Không thể tải hồ sơ.'); }
+    finally { setOpeningEdit(false); }
+  }
+
+  async function handleUpdateMember(id: string, updates: Partial<FamilyMember>) {
+    if (token) {
+      const updated = await patientFamilyApi.updateMember(token, Number(id), updates);
+      setProfiles(current => current && { ...current, members: current.members.map(item => item.id === id ? updated : item) });
+    } else if (!preview.updateMember(id, updates)) throw new Error('Không thể cập nhật hồ sơ.');
+    setToastMessage('Đã cập nhật thông tin hồ sơ người thân.');
   }
 
   return (
@@ -210,9 +230,7 @@ function FamilyContent({ token }: { token: string | null }) {
               <FamilyMemberCard
                 key={member.id}
                 member={member}
-                onEdit={token ? undefined : () => {
-                  setEditingMember(preview.members.find(item => item.id === member.id) ?? null);
-                }}
+                onEdit={() => void handleEditMember(member.id)}
                 onDelete={() => setDeletingMember(member)}
               />
             ))}
@@ -229,6 +247,7 @@ function FamilyContent({ token }: { token: string | null }) {
       )}
 
       {/* Modals Workflow */}
+      {openingEdit && <p role="status" className="fixed bottom-6 left-6 rounded-lg border bg-white p-4 text-sm shadow">Đang tải hồ sơ người thân…</p>}
       {isAddOpen && <AddFamilyMemberDialog
         isOpen
         showNote={!token}
@@ -239,10 +258,9 @@ function FamilyContent({ token }: { token: string | null }) {
       <EditFamilyMemberDialog
         isOpen={Boolean(editingMember)}
         member={editingMember}
+        basicOnly={Boolean(token)}
         onClose={() => setEditingMember(null)}
-        onSave={(id, updates) => {
-          if (preview.updateMember(id, updates)) setToastMessage('Đã cập nhật thông tin hồ sơ người thân.');
-        }}
+        onSave={handleUpdateMember}
       />
 
       {deletingMember && <DeleteFamilyMemberDialog

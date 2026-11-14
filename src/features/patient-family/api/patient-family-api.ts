@@ -25,6 +25,7 @@ interface PatientProfile {
   maskedNationalId?: string | null;
   maskedPhone?: string | null;
   insuranceNo?: string | null;
+  address?: string | null;
 }
 
 type ManagedFamilyMember = FamilyMemberSummary & { relationId: number };
@@ -58,10 +59,26 @@ function toFamilyMember(profile: PatientProfile): ManagedFamilyMember {
     nationalId: profile.maskedNationalId ?? '',
     phone: profile.maskedPhone ?? undefined,
     bhytNumber: profile.insuranceNo ?? undefined,
+    address: profile.address ?? undefined,
   };
 }
 
 export const patientFamilyApi = {
+  async getMember(token: string, patientId: number) {
+    const data = await accountRequest('profiles/detail', token, { patientId });
+    if (!isPatientProfile(data) || data.id !== patientId || data.relationship === 'SELF') throw new Error('Hồ sơ người thân không hợp lệ.');
+    return toFamilyMember(data);
+  },
+  async updateMember(token: string, patientId: number, input: Partial<FamilyMember>) {
+    const data = await accountRequest('profiles/update', token, {
+      patientId, fullName: input.fullName, dob: input.dob, gender: input.gender,
+      address: input.address ?? null, insuranceNo: input.bhytNumber ?? null,
+      relationship: input.relationship ? backendRelationships[input.relationship] : undefined,
+      nationalId: input.nationalId?.trim() || undefined, phone: input.phone?.trim() || undefined,
+    });
+    if (!isPatientProfile(data) || data.id !== patientId || data.relationship === 'SELF') throw new Error('Phản hồi cập nhật người thân không hợp lệ.');
+    return toFamilyMember(data);
+  },
   async getProfiles(token: string, signal?: AbortSignal): Promise<FamilyProfiles> {
     const data = await accountRequest('profiles/list', token, {}, signal);
     if (!Array.isArray(data) || !data.every(isPatientProfile)) throw new Error('Danh sách hồ sơ gia đình không hợp lệ.');

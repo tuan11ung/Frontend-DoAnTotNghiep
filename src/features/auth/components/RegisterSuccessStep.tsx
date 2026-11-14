@@ -2,14 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {
-  CheckCircle2,
-  LogIn,
-  UserCheck,
-  Phone,
-  Mail,
-  CreditCard,
-} from 'lucide-react';
+import { CheckCircle2, LogIn } from 'lucide-react';
 import { RegisterFormValues } from '../models/types/register.types';
 import { useBookingReturnTo } from '../hooks/use-booking-return-to';
 import { getPatientAuthHref } from '../utils/booking-return';
@@ -19,7 +12,7 @@ interface RegisterSuccessStepProps {
   continuationError?: string | null;
 }
 
-export function RegisterSuccessStep({ registeredData, continuationError }: RegisterSuccessStepProps) {
+export function RegisterSuccessStep({ continuationError }: RegisterSuccessStepProps) {
   const returnTo = useBookingReturnTo();
 
   return (
