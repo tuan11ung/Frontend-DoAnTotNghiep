@@ -1,36 +1,11 @@
 'use client';
-
-import React, { useState } from 'react';
-import { AppointmentTabType } from '@/src/shared/types/medical';
+import { Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import { HeroSection } from './components/HeroSection';
-import { AppointmentContainer } from './components/AppointmentContainer';
 import { TrustAndValuesSection } from './components/TrustAndValuesSection';
-import { HospitalNetworkSection } from './components/HospitalNetworkSection';
-import { HomeKnowledgeSection } from './components/HomeKnowledgeSection';
-
-export function HomePage() {
-  const [activeTab, setActiveTab] = useState<AppointmentTabType>('doctor');
-
-  const handleSelectTab = (tab: AppointmentTabType) => {
-    setActiveTab(tab);
-  };
-
-  return (
-    <div className="flex flex-col flex-1">
-      {/* 1. Hero Search & Banner */}
-      <HeroSection onSelectTab={handleSelectTab} />
-
-      {/* 2. Interactive Appointment Container (Tabs + Content) */}
-      <AppointmentContainer currentTab={activeTab} onTabChange={handleSelectTab} />
-
-      <HospitalNetworkSection />
-      <HomeKnowledgeSection />
-
-      {/* Trust & Core Values */}
-      <TrustAndValuesSection onSelectTab={handleSelectTab} />
-    </div>
-  );
+import { PublicDiscovery } from '../public-data/PublicDiscovery';
+export function HomePage(){
+  const router=useRouter();const choose=(tab:string)=>router.push(tab==='doctor'?'/search?type=doctors':'/hospitals');
+  return <div className="flex flex-1 flex-col"><HeroSection onSelectTab={choose}/><Suspense fallback={<p role="status" className="p-8">Đang tải danh mục…</p>}><PublicDiscovery compact/></Suspense><TrustAndValuesSection onSelectTab={choose}/></div>;
 }
-
-// Backward compatibility alias
-export { HomePage as HomeScreen };
+export {HomePage as HomeScreen};

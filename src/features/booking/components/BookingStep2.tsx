@@ -18,7 +18,7 @@ interface BookingStep2Props<H extends string | number, S extends string | number
   qualification?: {
     value: DoctorQualification | null;
     available: boolean;
-    onSelect: (value: DoctorQualification) => void;
+    onSelect: (value: DoctorQualification | null) => void;
   };
   canContinue: boolean;
   onBack: () => void;
@@ -76,10 +76,11 @@ export function BookingStep2<H extends string | number, S extends string | numbe
               disabled={!hasSpecialty}
               onChange={(event) => {
                 const value = event.target.value;
-                if (value === 'MASTER' || value === 'CK1' || value === 'CK2') qualification.onSelect(value);
+                if (value === '') qualification.onSelect(null);
+                else if (value === 'MASTER' || value === 'CK1' || value === 'CK2') qualification.onSelect(value);
               }}
             >
-              <option disabled value="">Chọn trình độ bác sĩ</option>
+              <option value="">Tất cả trình độ</option>
               {Object.entries(doctorQualifications).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}

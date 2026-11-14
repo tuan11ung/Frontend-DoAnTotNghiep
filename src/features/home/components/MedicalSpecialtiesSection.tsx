@@ -2,31 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import {
-  Baby,
-  User,
-  Sparkles,
-  Apple,
-  Bone,
-  ShieldCheck,
-  Wind,
-  Ear,
-  Award,
-  HeartPulse,
-  Accessibility,
-  Activity,
-  Ambulance,
-  Syringe,
-  Smile,
-  ShieldAlert,
-  Droplets,
-  Pill,
-  Brain,
-  Microscope,
-  Droplet,
-  Eye,
-  ChevronDown,
-} from 'lucide-react';
+import { Baby, User, Sparkles, Apple, Bone, Wind, Ear, Award, HeartPulse, Accessibility, Activity, Ambulance, Syringe, Smile, ShieldAlert, Droplets, Pill, Brain, Microscope, Droplet, Eye, ChevronDown } from 'lucide-react';
 import { SPECIALTIES_LIST } from '@/src/features/home/data/medical-data';
 import { SpecialtyProps } from '@/src/types/medical';
 

@@ -9,7 +9,7 @@ export async function accountRequest(endpoint: string, token: string, body: obje
   const result: unknown = await response.json().catch(() => null);
   if (response.status === 401 || response.status === 403) throw new Error('Phiên đăng nhập đã hết hạn hoặc không có quyền truy cập. Vui lòng đăng nhập lại.');
   if (!response.ok || !isObject(result) || result.success !== true) {
-    throw new Error('Không thể lưu hoặc tải thông tin. Vui lòng thử lại.');
+    throw new Error(isObject(result) && typeof result.message === 'string' ? result.message : 'Không thể lưu hoặc tải thông tin. Vui lòng thử lại.');
   }
   return result.data;
 }

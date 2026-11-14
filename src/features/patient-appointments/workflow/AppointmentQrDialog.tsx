@@ -24,7 +24,7 @@ export function AppointmentQrDialog({ isOpen, appointment, onClose, queueRoom, q
   if (!isOpen || !appointment) return null;
   const status = APPOINTMENT_STATUS_LABELS[appointment.status];
   const room = appointmentRoomInfo(appointment);
-  const showQr = ['BOOKED', 'CHECKED_IN', 'IN_PROGRESS'].includes(appointment.status);
+  const showQr = Boolean(appointment.qrCodeData) && ['BOOKED', 'CHECKED_IN', 'IN_PROGRESS'].includes(appointment.status);
 
   return <dialog ref={dialogRef} onCancel={(event) => { event.preventDefault(); onClose(); }} onClick={(event) => { if (event.target === event.currentTarget) onClose(); }} aria-labelledby="appointment-detail-title" className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-1.5rem)] max-w-3xl overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl backdrop:bg-slate-900/50">
     <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-slate-100 bg-white px-5 py-4 sm:px-6"><div><h2 id="appointment-detail-title" className="text-lg font-extrabold text-slate-900">Chi tiết lịch hẹn</h2><p className="mt-1 text-xs text-slate-500">Mã lịch hẹn: <strong className="font-mono text-blue-700">{appointment.code}</strong></p></div><button type="button" aria-label="Đóng chi tiết lịch hẹn" onClick={onClose} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700"><X className="size-5" /></button></header>
@@ -42,7 +42,7 @@ export function AppointmentQrDialog({ isOpen, appointment, onClose, queueRoom, q
         </dl>
         <section aria-label="Chính sách hủy của cơ sở" className="rounded-xl border border-amber-100 bg-amber-50/60 p-4"><h3 className="flex items-center gap-2 text-xs font-bold text-slate-800"><ShieldCheck className="size-4 text-amber-700" />Chính sách hủy của cơ sở</h3><p className="mt-2 text-xs leading-relaxed text-slate-600">{appointment.cancellationPolicy?.summary || 'Cơ sở chưa công bố chính sách hủy trên hệ thống. Vui lòng liên hệ trước khi thay đổi lịch hẹn.'}</p><p className="mt-2 text-[11px] leading-relaxed text-slate-500">{appointment.cancellationPolicy?.refundNote || 'Điều kiện hoàn phí cần được xác nhận trực tiếp với cơ sở.'}</p>{appointment.hospitalHotline && <a href={`tel:${appointment.hospitalHotline.replace(/[^\d+]/g, '')}`} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-blue-700"><Phone className="size-3.5" />{appointment.hospitalHotline}</a>}</section>
       </div>
-      <aside>{showQr ? <AppointmentQrCode key={appointment.id} appointment={appointment} /> : <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center text-xs leading-relaxed text-slate-500"><ShieldCheck className="mx-auto mb-3 size-8 text-slate-300" />{appointment.status === 'CANCELLED' ? 'Lịch đã hủy. QR không còn sử dụng để check-in.' : 'Lịch đã kết thúc. QR không còn sử dụng để check-in.'}</div>}</aside>
+      <aside>{showQr ? <AppointmentQrCode key={appointment.id} appointment={appointment} /> : <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center text-xs leading-relaxed text-slate-500"><ShieldCheck className="mx-auto mb-3 size-8 text-slate-300" />{appointment.status === 'PENDING_SPECIALTY' ? 'Đang chờ lễ tân phân chuyên khoa. Bạn sẽ nhận thông báo xác nhận khi lịch được phân.' : appointment.status === 'CANCELLED' ? 'Lịch đã hủy. QR không còn sử dụng để check-in.' : 'Chưa có mã QR sử dụng để check-in.'}</div>}</aside>
     </div>
   </dialog>;
 }

@@ -25,7 +25,7 @@ export const HospitalServicesTab: React.FC<HospitalServicesTabProps> = ({
   onBackToInfo,
   onBookService,
 }) => {
-  const renderServiceIcon = (iconType: ClinicalServiceItem['iconType'], accentColor?: string) => {
+  const renderServiceIcon = (iconType: ClinicalServiceItem['iconType']) => {
     switch (iconType) {
       case 'child':
         return (
@@ -103,7 +103,7 @@ export const HospitalServicesTab: React.FC<HospitalServicesTabProps> = ({
             >
               <div>
                 <div className="flex items-center justify-between mb-3.5">
-                  {renderServiceIcon(service.iconType, service.accentColor)}
+                  {renderServiceIcon(service.iconType)}
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 shadow-2xs">
                     {service.location}
                   </span>

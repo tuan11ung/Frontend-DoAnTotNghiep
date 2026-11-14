@@ -45,7 +45,7 @@ export function AppointmentCard({
     bgClass: 'bg-slate-100 border-slate-200',
   };
 
-  const isBooked = appointment.status === 'BOOKED';
+  const isBooked = ['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status);
   const isCheckedIn = appointment.status === 'CHECKED_IN' || appointment.status === 'IN_PROGRESS';
   const isCompleted = appointment.status === 'COMPLETED';
   const isCancelled = appointment.status === 'CANCELLED';
@@ -161,7 +161,7 @@ export function AppointmentCard({
           )}
 
           {/* Lịch đã checkin: Xem hàng chờ */}
-          {isCheckedIn && (
+          {isCheckedIn && appointment.source !== 'api' && (
             <button
               onClick={() => onOpenQueue(appointment)}
               type="button"
@@ -176,7 +176,7 @@ export function AppointmentCard({
           {/* Lịch hoàn tất: Xem kết quả */}
           {isCompleted && (
             <Link
-              href={{ pathname: '/patient/results', query: { encounter: appointment.id } }}
+              href={{ pathname: '/patient/results', query: { profile: appointment.targetType === 'SELF' ? 'self' : appointment.patientId } }}
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               <FileText className="w-3.5 h-3.5" />

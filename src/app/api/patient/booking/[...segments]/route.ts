@@ -3,10 +3,15 @@ import { NextResponse } from 'next/server';
 const ENDPOINTS: Record<string, string> = {
   'profiles/list': '/patient/profiles/list',
   'hospitals/search': '/patient/hospitals/search',
+  'hospitals/specialties/search': '/public/hospitals/specialties/search',
   'appointments/bhyt/specialties/search': '/patient/appointments/bhyt/specialties/search',
   'appointments/bhyt/available-slots/search': '/patient/appointments/bhyt/available-slots/search',
   'appointments/bhyt/create': '/patient/appointments/bhyt/create',
   'appointments/detail': '/patient/appointments/detail',
+  'appointments/search': '/patient/appointments/search',
+  'appointments/cancel': '/patient/appointments/cancel',
+  'appointments/available-slots/search': '/patient/appointments/available-slots/search',
+  'appointments/create': '/patient/appointments/create',
 };
 
 export async function POST(request: Request, { params }: { params: Promise<{ segments: string[] }> }) {

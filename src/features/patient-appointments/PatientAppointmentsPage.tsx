@@ -28,8 +28,8 @@ export function PatientAppointmentsPage() {
   const searchParams = useSearchParams();
   const initialTarget = searchParams.get('target') || 'ALL';
 
-  const { appointments, loading, storageError, queueError, rooms, cancelAppointment } = usePatientAppointments();
-  const { members } = useFamilyMembers();
+  const { auth, appointments, profiles, loading, storageError, queueError, rooms, cancelAppointment, refresh } = usePatientAppointments();
+  const { members } = useFamilyMembers(auth.isPreview);
 
   // Filters state
   const [currentTab, setCurrentTab] = useState<AppointmentFilterTab>(searchParams.get('tab') === 'ongoing' ? 'ONGOING' : 'UPCOMING');
@@ -64,7 +64,7 @@ export function PatientAppointmentsPage() {
     return appointments.filter((apt) => {
       // 1. Tab filter
       if (currentTab === 'UPCOMING') {
-        if (apt.status !== 'BOOKED') return false;
+        if (!['BOOKED', 'PENDING_SPECIALTY'].includes(apt.status)) return false;
       } else if (currentTab === 'ONGOING') {
         if (!['CHECKED_IN', 'IN_PROGRESS'].includes(apt.status)) return false;
       } else if (currentTab === 'HISTORY') {
@@ -105,12 +105,14 @@ export function PatientAppointmentsPage() {
       : appointments.filter((a) => a.patientId === selectedProfile);
 
     return {
-      upcoming: baseList.filter((a) => a.status === 'BOOKED').length,
+      upcoming: baseList.filter((a) => ['BOOKED', 'PENDING_SPECIALTY'].includes(a.status)).length,
       ongoing: baseList.filter((a) => ['CHECKED_IN', 'IN_PROGRESS'].includes(a.status)).length,
       history: baseList.filter((a) => ['COMPLETED', 'NO_SHOW'].includes(a.status)).length,
       cancelled: baseList.filter((a) => a.status === 'CANCELLED').length,
     };
   }, [appointments, selectedProfile]);
+
+  if (auth.isReady && !auth.isAuthenticated) return <main className="mx-auto max-w-5xl p-8 text-center"><h1 className="text-xl font-bold">Lịch khám của tôi</h1><p className="my-4">Vui lòng đăng nhập để xem lịch khám.</p><Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link></main>;
 
   return (
     <div className="min-h-screen bg-slate-50/60 pb-16">
@@ -147,6 +149,7 @@ export function PatientAppointmentsPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button type="button" onClick={refresh} className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold">Làm mới</button>
             <Link
               href="/booking"
               className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-md text-xs sm:text-sm transition-all cursor-pointer transform hover:-translate-y-0.5"
@@ -170,8 +173,8 @@ export function PatientAppointmentsPage() {
               className="min-w-0 flex-1 px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all text-slate-800"
             >
               <option value="ALL">Toàn bộ gia đình (Tất cả)</option>
-              <option value="SELF">Bản thân (Nguyễn Văn An)</option>
-              {members.map((m) => (
+              <option value="SELF">Bản thân{profiles.find(p => p.relationship === 'SELF')?.fullName ? ` (${profiles.find(p => p.relationship === 'SELF')?.fullName})` : ''}</option>
+              {(auth.isPreview ? members : profiles.filter(p => p.relationship !== 'SELF').map(p => ({ id: String(p.id), fullName: p.fullName, relationship: 'KHAC' }))).map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.fullName} ({m.relationship === 'ME' ? 'Mẹ' : m.relationship === 'CHA' ? 'Cha' : m.relationship === 'CON' ? 'Con' : 'Người thân'})
                 </option>
@@ -194,7 +197,7 @@ export function PatientAppointmentsPage() {
           </div>
         </div>
 
-        {(storageError || queueError) && <p role="alert" className="mb-5 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />Không thể đọc đầy đủ dữ liệu lịch hẹn hoặc hàng chờ trong trình duyệt. Vui lòng kiểm tra dữ liệu lưu trữ; không cấp số hoặc hủy lịch khi dữ liệu không hợp lệ.</p>}
+        {(storageError || queueError) && <p role="alert" className="mb-5 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />{storageError || 'Chưa tải được hàng chờ. Vui lòng thử lại.'}</p>}
         {currentTab === 'UPCOMING' && tabCounts.ongoing > 0 && <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-xs text-emerald-900"><p><strong>{tabCounts.ongoing}</strong> lịch đã check-in đang diễn ra.</p><button type="button" onClick={() => setCurrentTab('ONGOING')} className="rounded-lg px-3 py-2 font-bold hover:bg-emerald-100">Xem số thứ tự & phòng khám →</button></div>}
 
         {/* Appointment status tabs */}
@@ -211,6 +214,8 @@ export function PatientAppointmentsPage() {
         {/* Danh sách thẻ lịch khám */}
         {loading ? (
           <div className="py-24 text-center text-slate-400 text-sm">Đang tải danh sách lịch khám...</div>
+        ) : storageError && appointments.length === 0 ? (
+          <section className="rounded-2xl border border-rose-200 bg-white p-8 text-center"><h2 className="text-lg font-bold">Chưa tải được lịch khám</h2><p className="my-3 text-sm text-slate-600">Vui lòng thử lại để kiểm tra các lịch đã đặt.</p><button className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-bold text-white" type="button" onClick={refresh}>Thử lại</button></section>
         ) : filteredAppointments.length === 0 ? (
           <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
             <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4">

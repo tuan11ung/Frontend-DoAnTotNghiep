@@ -17,7 +17,8 @@ function MissingResult({ title, description, href, label }: { title: string; des
 export function PatientResultsScreen({ data }: { data: PatientResultsData }) {
   const params = useSearchParams();
   const router = useRouter();
-  const profileId = params.get('profile') ?? 'self';
+  const requestedProfile = params.get('profile');
+  const profileId = !requestedProfile || requestedProfile === 'self' ? data.defaultProfileId ?? 'self' : requestedProfile;
   const patient = data.patients.find((item) => item.id === profileId);
   const encounterId = params.get('encounter');
   const encounter = data.encounters.find((item) => item.id === encounterId && item.patientId === patient?.id);
@@ -42,7 +43,7 @@ export function PatientResultsScreen({ data }: { data: PatientResultsData }) {
         <EncounterList key={patient.id} encounters={encounters} patient={patient} />
         <aside className="hidden space-y-4 lg:block"><section className="rounded-2xl border border-slate-200 bg-white p-5"><ShieldCheck className="mb-4 size-7 text-blue-600" /><h2 className="text-sm font-bold text-slate-800">Theo dõi sau mỗi lần khám</h2><p className="mt-2 text-xs leading-relaxed text-slate-500">Chọn Kết quả ở một ca khám để xem tổng quan, các dịch vụ được chỉ định và phiếu đã công bố.</p><div className="mt-5 space-y-4">{[{ status: 'NOT_STARTED' as const, text: 'Dịch vụ chưa được thực hiện.' }, { status: 'AWAITING_RESULT' as const, text: 'Đã tiếp nhận, đang chờ trả kết quả.' }, { status: 'RESULT_READY' as const, text: 'Đã có kết quả từ cơ sở thực hiện.' }].map(({ status, text }) => <div key={status}><ServiceStatusBadge status={status} /><p className="mt-1.5 text-[11px] leading-relaxed text-slate-500">{text}</p></div>)}</div></section><div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5"><p className="flex items-center gap-2 text-xs font-bold text-blue-900"><Info className="size-4" />Chọn đúng thành viên</p><p className="mt-2 text-xs leading-relaxed text-blue-900/70">Ca khám được hiển thị riêng theo từng hồ sơ. Nếu chưa thấy kết quả, hãy kiểm tra lại thành viên đang chọn.</p></div></aside>
       </div>}
-      <div className="mt-7 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400"><p className="flex items-center gap-1.5"><ShieldCheck className="size-3.5" />Thông tin theo hồ sơ người bệnh đang chọn.</p><span className="rounded-md border border-slate-200 bg-white px-2 py-1">Dữ liệu minh họa</span></div>
+      <div className="mt-7 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400"><p className="flex items-center gap-1.5"><ShieldCheck className="size-3.5" />Thông tin theo hồ sơ người bệnh đang chọn.</p><span className="rounded-md border border-slate-200 bg-white px-2 py-1">{data.source === 'api' ? 'Dữ liệu từ cơ sở y tế' : 'Dữ liệu minh họa'}</span></div>
     </div>
   </div>;
 }

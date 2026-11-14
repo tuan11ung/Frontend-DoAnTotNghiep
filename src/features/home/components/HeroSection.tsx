@@ -11,7 +11,7 @@ interface HeroSectionProps {
   onSearch?: (query: string) => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectTab, onSearch }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -51,7 +51,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectTab, onSearch 
               Đặt khám bác sĩ
             </h1>
             <p className="text-blue-100 text-sm sm:text-base lg:text-lg font-normal mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Đặt khám với hơn 1000 bác sĩ đã kết nối chính thức với MedConnect để có số thứ tự và khung giờ khám trước
+              Tra cứu bác sĩ, chọn cơ sở và đặt khung giờ còn chỗ để nhận phiếu khám trước khi đến bệnh viện
             </p>
 
             {/* Search Bar Wrapper */}
@@ -137,8 +137,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSelectTab, onSearch 
                   <ShieldCheck className="w-6 h-6 text-emerald-600" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900 leading-tight">100% Bác sĩ</div>
-                  <div className="text-[11px] text-slate-500">Xác thực chứng chỉ Bộ Y Tế</div>
+                  <div className="text-xs font-bold text-slate-900 leading-tight">Chủ động lịch khám</div>
+                  <div className="text-[11px] text-slate-500">Theo dõi lịch hẹn và kết quả</div>
                 </div>
               </div>
             </div>

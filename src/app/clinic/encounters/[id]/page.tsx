@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
-import { EncounterPage } from '@/src/features/encounters/EncounterPage';
+import { Suspense } from 'react';
+import { ClinicEncounterEntry } from '@/src/features/encounters/ClinicEncounterEntry';
 
 export const metadata: Metadata = { title: 'Khám bệnh · MedConnect' };
 
 export default function Page() {
-  return <EncounterPage />;
+  return <Suspense fallback={<p role="status" className="p-8">Đang tải lượt khám…</p>}><ClinicEncounterEntry /></Suspense>;
 }

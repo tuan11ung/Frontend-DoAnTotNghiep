@@ -1,4 +1,5 @@
 export type AppointmentStatus =
+  | 'PENDING_SPECIALTY'
   | 'BOOKED'
   | 'CHECKED_IN'
   | 'IN_PROGRESS'
@@ -7,6 +8,11 @@ export type AppointmentStatus =
   | 'NO_SHOW';
 
 export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, { label: string; colorClass: string; bgClass: string }> = {
+  PENDING_SPECIALTY: {
+    label: 'Chờ phân chuyên khoa',
+    colorClass: 'text-amber-800',
+    bgClass: 'bg-amber-50 border-amber-200',
+  },
   BOOKED: {
     label: 'Đã đặt lịch',
     colorClass: 'text-blue-700',
@@ -60,7 +66,9 @@ export interface PatientAppointment {
   doctorName: string;
   doctorTitle: string;
   doctorAvatar?: string;
-  bookingMode: 'bhyt' | 'demand';
+  bookingMode: 'bhyt' | 'demand' | 'unknown';
+  source?: 'api';
+  queueNumber?: number | null;
   specialtyName: string;
   workDate: string; // YYYY-MM-DD
   timeSlot: string; // HH:mm

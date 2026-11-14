@@ -7,8 +7,9 @@ export const doctorQualifications = {
 export type DoctorQualification = keyof typeof doctorQualifications;
 
 export function getDoctorQualification(degree: string): DoctorQualification | undefined {
-  const code = degree.toUpperCase().replace(/[^A-Z]/g, '');
+  const normalized = degree.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  const code = normalized.replace(/CHUYEN\s*KHOA/g, 'CK').replace(/[^A-Z]/g, '');
   if (code.includes('CKII')) return 'CK2';
   if (code.includes('CKI')) return 'CK1';
-  if (code.startsWith('THS')) return 'MASTER';
+  if (code.startsWith('THS') || code.includes('THACSI')) return 'MASTER';
 }

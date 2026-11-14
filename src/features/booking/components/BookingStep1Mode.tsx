@@ -1,19 +1,7 @@
 'use client';
 
 import React from 'react';
-import {
-  Shield,
-  Award,
-  CheckCircle2,
-  ArrowRight,
-  Lightbulb,
-  SplitSquareVertical,
-  Check,
-  Clock,
-  Sparkles,
-  Building2,
-  MapPin,
-} from 'lucide-react';
+import { Shield, Award, ArrowRight, SplitSquareVertical, Building2, MapPin } from 'lucide-react';
 import { BookingMode, HospitalItem } from '../types';
 import { BookingSectionHeading } from './BookingSectionHeading';
 

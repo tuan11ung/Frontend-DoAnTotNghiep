@@ -17,8 +17,17 @@ import { useAuditedMockView } from '../hooks/use-audited-mock-view';
 import type { ClinicalScope } from '../api/clinical-demo-service';
 import { consultationHistoryHref, historyFiltersFromQuery, pastEncounterHref } from './past-encounter-navigation';
 import { loadMockPastDetail, loadMockPastImage, loadMockPastReport } from './past-encounter-demo-service';
+import { DoctorPastEncounterLive } from './DoctorPastEncounterLive';
 
 export function DoctorPastEncounterScreen() {
+  const auth = useDoctorAccess(); const params = useParams<{ encounterId: string; historyId: string }>(); const query = useSearchParams();
+  if (query.get('demo') === '1') return <DoctorPastEncounterDemoScreen />;
+  if (auth.loading) return <p role="status" className="p-8">Đang kiểm tra quyền truy cập…</p>;
+  if (!auth.isDoctor) return <main className="p-8"><h1 className="text-xl font-bold">Không có quyền xem bệnh án</h1><Link href="/patient/login" className="mt-4 inline-block font-bold text-blue-700">Đăng nhập bác sĩ</Link></main>;
+  return <DoctorPastEncounterLive key={`${auth.owner}:${params.encounterId}:${params.historyId}`} currentId={Number(params.encounterId)} historyId={Number(params.historyId)} requestedPatientId={Number(query.get('patientId'))} />;
+}
+
+function DoctorPastEncounterDemoScreen() {
   const auth = useDoctorAccess(); const { data, error } = useDoctorQueue();
   const params = useParams<{ encounterId: string; historyId: string }>(); const query = useSearchParams();
   const assignmentId = query.get('assignment');

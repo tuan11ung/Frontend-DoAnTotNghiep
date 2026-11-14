@@ -4,7 +4,7 @@ export interface ClinicalService {
   id: string;
   name: string;
   category: string;
-  kind: 'LAB' | 'IMAGING' | 'ULTRASOUND' | 'FUNCTIONAL';
+  kind: 'LAB' | 'IMAGING' | 'ULTRASOUND' | 'FUNCTIONAL' | 'OTHER';
   status: ClinicalServiceStatus;
   location: string;
   updatedAt?: string;
@@ -30,6 +30,7 @@ export interface ResultPatient {
 }
 
 export interface ResultEncounter {
+  source?: 'api';
   id: string;
   code: string;
   patientId: string;
@@ -56,6 +57,9 @@ export interface ResultDetailOptions { tab?: string; service?: string; group?: s
 export type ResultDetailHref = (options?: ResultDetailOptions) => string;
 
 export interface PatientResultsData {
+  source?: 'api';
+  defaultProfileId?: string;
+  publishedResults?: { serviceId: number; encounterId: number; patientId: number; serviceName: string; completedAt?: string }[];
   patients: ResultPatient[];
   encounters: ResultEncounter[];
 }

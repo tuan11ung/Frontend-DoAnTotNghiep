@@ -3,20 +3,7 @@
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import React, { useState } from 'react';
-import {
-  FileText,
-  AlertCircle,
-  Building2,
-  Calendar,
-  Clock,
-  User,
-  CreditCard,
-  ShieldCheck,
-  Info,
-  ArrowLeft,
-  CheckCircle2,
-  Loader2,
-} from 'lucide-react';
+import { FileText, AlertCircle, Building2, ShieldCheck, Info, CheckCircle2, Loader2 } from 'lucide-react';
 import {
   BookingMode,
   BookingTarget,
@@ -81,7 +68,6 @@ export const BookingStep4Confirm: React.FC<BookingStep4ConfirmProps> = ({
   const bhytDiscount = 30960;
   const bhytPatientPay = 7740;
 
-  const demandPrice = doctor ? doctor.price : specialty.price;
   const demandPriceFormatted = doctor ? doctor.priceFormatted : specialty.priceFormatted;
 
   return (

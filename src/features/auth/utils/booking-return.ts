@@ -19,6 +19,8 @@ export function getPatientAuthHref(page: 'login' | 'register' | 'forgot-password
 export function getPostLoginDestination(roles: string[], returnTo?: string | null): string {
   if (roles.includes('SUPER_ADMIN')) return '/admin/system';
   if (roles.includes('HOSPITAL_ADMIN')) return '/admin/facility';
+  if (roles.includes('HOSPITAL_LEADER')) return '/leader/notable-encounters';
+  if (roles.includes('RECEPTIONIST')) return '/reception';
   if (roles.includes('DOCTOR')) return '/doctor/queue';
   if (roles.includes('PARACLINICAL_TECHNICIAN')) return '/technician/queue';
   return roles.includes('PATIENT') ? getBookingReturnTo(returnTo) || '/' : '/';

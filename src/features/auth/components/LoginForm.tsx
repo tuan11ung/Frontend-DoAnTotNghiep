@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, LoaderCircle, LockKeyhole, UserRound } from 'lucide-react';
 import { createAuthSession, storeAuthSession } from '../utils/auth-storage';
 import { loginAccount, LoginApiError } from '../api/auth-api';
@@ -11,6 +11,7 @@ import { getPatientAuthHref, getPostLoginDestination } from '../utils/booking-re
 
 export function LoginForm() {
   const router = useRouter();
+  const passwordChanged = useSearchParams().get('passwordChanged') === '1';
   const returnTo = useBookingReturnTo();
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -51,6 +52,7 @@ export function LoginForm() {
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit}>
+      {passwordChanged && <p role="status" className="rounded-lg bg-emerald-50 p-3 text-sm leading-6 text-emerald-800">Mật khẩu đã được cập nhật. Vui lòng đăng nhập bằng mật khẩu mới.</p>}
       <div>
         <label className="mb-2 block text-sm font-semibold text-slate-800" htmlFor="login">
           Số điện thoại hoặc email <span className="text-rose-600">*</span>

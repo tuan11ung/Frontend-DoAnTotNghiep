@@ -105,7 +105,6 @@ export const MonthCalendarModal: React.FC<MonthCalendarModalProps> = ({
               const isPast = day < 15;
               const isSunday = (day + 2) % 7 === 0;
               const isSelected = fullDateStr === selectedDate;
-              const isAvailable = !isPast && !isSunday;
 
               if (isPast) {
                 return (

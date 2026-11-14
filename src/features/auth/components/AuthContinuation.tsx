@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
-import { CalendarClock } from 'lucide-react';
+
 import { useBookingReturnTo } from '../hooks/use-booking-return-to';
 import { getPatientAuthHref } from '../utils/booking-return';
 

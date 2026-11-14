@@ -2,26 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import {
-  CreditCard,
-  ChevronDown,
-  ChevronUp,
-  CheckCircle2,
-  MapPin,
-  Clock,
-  Sun,
-  Sunset,
-  CalendarDays,
-  Flame,
-  AlertCircle,
-  ShieldCheck,
-  Headphones,
-  Phone,
-  PhoneCall,
-  CalendarCheck2,
-  ArrowRight,
-  ExternalLink,
-} from 'lucide-react';
+import { CreditCard, ChevronDown, ChevronUp, CheckCircle2, MapPin, Clock, Sun, Sunset, CalendarDays, Flame, AlertCircle, ShieldCheck, Headphones, Phone, PhoneCall, CalendarCheck2, ArrowRight } from 'lucide-react';
 import { HospitalDetail } from '../types';
 
 interface HospitalInfoTabProps {

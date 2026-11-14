@@ -2,7 +2,7 @@
 
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Hospital,
   X,
@@ -21,7 +21,8 @@ interface HospitalBookingModalProps {
   initialService?: string;
 }
 
-export const HospitalBookingModal: React.FC<HospitalBookingModalProps> = ({
+export const HospitalBookingModal: React.FC<HospitalBookingModalProps> = (props) => props.isOpen ? <HospitalBookingForm key={props.hospital.id + ':' + props.initialService} {...props} /> : null;
+const HospitalBookingForm: React.FC<HospitalBookingModalProps> = ({
   isOpen,
   onClose,
   hospital,
@@ -29,30 +30,12 @@ export const HospitalBookingModal: React.FC<HospitalBookingModalProps> = ({
 }) => {
   const [patientName, setPatientName] = useState('');
   const [dob, setDob] = useState('');
-  const [bookingDate, setBookingDate] = useState('');
-  const [selectedService, setSelectedService] = useState('');
+  const [bookingDate, setBookingDate] = useState(() => { const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); return tomorrow.toISOString().split('T')[0]; });
+  const [selectedService, setSelectedService] = useState(initialService || hospital.servicesList[0]?.title || '');
   const [phone, setPhone] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Default tomorrow date
-  useEffect(() => {
-    if (isOpen) {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const dateStr = tomorrow.toISOString().split('T')[0];
-      setBookingDate(dateStr);
-
-      if (initialService) {
-        setSelectedService(initialService);
-      } else if (hospital.servicesList.length > 0) {
-        setSelectedService(hospital.servicesList[0].title);
-      }
-
-      setIsSuccess(false);
-      setErrorMessage('');
-    }
-  }, [isOpen, initialService, hospital.servicesList]);
 
   if (!isOpen) return null;
 
