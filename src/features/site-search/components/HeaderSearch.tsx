@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowUpRight, BookOpen, Building2, FileText, LoaderCircle, Search, Stethoscope, X } from 'lucide-react';
 import { useSearchSuggestions } from '../hooks/use-search-suggestions';
 import { SEARCH_MAX_LENGTH, SEARCH_MIN_LENGTH, type SearchGroupId } from '../types';
@@ -23,6 +24,7 @@ function SearchThumbnail({ image, group }: { image?: string; group: SearchGroupI
 
 export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
   const id = useId();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [composing, setComposing] = useState(false);
@@ -83,8 +85,13 @@ export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
         <div id={`${id}-panel`} className="absolute top-3 right-4 left-4 z-[80] origin-top-right animate-in fade-in zoom-in-95 duration-150 sm:top-5 sm:right-6 sm:left-auto sm:w-[420px] xl:top-0 xl:right-0">
           <form role="search" aria-label="Tìm kiếm trên MedConnect" className="flex h-11 items-center gap-2 rounded-xl border border-blue-300 bg-white px-3 shadow-sm ring-4 ring-blue-50" onSubmit={(event) => {
             event.preventDefault();
-            if (composing || !items.length) return;
-            document.getElementById(`${id}-option-${activeIndex >= 0 ? activeIndex : 0}`)?.click();
+            if (composing || !searchQuery) return;
+            if (activeIndex >= 0 && items[activeIndex]) {
+              document.getElementById(`${id}-option-${activeIndex}`)?.click();
+            } else {
+              setOpen(false);
+              router.push('/search?' + new URLSearchParams({ q: searchQuery }));
+            }
           }}>
             <Search aria-hidden="true" className="size-4 shrink-0 text-blue-600" />
             <input ref={inputRef} id={`${id}-input`} aria-label="Tìm bài viết, bệnh viện, bác sĩ" role="combobox" aria-autocomplete="list" aria-expanded={open} aria-controls={`${id}-results`} aria-activedescendant={activeIndex >= 0 && items[activeIndex] ? `${id}-option-${activeIndex}` : undefined} autoComplete="off" spellCheck={false} maxLength={SEARCH_MAX_LENGTH} value={query} onChange={(event) => changeQuery(event.target.value)} onCompositionStart={() => setComposing(true)} onCompositionEnd={(event) => { setComposing(false); changeQuery(event.currentTarget.value); }} onKeyDown={onKeyDown} placeholder="Tìm bài viết, bệnh viện, bác sĩ…" className="min-w-0 flex-1 bg-transparent py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400" />
@@ -111,6 +118,7 @@ export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
               </div>)}
             </div>
           </div>
+          {searchQuery && <Link className="mt-1 block rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm" href={'/search?' + new URLSearchParams({q: searchQuery})} onClick={()=>setOpen(false)}>Xem tất cả kết quả →</Link>}
           <p role="status" aria-live="polite" className="sr-only">{status === 'success' ? 'Đã cập nhật kết quả tìm kiếm.' : ''}</p>
         </div>
       )}
