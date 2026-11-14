@@ -111,7 +111,7 @@ export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
                 })}
               </div>)}
             </div>
-            <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-2.5 text-[10px] text-slate-400"><span>{status === 'success' ? `${total} kết quả · Bài viết được ưu tiên` : 'Tìm kiếm thông tin công khai'}</span><span className="hidden shrink-0 sm:inline">↑↓ chọn · Enter mở · Esc đóng</span></div>
+            {status === 'success' && <div className="border-t border-slate-100 px-4 py-2.5 text-[10px] text-slate-400">{total} kết quả</div>}
           </div>
           <p role="status" aria-live="polite" className="sr-only">{status === 'success' ? `${total} kết quả tìm kiếm. ${groups.map((group) => `${group.label}: ${group.total}`).join('. ')}` : ''}</p>
         </div>
