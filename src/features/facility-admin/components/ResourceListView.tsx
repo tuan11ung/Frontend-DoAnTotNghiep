@@ -109,7 +109,7 @@ function ActionButton({ children, label, onClick }: { children: React.ReactNode;
   );
 }
 
-export function ResourceListView({ kind, items, departments, specialties, staff, onAdd, onEdit, onToggle }: ResourceListViewProps) {
+export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdit, onToggle }: ResourceListViewProps) {
   const [query, setQuery] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('ALL');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');

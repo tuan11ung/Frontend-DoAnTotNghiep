@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Stethoscope,
   X,
@@ -21,7 +21,8 @@ interface DoctorBookingModalProps {
   selectedSlot: string | null;
 }
 
-export const DoctorBookingModal: React.FC<DoctorBookingModalProps> = ({
+export const DoctorBookingModal: React.FC<DoctorBookingModalProps> = (props) => props.isOpen ? <DoctorBookingForm key={props.doctor.id + ':' + props.selectedDateText + ':' + props.selectedSlot} {...props} /> : null;
+const DoctorBookingForm: React.FC<DoctorBookingModalProps> = ({
   isOpen,
   onClose,
   doctor,
@@ -31,17 +32,10 @@ export const DoctorBookingModal: React.FC<DoctorBookingModalProps> = ({
   const [patientName, setPatientName] = useState('');
   const [phone, setPhone] = useState('');
   const [note, setNote] = useState('');
-  const [slot, setSlot] = useState(selectedSlot || doctor.morningSlots[0]);
+  const slot = selectedSlot || doctor.morningSlots[0];
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    if (isOpen) {
-      setSlot(selectedSlot || doctor.morningSlots[0]);
-      setIsSuccess(false);
-      setErrorMessage('');
-    }
-  }, [isOpen, selectedSlot, doctor.morningSlots]);
 
   if (!isOpen) return null;
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Calendar, X, Clock, CheckCircle2, ShieldCheck, MapPin } from 'lucide-react';
+import { Calendar, X, CheckCircle2, ShieldCheck, MapPin } from 'lucide-react';
 import { SearchFacility } from '@/src/types/search';
 
 interface HospitalBookingModalProps {

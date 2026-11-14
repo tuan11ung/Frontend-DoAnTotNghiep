@@ -6,7 +6,7 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, CalendarDays, LoaderCircle, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { Bell, CalendarDays, LoaderCircle, RefreshCw, X } from 'lucide-react';
 import { logoutAccount } from '../auth/api/auth-api';
 import { clearStoredAuthSession, getStoredAuthSession } from '../auth/auth-storage';
 import {
