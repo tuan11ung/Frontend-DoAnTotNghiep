@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { QueueDisplayScreen } from '@/src/features/queue-display/QueueDisplayScreen';
-import { QUEUE_DEMO_FACILITIES } from '@/src/features/queue-display/data/queue-display-demo';
+import { QueueDisplayLive } from '@/src/features/queue-display/QueueDisplayLive';
 
 export const metadata: Metadata = {
   title: 'Bảng gọi số phòng khám | MedConnect',
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
 export default function QueueDisplayPage() {
   return (
     <Suspense fallback={<div className="grid min-h-svh place-items-center bg-slate-50 text-slate-500" role="status">Đang tải bảng gọi số…</div>}>
-      <QueueDisplayScreen facilities={QUEUE_DEMO_FACILITIES} />
+      <QueueDisplayLive />
     </Suspense>
   );
 }
