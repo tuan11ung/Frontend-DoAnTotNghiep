@@ -39,5 +39,6 @@ export function getAccountNavigationLinks(roles: readonly string[], departmentTy
   if (roles.includes('SUPER_ADMIN')) links.unshift({ href: '/admin/system', label: 'Quản trị hệ thống', icon: 'system' });
   if (roles.includes('HOSPITAL_ADMIN')) links.unshift({ href: '/admin/facility', label: 'Quản trị cơ sở', icon: 'facility' });
   if (roles.includes('RECEPTIONIST')) links.push({ href: '/reception', label: 'Tiếp đón bệnh nhân', icon: 'reception' });
+  if (roles.includes('HOSPITAL_LEADER')) links.push({ href: '/leader/notable-encounters', label: 'Ca khám đáng chú ý', icon: 'facility' });
   return links;
 }

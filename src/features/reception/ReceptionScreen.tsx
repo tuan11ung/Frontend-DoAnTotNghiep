@@ -18,6 +18,8 @@ import { CheckoutPanel } from './components/CheckoutPanel';
 import { ReceptionDialog } from './components/ReceptionDialog';
 import { PendingSpecialtyPanel } from './components/PendingSpecialtyPanel';
 import './reception.css';
+import { useDoctorAccess } from '@/src/features/doctor-queue/hooks/use-doctor-access';
+import { ReceptionLiveScreen } from './ReceptionLiveScreen';
 
 const sections: { id: ReceptionSection; label: string; description: string; Icon: typeof Search }[] = [
   { id: 'patients', label: 'Tra cứu bệnh nhân', description: 'Tìm kiếm và đối chiếu hồ sơ người bệnh trước khi tiếp nhận.', Icon: Search },
@@ -28,6 +30,15 @@ const sections: { id: ReceptionSection; label: string; description: string; Icon
 ];
 
 export function ReceptionScreen() {
+  const auth = useDoctorAccess();
+  const params = useSearchParams();
+  if (params.get('demo') === '1') return <ReceptionDemoScreen />;
+  if (auth.loading) return <p role="status" className="p-8 text-center">Đang kiểm tra phiên đăng nhập…</p>;
+  if (!auth.session?.roles.includes('RECEPTIONIST')) return <main className="p-10 text-center"><h1 className="text-xl font-bold">Không gian lễ tân</h1><p className="my-4">Vui lòng đăng nhập bằng tài khoản lễ tân.</p><Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link></main>;
+  return <ReceptionLiveScreen key={auth.owner} />;
+}
+
+function ReceptionDemoScreen() {
   const router = useRouter();
   const params = useSearchParams();
   const state = useReceptionDemo();
