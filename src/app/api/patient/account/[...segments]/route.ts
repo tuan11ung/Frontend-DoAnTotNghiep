@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 
 const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 const endpoints = new Set([
-  'profiles/list', 'profiles/update', 'family-members/create', 'family-members/remove',
+  'history-access/list', 'history-access/change',
+  'profiles/list', 'profiles/detail', 'profiles/update', 'family-members/create', 'family-members/remove',
   'allergies/list', 'allergies/save', 'allergies/delete', 'conditions/list', 'conditions/save', 'conditions/delete',
 ]);
 

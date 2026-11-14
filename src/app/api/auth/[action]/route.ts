@@ -2,6 +2,9 @@ const BACKEND_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081')
   .replace(/\/$/, '')
   .replace(/\/api\/v1$/, '');
 const ENDPOINTS = new Map([
+  ['forgot-password', { path: '/api/v1/auth/forgot-password', requiresAuthentication: false }],
+  ['reset-password', { path: '/api/v1/auth/reset-password', requiresAuthentication: false }],
+  ['change-password', { path: '/api/v1/auth/change-password', requiresAuthentication: true }],
   ['register', { path: '/api/v1/auth/register', requiresAuthentication: false }],
   ['verify-otp', { path: '/api/v1/auth/verify-otp', requiresAuthentication: false }],
   ['resend-otp', { path: '/api/v1/auth/resend-otp', requiresAuthentication: false }],
