@@ -1,11 +1,13 @@
 'use client';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { receptionApi, type ReceptionInvoice, type ReceptionInvoiceDetail } from '../api/reception-api';
+import { type ReceptionInvoice, type ReceptionInvoiceDetail } from '../api/reception-api';
+import { useReceptionData } from '../ReceptionDataProvider';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { money } from '@/src/features/patient-payments/payment.types';
 import { receptionButton, receptionCard, receptionError, receptionField } from './ReceptionRegistration';
 
 export function ReceptionBilling() {
+  const { api: receptionApi } = useReceptionData();
   const [query, setQuery] = useState(''); const [keyword, setKeyword] = useState(''); const [page, setPage] = useState(0);
   const [data, setData] = useState<ApiPage<ReceptionInvoice> | null>(null); const [detail, setDetail] = useState<ReceptionInvoiceDetail | null>(null);
   const [error, setError] = useState(''); const [notice, setNotice] = useState(''); const [revision, setRevision] = useState(0);
@@ -14,7 +16,7 @@ export function ReceptionBilling() {
     let active = true;
     receptionApi.invoices(keyword, page).then(value => { if (active) setData(value); }).catch(e => { if (active) setError(receptionError(e)); });
     return () => { active = false; };
-  }, [keyword, page, revision]);
+  }, [keyword, page, revision, receptionApi]);
   async function open(invoiceId: number) {
     if (lock.current) return; lock.current = true; setBusy(true); setError(''); setNotice(''); setGiven(''); setConfirmed(false); setDetail(null);
     try { setDetail(await receptionApi.invoice(invoiceId)); } catch (e) { setError(receptionError(e)); } finally { lock.current = false; setBusy(false); }

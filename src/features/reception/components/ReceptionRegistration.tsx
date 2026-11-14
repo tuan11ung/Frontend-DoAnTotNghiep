@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { receptionApi, type ReceptionPatient, type ReceptionSlot } from '../api/reception-api';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ReceptionCheckInResult } from './ReceptionCheckInResult';
+import { type ReceptionPatient, type ReceptionSlot } from '../api/reception-api';
 import { bookingToday } from '@/src/features/booking/utils/booking-dates';
+import { useReceptionData } from '../ReceptionDataProvider';
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { money } from '@/src/features/patient-payments/payment.types';
 
 export const receptionField = 'mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm disabled:bg-slate-100';
@@ -13,6 +16,8 @@ export const receptionCard = 'space-y-4 rounded-2xl border border-slate-200 bg-w
 export const receptionError = (error: unknown) => error instanceof Error ? error.message : 'Không thể xử lý yêu cầu. Vui lòng thử lại.';
 
 export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
+  const { api: receptionApi, href } = useReceptionData();
+  const router = useRouter();
   const params = useSearchParams(); const patientCode = params.get('patientCode');
   const [keyword, setKeyword] = useState(patientCode ?? ''); const [results, setResults] = useState<ReceptionPatient[] | null>(null);
   const [patient, setPatient] = useState<ReceptionPatient | null>(null); const [error, setError] = useState('');
@@ -22,7 +27,7 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
     const controller = new AbortController();
     receptionApi.patients(patientCode, controller.signal).then(items => { if (!controller.signal.aborted) { setResults(items); setPatient(items.find(item => item.patientCode === patientCode) ?? null); } }).catch(e => { if (!controller.signal.aborted) setError(receptionError(e)); });
     return () => controller.abort();
-  }, [patientCode, lookupOnly]);
+  }, [patientCode, lookupOnly, receptionApi]);
   async function search(event: FormEvent) {
     event.preventDefault(); if (busy) return; setBusy(true); setError('');
     try { setResults(await receptionApi.patients(keyword.trim())); } catch (e) { setError(receptionError(e)); } finally { setBusy(false); }
@@ -31,13 +36,14 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
     {error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
     {results?.length === 0 && <p role="status" className="text-sm text-slate-500">Không tìm thấy hồ sơ. Kiểm tra lại định danh hoặc tạo hồ sơ mới.</p>}
     {results && results.length >= 50 && <p className="text-xs text-amber-800">Đang hiển thị tối đa 50 hồ sơ. Nhập từ khóa cụ thể hơn để tìm đúng bệnh nhân.</p>}
-    <ul className="divide-y">{results?.map(item => <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><p className="font-bold">{item.fullName} · {item.patientCode}</p><p className="mt-1 text-sm text-slate-500">{item.dob} · {item.gender === 'FEMALE' ? 'Nữ' : item.gender === 'MALE' ? 'Nam' : 'Khác'} · {item.maskedNationalId ?? 'Chưa có CCCD'} · {item.maskedPhone ?? 'Chưa có SĐT'}</p></div>{lookupOnly ? <Link className="font-bold text-blue-700" href={`/reception?tab=registration&patientCode=${encodeURIComponent(item.patientCode)}`}>Đăng ký khám</Link> : <button type="button" className={receptionButton} onClick={() => setPatient(item)}>Chọn hồ sơ</button>}</li>)}</ul>
+    <ul className="divide-y">{results?.map(item => <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><p className="font-bold">{item.fullName} · {item.patientCode}</p><p className="mt-1 text-sm text-slate-500">{formatDisplayDate(item.dob)} · {item.gender === 'FEMALE' ? 'Nữ' : item.gender === 'MALE' ? 'Nam' : 'Khác'} · {item.maskedNationalId ?? 'Chưa có CCCD'} · {item.maskedPhone ?? 'Chưa có SĐT'}</p></div>{lookupOnly ? <Link className="font-bold text-blue-700" href={href('registration', { patientCode: item.patientCode })}>Đăng ký khám</Link> : <button type="button" className={receptionButton} onClick={() => setPatient(item)}>Chọn hồ sơ</button>}</li>)}</ul>
     <button type="button" className="text-sm font-bold text-blue-700" onClick={() => setCreating(v => !v)}>{creating ? 'Đóng tạo hồ sơ' : 'Tạo hồ sơ bệnh nhân mới'}</button>
-    {creating && <CreateReceptionPatient onCreated={item => { setResults([item]); setPatient(item); setCreating(false); }} />}
-  </section>{!lookupOnly && patient && <OfflineBooking key={patient.id} patient={patient} />}</div>;
+    {creating && <CreateReceptionPatient onCreated={item => { setResults([item]); setPatient(item); setCreating(false); if (lookupOnly) router.push(href('registration', { patientCode: item.patientCode })); }} />}
+  </section>{!lookupOnly && patient && <OfflineBooking key={patient.id} patient={patient} onNext={() => { setPatient(null); setResults(null); setKeyword(''); router.replace(href('registration')); }} />}</div>;
 }
 
 function CreateReceptionPatient({ onCreated }: { onCreated: (patient: ReceptionPatient) => void }) {
+  const { api: receptionApi } = useReceptionData();
   const [busy, setBusy] = useState(false); const [error, setError] = useState('');
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); if (busy) return;
@@ -52,7 +58,8 @@ function CreateReceptionPatient({ onCreated }: { onCreated: (patient: ReceptionP
   </fieldset>{error && <p role="alert" className="mt-3 text-sm text-rose-700">{error}</p>}</form>;
 }
 
-function OfflineBooking({ patient }: { patient: ReceptionPatient }) {
+function OfflineBooking({ patient, onNext }: { patient: ReceptionPatient; onNext: () => void }) {
+  const { api: receptionApi } = useReceptionData();
   const [slots, setSlots] = useState<ReceptionSlot[] | null>(null); const [slotId, setSlotId] = useState(''); const [reason, setReason] = useState('');
   const [revision, setRevision] = useState(0); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
   const [created, setCreated] = useState<Awaited<ReturnType<typeof receptionApi.createBooking>> | null>(null);
@@ -61,7 +68,7 @@ function OfflineBooking({ patient }: { patient: ReceptionPatient }) {
     const controller = new AbortController();
     receptionApi.slots(bookingToday(), true, controller.signal).then(items => { if (!controller.signal.aborted) setSlots(items); }).catch(e => { if (!controller.signal.aborted) setError(receptionError(e)); });
     return () => controller.abort();
-  }, [revision]);
+  }, [revision, receptionApi]);
   async function submit(event: FormEvent) {
     event.preventDefault(); if (lock.current || encounter) return; lock.current = true; setBusy(true); setError('');
     try {
@@ -72,7 +79,7 @@ function OfflineBooking({ patient }: { patient: ReceptionPatient }) {
     finally { lock.current = false; setBusy(false); }
   }
   return <section className={receptionCard}><h2 className="text-lg font-bold">Đăng ký cho {patient.fullName}</h2><p className="text-sm text-slate-500">{patient.patientCode} · {patient.maskedNationalId}</p>
-    {encounter ? <p role="status" className="rounded-lg bg-emerald-50 p-4 text-emerald-800">Đã tiếp nhận vào hàng chờ. Mã lượt khám: <strong>{encounter}</strong> · Số thứ tự: {created?.queueNumber}.</p> : <form onSubmit={submit} className="space-y-4"><fieldset disabled={busy || Boolean(created)} className="space-y-4">
+    {encounter ? <ReceptionCheckInResult code={encounter} queue={created?.queueNumber} slot={slots?.find(s => s.timeSlotId === Number(slotId))} onNext={onNext} /> : <form onSubmit={submit} className="space-y-4"><fieldset disabled={busy || Boolean(created)} className="space-y-4">
       <label className="block text-sm font-bold">Lịch khám trong ca hiện tại<select required className={receptionField} value={slotId} onChange={e => setSlotId(e.target.value)}><option value="">Chọn chuyên khoa, bác sĩ và phòng khám</option>{slots?.map(s => <option key={s.timeSlotId} value={s.timeSlotId}>{s.specialtyName} · {s.serviceType === 'BHYT' ? 'BHYT' : 'Dịch vụ'} · {s.rankName} {s.doctorName} · {s.roomName} · {s.startTime.slice(0, 5)}–{s.endTime.slice(0, 5)} · {s.price == null ? 'Chưa xác định phí' : money(s.price)} · Còn {s.remainingCapacity}</option>)}</select></label>
       {slots?.length === 0 && <p role="status" className="text-sm text-slate-500">Chưa có lịch còn chỗ trong ca hiện tại.</p>}{slots === null && !error && <p role="status">Đang tải lịch khám…</p>}
       <label className="block text-sm font-bold">Lý do khám<textarea required maxLength={500} value={reason} onChange={e => setReason(e.target.value)} rows={3} className={receptionField} /></label>

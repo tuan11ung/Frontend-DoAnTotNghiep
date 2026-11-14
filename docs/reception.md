@@ -1,38 +1,29 @@
 # Cổng lễ tân
 
-Route `/reception` có sidebar và khung làm việc độc lập, không dùng menu hoặc footer của cổng bệnh nhân.
+`/reception` dùng giao diện tab ngang cho tra cứu, đăng ký khám tại quầy, phân chuyên khoa, check-in và thanh toán. Chế độ backend yêu cầu vai trò `RECEPTIONIST`.
 
-## Chức năng
+## Demo ngay trong giao diện hiện tại
 
-- `/reception`: tra cứu theo tên có/không dấu, CCCD, số điện thoại hoặc mã bệnh nhân. Hiển thị thông tin định danh đã che bớt, đối chiếu hồ sơ rồi chuyển sang đăng ký khám. Có luồng tạo hồ sơ mới, kiểm tra trùng CCCD/số điện thoại và xác nhận trước khi tạo.
-- `/reception?tab=registration`: chọn bệnh nhân, chuyên khoa, mức khám, bác sĩ, lý do khám và nhãn ưu tiên. Xem phí, xác nhận rồi tạo lượt và số thứ tự theo phòng/ngày; tải phiếu khám dạng văn bản. Chặn lượt đang tiếp nhận trùng chuyên khoa.
-- `/reception?tab=checkin`: có thêm khu vực **Lịch hẹn từ cổng bệnh nhân** để nhận mã/QR và đồng bộ trạng thái Đang diễn ra cùng hàng chờ sang cổng bệnh nhân. Bộ AP-1001 cũ vẫn nhận `MEDCONNECT:AP-1001` / `MEDCONNECT-CHECKIN-AP-1001`. Hỗ trợ máy quét dạng bàn phím, chặn check-in trùng, lịch đã hủy hoặc khác ngày. Xem [luồng thử hai tab](appointments-tracking.md).
-- `/reception?tab=checkout`: tìm lượt khám, xem bảng kê, giảm trừ/tạm ứng, mô phỏng thu tiền mặt (kiểm tra số tiền và tính tiền trả lại) hoặc chuyển khoản (nhập tham chiếu). Xác nhận trước khi ghi nhận, chặn thu trùng và chặn ca chưa hoàn tất. Tải biên lai văn bản, ghi rõ không có giá trị thanh toán.
+Chạy `pnpm dev` rồi mở **http://localhost:3000/reception?demo=1**. Demo dùng chung component với backend; không còn giao diện sidebar riêng. Liên kết nghiệp vụ giữ tham số `demo=1`.
 
-## Dữ liệu và cách thử
+Demo mặc định chỉ mở trong development. Bản build thử nghiệm cần cấu hình `NEXT_PUBLIC_ENABLE_RECEPTION_DEMO=true` trước khi build. Không cần đăng nhập trong demo; không tạo hoặc sửa phiên đăng nhập.
 
-Đây là bản giao diện mô phỏng, chưa có API lễ tân, phiên nhân viên hoặc phân quyền backend. Chỉ dùng thông tin giả. Bộ tiếp đón AP-1001 cũ lưu riêng trong `medconnect.reception-demo.v1`. Khu vực tiếp nhận từ cổng bệnh nhân đọc lịch ở `medconnect.patient_appointments` và ghi trạng thái tiếp nhận/hàng chờ ở `medconnect.appointment-queue-demo.v1`; không đọc/ghi token, hồ sơ hoặc thanh toán. Dữ liệu được giữ khi tải lại, cập nhật giữa các tab trình duyệt cùng origin.
+Dữ liệu giả lưu tại `medconnect.reception-preview.v2` trong localStorage và giữ qua tải lại. Không gọi API, gửi email/SMS hoặc thu tiền thật. **Dùng backend** trở lại chế độ có xác thực. **Khôi phục dữ liệu demo** chỉ đặt lại bộ mẫu lễ tân sau khi xác nhận.
 
-Ngày làm việc mẫu cố định là **03/11/2026**. Giá tiền và giảm trừ đều là số mẫu, không mô phỏng quy tắc chi trả BHYT hoặc quyết toán thật.
+## Cách thử
 
-- Tra cứu `BN0001` hoặc `Nguyễn Văn An`, xác nhận, nhập lý do và đăng ký khám.
-- Check-in `AP-1001`: lịch đúng ngày. `AP-1003`: khác ngày. `AP-1004`: đã check-in. `AP-1005`: đã hủy.
-- Check-out `LK-2026-0302`: tổng 690.000 ₫, giảm 50.000 ₫, tạm ứng 100.000 ₫, còn thu 540.000 ₫. Nhập 600.000 ₫ để kiểm tra trả lại 60.000 ₫.
-- Với lượt vừa tạo, chọn lượt ở check-out và dùng nút **Mô phỏng: bác sĩ đã hoàn tất khám** để thử tiếp phần thu tiền. Đây chỉ là điều khiển demo, không phải quyền hoàn tất ca khám của lễ tân.
-- **Khôi phục dữ liệu mẫu** yêu cầu xác nhận, chỉ thay dữ liệu của cổng lễ tân bằng bộ mẫu ban đầu.
+1. Tra cứu `BN0001`, `BN0002`, `BN0003`, tên không dấu, CCCD hoặc điện thoại. Định danh hiển thị được che bớt.
+2. Không tìm thấy: thêm bệnh nhân với CCCD 12 số, điện thoại 10 số bắt đầu bằng 0. Thử trùng CCCD/điện thoại để kiểm tra lỗi.
+3. Đăng ký: chọn bệnh nhân, khung giờ và lý do, xác nhận để tạo lịch và check-in. Phòng Tim mạch mẫu hết chỗ để thử lỗi công suất. Phiếu có mã lượt khám, số thứ tự, khoa, phòng, bác sĩ và nút **Tiếp nhận bệnh nhân tiếp theo**.
+4. **Chờ phân chuyên khoa**: mở `AP-1002`, chọn chuyên khoa/phòng và xác nhận. Sang Check-in để tiếp nhận lịch này.
+5. **Check-in**: nhập `AP-1001` hoặc `DEMO:AP-1001`. Thử lại để kiểm tra chặn trùng. `AP-1003` đã hủy; `AP-1004` đã tiếp nhận; `AP-1005` khác ngày.
+6. Bấm **Hoàn tất ca demo** trên bảng công cụ để giả lập bác sĩ khám xong và tạo hóa đơn. Đây là điều khiển thử nghiệm.
+7. **Thanh toán**: mở `HD-4001` (420.000 đồng) hoặc hóa đơn vừa tạo. Nhập 500.000 đồng, kiểm tra tiền trả lại 80.000 đồng, đánh dấu đã đối chiếu rồi xác nhận thu tiền mặt. Tải lại để xem trạng thái và giao dịch; hóa đơn đã trả không được thu lại.
 
-Hai tệp `design/le-tan-dang-ky-kham-1.html` và `design/le-tan-dang-ky-kham-2.html` được cung cấp ở trạng thái trống (0 byte). Bản giao diện dựa vào luồng đăng ký trực tiếp, check-in và thanh toán trong `docs/chi-tiet-luong.md` cùng giao diện hiện có của dự án; không có thiết kế HTML để đối chiếu chi tiết.
+Bộ mẫu lấy ngày hiện tại khi khởi tạo. Nếu thử vào ngày khác, khôi phục bộ mẫu để cập nhật ngày làm việc.
 
-## Tích hợp sau giao diện
+Demo kiểm thử các nghiệp vụ hiện có trong giao diện chung; chưa gồm kích hoạt cấp cứu R8, chuyển khoản/VietQR thật hoặc biên lai điện tử.
 
-Khi có backend, thay service demo bằng proxy cùng origin. Backend phải xác thực nhân viên, ràng buộc cơ sở/ngày/phòng, kiểm tra hồ sơ trùng, cấp số thứ tự và ghi nhận giao dịch nguyên tử. Thanh toán chuyển khoản thật cần xác minh từ cổng thanh toán; không dùng thao tác xác nhận thủ công của bản demo để coi tiền đã về. Phiếu văn bản hiện tại không thay thế QR hoặc hóa đơn điện tử thực tế.
+## Kiểm tra
 
-## Kết quả kiểm tra
-
-- TypeScript, ESLint riêng module và build production: đạt.
-- Chrome: đã thử tra cứu không dấu, che định danh, xác nhận đăng ký, chặn lượt trùng và cấp số đúng theo phòng.
-- Đã thử lịch sai mã, khác ngày, đã check-in, đã hủy; check-in hợp lệ chỉ tạo một lượt khám.
-- Đã thử ca chưa hoàn tất, tiền mặt thiếu, tiền trả lại, giảm trừ/tạm ứng, chuyển khoản mô phỏng và tải biên lai.
-- Đã thử tạo hồ sơ mới, hồ sơ trùng CCCD, quay lại sửa không mất thông tin, đăng ký từ hồ sơ mới và giữ dữ liệu sau khi tải lại.
-- Bốn màn hình không tràn ngang ở 320, 390, 768, 1024 và 1440 px; đã kiểm tra sidebar điện thoại và hộp thoại đóng bằng Escape.
-- Đã thử phục hồi dữ liệu lỗi và khôi phục mẫu; không ảnh hưởng dữ liệu cổng bệnh nhân, không phát sinh request API hoặc lỗi JavaScript.
+`node scripts/check-reception-preview.mjs` kiểm tra adapter không dùng mạng: tìm kiếm/che định danh, hồ sơ trùng, công suất, phân chuyên khoa, check-in, hoàn tất ca, thu tiền/chặn trùng, dữ liệu lỗi, reset và tách biệt dữ liệu đăng nhập/bệnh nhân.
