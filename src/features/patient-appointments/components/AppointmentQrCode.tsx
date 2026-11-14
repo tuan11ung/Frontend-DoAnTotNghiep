@@ -33,6 +33,6 @@ export function AppointmentQrCode({ appointment }: { appointment: PatientAppoint
     <p className="mt-3 break-all font-mono text-sm font-bold text-slate-800">{appointment.code}</p>
     <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-slate-500">Xuất trình QR và giấy tờ tại quầy tiếp đón để nhân viên đối chiếu lịch hẹn.</p>
     <button type="button" onClick={download} disabled={!ready} className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50"><Download className="size-4" />Tải QR (.png)</button>
-    <p className="mt-3 text-[10px] leading-relaxed text-slate-400">QR mô phỏng chứa mã lịch hẹn, không chứa CCCD hoặc số điện thoại.</p>
+    <p className="mt-3 text-[10px] leading-relaxed text-slate-400">{appointment.source === 'api' ? 'Mã tiếp nhận do bệnh viện cấp. Chỉ chia sẻ với nhân viên tiếp đón.' : 'QR mô phỏng chứa mã lịch hẹn, không chứa CCCD hoặc số điện thoại.'}</p>
   </div>;
 }

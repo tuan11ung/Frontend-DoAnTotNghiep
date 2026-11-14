@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
@@ -62,7 +63,7 @@ export function BhytScheduleStep({ hospitalId, specialtyId, date, minDate, maxDa
 
 const genderLabels = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 
-export function BhytBookingSuccess({ appointment, specialtyName, onReset }: { appointment: BookedAppointment; specialtyName: string; onReset: () => void }) {
+export function BhytBookingSuccess({ appointment, specialtyName, onReset, service = false }: { appointment: BookedAppointment; specialtyName: string; onReset: () => void; service?: boolean }) {
   const pending = appointment.status === 'PENDING_SPECIALTY';
   return <section className="mx-auto max-w-xl space-y-5 rounded-2xl border border-emerald-200 bg-white p-6 text-center shadow-sm sm:p-8">
     <h1 className="text-xl sm:text-2xl font-extrabold text-emerald-700">{pending ? 'Đã gửi yêu cầu đặt khám' : 'Đặt lịch thành công'}</h1>
@@ -78,7 +79,8 @@ export function BhytBookingSuccess({ appointment, specialtyName, onReset }: { ap
       <div><dt className="text-slate-500">Số điện thoại</dt><dd className="font-bold">{appointment.patientMaskedPhone || 'Chưa cập nhật'}</dd></div>
       <div><dt className="text-slate-500">Giới tính</dt><dd className="font-bold">{appointment.patientGender ? genderLabels[appointment.patientGender] : 'Chưa cập nhật'}</dd></div>
       <div><dt className="text-slate-500">Cơ sở y tế</dt><dd className="font-bold">{appointment.hospitalName}</dd></div><div><dt className="text-slate-500">Chuyên khoa – Phòng</dt><dd className="font-bold">{specialtyName}{appointment.roomName && ` – ${appointment.roomName}`}</dd></div>{appointment.roomLocation && <div><dt className="text-slate-500">Vị trí phòng khám</dt><dd className="font-bold">{appointment.roomLocation}</dd></div>}<div><dt className="text-slate-500">{pending ? 'Khung giờ mong muốn' : 'Dự kiến check-in'}</dt><dd className="font-bold">{displayBookingDate(appointment.appointmentDate)} · {appointment.startTime.slice(0, 5)}–{appointment.endTime.slice(0, 5)}</dd></div><div><dt className="text-slate-500">Lý do khám / Triệu chứng</dt><dd className="whitespace-pre-wrap break-words">{appointment.appointReason}</dd></div></dl>
-    {!pending && <p className="text-sm text-slate-500">Mang theo giấy tờ tùy thân và thông tin BHYT để lễ tân kiểm tra khi check-in.</p>}
+    {!pending && <p className="text-sm text-slate-500">{service ? 'Mang theo giấy tờ tùy thân để lễ tân kiểm tra khi check-in.' : 'Mang theo giấy tờ tùy thân và thông tin BHYT để lễ tân kiểm tra khi check-in.'}</p>}
+    <Link className="block text-sm font-bold text-blue-700" href="/patient/appointments">Xem lịch khám của tôi</Link>
     <button className={bookingButtonClass} onClick={onReset} type="button">Đặt lịch khác</button>
   </section>;
 }

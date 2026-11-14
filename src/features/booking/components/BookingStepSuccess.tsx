@@ -4,19 +4,7 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import {
-  CheckCircle2,
-  Copy,
-  Check,
-  QrCode,
-  Info,
-  Download,
-  Home,
-  ArrowRight,
-  ShieldCheck,
-  PlusCircle,
-  CalendarCheck,
-} from 'lucide-react';
+import { CheckCircle2, Copy, Check, QrCode, Info, Download, Home, ShieldCheck, PlusCircle, CalendarCheck } from 'lucide-react';
 import {
   BookingMode,
   BookingTarget,

@@ -8,7 +8,7 @@ export class BookingApiError extends Error {
   }
 }
 
-async function request<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
+export async function bookingRequest<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   const session = getStoredAuthSession();
   if (!session?.roles.includes('PATIENT')) throw new BookingApiError('Vui lòng đăng nhập bằng tài khoản bệnh nhân để đặt khám.', 401);
   const response = await fetch(`/api/patient/booking/${path}`, {
@@ -23,6 +23,8 @@ async function request<T>(path: string, body: unknown, signal?: AbortSignal): Pr
   }
   return result.data as T;
 }
+
+const request = bookingRequest;
 
 export const bookingApi = {
   profiles: (signal?: AbortSignal) => request<BookingPatientProfile[]>('profiles/list', {}, signal),

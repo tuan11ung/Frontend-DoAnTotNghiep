@@ -19,6 +19,7 @@ export function appointmentQueueKey(appointment: PatientAppointment) {
 }
 
 export function appointmentCheckInPayload(appointment: PatientAppointment) {
+  if (appointment.source === 'api') return appointment.qrCodeData;
   return `MEDCONNECT:APPOINTMENT:${appointment.id}:${appointment.code}`;
 }
 
@@ -59,7 +60,7 @@ export function appointmentDate(date: string) {
 }
 
 export function canCancelAppointment(appointment: PatientAppointment, now = Date.now()) {
-  if (appointment.status !== 'BOOKED') return false;
+  if (!['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status)) return false;
   const cutoff = appointment.cancellationPolicy?.cutoffMinutes;
   if (cutoff === undefined) return true;
   return Date.parse(`${appointment.workDate}T${appointment.timeSlot}:00+07:00`) - now > cutoff * 60000;
