@@ -22,7 +22,15 @@ Dữ liệu giả lưu tại `medconnect.reception-preview.v2` trong localStorag
 
 Bộ mẫu lấy ngày hiện tại khi khởi tạo. Nếu thử vào ngày khác, khôi phục bộ mẫu để cập nhật ngày làm việc.
 
-Demo kiểm thử các nghiệp vụ hiện có trong giao diện chung; chưa gồm kích hoạt cấp cứu R8, chuyển khoản/VietQR thật hoặc biên lai điện tử.
+**R1–R4:** Tra cứu theo CCCD, kiểm tra BHYT và bấm Xác nhận bệnh nhân. Chỉ khi không tìm thấy mới mở đăng ký bệnh nhân mới. Kiểm tra popup trước khi lưu hồ sơ hoặc tạo lượt khám. Chọn phòng hết chỗ để xem các lựa chọn thay thế.
+
+**R5:** Tra cứu AP-1001, sửa lý do khám trước khi check-in. Sau tiếp nhận, mở link trong SMS mô phỏng để xem số thứ tự và hàng chờ. Tra mã không tồn tại để thử nút Tạo lần khám.
+
+**R6–R7:** Tìm hóa đơn bằng mã lượt, CCCD hoặc nội dung QR (ví dụ DEMO:AP-1004). Chọn tiền mặt hoặc tạo yêu cầu VietQR/ứng dụng. Mở màn bệnh nhân trong tab khác của cùng trình duyệt, xác nhận trả tiền, quay về quầy để in biên lai. QR dẫn đến màn thanh toán giả lập, không dùng app ngân hàng thật.
+
+**R8:** Tra cứu BN0001 hoặc BN0002, chọn Kích hoạt R8, xác nhận và mở màn bác sĩ. Chọn vai trò bác sĩ khoa cấp cứu để xem dị ứng và lịch sử; đóng quyền tại quầy để thu hồi. Nhật ký và quyền R8 dùng kho demo của khoa cấp cứu. Nếu build demo production, bật thêm NEXT_PUBLIC_ENABLE_DOCTOR_DEMO=true.
+
+Các thao tác mô phỏng chỉnh lịch, SMS, thanh toán điện tử và cấp quyền không gửi yêu cầu đến hệ thống thật. Chế độ backend dùng các API lễ tân hiện có.
 
 ## Kiểm tra
 

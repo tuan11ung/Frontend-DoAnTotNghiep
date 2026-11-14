@@ -23,7 +23,7 @@ function load(file) {
   cache.set(input, mod.exports);
   return mod.exports;
 }
-const { receptionPreviewApi: api, resetReceptionPreview, completePreviewEncounter, pendingPreviewEncounters, RECEPTION_PREVIEW_KEY } = load('src/features/reception/api/reception-preview-api.ts');
+const { receptionPreviewApi: api, resetReceptionPreview, editPreviewBooking, previewQueue, requestPreviewPayment, confirmPreviewPayment, readPaymentRequest, completePreviewEncounter, pendingPreviewEncounters, RECEPTION_PREVIEW_KEY } = load('src/features/reception/api/reception-preview-api.ts');
 resetReceptionPreview();
 assert.equal((await api.patients('nguyen van an')).length, 1);
 assert.equal((await api.patients('001090000001'))[0].maskedNationalId, '001••••••001');
@@ -35,7 +35,7 @@ await assert.rejects(api.createPatient({ fullName: 'Trùng điện thoại', nat
 await assert.rejects(api.createPatient({ fullName: 'Ngày sai', nationalId: '001099000077', dob: '2025-02-31' }), /Kiểm tra/);
 const date = (await api.appointment('AP-1001')).appointmentDate;
 const slots = await api.slots(date, true);
-assert.equal(slots.length, 3);
+assert.ok(slots.some(s=>s.specialtyId===3 && s.remainingCapacity>0));
 await assert.rejects(api.createBooking(p.id, 3, 'Phòng hết chỗ'), /hết chỗ/);
 const booking = await api.createBooking(p.id, 2, 'Khám kiểm thử');
 const capacity = (await api.slots(date, true)).find(s => s.timeSlotId === 2).remainingCapacity;
@@ -58,6 +58,20 @@ await api.checkIn('DEMO:AP-1002');
 await assert.rejects(api.checkIn('DEMO:AP-1003'), /đã hủy/);
 await assert.rejects(api.checkIn('DEMO:AP-1005'), /khác ngày/);
 await assert.rejects(api.appointment('not-a-code'), /Không tìm thấy/);
+await assert.rejects(editPreviewBooking('AP-1002','Sửa muộn'),/không hợp lệ/);
+assert.equal((await editPreviewBooking('AP-1001','Khám lại')).appointReason,'Khám lại');
+const checked=await api.checkIn('DEMO:AP-1001');
+assert.ok(previewQueue(checked.encounterCode).number > 0);
+assert.ok(previewQueue(checked.encounterCode).ahead > 0);
+assert.equal((await api.invoices('001162000002',0)).content[0].invoiceCode,'HD-4001');
+assert.equal((await api.invoices('DEMO:AP-1004',0)).content[0].invoiceCode,'HD-4001');
+const req=await requestPreviewPayment(4001,'VietQR');
+const req2=await requestPreviewPayment(4001,'Ứng dụng');
+assert.equal(readPaymentRequest(req.token).invoice.status,'UNPAID');
+await confirmPreviewPayment(req2.token);
+assert.equal(readPaymentRequest(req.token).invoice.status,'PAID');
+await assert.rejects(confirmPreviewPayment(req.token),/trùng/);
+assert.equal((await api.invoice(4001)).transactions[0].methodLabel,'Ứng dụng');
 const controller = new AbortController(); controller.abort();
 await assert.rejects(api.patients('BN0001', controller.signal), { name: 'AbortError' });
 assert.equal(memory.get('medconnect.auth'), 'keep-real-session');

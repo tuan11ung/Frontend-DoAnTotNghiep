@@ -19,7 +19,7 @@ export interface ReceptionAppointment {
 }
 export interface PendingAppointment { appointmentId: number; appointmentCode: string; patientName: string; patientCode: string; appointmentDate: string; startTime: string; endTime: string; appointReason: string }
 export interface ReceptionInvoice { id: number; invoiceCode: string; encounterId: number; totalAmount: number; status: 'UNPAID' | 'PAID'; statusLabel: string }
-export interface ReceptionInvoiceDetail { invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; transactionRef?: string }[] }
+export interface ReceptionInvoiceDetail { lines?: {name:string; amount:number}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; transactionRef?: string }[] }
 
 export const receptionApi = {
   patients: (keyword: string, signal?: AbortSignal) => clinicalRequest<ReceptionPatient[]>('reception/patients/search', { keyword }, signal),
@@ -28,7 +28,7 @@ export const receptionApi = {
   slots: (date: string, offline: boolean, signal?: AbortSignal) => clinicalRequest<ReceptionSlot[]>('reception/slots/search', { date, offline }, signal),
   assign: (appointmentId: number, timeSlotId: number) => clinicalRequest<ReceptionAppointment>('reception/appointments/assign-specialty', { appointmentId, timeSlotId }),
   checkIn: (qrToken: string) => clinicalRequest<{ encounterId: number; encounterCode: string }>('encounters/check-in', { qrToken }),
-  createBooking: (patientId: number, timeSlotId: number, appointReason: string) => clinicalRequest<{ appointmentId: number; appointmentCode: string; qrToken: string; queueNumber: number }>('appointments/create', { patientId, timeSlotId, appointReason }),
+  createBooking: (patientId: number, timeSlotId: number, appointReason: string) => clinicalRequest<{ appointmentId: number; appointmentCode: string; qrToken: string; queueNumber?: number }>('appointments/create', { patientId, timeSlotId, appointReason }),
   async pending(page: number, signal?: AbortSignal): Promise<ApiPage<PendingAppointment>> {
     const session = getStoredAuthSession();
     if (!session) throw new Error('Vui lòng đăng nhập tài khoản lễ tân.');

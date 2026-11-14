@@ -54,3 +54,10 @@
 .reception-portal .reception-secondary:focus-visible { outline: 2px solid var(--color-blue-600); outline-offset: 2px; }
 .reception-portal button:not(:disabled) { cursor: pointer; }
 .reception-portal button:disabled { cursor: not-allowed; opacity: 0.45; }
+
+@media print {
+  body:has(.reception-receipt) * { visibility: hidden; }
+  body:has(.reception-receipt) .reception-receipt, body:has(.reception-receipt) .reception-receipt * { visibility: visible; }
+  .reception-receipt { display: block !important; position: absolute; inset: 0; padding: 2rem; background: white; color: black; }
+  .reception-receipt h1 { font-size: 20pt; margin-bottom: 1rem; }
+}
