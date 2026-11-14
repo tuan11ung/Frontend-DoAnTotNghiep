@@ -36,7 +36,16 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
     {error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
     {results?.length === 0 && <p role="status" className="text-sm text-slate-500">Không tìm thấy hồ sơ. Kiểm tra lại định danh hoặc tạo hồ sơ mới.</p>}
     {results && results.length >= 50 && <p className="text-xs text-amber-800">Đang hiển thị tối đa 50 hồ sơ. Nhập từ khóa cụ thể hơn để tìm đúng bệnh nhân.</p>}
-    <ul className="divide-y">{results?.map(item => <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><p className="font-bold">{item.fullName} · {item.patientCode}</p><p className="mt-1 text-sm text-slate-500">{formatDisplayDate(item.dob)} · {item.gender === 'FEMALE' ? 'Nữ' : item.gender === 'MALE' ? 'Nam' : 'Khác'} · {item.maskedNationalId ?? 'Chưa có CCCD'} · {item.maskedPhone ?? 'Chưa có SĐT'}</p></div>{lookupOnly ? <Link className="font-bold text-blue-700" href={href('registration', { patientCode: item.patientCode })}>Đăng ký khám</Link> : <button type="button" className={receptionButton} onClick={() => setPatient(item)}>Chọn hồ sơ</button>}</li>)}</ul>
+    <ul className="divide-y">{results?.map(item => <li key={item.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
+      <div className="min-w-0"><p className="font-bold">{item.fullName} · {item.patientCode}</p>
+        <p className="mt-1 text-sm text-slate-500">Ngày sinh: {formatDisplayDate(item.dob)} · Giới tính: {item.gender === 'FEMALE' ? 'Nữ' : item.gender === 'MALE' ? 'Nam' : 'Khác'}</p>
+        <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
+          <div className="flex flex-wrap gap-x-2"><dt className="text-slate-500">CCCD:</dt><dd className="font-medium text-slate-700">{item.maskedNationalId || 'Chưa cập nhật'}</dd></div>
+          <div className="flex flex-wrap gap-x-2"><dt className="text-slate-500">Số điện thoại:</dt><dd className="font-medium text-slate-700">{item.maskedPhone || 'Chưa cập nhật'}</dd></div>
+        </dl>
+      </div>
+      {lookupOnly ? <Link className="font-bold text-blue-700" href={href('registration', { patientCode: item.patientCode })}>Đăng ký khám</Link> : <button type="button" className={receptionButton} onClick={() => setPatient(item)}>Chọn hồ sơ</button>}
+    </li>)}</ul>
     <button type="button" className="text-sm font-bold text-blue-700" onClick={() => setCreating(v => !v)}>{creating ? 'Đóng tạo hồ sơ' : 'Tạo hồ sơ bệnh nhân mới'}</button>
     {creating && <CreateReceptionPatient onCreated={item => { setResults([item]); setPatient(item); setCreating(false); if (lookupOnly) router.push(href('registration', { patientCode: item.patientCode })); }} />}
   </section>{!lookupOnly && patient && <OfflineBooking key={patient.id} patient={patient} onNext={() => { setPatient(null); setResults(null); setKeyword(''); router.replace(href('registration')); }} />}</div>;
