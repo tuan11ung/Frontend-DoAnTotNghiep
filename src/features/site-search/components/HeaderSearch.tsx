@@ -33,7 +33,6 @@ export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
   const searchQuery = query.trim().replace(/\s+/g, ' ');
   const { status, groups, retry } = useSearchSuggestions(searchQuery, open && !composing);
   const items = groups.flatMap((group) => group.items);
-  const total = groups.reduce((count, group) => count + group.total, 0);
 
   useEffect(() => {
     if (!open) return;
@@ -100,7 +99,7 @@ export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
               {status === 'error' && <div className="p-5" role="alert"><p className="text-sm font-medium text-slate-700">Chưa thể tải kết quả. Vui lòng thử lại.</p><button type="button" onClick={retry} className="mt-3 rounded-lg bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100">Thử lại</button></div>}
               {status === 'success' && !items.length && <div className="p-5"><p className="break-words text-sm font-semibold text-slate-800">Không tìm thấy kết quả cho “{searchQuery}”</p><p className="mt-2 text-xs leading-relaxed text-slate-500">Thử từ khóa ngắn hơn hoặc tìm theo tên bài viết, bệnh viện, bác sĩ.</p></div>}
               {groups.map((group) => <div key={group.id} role="group" aria-labelledby={`${id}-${group.id}`}>
-                <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-y border-slate-100 bg-slate-50 px-4 py-2.5"><h3 id={`${id}-${group.id}`} className="text-xs font-bold text-slate-800">{group.label}</h3><span className="text-[10px] text-slate-400">{group.total} kết quả</span></div>
+                <div className="sticky top-0 z-10 border-y border-slate-100 bg-slate-50 px-4 py-2.5"><h3 id={`${id}-${group.id}`} className="text-xs font-bold text-slate-800">{group.label}</h3></div>
                 {group.items.map((item) => {
                   const index = items.indexOf(item);
                   return <Link key={item.id} id={`${id}-option-${index}`} role="option" aria-selected={activeIndex === index} tabIndex={-1} href={item.href} target={item.external ? '_blank' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} prefetch={false} onClick={() => setOpen(false)} onMouseEnter={() => setActiveIndex(index)} className={`flex items-center gap-3 px-4 py-3 transition-colors focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-blue-600 ${activeIndex === index ? 'bg-blue-50' : 'hover:bg-blue-50/60'}`}>
@@ -111,9 +110,8 @@ export function HeaderSearch({ onOpen }: { onOpen?: () => void }) {
                 })}
               </div>)}
             </div>
-            {status === 'success' && <div className="border-t border-slate-100 px-4 py-2.5 text-[10px] text-slate-400">{total} kết quả</div>}
           </div>
-          <p role="status" aria-live="polite" className="sr-only">{status === 'success' ? `${total} kết quả tìm kiếm. ${groups.map((group) => `${group.label}: ${group.total}`).join('. ')}` : ''}</p>
+          <p role="status" aria-live="polite" className="sr-only">{status === 'success' ? 'Đã cập nhật kết quả tìm kiếm.' : ''}</p>
         </div>
       )}
     </div>
