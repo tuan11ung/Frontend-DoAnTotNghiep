@@ -39,6 +39,7 @@ export interface DoctorQueuePatientResponse {
   appointReason: string | null;
   online: boolean;
   status: 'WAITING' | 'IN_PROGRESS' | 'ABSENT' | 'COMPLETED';
+  inRoom: boolean;
   clsQueueStatus: 'NONE' | 'WAITING_RESULTS' | 'RETURN_READY' | 'RETURNED';
   clsCompletedAt: string | null;
   returnedToRoomAt: string | null;

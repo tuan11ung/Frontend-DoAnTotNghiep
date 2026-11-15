@@ -6,9 +6,11 @@ import type { PatientAppointment } from '@/src/shared/types/appointment';
 import { bookingRequest } from '@/src/features/booking/api/booking-api';
 
 type Ticket = { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS'; own: boolean };
+type Continuation = { number: number; status: 'WAITING_CLS' | 'RETURN_READY'; own: boolean };
+const ongoing = (status: string) => ['IN_PROGRESS', 'WAITING_CLS', 'RETURN_READY', 'RETURN_CALLED'].includes(status);
 type Queue = {
   number: number; status: string; position: number | null; aheadCount: number | null;
-  missed: boolean; remainingNormalTurns: number; tickets: Ticket[]; updatedAt: string;
+  missed: boolean; remainingNormalTurns: number; tickets: Ticket[]; continuations?: Continuation[]; updatedAt: string;
   date: string; startTime: string; endTime: string; roomName: string; roomLocation: string | null;
   sessionState: 'UPCOMING' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
 };
@@ -31,7 +33,7 @@ function usePatientQueue(appointmentId: string, interval: number) {
         if (!Array.isArray(data.tickets) || typeof data.updatedAt !== 'string') throw new Error('Dữ liệu hàng chờ không hợp lệ.');
         if (!disposed) {
           setSnapshot({ id: appointmentId, data, error: '' });
-          finished = ['ENDED', 'CANCELLED'].includes(data.sessionState) || ['COMPLETED', 'CANCELLED'].includes(data.status);
+          finished = (['ENDED', 'CANCELLED'].includes(data.sessionState) && !ongoing(data.status)) || ['COMPLETED', 'CANCELLED'].includes(data.status);
         }
       } catch (error) {
         if (!disposed && !controller.signal.aborted) setSnapshot(previous => ({
@@ -62,17 +64,20 @@ const statusLabel = (status: Ticket['status']) => ({ WAITING: 'Đang chờ', CAL
 function QueueProgress({ data }: { data: Queue }) {
   const own = data.tickets.find(ticket => ticket.own);
   const title = data.status === 'COMPLETED' ? 'Bạn đã hoàn tất khám'
-    : data.sessionState === 'ENDED' ? 'Ca khám đã kết thúc — liên hệ lễ tân để được hỗ trợ'
+    : data.sessionState === 'ENDED' && !ongoing(data.status) ? 'Ca khám đã kết thúc — liên hệ lễ tân để được hỗ trợ'
       : data.sessionState === 'CANCELLED' ? 'Ca khám đã bị hủy — liên hệ lễ tân'
         : own?.status === 'IN_PROGRESS' ? 'Bạn đang được khám'
           : own?.status === 'CALLED' ? 'Đã đến lượt bạn — vui lòng vào phòng khám'
+            : data.status === 'WAITING_CLS' ? 'Bạn đang thực hiện hoặc chờ kết quả cận lâm sàng'
+              : data.status === 'RETURN_READY' ? 'Đã có đủ kết quả CLS — chờ bác sĩ tiếp tục lượt khám'
             : data.status === 'ABSENT' ? 'Bạn đã lỡ lượt gọi — vui lòng check-in lại tại lễ tân'
               : data.status === 'BOOKED' ? 'Bạn chưa check-in tại quầy tiếp đón'
                 : data.sessionState === 'UPCOMING' ? 'Ca khám chưa bắt đầu' : 'Đang chờ đến lượt';
   return <section aria-live="polite" aria-label="Tiến độ hàng chờ" className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-xs leading-relaxed">
     <p className="font-bold text-slate-800">Số phiếu {ticketLabel(data.number)} · {title}</p>
     {data.aheadCount != null && data.status !== 'COMPLETED' && !['ENDED', 'CANCELLED'].includes(data.sessionState) && <p className="mt-2 flex items-center gap-2 text-blue-800"><Users className="size-4 shrink-0" /><span>Còn <strong>{data.aheadCount}</strong> người trước bạn{data.aheadCount === 0 && own?.status === 'WAITING' ? ' — sắp đến lượt, hãy ở gần phòng khám.' : '.'}</span></p>}
-    {data.missed && !['COMPLETED', 'IN_PROGRESS'].includes(data.status) && <p className="mt-2 text-amber-800">Bạn đã lỡ lượt. Sau khi check-in, bạn được xếp theo thứ tự đến trong nhóm muộn; khi có đủ hai nhóm, phòng khám xen kẽ 2 lượt thường và 1 lượt muộn.{data.remainingNormalTurns > 0 ? ` Còn ${data.remainingNormalTurns} lượt thường để hoàn tất mức lùi hiện tại.` : ''}</p>}
+    {data.missed && data.status !== 'COMPLETED' && !ongoing(data.status) && <p className="mt-2 text-amber-800">Bạn đã lỡ lượt. Sau khi check-in, bạn được xếp theo thứ tự đến trong nhóm muộn; khi có đủ hai nhóm, phòng khám xen kẽ 2 lượt thường và 1 lượt muộn.{data.remainingNormalTurns > 0 ? ` Còn ${data.remainingNormalTurns} lượt thường để hoàn tất mức lùi hiện tại.` : ''}</p>}
+    {['WAITING_CLS', 'RETURN_READY'].includes(data.status) && <p className="mt-2 text-slate-600">Bạn tiếp tục cùng lượt khám và số phiếu cũ sau CLS, không cần check-in lại. Phòng có thể khám người khác trong lúc bạn chờ kết quả; người đã được gọi hoặc đang khám được giữ lượt.</p>}
     {data.status === 'BOOKED' && <p className="mt-2 text-slate-600">Bạn chỉ có vị trí chờ thực tế sau khi check-in. Vui lòng có mặt trước lượt gọi; số phiếu được giữ nguyên.</p>}
   </section>;
 }
@@ -104,6 +109,7 @@ export function PatientQueueDialogLive({ appointment, onClose }: { appointment: 
         <QueueProgress data={data} />
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500"><span>Cập nhật {new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(data.updatedAt))}</span><button type="button" onClick={retry} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 font-semibold"><RefreshCw className="size-3.5" />Làm mới</button></div>
         <section aria-label="Danh sách tại phòng" className="overflow-hidden rounded-xl border border-slate-200"><h3 className="bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800">Thứ tự phục vụ dự kiến</h3><ol className="divide-y divide-slate-100">{data.tickets.map(ticket => <li key={ticket.number} data-own={ticket.own} className={`flex items-center gap-3 px-4 py-3 text-xs ${ticket.own ? 'bg-blue-50 text-blue-800' : 'text-slate-600'}`}><strong className="min-w-10 text-base tabular-nums">{ticketLabel(ticket.number)}</strong><span className="flex-1">{ticket.own ? 'Bạn / hồ sơ đang xem' : 'Bệnh nhân'}</span><span className="font-medium">{statusLabel(ticket.status)}</span></li>)}</ol>{!data.tickets.length && <p className="p-5 text-xs text-slate-500">Chưa có người đã check-in trong hàng chờ.</p>}</section>
+        {!!data.continuations?.length && <section aria-label="Đang thực hiện hoặc chờ quay lại sau CLS" className="rounded-xl border border-slate-200 p-4"><h3 className="text-sm font-bold text-slate-800">Đang thực hiện / chờ quay lại sau CLS</h3><ul className="mt-3 space-y-2">{data.continuations.map(ticket => <li key={ticket.number} className={`flex flex-wrap items-center justify-between gap-2 text-xs ${ticket.own ? 'font-bold text-blue-700' : 'text-slate-600'}`}><span>{ticketLabel(ticket.number)} · {ticket.own ? 'Bạn / hồ sơ đang xem' : 'Bệnh nhân'}</span><span>{ticket.status === 'WAITING_CLS' ? 'Đang thực hiện / chờ kết quả' : 'Chờ bác sĩ tiếp tục khám'}</span></li>)}</ul></section>}
         <p className="text-xs leading-relaxed text-slate-500">Tự cập nhật mỗi 5 giây khi mở màn hình. Danh sách chỉ tính người đã check-in, gồm người đang khám. Thứ tự có thể thay đổi khi có người check-in hoặc được điều phối; người đã được gọi được giữ lượt. Thông tin cá nhân của người khác được ẩn.</p>
       </>}
     </div>

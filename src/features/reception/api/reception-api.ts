@@ -8,7 +8,7 @@ export interface ReceptionPatient {
 export interface ReceptionSlot {
   timeSlotId: number; staffId: number; doctorName: string; rankName?: string; roomId: number; roomName: string;
   roomLocation?: string; specialtyId: number; specialtyName: string; serviceType: 'BHYT' | 'SERVICE';
-  appointmentDate: string; startTime: string; endTime: string; price?: number; remainingCapacity: number;
+  appointmentDate: string; startTime: string; endTime: string; price?: number; remainingCapacity: number; held?: boolean;
 }
 export interface ReceptionAppointment {
   appointmentId: number; appointmentCode: string; status: string; patientId: number; patientName: string;
@@ -25,7 +25,7 @@ export const receptionApi = {
   patients: (keyword: string, signal?: AbortSignal) => clinicalRequest<ReceptionPatient[]>('reception/patients/search', { keyword }, signal),
   createPatient: (input: object) => clinicalRequest<ReceptionPatient>('reception/patients/create', input),
   appointment: (reference: string) => clinicalRequest<ReceptionAppointment>('reception/appointments/detail', { reference }),
-  slots: (date: string, offline: boolean, signal?: AbortSignal) => clinicalRequest<ReceptionSlot[]>('reception/slots/search', { date, offline }, signal),
+  slots: (date: string, offline: boolean, signal?: AbortSignal, appointmentId?: number) => clinicalRequest<ReceptionSlot[]>('reception/slots/search', { date, offline, appointmentId }, signal),
   assign: (appointmentId: number, timeSlotId: number) => clinicalRequest<ReceptionAppointment>('reception/appointments/assign-specialty', { appointmentId, timeSlotId }),
   checkIn: (qrToken: string) => clinicalRequest<{ encounterId: number; encounterCode: string }>('encounters/check-in', { qrToken }),
   createBooking: (patientId: number, timeSlotId: number, appointReason: string) => clinicalRequest<{ appointmentId: number; appointmentCode: string; qrToken: string; queueNumber?: number }>('appointments/create', { patientId, timeSlotId, appointReason }),

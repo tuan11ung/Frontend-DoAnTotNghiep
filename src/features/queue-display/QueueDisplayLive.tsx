@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { publicApi, publicRequest, type PublicHospital } from '../public-data/public-api';
 import { QueueClock } from './components/QueueClock';
 interface Room { scheduleId: number; roomId: number; code: string; name: string; location?: string; doctorName: string; specialtyName?: string; session: string; startTime: string; endTime: string }
-interface Display { tickets: { number: number; status: string; calledAt?: string }[]; updatedAt: string; date: string }
+interface Display { tickets: { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS'; calledAt?: string }[]; updatedAt: string; date: string }
 export function QueueDisplayLive() {
   const params = useSearchParams(); const [hospitals, setHospitals] = useState<PublicHospital[] | null>(null);
   const [hospitalId, setHospitalId] = useState(Number(params.get('facility')) || 0); const [scheduleId, setScheduleId] = useState(Number(params.get('schedule')) || 0);
@@ -33,7 +33,7 @@ export function QueueDisplayLive() {
     void refresh(); return () => { controller.abort(); clearTimeout(timer); };
   }, [hospitalId, scheduleId, room, revision]);
   const current = display?.scheduleId === scheduleId && room ? display.data : null;
-  const called = current?.tickets.filter(t => t.status === 'IN_PROGRESS' || (t.status === 'WAITING' && t.calledAt));
+  const called = current?.tickets.filter(t => t.status === 'CALLED' || t.status === 'IN_PROGRESS' || (t.status === 'WAITING' && t.calledAt));
   const waiting = current?.tickets.filter(t => t.status === 'WAITING' && !t.calledAt);
   return <main ref={element} className="min-h-svh bg-slate-50 p-4 sm:p-8"><div className="mx-auto max-w-7xl space-y-6"><header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-bold text-blue-700">MedConnect · Bảng gọi số</p><h1 className="mt-2 text-2xl font-extrabold">{room?.name || 'Hàng chờ phòng khám'}</h1></div><QueueClock/></header>
     <div className="flex flex-wrap items-end gap-4"><label className="min-w-0 flex-1 text-sm font-bold">Cơ sở<select className="mt-2 w-full rounded-lg border bg-white p-3" value={hospitalId} onChange={e => { setHospitalId(Number(e.target.value)); setScheduleId(0); setDisplay(null); }}><option value={0}>Chọn cơ sở</option>{hospitals?.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}</select></label><label className="min-w-0 flex-1 text-sm font-bold">Phòng và ca hôm nay<select className="mt-2 w-full rounded-lg border bg-white p-3" value={scheduleId} onChange={e => { setScheduleId(Number(e.target.value)); setDisplay(null); const next = new URLSearchParams({ facility: String(hospitalId), schedule: e.target.value }); window.history.replaceState(null, '', `?${next}`); }}><option value={0}>Chọn phòng</option>{validRooms?.map(r => <option key={r.scheduleId} value={r.scheduleId}>{r.code} · {r.name} · {r.session === 'MORNING' ? 'Sáng' : 'Chiều'}</option>)}</select></label><button type="button" className="rounded-lg border bg-white p-3 text-sm font-bold" onClick={() => { const action = document.fullscreenElement ? document.exitFullscreen() : element.current?.requestFullscreen(); action?.catch(() => setError('Không thể mở toàn màn hình trên trình duyệt này.')); }}>Toàn màn hình</button></div>

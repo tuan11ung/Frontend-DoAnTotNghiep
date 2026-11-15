@@ -23,6 +23,7 @@ function formatLocalTime(value: string) {
 
 function mapStatus(patient: DoctorQueuePatientResponse): QueueStatus {
   if (patient.status === 'IN_PROGRESS') {
+    if (patient.inRoom) return 'in-room';
     if (patient.clsQueueStatus === 'WAITING_RESULTS') return 'awaiting-results';
     if (patient.clsQueueStatus === 'RETURN_READY') return 'return-ready';
     return 'in-room';
@@ -233,7 +234,7 @@ export function useDoctorQueueApi() {
   }
 
   async function continueDiagnosis() {
-    if (!selectedReturnPatient?.encounterCode || !selectedRoom || currentPatient) return;
+    if (!selectedReturnPatient?.encounterCode || !selectedRoom || currentPatient || callingRecord) return;
     setContinuing(true);
     try {
       const resumed = await doctorQueueApi.resumeAfterCls(selectedReturnPatient.encounterCode);
