@@ -44,7 +44,7 @@ export const consultationApi = {
     }
     throw new Error('Không thể tải đầy đủ chỉ định CLS.');
   },
-  order: (orderedServiceId: number) => clinicalRequest<TechnicianOrderDetail>('ordered-services/detail', { orderedServiceId }),
+  order: (orderedServiceId: number, signal?: AbortSignal) => clinicalRequest<TechnicianOrderDetail>('ordered-services/detail', { orderedServiceId }, signal),
   createOrder: (encounterId: number, serviceId: number, clinicalNote: string) => clinicalRequest<OrderedService>('ordered-services/create', { encounterId, serviceId, clinicalNote }),
   cancelOrder: (orderedServiceId: number) => clinicalRequest<OrderedService>('ordered-services/cancel', { orderedServiceId }),
   services: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<TechnicianMedicalService>>('medical-services/search', { keyword, active: true, pageable: { page, size: 20 } }, signal),

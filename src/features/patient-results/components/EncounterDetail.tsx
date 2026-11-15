@@ -10,6 +10,7 @@ import { EncounterOverview } from './EncounterOverview';
 import { patientResultsHref } from '../utils/result-format';
 import { EncounterBillingLink } from '@/src/features/patient-payments/components/EncounterBillingLink';
 import { EncounterPrescription, EncounterRecordSections } from './EncounterRecordSections';
+import { EncounterAiQuestion } from './EncounterAiQuestion';
 
 const tabs = [
   { id: 'overview', label: 'Tổng quan' }, { id: 'services', label: 'Dịch vụ' },
@@ -33,6 +34,7 @@ export function EncounterDetail(props: EncounterDetailProps) {
       <div className="flex items-center gap-3 px-3 py-4 sm:px-5"><Link href={backHref} aria-label={doctor ? "Quay lại màn Khám bệnh" : "Về danh sách ca khám"} className="rounded-lg p-1.5 text-slate-500 hover:bg-blue-50 hover:text-blue-700"><ArrowLeft className="size-5" /></Link><div><h1 className="text-lg font-extrabold text-slate-900 sm:text-xl">{doctor ? "Chi tiết phiên khám cũ" : "Thông tin đợt khám"}</h1><p className="mt-0.5 text-[10px] text-slate-500 sm:text-xs">{doctor && <>{encounter.code} · </>}{tab.label}</p></div></div>
       <nav aria-label="Thông tin đợt khám" className={`grid px-2 ${doctor ? "grid-cols-3" : "grid-cols-4"}`}>{visibleTabs.map((item) => <Link key={item.id} href={href({ tab: item.id })} aria-current={tab.id === item.id ? 'page' : undefined} className={`border-b-[3px] px-1 py-3 text-center text-xs font-semibold transition-colors sm:text-sm ${tab.id === item.id ? 'border-blue-600 bg-blue-50/60 text-blue-700' : 'border-transparent text-slate-500 hover:bg-slate-50 hover:text-blue-700'}`}>{item.label}</Link>)}</nav>
     </div>
+    <div className="mb-5"><EncounterAiQuestion key={encounter.id} encounter={encounter}/></div>
     <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="min-w-0 space-y-5">
         {tab.id !== 'services' && <EncounterCard encounter={encounter} patient={patient} detail readOnly={doctor} />}

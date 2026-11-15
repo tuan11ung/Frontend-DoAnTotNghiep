@@ -9,7 +9,10 @@ export function formatResultDate(value: string) {
 }
 
 export function formatResultTime(value: string) {
-  return timeFormat.format(new Date(value));
+  if(!/T\d{2}:\d{2}/.test(value))return 'Chưa có giờ';
+  const timestamp=/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)?value:value+'+07:00';
+  const date=new Date(timestamp);
+  return Number.isFinite(date.getTime())?timeFormat.format(date):'Chưa có giờ';
 }
 
 export function normalizeResultSearch(value: string) {
