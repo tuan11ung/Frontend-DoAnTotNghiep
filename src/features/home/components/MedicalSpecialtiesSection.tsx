@@ -3,15 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { Baby, User, Sparkles, Apple, Bone, Wind, Ear, Award, HeartPulse, Accessibility, Activity, Ambulance, Syringe, Smile, ShieldAlert, Droplets, Pill, Brain, Microscope, Droplet, Eye, ChevronDown } from 'lucide-react';
-import { SPECIALTIES_LIST } from '@/src/features/home/data/medical-data';
 import { SpecialtyProps } from '@/src/types/medical';
 
 interface MedicalSpecialtiesSectionProps {
-  specialties?: SpecialtyProps[];
+  specialties: SpecialtyProps[];
 }
 
 export const MedicalSpecialtiesSection: React.FC<MedicalSpecialtiesSectionProps> = ({
-  specialties = SPECIALTIES_LIST,
+  specialties,
 }) => {
   const renderIcon = (iconName: string) => {
     switch (iconName) {
@@ -99,9 +98,9 @@ export const MedicalSpecialtiesSection: React.FC<MedicalSpecialtiesSectionProps>
         <div className="mt-10 text-center">
           <Link
             className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 bg-white border border-blue-200 px-6 py-2.5 rounded-full shadow-xs hover:shadow transition-all cursor-pointer"
-            href="/search"
+            href="/search?type=doctor"
           >
-            <span>Xem thêm 20+ chuyên khoa khác</span>
+            <span>Tìm bác sĩ theo chuyên khoa</span>
             <ChevronDown className="w-4 h-4" />
           </Link>
         </div>
