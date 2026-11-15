@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { ClinicalApiError } from '@/src/shared/lib/clinical-api';
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { consultationApi, type ClinicalAllergy, type ClinicalCondition, type ClinicalPatient, type EncounterDetail } from './api/consultation-api';
 import { DoctorPrescriptionLive } from './DoctorPrescriptionLive';
 import { DoctorOrdersLive } from './DoctorOrdersLive';
@@ -11,6 +13,19 @@ import { clinicalButton, clinicalCard, clinicalField } from './components/clinic
 export function DoctorConsultationLive({ encounterId, patientId }: { encounterId: number; patientId: number }) {
   const [data, setData] = useState<{ encounter: EncounterDetail; patient: ClinicalPatient; allergies: ClinicalAllergy[]; conditions: ClinicalCondition[] } | null>(null);
   const [error, setError] = useState(''); const [revision, setRevision] = useState(0);
+  useEffect(()=>{
+    const controller=new AbortController();
+    async function verify(){
+      if(!Number.isSafeInteger(patientId) || patientId<=0 || !Number.isSafeInteger(encounterId) || encounterId<=0)return;
+      try {
+        const current=await consultationApi.detail(encounterId,patientId,controller.signal);
+        if(!controller.signal.aborted && current.status!=='IN_PROGRESS'){setData(null);setError('Lượt khám đã đóng. Quyền xem hồ sơ điều trị không còn mở.');}
+      } catch(e){if(!controller.signal.aborted && e instanceof ClinicalApiError && [401,403,404,409].includes(e.status)){setData(null);setError('Quyền truy cập hồ sơ đã đóng hoặc phiên đăng nhập hết hạn.');}}
+    }
+    const timer=setInterval(()=>void verify(),15000);
+    window.addEventListener('focus',verify);
+    return ()=>{controller.abort();clearInterval(timer);window.removeEventListener('focus',verify);};
+  },[encounterId,patientId]);
   useEffect(() => {
     if (!Number.isSafeInteger(encounterId) || encounterId <= 0 || !Number.isSafeInteger(patientId) || patientId <= 0) return;
     const controller = new AbortController();
@@ -22,10 +37,10 @@ export function DoctorConsultationLive({ encounterId, patientId }: { encounterId
   if (!Number.isSafeInteger(patientId) || patientId <= 0 || !Number.isSafeInteger(encounterId) || encounterId <= 0) return <section className="p-8"><h1 className="text-xl font-bold">Chưa xác định được lượt khám</h1><p className="my-4">Mở hồ sơ từ bệnh nhân đang khám trong hàng chờ.</p><Link href="/doctor/queue" className="font-bold text-blue-700">Về hàng chờ</Link></section>;
   if (error) return <section className="p-8"><p role="alert" className="text-rose-700">{error}</p><button className={`${clinicalButton} mt-4`} type="button" onClick={() => { setError(''); setRevision(v => v + 1); }}>Thử lại</button><Link href="/doctor/queue" className="ml-4 text-blue-700">Về hàng chờ</Link></section>;
   if (!data) return <p role="status" className="p-8">Đang tải bệnh án và thông tin dị ứng…</p>;
-  return <ConsultationWorkspace key={data.encounter.encounterId} initial={data.encounter} patient={data.patient} allergies={data.allergies} conditions={data.conditions} />;
+  return <ConsultationWorkspace key={data.encounter.encounterId} initial={data.encounter} patient={data.patient} allergies={data.allergies} conditions={data.conditions} onClosed={()=>{setData(null);setError('Đã hoàn tất lượt khám. Bệnh án khóa chỉnh sửa và quyền truy cập hồ sơ điều trị đã đóng.');}} />;
 }
 
-function ConsultationWorkspace({ initial, patient, allergies, conditions }: { initial: EncounterDetail; patient: ClinicalPatient; allergies: ClinicalAllergy[]; conditions: ClinicalCondition[] }) {
+function ConsultationWorkspace({ initial, patient, allergies, conditions, onClosed }: { initial: EncounterDetail; patient: ClinicalPatient; allergies: ClinicalAllergy[]; conditions: ClinicalCondition[]; onClosed:()=>void }) {
   const [encounter, setEncounter] = useState(initial); const [tab, setTab] = useState('profile');
   const [symptoms, setSymptoms] = useState(initial.symptoms ?? ''); const [notes, setNotes] = useState(initial.clinicalNotes ?? '');
   const [diagnoses, setDiagnoses] = useState(initial.diagnoses.map(d => ({ icd10Id: d.icd10Id, diagnosisText: d.diagnosisText || d.icd10Name || '', primary: d.primary })));
@@ -47,15 +62,17 @@ function ConsultationWorkspace({ initial, patient, allergies, conditions }: { in
     void save(async () => {
       const orders = await consultationApi.orders(encounter.encounterId);
       if (orders.some(order => !['COMPLETED', 'CANCELLED'].includes(order.status))) throw new Error('Còn chỉ định CLS chưa hoàn tất. Vui lòng kiểm tra kết quả trước khi kết luận.');
-      return consultationApi.complete(encounter.encounterId, conclusion.trim(), notable, notableReason.trim());
+      const result=await consultationApi.complete(encounter.encounterId, conclusion.trim(), notable, notableReason.trim());
+      onClosed();
+      return result;
     }, 'Đã hoàn tất lượt khám. Hóa đơn được tạo để thanh toán tại quầy.');
   }
   return <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-7"><div className="mx-auto max-w-6xl space-y-5"><Link href="/doctor/queue" className="text-sm font-bold text-blue-700">← Hàng chờ phòng khám</Link>
     <header className={clinicalCard}><h1 className="text-2xl font-extrabold">Khám bệnh · {patient.fullName}</h1><p className="text-sm text-slate-500">{encounter.encounterCode} · {encounter.hospitalName} · {encounter.doctorName} · {editable ? 'Đang khám' : encounter.status === 'COMPLETED' ? 'Đã hoàn tất' : encounter.status}</p></header>
-    <section className="rounded-xl border border-rose-200 bg-rose-50 p-4"><h2 className="font-bold text-rose-800">Thông tin dị ứng</h2>{allergies.length ? <ul className="mt-2 space-y-2 text-sm text-rose-800">{allergies.map(a => <li key={a.id}>{a.name} {a.reaction && `· ${a.reaction}`} · {a.verified ? 'Đã xác minh' : 'Chưa xác minh'}</li>)}</ul> : <p className="mt-2 text-sm text-rose-800">Chưa có khai báo dị ứng; cần hỏi lại người bệnh khi khám.</p>}</section>
+    <section aria-label="Cảnh báo dị ứng" className="sticky top-0 z-40 rounded-xl border border-rose-200 bg-rose-50 p-4 shadow-sm"><h2 className="font-bold text-rose-800">Thông tin dị ứng</h2>{allergies.length ? <ul className="mt-2 space-y-2 text-sm text-rose-800">{allergies.map(a => <li key={a.id}>{a.name} {a.reaction && `· ${a.reaction}`} · {a.verified ? 'Đã xác minh' : 'Chưa xác minh'}</li>)}</ul> : <p className="mt-2 text-sm text-rose-800">Chưa có khai báo dị ứng; cần hỏi lại người bệnh khi khám.</p>}</section>
     <nav aria-label="Các phần bệnh án" className="flex flex-wrap gap-2">{[['profile', 'Hồ sơ & tiền sử'], ['clinical', 'Khám lâm sàng & chẩn đoán'], ['orders', 'Chỉ định & kết quả CLS'], ['prescription', 'Kê đơn thuốc'], ['conclusion', 'Kết luận']].map(([id, label]) => <button type="button" key={id} aria-pressed={tab === id} className={tab === id ? clinicalButton : 'rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold'} onClick={() => setTab(id)}>{label}</button>)}</nav>
     {error && <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}{notice && <p role="status" className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">{notice}</p>}
-    {tab === 'profile' && <><section className={clinicalCard}><h2 className="text-lg font-bold">Thông tin bệnh nhân</h2><dl className="grid gap-4 text-sm sm:grid-cols-2">{[['Họ tên', patient.fullName], ['Mã bệnh nhân', patient.patientCode], ['Ngày sinh', patient.dob], ['Giới tính', patient.gender === 'MALE' ? 'Nam' : patient.gender === 'FEMALE' ? 'Nữ' : 'Khác'], ['CCCD', patient.maskedNationalId], ['Điện thoại', patient.maskedPhone], ['Địa chỉ', patient.address], ['BHYT', patient.insuranceNo]].map(([label, value]) => <div key={label}><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-semibold">{value || 'Chưa cập nhật'}</dd></div>)}</dl><h3 className="font-bold">Tiền sử bệnh</h3>{conditions.length ? <ul className="space-y-2 text-sm">{conditions.map(c => <li key={c.id}>{c.name} {c.diagnosedYear && `· ${c.diagnosedYear}`} · {c.recovered ? 'Đã khỏi' : 'Đang theo dõi'}</li>)}</ul> : <p className="text-sm text-slate-500">Chưa có khai báo tiền sử bệnh.</p>}</section><DoctorHistoryLive patientId={patient.id} currentId={encounter.encounterId} /></>}
+    {tab === 'profile' && <><section className={clinicalCard}><h2 className="text-lg font-bold">Thông tin bệnh nhân</h2><dl className="grid gap-4 text-sm sm:grid-cols-2">{[['Họ tên', patient.fullName], ['Mã bệnh nhân', patient.patientCode], ['Ngày sinh', formatDisplayDate(patient.dob)], ['Giới tính', patient.gender === 'MALE' ? 'Nam' : patient.gender === 'FEMALE' ? 'Nữ' : 'Khác'], ['CCCD', patient.maskedNationalId], ['Điện thoại', patient.maskedPhone], ['Địa chỉ', patient.address], ['BHYT', patient.insuranceNo]].map(([label, value]) => <div key={label}><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-semibold">{value || 'Chưa cập nhật'}</dd></div>)}</dl><h3 className="font-bold">Tiền sử bệnh</h3>{conditions.length ? <ul className="space-y-2 text-sm">{conditions.map(c => <li key={c.id}>{c.name} {c.diagnosedYear && `· ${c.diagnosedYear}`} · {c.recovered ? 'Đã khỏi' : 'Đang theo dõi'}</li>)}</ul> : <p className="text-sm text-slate-500">Chưa có khai báo tiền sử bệnh.</p>}</section><DoctorHistoryLive patientId={patient.id} currentId={encounter.encounterId} /></>}
     {tab === 'clinical' && <><form className={clinicalCard} onSubmit={e => { e.preventDefault(); void save(() => consultationApi.clinical(encounter.encounterId, symptoms.trim(), notes.trim()), 'Đã lưu khám lâm sàng.'); }}><h2 className="text-lg font-bold">Khám lâm sàng</h2><p className="text-sm text-slate-500">Lý do khám: {encounter.appointReason}</p><fieldset disabled={!editable || busy} className="space-y-4"><label className="block text-sm font-bold">Triệu chứng<textarea maxLength={10000} rows={3} value={symptoms} onChange={e => setSymptoms(e.target.value)} className={clinicalField} /></label><label className="block text-sm font-bold">Ghi nhận thăm khám<textarea maxLength={10000} rows={5} value={notes} onChange={e => setNotes(e.target.value)} className={clinicalField} /></label><button type="submit" className={clinicalButton} disabled={!symptoms.trim() && !notes.trim()}>Lưu khám lâm sàng</button></fieldset></form>
       <form className={clinicalCard} onSubmit={e => { e.preventDefault(); void save(() => consultationApi.diagnoses(encounter.encounterId, diagnoses), 'Đã lưu chẩn đoán.'); }}><h2 className="text-lg font-bold">Chẩn đoán</h2><fieldset disabled={!editable || busy} className="space-y-4">{diagnoses.map((d, index) => <div key={index} className="flex flex-wrap items-end gap-3"><label className="min-w-0 flex-1 text-sm font-semibold">Nội dung chẩn đoán<input required maxLength={500} value={d.diagnosisText} onChange={e => setDiagnoses(items => items.map((item, i) => i === index ? { ...item, diagnosisText: e.target.value } : item))} className={clinicalField} /></label><label className="flex gap-2 py-2 text-sm"><input name="primary" type="radio" checked={d.primary} onChange={() => setDiagnoses(items => items.map((item, i) => ({ ...item, primary: i === index })))} />Bệnh chính</label><button type="button" className="py-2 text-sm text-rose-700" onClick={() => setDiagnoses(items => items.filter((_, i) => i !== index))}>Xóa</button></div>)}<div className="flex gap-3"><button type="button" className="text-sm font-bold text-blue-700" disabled={diagnoses.length >= 50} onClick={() => setDiagnoses(items => [...items, { icd10Id: undefined, diagnosisText: '', primary: items.length === 0 }])}>+ Thêm chẩn đoán</button><button type="submit" disabled={!diagnoses.length || !diagnoses.some(d => d.primary)} className={clinicalButton}>Lưu chẩn đoán</button></div></fieldset></form></>}
     {tab === 'orders' && <DoctorOrdersLive encounterId={encounter.encounterId} patientId={patient.id} editable={editable} />}
