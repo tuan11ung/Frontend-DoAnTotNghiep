@@ -25,6 +25,8 @@ export interface DoctorQueuePatientResponse {
   appointmentId: number;
   workScheduleId: number;
   nextToCall: boolean;
+  missedTurn: boolean;
+  queuePosition: number | null;
   encounterId: number | null;
   encounterCode: string | null;
   queueNumber: number;

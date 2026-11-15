@@ -6,8 +6,15 @@ import type { PatientAppointment } from '@/src/shared/types/appointment';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { abbreviateQueueName, appointmentRoomInfo } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from '../components/AppointmentQueueSummary';
+import { PatientQueueDialogLive } from '../components/PatientQueueLive';
 
 export function AppointmentQueueDialog({ appointment, room, onClose }: { appointment: PatientAppointment | null; room?: VisitQueueRoom; onClose: () => void }) {
+  if (!appointment) return null;
+  if (appointment.source === 'api') return <PatientQueueDialogLive key={appointment.id} appointment={appointment} onClose={onClose} />;
+  return <PreviewAppointmentQueueDialog appointment={appointment} room={room} onClose={onClose} />;
+}
+
+function PreviewAppointmentQueueDialog({ appointment, room, onClose }: { appointment: PatientAppointment; room?: VisitQueueRoom; onClose: () => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const appointmentId = appointment?.id;

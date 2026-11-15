@@ -2,8 +2,10 @@ import { Clock3, Users } from 'lucide-react';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { appointmentQueueProgress } from '@/src/features/appointment-tracking/utils/appointment-tracking';
+import { PatientQueueSummaryLive } from './PatientQueueLive';
 
 export function AppointmentQueueSummary({ appointment, room }: { appointment: PatientAppointment; room?: VisitQueueRoom }) {
+  if (appointment.source === 'api') return <PatientQueueSummaryLive key={appointment.id} appointment={appointment} />;
   if (!room) return <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs leading-relaxed text-slate-500">Chưa nhận được dữ liệu hàng chờ cho lịch này. Vui lòng liên hệ quầy tiếp đón.</p>;
   const { own, ahead, minutes, estimated } = appointmentQueueProgress(room, appointment);
   if (!own) return null;

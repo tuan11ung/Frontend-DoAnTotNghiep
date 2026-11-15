@@ -9,6 +9,7 @@ const ENDPOINTS: Record<string, string> = {
   'appointments/bhyt/create': '/patient/appointments/bhyt/create',
   'appointments/detail': '/patient/appointments/detail',
   'appointments/search': '/patient/appointments/search',
+  'appointments/queue': '/patient/appointments/queue',
   'appointments/cancel': '/patient/appointments/cancel',
   'appointments/available-slots/search': '/patient/appointments/available-slots/search',
   'appointments/create': '/patient/appointments/create',

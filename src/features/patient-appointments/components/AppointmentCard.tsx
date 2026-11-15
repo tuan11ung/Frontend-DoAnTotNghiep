@@ -161,7 +161,7 @@ export function AppointmentCard({
           )}
 
           {/* Lịch đã checkin: Xem hàng chờ */}
-          {isCheckedIn && appointment.source !== 'api' && (
+          {(isCheckedIn || (appointment.source === 'api' && ['BOOKED', 'NO_SHOW'].includes(appointment.status))) && (
             <button
               onClick={() => onOpenQueue(appointment)}
               type="button"

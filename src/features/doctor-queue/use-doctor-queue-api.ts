@@ -52,7 +52,7 @@ function mapPatient(patient: DoctorQueuePatientResponse): QueuePatient {
     maskedCitizenId: patient.maskedNationalId || 'Chưa cập nhật',
     gender,
     avatar: null,
-    detail,
+    detail: patient.missedTurn && status === 'waiting' ? `Đã lỡ lượt · Nhóm đến muộn · ${detail}` : detail,
     checkIn: patient.checkedInAt ? formatTime(patient.checkedInAt) : 'Chưa check-in',
     status,
     tags,
