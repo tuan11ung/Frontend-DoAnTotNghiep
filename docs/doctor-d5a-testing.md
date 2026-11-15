@@ -25,6 +25,14 @@ Chuẩn bị một bác sĩ được phân công, một lễ tân và bệnh nh�
 8. Thử thu hồi đồng ý truy cập bệnh sử từ phía bệnh nhân, sau đó mở lại bệnh sử bằng bác sĩ: API phải từ chối.
 9. Kiểm tra log backend: yêu cầu đọc hồ sơ, danh sách lịch sử và chi tiết phải đi qua RecordAccessService và tạo recordAccessed trong SystemLogService. Đối chiếu bác sĩ, bệnh nhân, lượt khám và thời điểm; frontend không tự tạo log giả. Việc kiểm tra quyền định kỳ có thể tạo thêm log truy cập.
 
+## Hồi quy trang bệnh án cũ
+
+- Mở phiên khám cũ trong tab thứ hai: ngày hiển thị DD/MM/YYYY và dị ứng được ghim khi cuộn, cùng nội dung với màn điều trị.
+- Hoàn tất ca hiện tại ở tab thứ nhất. Quay lại tab bệnh án cũ hoặc chờ tối đa khoảng 15 giây: thông tin bệnh án, CLS và đơn thuốc phải biến mất khi API báo đóng quyền.
+- Thử thu hồi quyền bệnh sử khi ca còn diễn ra: kết quả tương tự. Nút Kiểm tra lại quyền truy cập phải gọi API lại, không phục hồi dữ liệu lưu cũ.
+- Ngắt mạng khi kiểm tra quyền: nội dung cũ cũng bị ẩn; nối mạng và thử lại để tải thông tin có quyền.
+- Điều hướng sang bệnh nhân/lượt khám khác: không hiển thị tạm dữ liệu của lượt trước. Chỉ render hồ sơ khi kiểm tra ca đang diễn ra, bệnh án cũ và dị ứng đều thành công.
+
 ## Giới hạn hợp đồng API
 
 API lịch sử hiện chưa trả chuyên khoa của phiên khám. Giao diện tra cứu chuyên khoa từ hồ sơ bác sĩ hiện tại qua public directory. Nếu hồ sơ bác sĩ không còn công khai, hiển thị Chưa cập nhật. Đây không phải chuyên khoa lịch sử được lưu tại thời điểm khám. Muốn lọc chính xác chuyên khoa thời điểm khám cần backend bổ sung trường này.
