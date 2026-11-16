@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { X, Edit3, AlertCircle } from 'lucide-react';
 import { FamilyRelationship, RELATIONSHIP_LABELS, FamilyMember, FamilyMemberSummary } from '../models/types/family.types';
@@ -194,14 +195,14 @@ function EditFamilyMemberForm({ member, onClose, onSave, basicOnly }: Omit<EditF
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">Ghi chú / Tiền sử</label>
+            {basicOnly ? <Link href={`/patient/family/${member.id}/health`} className="text-sm font-semibold text-blue-700">Quản lý tiền sử & dị ứng của người thân →</Link> : <><label className="block text-xs font-bold text-slate-700 mb-1.5">Ghi chú / Tiền sử</label>
             <textarea
               rows={2}
               value={note}
-              disabled={basicOnly || saving}
+              disabled={saving}
               onChange={(e) => setNote(e.target.value)}
               className="w-full px-3.5 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-slate-900 resize-none"
-            />
+            /></>}
           </div>
 
           <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">

@@ -9,7 +9,7 @@ export interface PersonalProfile {
   insuranceNo: string | null;
   maskedNationalId: string | null;
   maskedPhone: string | null;
-  relationship: 'SELF';
+  relationship: 'SELF' | 'FATHER' | 'MOTHER' | 'CHILD' | 'WIFE' | 'HUSBAND' | 'SIBLING' | 'GRANDPARENT' | 'GRANDCHILD' | 'OTHER';
 }
 export type ProfileInput = Pick<PersonalProfile, 'fullName' | 'dob' | 'gender' | 'address' | 'insuranceNo'> & {
   nationalId?: string;

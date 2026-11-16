@@ -18,7 +18,8 @@ function isObject(value: unknown): value is Record<string, unknown> {
 }
 function optionalText(value: unknown) { return value === null || typeof value === 'string'; }
 export function isProfile(value: unknown): value is PersonalProfile {
-  return isObject(value) && Number.isSafeInteger(value.id) && Number(value.id) > 0 && value.relationship === 'SELF'
+  return isObject(value) && Number.isSafeInteger(value.id) && Number(value.id) > 0
+    && ['SELF', 'FATHER', 'MOTHER', 'CHILD', 'WIFE', 'HUSBAND', 'SIBLING', 'GRANDPARENT', 'GRANDCHILD', 'OTHER'].includes(String(value.relationship))
     && typeof value.patientCode === 'string' && typeof value.fullName === 'string' && value.fullName.trim().length > 0
     && typeof value.dob === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.dob)
     && ['MALE', 'FEMALE', 'OTHER'].includes(String(value.gender))
@@ -63,10 +64,10 @@ function readCondition(value: unknown, patientId: number): Condition {
   return condition;
 }
 
-export async function loadProfile(token: string, signal: AbortSignal): Promise<ProfileData> {
+export async function loadProfile(token: string, signal: AbortSignal, patientId?: number): Promise<ProfileData> {
   const profiles = await accountRequest('profiles/list', token, {}, signal);
   if (!Array.isArray(profiles)) throw invalid();
-  const own = profiles.filter((p: unknown) => isObject(p) && p.relationship === 'SELF');
+  const own = profiles.filter((p: unknown) => isObject(p) && (patientId === undefined ? p.relationship === 'SELF' : p.id === patientId));
   if (own.length !== 1) throw invalid();
   const profile = readProfile(own[0]);
   const [allergies, conditions] = await Promise.all([

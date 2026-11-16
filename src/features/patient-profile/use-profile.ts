@@ -5,7 +5,7 @@ import { updateStoredAccountName } from '@/src/features/auth/utils/auth-storage'
 import { accountRequest, loadProfile, saveAllergy, saveCondition, updateProfile } from './profile-api';
 import { canEditHealth, type AllergyInput, type ConditionInput, type ProfileData, type ProfileInput } from './profile.types';
 
-export function useProfile(token: string | null) {
+export function useProfile(token: string | null, selectedPatientId?: number) {
   const [remote, setRemote] = useState<ProfileData | null>(null);
   const [error, setError] = useState('');
   const [revision, setRevision] = useState(0);
@@ -14,13 +14,13 @@ export function useProfile(token: string | null) {
   useEffect(() => {
     if (!token) return;
     const controller = new AbortController();
-    loadProfile(token, controller.signal).then(data => {
+    loadProfile(token, controller.signal, selectedPatientId).then(data => {
       if (!controller.signal.aborted) { setRemote(data); setError(''); }
     }).catch(() => {
       if (!controller.signal.aborted) setError('Không thể tải hồ sơ. Hãy kiểm tra kết nối và phiên đăng nhập, rồi thử lại.');
     });
     return () => controller.abort();
-  }, [token, revision]);
+  }, [token, revision, selectedPatientId]);
   const data = remote;
   const patientId = data?.profile.id;
   function requirePatient() {
@@ -32,7 +32,7 @@ export function useProfile(token: string | null) {
     async savePersonal(input: ProfileInput) {
       const id = requirePatient();
       const profile = await updateProfile(token!, id, input);
-      updateStoredAccountName(token!, profile.fullName);
+      if (profile.relationship === 'SELF') updateStoredAccountName(token!, profile.fullName);
       if (active.current) setRemote(d => d ? { ...d, profile } : d);
     },
     async saveAllergy(input: AllergyInput) {

@@ -3,6 +3,7 @@
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import React from 'react';
+import Link from 'next/link';
 import {
   User,
   Calendar,
@@ -113,6 +114,7 @@ export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardP
           </div>
         )}
       </div>
+      <Link href={`/patient/family/${member.id}/health`} className="mt-4 rounded-lg border border-blue-200 px-4 py-2.5 text-center text-sm font-semibold text-blue-700 hover:bg-blue-50">Tiền sử & dị ứng</Link>
     </div>
   );
 }
