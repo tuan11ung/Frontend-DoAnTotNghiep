@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 
 const ENDPOINTS: Record<string, string> = {
+  'ingredients/search': '/clinic/ingredients/search',
   'icd10/search-cursor': '/clinic/icd10/search-cursor',
   'hospital-medicines/search': '/clinic/hospital-medicines/search',
   'ordered-services/history/search': '/clinic/ordered-services/history/search',
@@ -22,7 +23,9 @@ const ENDPOINTS: Record<string, string> = {
   'encounters/notable/detail': '/clinic/encounters/notable/detail',
   'patients/detail': '/clinic/patients/detail',
   'patient-allergies/list': '/clinic/patient-allergies/list',
+  'patient-allergies/save': '/clinic/patient-allergies/save',
   'patient-conditions/list': '/clinic/patient-conditions/list',
+  'patient-conditions/save': '/clinic/patient-conditions/save',
   'ordered-services/create': '/clinic/ordered-services/create',
   'ordered-services/search-by-encounter': '/clinic/ordered-services/search-by-encounter',
   'ordered-services/cancel': '/clinic/ordered-services/cancel',

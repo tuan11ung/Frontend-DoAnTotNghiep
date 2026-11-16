@@ -24,8 +24,10 @@ export interface EncounterDetail extends EncounterSummary {
   symptoms?: string; clinicalNotes?: string; notable: boolean; notableReason?: string; diagnoses: EncounterDiagnosis[];
 }
 export interface ClinicalPatient { id: number; fullName: string; dob: string; gender: string; patientCode: string; maskedNationalId?: string; maskedPhone?: string; address?: string; insuranceNo?: string }
-export interface ClinicalAllergy { id: number; name: string; type: string; reaction?: string; verified?: boolean }
-export interface ClinicalCondition { id: number; name: string; diagnosedYear?: number; recovered: boolean }
+export interface ClinicalAllergy { id: number; patientId?: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null; verified?: boolean; source?: string }
+export interface ClinicalCondition { id: number; patientId?: number; icd10Id?: number | null; name: string; diagnosedYear?: number | null; recovered: boolean; verified?: boolean; source?: string }
+export interface AllergyInput { id?: number; patientId: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null }
+export interface ConditionInput { id?: number; patientId: number; icd10Id?: number | null; name: string; diagnosedYear: number | null; recovered: boolean }
 export interface Icd10Choice { id: number; code: string; name: string }
 export interface PrescriptionDraft {
   note: string;
@@ -33,11 +35,14 @@ export interface PrescriptionDraft {
 }
 
 export const consultationApi = {
+  ingredients: (keyword: string, signal?: AbortSignal) => clinicalRequest<ApiPage<{id:number;name:string}>>('ingredients/search', {keyword,pageable:{page:0,size:20}}, signal),
   icd10: (keyword: string, afterId?: number, signal?: AbortSignal) => clinicalRequest<{ content: Icd10Choice[]; nextCursor?: number; hasMore: boolean }>('icd10/search-cursor', { keyword, afterId, size: 20 }, signal),
   detail: (encounterId: number, patientId: number, signal?: AbortSignal) => clinicalRequest<EncounterDetail>('encounters/detail', { encounterId, patientId }, signal),
   patient: (patientId: number, signal?: AbortSignal) => clinicalRequest<ClinicalPatient>('patients/detail', { patientId }, signal),
   allergies: (patientId: number, signal?: AbortSignal) => clinicalRequest<ClinicalAllergy[]>('patient-allergies/list', { patientId }, signal),
+  saveAllergy: (input: AllergyInput) => clinicalRequest<ClinicalAllergy>('patient-allergies/save', input),
   conditions: (patientId: number, signal?: AbortSignal) => clinicalRequest<ClinicalCondition[]>('patient-conditions/list', { patientId }, signal),
+  saveCondition: (input: ConditionInput) => clinicalRequest<ClinicalCondition>('patient-conditions/save', input),
   clinical: (encounterId: number, symptoms: string, clinicalNotes: string) => clinicalRequest<EncounterDetail>('encounters/update-clinical', { encounterId, symptoms, clinicalNotes }),
   diagnoses: (encounterId: number, diagnoses: { icd10Id?: number; diagnosisText?: string; primary: boolean }[]) => clinicalRequest<EncounterDetail>('encounters/save-diagnoses', { encounterId, diagnoses }),
   complete: (encounterId: number, finalConclusion: string, notable: boolean, notableReason: string, prescription?: PrescriptionDraft) => clinicalRequest<EncounterDetail>('encounters/complete', { encounterId, finalConclusion, notable, notableReason: notable ? notableReason : null, prescription }),
