@@ -9,7 +9,9 @@ import {
   Building2,
   FileHeart,
   Microscope,
+  PauseCircle,
   Pencil,
+  PlayCircle,
   Pill,
   Plus,
   Search,
@@ -104,12 +106,13 @@ function StatusBadge({ active, activeLabel = 'Đang hoạt động', inactiveLab
   );
 }
 
-function Toggle({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
-  return (
-    <button aria-label={label} aria-pressed={active} className={`relative h-7 w-12 rounded-full transition-colors ${active ? 'bg-emerald-600' : 'bg-slate-300'}`} onClick={onClick} type="button">
-      <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${active ? 'translate-x-6' : 'translate-x-1'}`} />
-    </button>
-  );
+function StatusAction({ active, section, item, onClick }: { active: boolean; section: EditableSection; item: SystemResource; onClick: () => void }) {
+  const publication = section === 'articles';
+  const label = publication ? (active ? 'Gỡ đăng' : 'Đăng bài') : (active ? 'Tạm ngừng' : 'Kích hoạt');
+  const name = 'title' in item ? item.title : item.name;
+  const description = `${label} ${name}`;
+  const Icon = active ? PauseCircle : PlayCircle;
+  return <button aria-label={description} title={description} className={`inline-flex min-h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 ${active ? 'border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300 hover:bg-amber-100 focus-visible:outline-amber-600' : 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-emerald-600'}`} onClick={onClick} type="button"><Icon aria-hidden="true" className="h-4 w-4" />{label}</button>;
 }
 
 function RowActions({ active, item, section, onEdit, onToggle, children }: { active?: boolean; item: SystemResource; section: EditableSection; onEdit: SystemResourceViewProps['onEdit']; onToggle: SystemResourceViewProps['onToggle']; children?: ReactNode }) {
@@ -119,7 +122,7 @@ function RowActions({ active, item, section, onEdit, onToggle, children }: { act
       <button className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" onClick={() => onEdit(section, item)} type="button">
         <Pencil className="h-3.5 w-3.5" /> Sửa
       </button>
-      {typeof active === 'boolean' && <Toggle active={active} label="Đổi trạng thái" onClick={() => onToggle(section, item)} />}
+      {typeof active === 'boolean' && <StatusAction active={active} section={section} item={item} onClick={() => onToggle(section, item)} />}
     </div>
   );
 }
