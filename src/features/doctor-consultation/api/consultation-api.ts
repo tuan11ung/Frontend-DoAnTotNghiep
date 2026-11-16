@@ -26,15 +26,21 @@ export interface EncounterDetail extends EncounterSummary {
 export interface ClinicalPatient { id: number; fullName: string; dob: string; gender: string; patientCode: string; maskedNationalId?: string; maskedPhone?: string; address?: string; insuranceNo?: string }
 export interface ClinicalAllergy { id: number; name: string; type: string; reaction?: string; verified?: boolean }
 export interface ClinicalCondition { id: number; name: string; diagnosedYear?: number; recovered: boolean }
+export interface Icd10Choice { id: number; code: string; name: string }
+export interface PrescriptionDraft {
+  note: string;
+  medicines: { hospitalMedicineId: number; quantity: number; dosage: string; usageInstruction: string; durationDays: number }[];
+}
 
 export const consultationApi = {
+  icd10: (keyword: string, afterId?: number, signal?: AbortSignal) => clinicalRequest<{ content: Icd10Choice[]; nextCursor?: number; hasMore: boolean }>('icd10/search-cursor', { keyword, afterId, size: 20 }, signal),
   detail: (encounterId: number, patientId: number, signal?: AbortSignal) => clinicalRequest<EncounterDetail>('encounters/detail', { encounterId, patientId }, signal),
   patient: (patientId: number, signal?: AbortSignal) => clinicalRequest<ClinicalPatient>('patients/detail', { patientId }, signal),
   allergies: (patientId: number, signal?: AbortSignal) => clinicalRequest<ClinicalAllergy[]>('patient-allergies/list', { patientId }, signal),
   conditions: (patientId: number, signal?: AbortSignal) => clinicalRequest<ClinicalCondition[]>('patient-conditions/list', { patientId }, signal),
   clinical: (encounterId: number, symptoms: string, clinicalNotes: string) => clinicalRequest<EncounterDetail>('encounters/update-clinical', { encounterId, symptoms, clinicalNotes }),
   diagnoses: (encounterId: number, diagnoses: { icd10Id?: number; diagnosisText?: string; primary: boolean }[]) => clinicalRequest<EncounterDetail>('encounters/save-diagnoses', { encounterId, diagnoses }),
-  complete: (encounterId: number, finalConclusion: string, notable: boolean, notableReason: string) => clinicalRequest<EncounterDetail>('encounters/complete', { encounterId, finalConclusion, notable, notableReason: notable ? notableReason : null }),
+  complete: (encounterId: number, finalConclusion: string, notable: boolean, notableReason: string, prescription?: PrescriptionDraft) => clinicalRequest<EncounterDetail>('encounters/complete', { encounterId, finalConclusion, notable, notableReason: notable ? notableReason : null, prescription }),
   async orders(encounterId: number, signal?: AbortSignal, patientId?: number) {
     const items: OrderedService[] = [];
     for (let page = 0; page < 100; page++) {
