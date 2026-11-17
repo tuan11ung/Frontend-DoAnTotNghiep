@@ -233,13 +233,16 @@ function SystemAdminLiveScreen() {
     setError('');
     const results = await Promise.allSettled([
       searchHospitals(), searchSpecialties(), searchMedicines(), searchArticles(), searchSystemLogs(),
+      searchHospitals({ status: 'ACTIVE' }, { page: 0, size: 1 }),
+      searchArticles({ published: true }, { page: 0, size: 1 }),
     ]);
-    const [hospitalResult, specialtyResult, medicineResult, articleResult, logResult] = results;
+    const [hospitalResult, specialtyResult, medicineResult, articleResult, logResult, activeResult, publishedResult] = results;
     if (hospitalResult.status === 'fulfilled') {
       const page = hospitalResult.value;
       setSectionData('hospitals', page);
-      setStats((current) => ({ ...current, hospitals: page.totalElements, activeHospitals: page.content.filter((item) => item.status === 'ACTIVE').length }));
+      setStats((current) => ({ ...current, hospitals: page.totalElements }));
     }
+    if (activeResult.status === 'fulfilled') setStats(current => ({ ...current, activeHospitals: activeResult.value.totalElements }));
     if (specialtyResult.status === 'fulfilled') {
       setSectionData('specialties', specialtyResult.value);
       setStats((current) => ({ ...current, specialties: specialtyResult.value.totalElements }));
@@ -250,8 +253,9 @@ function SystemAdminLiveScreen() {
     }
     if (articleResult.status === 'fulfilled') {
       setSectionData('articles', articleResult.value);
-      setStats((current) => ({ ...current, publishedArticles: articleResult.value.content.filter((item) => item.published).length }));
+
     }
+    if (publishedResult.status === 'fulfilled') setStats(current => ({ ...current, publishedArticles: publishedResult.value.totalElements }));
     if (logResult.status === 'fulfilled') {
       setLogs(logResult.value.content);
       setLogPagination({ page: logResult.value.page, size: logResult.value.size, totalElements: logResult.value.totalElements, totalPages: logResult.value.totalPages });
@@ -260,7 +264,7 @@ function SystemAdminLiveScreen() {
       loadedSections.current.add('system-logs');
     }
     const failure = results.find((result) => result.status === 'rejected');
-    if (failure?.status === 'rejected' && results.every((result) => result.status === 'rejected')) handleError(failure.reason);
+    if (failure?.status === 'rejected') handleError(failure.reason);
     loadedSections.current.add('overview');
     setOverviewLoaded(true);
     setLoadingSection(null);
