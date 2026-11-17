@@ -29,16 +29,28 @@ export function usePatientAppointments() {
   const [remote, setRemote] = useState<{ token: string; appointments: PatientAppointment[]; profiles: BookingPatientProfile[]; hospitals: BookingHospital[] } | null>(null);
   const [failure, setFailure] = useState<{ token: string; message: string } | null>(null);
   const busy = useRef(false);
+  const mutation = useRef(0);
   useEffect(() => {
     if (!auth.isReady || !auth.isAuthenticated || !token) return;
     const controller = new AbortController();
-    Promise.all([searchPatientAppointments(controller.signal), bookingApi.profiles(controller.signal), bookingApi.hospitals(controller.signal)])
-      .then(([items, profiles, hospitals]) => {
-        if (controller.signal.aborted) return;
-        setRemote({ token, profiles, hospitals, appointments: items.map(item => toPatientAppointment(item, profiles, hospitals)) });
-        setFailure(null);
-      }).catch(error => { if (!controller.signal.aborted) setFailure({ token, message: error instanceof Error ? error.message : 'Không thể tải lịch khám.' }); });
-    return () => controller.abort();
+    let running = false;
+    async function load() {
+      if (running || busy.current || document.hidden) return;
+      running = true;
+      const generation = mutation.current;
+      try {
+        const [items, profiles, hospitals] = await Promise.all([searchPatientAppointments(controller.signal), bookingApi.profiles(controller.signal), bookingApi.hospitals(controller.signal)]);
+        if (!controller.signal.aborted && generation === mutation.current) {
+          setRemote({ token: token!, profiles, hospitals, appointments: items.map(item => toPatientAppointment(item, profiles, hospitals)) });
+          setFailure(null);
+        }
+      } catch (error) { if (!controller.signal.aborted && generation === mutation.current) setFailure({ token: token!, message: error instanceof Error ? error.message : 'Không thể tải lịch khám.' }); }
+      finally { running = false; }
+    }
+    void load();
+    const timer = window.setInterval(() => void load(), 15000);
+    window.addEventListener('focus', load); document.addEventListener('visibilitychange', load);
+    return () => { controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
   }, [auth.isReady, auth.isAuthenticated, token, revision]);
   const data = remote?.token === token ? remote : null;
   const appointments = data?.appointments ?? [];
@@ -46,6 +58,7 @@ export function usePatientAppointments() {
   async function cancelAppointment(id: string, reason: string) {
     if (busy.current) return { success: false, error: 'Đang xử lý yêu cầu hủy.' };
     busy.current = true;
+    mutation.current++;
     try {
 
       if (!token || !data) throw new Error('Vui lòng đăng nhập và tải lại lịch khám.');

@@ -10,11 +10,23 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   const [orders, setOrders] = useState<OrderedService[] | null>(null); const [catalogue, setCatalogue] = useState<ApiPage<TechnicianMedicalService> | null>(null);
   const [keyword, setKeyword] = useState(''); const [query, setQuery] = useState(''); const [page, setPage] = useState(0);
   const [serviceId, setServiceId] = useState(''); const [note, setNote] = useState(''); const [result, setResult] = useState<TechnicianOrderDetail | null>(null);
-  const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [revision, setRevision] = useState(0); const lock = useRef(false);
+  const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [revision, setRevision] = useState(0); const lock = useRef(false); const mutation = useRef(0);
   useEffect(() => {
     const controller = new AbortController();
-    consultationApi.orders(encounterId, controller.signal, editable ? undefined : patientId).then(items => { if (!controller.signal.aborted) setOrders(items); }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải chỉ định.'); });
-    return () => controller.abort();
+    let running = false;
+    async function load() {
+      if (running || lock.current || document.hidden) return;
+      running = true; const version = mutation.current;
+      try {
+        const items = await consultationApi.orders(encounterId, controller.signal, editable ? undefined : patientId);
+        if (!controller.signal.aborted && version === mutation.current) setOrders(items);
+      } catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải chỉ định.'); }
+      finally { running = false; }
+    }
+    void load();
+    const timer = window.setInterval(() => void load(), 10000);
+    window.addEventListener('focus', load); document.addEventListener('visibilitychange', load);
+    return () => { controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
   }, [encounterId, revision, editable, patientId]);
   useEffect(() => {
     if (!editable) return;
@@ -23,7 +35,7 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
     return () => controller.abort();
   }, [editable, query, page]);
   async function run(action: () => Promise<void>) {
-    if (lock.current) return; lock.current = true; setBusy(true); setError('');
+    if (lock.current) return; lock.current = true; mutation.current++; setBusy(true); setError('');
     try { await action(); } catch (e) { setError(e instanceof Error ? e.message : 'Không thể xử lý chỉ định.'); }
     finally { lock.current = false; setBusy(false); }
   }
