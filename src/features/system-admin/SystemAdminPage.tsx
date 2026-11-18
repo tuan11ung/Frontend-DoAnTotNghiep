@@ -138,7 +138,7 @@ function HospitalAdminPreview() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
-      <SystemAdminSidebar activeSection="hospitals" counts={{}} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={unavailable} onOpenMobile={() => setMobileOpen(true)} onSelect={unavailable} />
+      <SystemAdminSidebar activeSection="hospitals" mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={unavailable} onOpenMobile={() => setMobileOpen(true)} onSelect={unavailable} />
       <div className="lg:pl-[280px]">
         <header className="border-b border-slate-200 bg-white px-4 py-5 pl-20 sm:px-6 sm:pl-20 lg:px-8">
           <p className="text-xs font-bold uppercase tracking-wide text-blue-700">Quản trị hệ thống · Xem trước</p>
@@ -169,7 +169,6 @@ function SystemAdminLiveScreen() {
   const [resourcePagination, setResourcePagination] = useState(EMPTY_RESOURCE_PAGINATION);
   const [logPagination, setLogPagination] = useState<PaginationInfo>({ ...EMPTY_PAGINATION });
   const [logFilters, setLogFilters] = useState<SystemLogFilters>({});
-  const [counts, setCounts] = useState<Partial<Record<SystemSection, number>>>({});
   const [stats, setStats] = useState(EMPTY_STATS);
   const [overviewLoaded, setOverviewLoaded] = useState(false);
   const [loadingSection, setLoadingSection] = useState<SystemSection | null>(null);
@@ -196,7 +195,6 @@ function SystemAdminLiveScreen() {
         totalPages: response.totalPages,
       },
     }));
-    setCounts((current) => ({ ...current, [section]: response.totalElements }));
     loadedSections.current.add(section);
   }, []);
 
@@ -218,7 +216,6 @@ function SystemAdminLiveScreen() {
         const response = await searchSystemLogs({}, pageable);
         setLogs(response.content);
         setLogPagination({ page: response.page, size: response.size, totalElements: response.totalElements, totalPages: response.totalPages });
-        setCounts((current) => ({ ...current, 'system-logs': response.totalElements }));
         loadedSections.current.add(section);
       }
     } catch (caught) {
@@ -259,7 +256,6 @@ function SystemAdminLiveScreen() {
     if (logResult.status === 'fulfilled') {
       setLogs(logResult.value.content);
       setLogPagination({ page: logResult.value.page, size: logResult.value.size, totalElements: logResult.value.totalElements, totalPages: logResult.value.totalPages });
-      setCounts((current) => ({ ...current, 'system-logs': logResult.value.totalElements }));
       setStats((current) => ({ ...current, recentLogs: logResult.value.totalElements }));
       loadedSections.current.add('system-logs');
     }
@@ -401,7 +397,6 @@ function SystemAdminLiveScreen() {
       const response = await searchSystemLogs(filters, { page, size, sortDirection: 'DESC' });
       setLogs(response.content);
       setLogPagination({ page: response.page, size: response.size, totalElements: response.totalElements, totalPages: response.totalPages });
-      setCounts((current) => ({ ...current, 'system-logs': response.totalElements }));
     } catch (caught) { handleError(caught); }
     finally { setLoadingSection(null); }
   }
@@ -437,7 +432,7 @@ function SystemAdminLiveScreen() {
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
-      <SystemAdminSidebar activeSection={activeSection} counts={counts} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={() => void logout()} onOpenMobile={() => setMobileOpen(true)} onSelect={setActiveSection} />
+      <SystemAdminSidebar activeSection={activeSection} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={() => void logout()} onOpenMobile={() => setMobileOpen(true)} onSelect={setActiveSection} />
       <div className="lg:pl-[280px]">
         <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
           <div className="flex min-h-20 items-center justify-between gap-4 px-4 pl-20 sm:px-6 sm:pl-20 lg:px-8">
