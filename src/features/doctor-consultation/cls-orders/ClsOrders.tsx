@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { CheckCheck, FlaskConical, ShieldAlert, X } from 'lucide-react';
@@ -54,7 +55,7 @@ export function ClsOrders({ scope, grantId, onDirtyChange }: { scope: ClinicalSc
   }
   return <div className="space-y-5">
     <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="flex items-center gap-2 text-lg font-bold text-slate-900"><FlaskConical className="size-5 text-blue-700" />Chỉ định cận lâm sàng</h2><p className="mt-1.5 text-xs leading-6 text-slate-500">Chọn dịch vụ trong danh mục của {result.data?.facility ?? 'cơ sở đang khám'}.</p></div>{dirty && <span className="rounded-full bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-700">Chưa xác nhận chỉ định</span>}</div>
-    {message && <p role="status" className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm leading-6 text-emerald-700">{message}</p>}
+    {<ToastMessage message={message} onDismiss={()=>setMessage('')}/>}
     {failure && <p role="alert" className="rounded-xl border border-rose-100 bg-rose-50 p-4 text-sm leading-6 text-rose-700">{failure}</p>}
     <form noValidate onSubmit={submit} aria-label="Lập phiếu chỉ định CLS">
       <fieldset disabled={busy || result.loading || Boolean(result.error)} className="grid min-w-0 items-start gap-5 disabled:opacity-60 lg:grid-cols-2">

@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { CalendarDays, Info, LoaderCircle } from 'lucide-react';
 import { DoctorAssignmentPopover } from './components/DoctorAssignmentPopover';
@@ -20,7 +21,7 @@ export function WorkSchedulePage() {
     <section aria-label="Phân công lịch làm việc" aria-busy={busy || loading} className="min-w-0 space-y-5">
       <ScheduleToolbar busy={busy} canPublish={Boolean(week && hasDraft && !state.needsReload)} canSave={Boolean(week && dirtyCount && !state.needsReload)} loading={loading} onPublish={() => void state.save('publish')} onReload={state.reload} onSave={() => void state.save('save-draft')} onSpecialty={state.changeSpecialty} onWeek={state.changeWeek} specialties={state.specialties} specialtyId={state.specialtyId} weekStart={state.weekStart} />
       {state.error && <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert"><p>{state.error}</p>{state.needsReload && <p className="mt-1 font-semibold">Tải lại lịch trước khi tiếp tục. Các thay đổi chưa lưu vẫn được giữ trên màn hình để bạn xem lại.</p>}</div>}
-      {state.notice && <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">{state.notice}</p>}
+      {<ToastMessage message={state.notice} onDismiss={state.dismissNotice}/>}
       {loading ? <div className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-12 text-sm text-slate-500" role="status"><LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin" />Đang tải lịch phân công…</div> : week ? (
         <div className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4 sm:px-6">

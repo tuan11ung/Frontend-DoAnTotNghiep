@@ -1,7 +1,8 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { useRef } from 'react';
-import { Check, CheckCheck, Megaphone, X } from 'lucide-react';
+import { CheckCheck, Megaphone } from 'lucide-react';
 import { CallingPatientModal } from './components/CallingPatientModal';
 import { QueuePatientList } from './components/QueuePatientList';
 import { QueueShiftSummary } from './components/QueueShiftSummary';
@@ -63,7 +64,7 @@ export function ClinicalQueueWorkspace({ shifts, copy }: ClinicalQueueWorkspaceP
       </section>
 
       {callingPatient && <CallingPatientModal key={callingPatient.id} onAbsent={() => finishCall(state.markAbsent)} onAdmit={() => finishCall(state.admitPatient)} onClose={() => finishCall(state.closeCall)} patient={callingPatient} room={shift.room} />}
-      {state.notice && <div className="fixed bottom-5 left-4 right-4 z-50 flex items-start gap-3 rounded-xl border border-emerald-200 bg-white p-4 text-xs font-semibold leading-5 text-emerald-800 shadow-xl sm:left-auto sm:max-w-sm" role="status"><Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" /><p className="flex-1">{state.notice}</p><button aria-label="Đóng thông báo" className="rounded-lg p-0.5 text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600" onClick={state.dismissNotice} type="button"><X aria-hidden="true" className="h-4 w-4" /></button></div>}
+      {<ToastMessage message={state.notice} tone="info" onDismiss={state.dismissNotice}/>}
     </>
   );
 }

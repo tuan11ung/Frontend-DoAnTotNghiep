@@ -1,9 +1,10 @@
 'use client';
 
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { AccountName } from '@/src/shared/components/layout/AccountName';
 
 import { useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, ChevronRight, Flag, Plus, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronRight, Flag, Plus } from 'lucide-react';
 import { encounterTabs, icdCatalog, initialServices } from './data/encounter-demo';
 import type { Diagnosis, EncounterTab, OrderedService, PrescriptionItem } from './types';
 import { DiagnosisPanel, HistoryPanel, OverviewPanel, PrescriptionPanel, SummaryPanel } from './components/ClinicalPanels';
@@ -73,6 +74,6 @@ export function EncounterPage() {
       </section>
     </main>
     {queueOpen && <PatientQueueDialog status={queueStatus} onClose={() => setQueueOpen(false)} onOpen={() => { setQueueOpen(false); switchTab('results'); }} notify={setNotice} />}
-    <div role="status" aria-live="polite" className={`${notice ? 'fixed bottom-5 left-1/2 z-50 flex w-[calc(100%_-_24px)] max-w-lg -translate-x-1/2 items-start gap-3 rounded-xl border border-medblue-200 bg-white p-4 text-xs leading-6 shadow-xl' : 'sr-only'}`}>{notice}{notice && <EncounterButton aria-label="Đóng thông báo" onClick={() => setNotice('')}><X className="h-3.5 w-3.5" /></EncounterButton>}</div>
+    <ToastMessage message={notice} tone="info" onDismiss={()=>setNotice("")}/>
   </div>;
 }

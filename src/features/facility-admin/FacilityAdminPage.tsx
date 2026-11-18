@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
 
@@ -6,7 +7,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Bell,
-  CheckCircle2,
   ChevronRight,
   CircleAlert,
   HelpCircle,
@@ -61,7 +61,7 @@ const SECTION_TO_KIND: Partial<Record<AdminSection, EntityKind>> = {
   services: 'service',
 };
 
-type ToastState = { type: 'success' | 'warning'; message: string } | null;
+type ToastState = { id?: number; type: 'success' | 'warning'; message: string } | null;
 
 function replaceOrAppend<T extends { id: number }>(items: T[], next: T) {
   return items.some((item) => item.id === next.id)
@@ -104,8 +104,8 @@ export function FacilityAdminPage() {
   };
 
   const showToast = (nextToast: Exclude<ToastState, null>) => {
-    setToast(nextToast);
-    window.setTimeout(() => setToast(null), 3500);
+    setToast({...nextToast,id:Date.now()});
+
   };
 
   const loadFacilityData = useCallback(async () => {
@@ -337,12 +337,7 @@ export function FacilityAdminPage() {
         />
       )}
 
-      {toast && (
-        <div aria-live="polite" className={`fixed bottom-5 right-5 z-[100] flex max-w-sm items-start gap-3 rounded-xl border bg-white px-4 py-3 text-sm font-semibold shadow-xl ${toast.type === 'success' ? 'border-emerald-200 text-emerald-800' : 'border-amber-200 text-amber-800'}`} role="status">
-          {toast.type === 'success' ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" /> : <CircleAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />}
-          {toast.message}
-        </div>
-      )}
+      {toast && <ToastMessage key={toast.id} message={toast.message} tone={toast.type} onDismiss={()=>setToast(null)}/>}
     </div>
   );
 }

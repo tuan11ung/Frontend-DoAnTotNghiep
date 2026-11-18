@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, Check, FileImage, FlaskConical, LoaderCircle, Play, Save, Upload, X } from 'lucide-react';
@@ -135,7 +136,7 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
     <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5 sm:p-6">
       <section className="rounded-xl border border-blue-100 bg-blue-50/40 p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">{detail.order.patientCode} · Chỉ định #{detail.order.id}</p><h3 className="mt-2 text-base font-extrabold text-slate-900">{detail.order.patientFullName}</h3><p className="mt-1.5 text-xs text-slate-500">Ngày sinh: {formatDisplayDate(detail.order.patientDob)}</p></div><TechnicianStatusBadge status={detail.order.status} /></div><p className="mt-4 text-sm font-bold text-slate-800">{detail.order.serviceName}</p><p className="mt-1 text-[11px] text-slate-500">{detail.order.serviceCode} · Chỉ định lúc {formatDisplayDateTime(detail.order.orderedDate)}</p>{detail.order.clinicalNote && <p className="mt-3 border-t border-blue-100 pt-3 text-xs leading-6 text-slate-600"><strong className="font-bold">Lưu ý của bác sĩ: </strong>{detail.order.clinicalNote}</p>}</section>
       {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs leading-6 text-rose-800" role="alert">{error}<button className="ml-2 rounded-lg px-2 py-1 font-bold underline focus-visible:outline-2 focus-visible:outline-rose-600" disabled={Boolean(pending)} onClick={() => leave(onReload)} type="button">Tải lại chỉ định</button></div>}
-      {notice && <p className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs leading-6 text-emerald-800" role="status"><Check aria-hidden="true" className="mt-1 h-4 w-4 shrink-0" />{notice}</p>}
+      {<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
       {detail.order.status === 'ORDERED' && <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-6 text-amber-800">Bấm <strong>Tiếp nhận chỉ định</strong> để bắt đầu thực hiện và nhập kết quả.</p>}
       {readOnly && <p className="text-xs leading-6 text-slate-500">{detail.order.status === 'COMPLETED' ? `Đã hoàn tất lúc ${formatDisplayDateTime(detail.order.completedDate)}. Kết quả chỉ được xem.` : 'Chỉ định đã hủy. Kết quả chỉ được xem.'}</p>}
       <fieldset className="space-y-5 disabled:opacity-75" disabled={Boolean(pending) || !editable}>
