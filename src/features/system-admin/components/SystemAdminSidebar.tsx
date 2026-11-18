@@ -26,7 +26,6 @@ import type { SystemSection } from '../types';
 
 interface SystemAdminSidebarProps {
   activeSection: SystemSection;
-  counts: Partial<Record<SystemSection, number>>;
   mobileOpen: boolean;
   onCloseMobile: () => void;
   onLogout: () => void;
@@ -70,7 +69,6 @@ const NAVIGATION_GROUPS: Array<{ label: string; items: NavigationItem[] }> = [
 
 function SidebarContent({
   activeSection,
-  counts,
   onCloseMobile,
   onLogout,
   onSelect,
@@ -117,7 +115,6 @@ function SidebarContent({
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const active = activeSection === item.id;
-                const count = counts[item.id];
                 return (
                   <button
                     aria-current={active ? 'page' : undefined}
@@ -128,11 +125,7 @@ function SidebarContent({
                   >
                     <Icon className={`h-[18px] w-[18px] ${active ? 'text-blue-700' : 'text-emerald-100/65'}`} />
                     <span className="flex-1">{item.label}</span>
-                    {typeof count === 'number' ? (
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] ${active ? 'bg-blue-50 text-blue-700' : 'bg-white/10 text-white/70'}`}>{count}</span>
-                    ) : (
-                      <ChevronRight className={`h-4 w-4 ${active ? 'text-slate-400' : 'text-white/25'}`} />
-                    )}
+                    <ChevronRight aria-hidden="true" className={`h-4 w-4 ${active ? 'text-slate-400' : 'text-white/25'}`} />
                   </button>
                 );
               })}
