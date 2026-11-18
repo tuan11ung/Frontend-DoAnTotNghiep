@@ -21,7 +21,11 @@ export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initial
   const params = useSearchParams();
   const requestedHospital = params.get('hospitalId'); const doctorFromLink = params.get('doctorId'); const requestedSpecialty = params.get('specialtyId');
   const requestedDoctor = doctorFromLink && /^[1-9]\d*$/.test(doctorFromLink) && Number.isSafeInteger(Number(doctorFromLink)) ? doctorFromLink : null;
-  const [step, setStep] = useState(initialPatientId === undefined ? 1 : 2); const [mode, setMode] = useState<'bhyt' | 'demand'>('demand');
+  const requestedMode = params.get('mode');
+  const [step, setStep] = useState(initialPatientId === undefined ? 1 : 2);
+  const [mode, setMode] = useState<'bhyt' | 'demand' | null>(
+    initialPatientId !== undefined || requestedMode === 'service' || requestedMode === 'demand' ? 'demand' : null,
+  );
   const [bootstrap, setBootstrap] = useState<{ profiles: BookingPatientProfile[]; hospitals: BookingHospital[] } | null>(null);
   const [revision, setRevision] = useState(0); const [error, setError] = useState('');
   const [patientId, setPatientId] = useState<number | null>(initialPatientId ?? null); const [hospitalId, setHospitalId] = useState<number | null>(null);
@@ -102,7 +106,7 @@ export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initial
       {doctorFromLink && !requestedDoctor && <p role="status" className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">Lịch bác sĩ từ trang giới thiệu chưa được xác nhận. Vui lòng chọn cơ sở, chuyên khoa và bác sĩ có lịch khả dụng ở các bước tiếp theo.</p>}
       {step > 1 && step < 5 && <div className="rounded-2xl border bg-white p-5"><BookingTargetSelector options={bootstrap.profiles.map(toBookingTarget)} currentTarget={patient ? toBookingTarget(patient) : undefined} onSelectTarget={target => setPatientId(Number(target.id))} /></div>}
       {step === 1 && <BookingStep1Mode selectedMode={mode} onSelectMode={setMode} continueDisabled={!patient} targetSelector={<BookingTargetSelector options={bootstrap.profiles.map(toBookingTarget)} currentTarget={patient ? toBookingTarget(patient) : undefined} onSelectTarget={target => setPatientId(Number(target.id))} />} onContinue={() => {
-        if (!patient) return;
+        if (!patient || !mode) return;
         if (mode === 'bhyt') onSwitchMode(patient.id);
         else setStep(2);
       }} />}
