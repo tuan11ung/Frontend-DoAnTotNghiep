@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { BadgeDollarSign, Building2, DoorOpen, Save, Stethoscope, UserPlus, X } from 'lucide-react';
+import { SearchableDropdown } from '@/src/shared/components/SearchableDropdown';
 import { STAFF_ROLE_LABELS } from '../data/facility-admin-data';
 import type {
   AdminEntity,
@@ -50,6 +51,7 @@ const STAFF_ROLES: StaffRole[] = [
 ];
 
 const inputClass = 'h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100';
+
 const labelClass = 'mb-1.5 block text-sm font-semibold text-slate-700';
 
 function initialForm(kind: EntityKind, entity?: AdminEntity): FormState {
@@ -101,6 +103,7 @@ export function EntityEditorModal({
   const meta = META[kind];
   const ModalIcon = meta.icon;
   const isEditing = Boolean(entity);
+  const selectedSpecialty = specialtyCatalog.find((item) => String(item.id) === form.specialtyId);
 
   const update = (key: string, value: string | boolean | string[]) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -125,9 +128,8 @@ export function EntityEditorModal({
         return;
       }
       if (kind === 'specialty') {
-        const catalogItem = specialtyCatalog.find((item) => item.id === Number(form.specialtyId));
-        if (!catalogItem) throw new Error('Vui lòng chọn chuyên khoa trong danh mục chung.');
-        await onSave({ id, active, specialtyId: catalogItem.id, code: catalogItem.code, name: catalogItem.name, description: catalogItem.description });
+        if (!selectedSpecialty) throw new Error('Vui lòng chọn chuyên khoa trong danh mục chung.');
+        await onSave({ id, active, specialtyId: selectedSpecialty.id, code: selectedSpecialty.code, name: selectedSpecialty.name, description: selectedSpecialty.description });
         return;
       }
       if (kind === 'room') {
@@ -206,7 +208,31 @@ export function EntityEditorModal({
             )}
 
             {kind === 'specialty' && (
-              <label className="sm:col-span-2"><span className={labelClass}>Danh mục chuyên khoa chung <span className="text-rose-600">*</span></span><select className={inputClass} onChange={(event) => update('specialtyId', event.target.value)} required value={String(form.specialtyId)}><option value="">Chọn chuyên khoa</option>{specialtyCatalog.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.name}</option>)}</select><span className="mt-2 block text-xs text-slate-500">Tên, mã và mô tả do Super Admin quản lý trong danh mục chung.</span></label>
+              <>
+                {isEditing ? <label className="sm:col-span-2">
+                  <span className={labelClass}>Danh mục chuyên khoa chung <span className="text-rose-600">*</span></span>
+                  <select className={inputClass} onChange={(event) => update('specialtyId', event.target.value)} required value={String(form.specialtyId)}>
+                    <option value="">Chọn chuyên khoa</option>
+                    {specialtyCatalog.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.name}</option>)}
+                  </select>
+                </label> : (
+                  <SearchableDropdown
+                    className="sm:col-span-2"
+                    emptyMessage="Không tìm thấy chuyên khoa"
+                    label={<>Danh mục chuyên khoa chung <span className="text-rose-600">*</span></>}
+                    onChange={(value) => update('specialtyId', value)}
+                    options={specialtyCatalog.map((item) => ({
+                      value: String(item.id),
+                      label: `${item.code} · ${item.name}`,
+                      searchText: item.name,
+                    }))}
+                    placeholder="Chọn chuyên khoa"
+                    searchPlaceholder="Nhập tên chuyên khoa"
+                    value={String(form.specialtyId)}
+                  />
+                )}
+                <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">Tên, mã và mô tả do Super Admin quản lý trong danh mục chung.</p>
+              </>
             )}
 
             {kind === 'room' && (
