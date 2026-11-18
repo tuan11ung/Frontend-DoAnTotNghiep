@@ -26,6 +26,7 @@ export default function RootLayout({
     <html lang="vi" className={`${manrope.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-white text-slate-800">
         {children}
+        <div id="toast-region" data-toast-region className="toast-region" />
       </body>
     </html>
   );

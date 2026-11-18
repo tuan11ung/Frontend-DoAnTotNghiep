@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
 
@@ -150,7 +151,7 @@ function HospitalAdminPreview() {
             onCreateHospitalAdmin={(item) => { if (item.status === 'ACTIVE') { setNotice(''); setHospital(item); } }}
             onAdd={unavailable} onEdit={unavailable} onToggle={unavailable} onRefresh={() => setNotice('Đang hiển thị dữ liệu bệnh viện mẫu.')}
             onPageChange={unavailable} onPageSizeChange={unavailable} />
-          {notice && <p className="mt-4 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700" role="status">{notice}</p>}
+          {<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
         </main>
       </div>
       {hospital && <SystemEditorModal key={hospital.id} mode="hospital-admin" hospital={hospital} preview onClose={() => setHospital(null)} onCreateHospitalAdmin={submit} />}
@@ -454,7 +455,7 @@ function SystemAdminLiveScreen() {
         </main>
       </div>
 
-      {notice && <div role="status" className="fixed bottom-5 right-5 z-[90] flex max-w-[calc(100vw-2.5rem)] items-center gap-2 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm font-bold text-emerald-700 shadow-xl"><span className="h-2 w-2 rounded-full bg-emerald-500" />{notice}</div>}
+      {<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
       {editor?.mode === 'hospital-admin' && <SystemEditorModal hospital={editor.hospital} key={`hospital-admin-${editor.hospital.id}`} mode="hospital-admin" onClose={() => setEditor(null)} onCreateHospitalAdmin={(values) => submitHospitalAdmin(editor.hospital, values)} />}
       {editor && editor.mode !== 'hospital-admin' && <SystemEditorModal ingredients={resources.ingredients as IngredientItem[]} item={editor.item} key={`${editor.section}-${editor.item?.id ?? 'new'}`} onClose={() => setEditor(null)} onSave={saveEditor} section={editor.section} serviceCategories={resources['service-categories'] as ServiceCategoryItem[]} specialties={resources.specialties as SpecialtyItem[]} />}
     </div>

@@ -1,8 +1,9 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { useRef } from 'react';
 import Link from 'next/link';
-import { AlertCircle, Check, LoaderCircle, Megaphone, RefreshCw, Stethoscope, X } from 'lucide-react';
+import { AlertCircle, LoaderCircle, Megaphone, RefreshCw, Stethoscope } from 'lucide-react';
 import { CallingPatientModal } from '@/src/features/clinical-queue/components/CallingPatientModal';
 import { QueuePatientList } from '@/src/features/clinical-queue/components/QueuePatientList';
 import { QueueShiftSummary } from '@/src/features/clinical-queue/components/QueueShiftSummary';
@@ -62,7 +63,7 @@ export function DoctorQueueWorkspaceLive() {
         <QueuePatientList detailLabel={state.returnQueueActive ? 'Trạng thái CLS' : COPY.detailColumn} emptyDescription={state.returnQueueActive ? 'Bệnh nhân sẽ tự xuất hiện khi toàn bộ chỉ định CLS đã hoàn tất.' : undefined} emptyTitle={state.returnQueueActive ? 'Chưa có bệnh nhân hoàn thành CLS' : undefined} filtered={state.filtered} nextId={state.returnQueueActive ? undefined : state.nextPatient?.id} onResetFilters={state.resetFilters} onSelect={state.returnQueueActive ? (patient) => state.setSelectedReturnId(patient.id) : undefined} patients={state.visiblePatients} selectedId={state.returnQueueActive ? state.selectedReturnId : undefined} />
       </section>
       {callingPatient && <CallingPatientModal initialCallCount={state.initialCallCount} key={callingPatient.id} onAbsent={async () => { await state.markAbsent(); restoreFocus(); }} onAdmit={async () => { await state.admitPatient(); restoreFocus(); }} onClose={() => { state.closeCall(); restoreFocus(); }} onRecall={state.recallPatient} patient={callingPatient} room={shift.room} />}
-      {state.notice && <div className="fixed bottom-5 left-4 right-4 z-50 flex items-start gap-3 rounded-xl border border-emerald-200 bg-white p-4 text-xs font-semibold leading-5 text-emerald-800 shadow-xl sm:left-auto sm:max-w-sm" role="status"><Check aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" /><p className="flex-1">{state.notice}</p><button aria-label="Đóng thông báo" className="rounded-lg p-0.5 text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600" onClick={state.dismissNotice} type="button"><X aria-hidden="true" className="h-4 w-4" /></button></div>}
+      {<ToastMessage message={state.notice} tone="info" onDismiss={state.dismissNotice}/>}
     </>
   );
 }

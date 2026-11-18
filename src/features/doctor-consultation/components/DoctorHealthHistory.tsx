@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { consultationApi, type ClinicalAllergy, type ClinicalCondition } from '../api/consultation-api';
 import { clinicalButton, clinicalCard, clinicalField } from './clinical-ui';
@@ -70,7 +71,7 @@ export function DoctorHealthHistory({patientId,allergies,conditions,editable,onA
   }
   const badge=(verified?:boolean,source?:string)=><span className={'rounded-full px-2 py-1 text-xs '+(verified?'bg-emerald-50 text-emerald-800':'bg-amber-50 text-amber-800')}>{verified?'Đã xác minh':'Chưa xác minh'}{source && ' · '+(source==='DOCTOR'?'Bác sĩ ghi nhận':source==='PATIENT'?'Người bệnh khai báo':source)}</span>;
   return <section className={clinicalCard} aria-label="Dị ứng và tiền sử bệnh">
-    <h2 className="text-lg font-bold">Dị ứng & tiền sử bệnh</h2>{notice && <p role="status" className="text-sm text-emerald-700">{notice}</p>}
+    <h2 className="text-lg font-bold">Dị ứng & tiền sử bệnh</h2>{<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
     <div><div className="flex justify-between gap-3"><h3 className="font-bold">Dị ứng</h3><button type="button" className="font-semibold text-blue-700 disabled:opacity-50" disabled={!editable || busy || editor!==null} onClick={()=>open({kind:'allergy'})}>+ Thêm dị ứng</button></div>
     {!allergies.length && <p className="mt-2 text-sm text-slate-500">Chưa có khai báo dị ứng. Không đồng nghĩa không dị ứng.</p>}
     <ul className="divide-y">{allergies.map(a=><li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm"><div><p className="font-semibold">{a.name} · {types[a.type] || a.type}</p><p className="my-1">{a.reaction || 'Chưa cung cấp biểu hiện'}</p>{badge(a.verified,a.source)}</div><button type="button" disabled={!editable || busy || editor!==null} className="text-blue-700 disabled:opacity-50" onClick={()=>open({kind:'allergy',entry:a})}>{a.verified?'Cập nhật':'Kiểm tra / xác minh'}</button></li>)}</ul>{form('allergy')}</div>

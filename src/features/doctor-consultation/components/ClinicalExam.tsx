@@ -1,4 +1,5 @@
 'use client';
+import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { Activity, ClipboardPenLine, RotateCcw, Save, Stethoscope } from 'lucide-react';
@@ -73,7 +74,7 @@ function ClinicalExamEditor({ initial, scope, onReload, onDirtyChange }: { initi
       </section>
     </fieldset>
     <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5"><div className="text-xs leading-6 text-slate-500">{saved ? <>Lưu gần nhất: <strong className="font-medium text-slate-700">{recordAccessTime(saved.updatedAt)}</strong><br /><span className="text-[10px] text-slate-400">Bản nháp #{saved.revision} · Dữ liệu mô phỏng trên trình duyệt</span></> : <>Chưa lưu thông tin khám lâm sàng.<br /><span className="text-[10px] text-slate-400">Bản nháp chỉ thuộc lượt khám này.</span></>}</div><div className="flex w-full flex-wrap gap-2 sm:w-auto"><button type="button" disabled={busy} onClick={onReload} className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-3 text-xs font-semibold text-slate-600 disabled:opacity-50" title="Nạp lại sẽ bỏ thay đổi chưa lưu"><RotateCcw className="size-4" />Nạp lại bản đã lưu{dirty ? ' (bỏ thay đổi)' : ''}</button><button type="submit" disabled={busy || !dirty} className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 py-3 text-xs font-bold text-white hover:bg-blue-800 disabled:opacity-40"><Save className="size-4" />{busy ? 'Đang lưu…' : 'Lưu bản nháp'}</button></div></div>
-    {message && <p role="status" className="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-700">{message}</p>}
+    {<ToastMessage message={message} onDismiss={()=>setMessage('')}/>}
     {failure && <p role="alert" className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700">{failure}</p>}
   </form>;
 }

@@ -191,7 +191,7 @@ export function useWorkSchedule() {
   function retryOptions() {
     setOptionsError(''); setOptionsLoading(true); setOptionsRevision((value) => value + 1);
   }
-  return { specialties, specialtyId, weekStart, today, week, edits, dirtyCount, loading, busy, error, notice, needsReload,
+  return { specialties, specialtyId, weekStart, today, week, edits, dirtyCount, loading, busy, error, notice, dismissNotice: () => setNotice(''), needsReload,
     selected, selectedCell, selectedRoom, doctorOptions, optionsLoading, optionsError, closePopover, changeWeek,
     changeSpecialty, reload, openCell, assignDoctor, save, retryOptions };
 }
