@@ -8,7 +8,7 @@ import { BookingSectionHeading } from './BookingSectionHeading';
 interface BookingStep1ModeProps {
   hospital?: HospitalItem;
   targetSelector?: React.ReactNode;
-  selectedMode: BookingMode;
+  selectedMode: BookingMode | null;
   continueDisabled?: boolean;
   onSelectMode: (mode: BookingMode) => void;
   onContinue: () => void;
@@ -205,7 +205,7 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
 
               <h3 className="text-base font-bold text-slate-900 mb-2">2. Khám theo yêu cầu</h3>
               <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-                Nếu người khám muốn chọn trình độ bác sĩ, hãy chọn
+                Nếu người khám muốn chọn trình độ bác sĩ theo mong muốn của mình, hãy chọn
                 <em className="font-semibold text-blue-700"> Khám theo yêu cầu</em>.
               </p>
 
@@ -240,7 +240,7 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
           <button
             type="button"
             onClick={onContinue}
-            disabled={continueDisabled}
+            disabled={continueDisabled || selectedMode === null}
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-8 py-3 rounded-lg shadow-md shadow-blue-500/25 flex items-center justify-center gap-2 transition-all transform active:scale-[0.99] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <span>Tiếp tục</span>

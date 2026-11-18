@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { bookingApi } from './api/booking-api';
 import { serviceBookingApi, type ServiceSlot, type ServiceSpecialty } from './api/service-booking-api';
 import type { BookedAppointment, BookingHospital, BookingPatientProfile } from './models/types/bhyt.types';
@@ -17,14 +17,18 @@ import { BhytBookingSuccess, bookingBackClass, bookingButtonClass, bookingInputC
 
 const money = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 
-export function ServiceBookingFlow() {
-  const router = useRouter(); const params = useSearchParams();
+export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initialPatientId?: number; onSwitchMode: (patientId: number) => void }) {
+  const params = useSearchParams();
   const requestedHospital = params.get('hospitalId'); const doctorFromLink = params.get('doctorId'); const requestedSpecialty = params.get('specialtyId');
   const requestedDoctor = doctorFromLink && /^[1-9]\d*$/.test(doctorFromLink) && Number.isSafeInteger(Number(doctorFromLink)) ? doctorFromLink : null;
-  const [step, setStep] = useState(1); const [mode, setMode] = useState<'bhyt' | 'demand'>('demand');
+  const requestedMode = params.get('mode');
+  const [step, setStep] = useState(initialPatientId === undefined ? 1 : 2);
+  const [mode, setMode] = useState<'bhyt' | 'demand' | null>(
+    initialPatientId !== undefined || requestedMode === 'service' || requestedMode === 'demand' ? 'demand' : null,
+  );
   const [bootstrap, setBootstrap] = useState<{ profiles: BookingPatientProfile[]; hospitals: BookingHospital[] } | null>(null);
   const [revision, setRevision] = useState(0); const [error, setError] = useState('');
-  const [patientId, setPatientId] = useState<number | null>(null); const [hospitalId, setHospitalId] = useState<number | null>(null);
+  const [patientId, setPatientId] = useState<number | null>(initialPatientId ?? null); const [hospitalId, setHospitalId] = useState<number | null>(null);
   const [specialtyId, setSpecialtyId] = useState<number | null>(null);
   const [qualification, setQualification] = useState<DoctorQualification | null>(null);
   const [specialties, setSpecialties] = useState<{ hospitalId: number; items: ServiceSpecialty[]; error?: string } | null>(null);
@@ -48,11 +52,16 @@ export function ServiceBookingFlow() {
     Promise.all([bookingApi.profiles(controller.signal), bookingApi.hospitals(controller.signal)]).then(([profiles, hospitals]) => {
       if (controller.signal.aborted) return;
       if (!profiles.length) throw new Error('Chưa có hồ sơ người khám. Vui lòng tạo hồ sơ trước.');
-      setBootstrap({ profiles, hospitals }); setPatientId(profiles.find(p => p.relationship === 'SELF')?.id ?? profiles[0].id);
+      setBootstrap({ profiles, hospitals });
+      const transferredPatient = profiles.find(p => p.id === initialPatientId);
+      if (initialPatientId !== undefined && !transferredPatient) setStep(1);
+      setPatientId(current => profiles.find(p => p.id === current)?.id
+        ?? transferredPatient?.id
+        ?? (initialPatientId === undefined ? (profiles.find(p => p.relationship === 'SELF') ?? profiles[0]).id : null));
       setHospitalId(hospitals.find(h => String(h.id) === requestedHospital)?.id ?? null); setError('');
     }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải dữ liệu đặt khám.'); });
     return () => controller.abort();
-  }, [requestedHospital, revision]);
+  }, [initialPatientId, requestedHospital, revision]);
 
   useEffect(() => {
     if (hospitalId === null) return;
@@ -96,7 +105,11 @@ export function ServiceBookingFlow() {
     {bootstrap && <>
       {doctorFromLink && !requestedDoctor && <p role="status" className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">Lịch bác sĩ từ trang giới thiệu chưa được xác nhận. Vui lòng chọn cơ sở, chuyên khoa và bác sĩ có lịch khả dụng ở các bước tiếp theo.</p>}
       {step > 1 && step < 5 && <div className="rounded-2xl border bg-white p-5"><BookingTargetSelector options={bootstrap.profiles.map(toBookingTarget)} currentTarget={patient ? toBookingTarget(patient) : undefined} onSelectTarget={target => setPatientId(Number(target.id))} /></div>}
-      {step === 1 && <BookingStep1Mode selectedMode={mode} onSelectMode={setMode} continueDisabled={!patient} targetSelector={<BookingTargetSelector options={bootstrap.profiles.map(toBookingTarget)} currentTarget={patient ? toBookingTarget(patient) : undefined} onSelectTarget={target => setPatientId(Number(target.id))} />} onContinue={() => mode === 'bhyt' ? router.replace('/booking?mode=bhyt&step=1') : setStep(2)} />}
+      {step === 1 && <BookingStep1Mode selectedMode={mode} onSelectMode={setMode} continueDisabled={!patient} targetSelector={<BookingTargetSelector options={bootstrap.profiles.map(toBookingTarget)} currentTarget={patient ? toBookingTarget(patient) : undefined} onSelectTarget={target => setPatientId(Number(target.id))} />} onContinue={() => {
+        if (!patient || !mode) return;
+        if (mode === 'bhyt') onSwitchMode(patient.id);
+        else setStep(2);
+      }} />}
       {step === 2 && <BookingStep2 hospitals={bootstrap.hospitals} hospitalId={hospitalId} patientName={patient?.fullName} specialties={(specialties?.hospitalId === hospitalId ? specialties.items : []).map(s => ({ id: s.specialtyId, name: s.name }))} specialtyId={specialtyId} specialtiesLoading={hospitalId !== null && specialties?.hospitalId !== hospitalId} specialtyError={specialties?.hospitalId === hospitalId ? specialties.error : undefined}
         qualification={{ value: qualification, available: true, onSelect: value => { setQualification(value); setSlot(null); } }}
         onSelectHospital={id => { setHospitalId(id); setSpecialtyId(null); setSlot(null); setDate(''); }} onSelectSpecialty={id => { setSpecialtyId(id); setSlot(null); }} canContinue={Boolean(patient && hospital && specialty)} onBack={() => setStep(1)} onContinue={() => { setError(''); setStep(3); }} />}
