@@ -1,20 +1,19 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { BookingApiError, bookingApi } from '../api/booking-api';
 import type { BhytSlot, BhytSpecialty, BookedAppointment, BookingHospital, BookingPatientProfile } from '../models/types/bhyt.types';
 import type { BookingMode } from '../types';
 import { bookingToday, bookingLastDate } from '../utils/booking-dates';
 
-export function useBhytBooking() {
-  const router = useRouter();
+export function useBhytBooking(initialPatientId: number | undefined, onSwitchMode: (patientId: number) => void) {
   const params = useSearchParams();
   const requestedHospital = params.get('hospitalId');
   const [step, setStep] = useState(params.get('step') === '1' ? 1 : 2);
   const [mode, setMode] = useState<BookingMode>('bhyt');
   const [bootstrap, setBootstrap] = useState<{ loaded: boolean; hospitals: BookingHospital[]; profiles: BookingPatientProfile[]; error?: string; auth?: boolean }>({ loaded: false, hospitals: [], profiles: [] });
-  const [patientId, setPatientId] = useState<number | null>(null);
+  const [patientId, setPatientId] = useState<number | null>(initialPatientId ?? null);
   const patient = bootstrap.profiles.find((profile) => profile.id === patientId);
   const [revision, setRevision] = useState(0);
   const [hospitalId, setHospitalId] = useState<number | null>(null);
@@ -49,15 +48,18 @@ export function useBhytBooking() {
       if (controller.signal.aborted) return;
       const self = profiles.find((profile) => profile.relationship === 'SELF');
       setBootstrap({ loaded: true, profiles, hospitals, error: !profiles.length ? 'Chưa có hồ sơ bệnh nhân. Vui lòng tạo hồ sơ trước khi đặt khám.' : undefined });
-      if (!self && profiles.length) setStep(1);
-      setPatientId((current) => profiles.find((profile) => profile.id === current)?.id ?? self?.id ?? null);
+      const transferredPatient = profiles.find((profile) => profile.id === initialPatientId);
+      if (profiles.length && (initialPatientId === undefined ? !self : !transferredPatient)) setStep(1);
+      setPatientId((current) => profiles.find((profile) => profile.id === current)?.id
+        ?? transferredPatient?.id
+        ?? (initialPatientId === undefined ? self?.id ?? null : null));
       const requested = hospitals.find((item) => String(item.id) === requestedHospital);
       setHospitalId(requested?.id ?? null);
     }).catch((caught: unknown) => {
       if (!controller.signal.aborted) setBootstrap({ loaded: true, hospitals: [], profiles: [], auth: caught instanceof BookingApiError && caught.status === 401, error: caught instanceof Error ? caught.message : 'Không thể tải dữ liệu đặt khám.' });
     });
     return () => controller.abort();
-  }, [requestedHospital, revision]);
+  }, [initialPatientId, requestedHospital, revision]);
 
   useEffect(() => {
     if (hospitalId === null) return;
@@ -112,7 +114,11 @@ export function useBhytBooking() {
 
   const retryBootstrap = () => setRevision(value => value + 1);
   const selectPatient = (id: string) => setPatientId(Number(id));
-  const continueMode = () => mode === 'bhyt' ? (patient && setStep(2)) : router.replace('/booking?mode=demand&step=1');
+  const continueMode = () => {
+    if (!patient) return;
+    if (mode === 'bhyt') setStep(2);
+    else onSwitchMode(patient.id);
+  };
   const selectHospital = (id: number) => {
     setHospitalId(id);
     setSpecialtyId(null);

@@ -205,7 +205,7 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
 
               <h3 className="text-base font-bold text-slate-900 mb-2">2. Khám theo yêu cầu</h3>
               <p className="text-sm text-slate-600 mb-6 leading-relaxed">
-                Nếu người khám muốn chọn trình độ bác sĩ, hãy chọn
+                Nếu người khám muốn chọn trình độ bác sĩ theo mong muốn của mình, hãy chọn
                 <em className="font-semibold text-blue-700"> Khám theo yêu cầu</em>.
               </p>
 
