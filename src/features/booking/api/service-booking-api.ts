@@ -1,4 +1,5 @@
 import { bookingRequest } from './booking-api';
+import { loadSearchPages, type SearchPage } from '@/src/shared/lib/search-pagination';
 import type { BookedAppointment } from '../models/types/bhyt.types';
 
 export interface ServiceSlot {
@@ -23,7 +24,9 @@ export const serviceBookingApi = {
     throw new Error('Không thể tải đầy đủ chuyên khoa.');
   },
   slots: (hospitalId: number, fromDate: string, toDate: string, signal?: AbortSignal) =>
-    bookingRequest<ServiceSlot[]>('appointments/available-slots/search', { hospitalId, fromDate, toDate, serviceType: 'SERVICE' }, signal),
+    loadSearchPages(page => bookingRequest<SearchPage<ServiceSlot>>('appointments/available-slots/search', {
+      hospitalId, fromDate, toDate, serviceType: 'SERVICE', pageable: { page, size: 100 },
+    }, signal), signal),
   create: (hospitalId: number, patientId: number, timeSlotId: number, appointReason: string) =>
     bookingRequest<BookedAppointment>('appointments/create', { hospitalId, patientId, timeSlotId, appointReason, serviceType: 'SERVICE' }),
 };

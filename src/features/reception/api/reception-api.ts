@@ -1,5 +1,6 @@
 import { clinicalRequest, type ApiPage } from '@/src/shared/lib/clinical-api';
 import { getStoredAuthSession } from '@/src/features/auth/auth-storage';
+import { loadSearchPages } from '@/src/shared/lib/search-pagination';
 
 export interface ReceptionPatient {
   id: number; patientCode: string; fullName: string; dob: string; gender: 'MALE' | 'FEMALE' | 'OTHER';
@@ -22,10 +23,12 @@ export interface ReceptionInvoice { id: number; invoiceCode: string; encounterId
 export interface ReceptionInvoiceDetail { lines?: {name:string; amount:number}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; transactionRef?: string }[] }
 
 export const receptionApi = {
-  patients: (keyword: string, signal?: AbortSignal) => clinicalRequest<ReceptionPatient[]>('reception/patients/search', { keyword }, signal),
+  patientsPage: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page, size: 20 } }, signal),
+  patients: async (keyword: string, signal?: AbortSignal) => (await clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page: 0, size: 20 } }, signal)).content,
   createPatient: (input: object) => clinicalRequest<ReceptionPatient>('reception/patients/create', input),
   appointment: (reference: string) => clinicalRequest<ReceptionAppointment>('reception/appointments/detail', { reference }),
-  slots: (date: string, offline: boolean, signal?: AbortSignal, appointmentId?: number) => clinicalRequest<ReceptionSlot[]>('reception/slots/search', { date, offline, appointmentId }, signal),
+  slots: (date: string, offline: boolean, signal?: AbortSignal, appointmentId?: number) =>
+    loadSearchPages(page => clinicalRequest<ApiPage<ReceptionSlot>>('reception/slots/search', { date, offline, appointmentId, pageable: { page, size: 100 } }, signal), signal),
   assign: (appointmentId: number, timeSlotId: number) => clinicalRequest<ReceptionAppointment>('reception/appointments/assign-specialty', { appointmentId, timeSlotId }),
   checkIn: (qrToken: string) => clinicalRequest<{ encounterId: number; encounterCode: string }>('encounters/check-in', { qrToken }),
   createBooking: (patientId: number, timeSlotId: number, appointReason: string) => clinicalRequest<{ appointmentId: number; appointmentCode: string; qrToken: string; queueNumber?: number }>('appointments/create', { patientId, timeSlotId, appointReason }),

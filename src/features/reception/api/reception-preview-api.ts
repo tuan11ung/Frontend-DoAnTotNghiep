@@ -80,6 +80,7 @@ function allocate(s: State, a: ReceptionAppointment, slot: ReceptionSlot) {
 }
 export const receptionPreviewApi: typeof receptionApi = {
   patients: (keyword, signal) => run(s => s.patients.filter(p => normalize([p.fullName, p.patientCode, p.nationalId, p.phone].join(' ')).includes(normalize(keyword.trim()))), false, signal),
+  patientsPage: (keyword, page, signal) => run(s => pageOf(s.patients.filter(p => normalize([p.fullName, p.patientCode, p.nationalId, p.phone].join(' ')).includes(normalize(keyword.trim()))), page), false, signal),
   createPatient: input => run(s => {
     const v = input as Record<string, unknown>;
     const text = (key: string) => typeof v[key] === 'string' ? (v[key] as string).trim() : '';

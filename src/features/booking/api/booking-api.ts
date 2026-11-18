@@ -1,4 +1,5 @@
 import { clearStoredAuthSession, getStoredAuthSession } from '../../auth/auth-storage';
+import { loadSearchPages, type SearchPage } from '@/src/shared/lib/search-pagination';
 import type { BhytBookingWindow, BhytSlot, BhytSpecialty, BookedAppointment, BookingHospital, BookingPatientProfile } from '../models/types/bhyt.types';
 
 export class BookingApiError extends Error {
@@ -39,10 +40,11 @@ export const bookingApi = {
     }
   },
   specialties: (hospitalId: number, signal?: AbortSignal) =>
-    request<BhytSpecialty[]>('appointments/bhyt/specialties/search', { hospitalId }, signal),
-  slots: (hospitalId: number, specialtyId: number | null, fromDate: string, toDate: string, signal?: AbortSignal) => request<BhytSlot[]>('appointments/bhyt/available-slots/search', {
-    hospitalId, specialtyId, fromDate, toDate,
-  }, signal),
+    loadSearchPages(page => request<SearchPage<BhytSpecialty>>('appointments/bhyt/specialties/search', { hospitalId, pageable: { page, size: 100 } }, signal), signal),
+  slots: (hospitalId: number, specialtyId: number | null, fromDate: string, toDate: string, signal?: AbortSignal) =>
+    loadSearchPages(page => request<SearchPage<BhytSlot>>('appointments/bhyt/available-slots/search', {
+      hospitalId, specialtyId, fromDate, toDate, pageable: { page, size: 100 },
+    }, signal), signal),
   create: (body: { hospitalId: number; patientId: number; specialtyId: number | null; window: BhytBookingWindow; appointReason: string }) =>
     request<BookedAppointment>('appointments/bhyt/create', body),
 };
