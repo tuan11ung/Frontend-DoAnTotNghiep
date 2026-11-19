@@ -1,4 +1,5 @@
 'use client';
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -27,7 +28,7 @@ export function PasswordInfo() {
     try {
       const session = getStoredAuthSession();
       if (!session) throw new Error('Vui lòng đăng nhập lại.');
-      const response = await fetch('/api/auth/change-password', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.accessToken }, body: JSON.stringify({ currentPassword: current, newPassword: next }) });
+      const response = await authenticatedFetch('/api/auth/change-password', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.accessToken }, body: JSON.stringify({ currentPassword: current, newPassword: next }) });
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.message || 'Không thể đổi mật khẩu.');
       clearStoredAuthSession(); form.reset(); setVisible({});

@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '@/src/features/auth/utils/auth-storage';
 import { addScheduleDays } from '@/src/features/work-schedules/utils/schedule-utils';
 import type { DoctorScheduleShift } from '../doctor-schedule.types';
@@ -49,7 +50,7 @@ export async function loadDoctorScheduleWeek(weekStart: string, signal: AbortSig
   if (!session?.roles.includes('DOCTOR')) throw new DoctorScheduleApiError('Vui lòng đăng nhập bằng tài khoản bác sĩ để xem lịch làm việc.', 403);
   const items: DoctorScheduleResponse[] = [];
   for (let page = 0; ; page++) {
-    const response = await fetch('/api/clinic/work-schedules/my-search', {
+    const response = await authenticatedFetch('/api/clinic/work-schedules/my-search', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.accessToken}` },
       body: JSON.stringify({ dateFrom: weekStart, dateTo: addScheduleDays(weekStart, 6), status: 'ACTIVE',
         pageable: { page, size: 100, sortBy: 'workDate', sortDirection: 'ASC' } }),

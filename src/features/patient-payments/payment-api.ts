@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import type { BillingProfile, Invoice, PaymentData, PaymentTransaction } from './payment.types';
 import { accountRequest } from '@/src/features/patient-profile/profile-api';
 
@@ -6,7 +7,7 @@ function amount(value: unknown): value is number { return typeof value === 'numb
 function id(value: unknown): value is number { return Number.isSafeInteger(value) && Number(value) > 0; }
 const invalid = () => new Error('Dữ liệu hóa đơn không hợp lệ. Vui lòng liên hệ cơ sở y tế.');
 async function request(token: string, path: 'search' | 'detail', body: object, signal: AbortSignal): Promise<unknown> {
-  const response = await fetch(`/api/patient/invoices/${path}`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]) });
+  const response = await authenticatedFetch(`/api/patient/invoices/${path}`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]) });
   const value: unknown = await response.json().catch(() => null);
   if (response.status === 401 || response.status === 403) throw new Error('Vui lòng đăng nhập lại để xem hóa đơn.');
   if (!response.ok || !object(value) || value.success !== true) throw new Error('Không thể tải hóa đơn. Vui lòng thử lại.');

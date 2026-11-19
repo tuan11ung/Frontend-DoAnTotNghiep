@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clinicalRequest, type ApiPage } from '@/src/shared/lib/clinical-api';
 import { getStoredAuthSession } from '@/src/features/auth/auth-storage';
 import { loadSearchPages } from '@/src/shared/lib/search-pagination';
@@ -35,7 +36,7 @@ export const receptionApi = {
   async pending(page: number, signal?: AbortSignal): Promise<ApiPage<PendingAppointment>> {
     const session = getStoredAuthSession();
     if (!session) throw new Error('Vui lòng đăng nhập tài khoản lễ tân.');
-    const response = await fetch(`/api/clinic/appointments/pending-specialty?page=${page}`, { headers: { Authorization: `Bearer ${session.accessToken}` }, cache: 'no-store', signal });
+    const response = await authenticatedFetch(`/api/clinic/appointments/pending-specialty?page=${page}`, { headers: { Authorization: `Bearer ${session.accessToken}` }, cache: 'no-store', signal });
     const result = await response.json().catch(() => null);
     if (!response.ok || !result?.success || !Array.isArray(result.data?.content)) throw new Error(result?.message || 'Không thể tải lịch chờ.');
     return result.data;

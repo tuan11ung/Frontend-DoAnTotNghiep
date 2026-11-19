@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { getStoredAuthSession, type AuthSession } from '../utils/auth-storage';
 import type { LoginRequest, LoginSession } from '../login/login.types';
 
@@ -19,7 +20,7 @@ export async function loginAccount({ login, password }: LoginRequest): Promise<L
   let response: Response;
 
   try {
-    response = await fetch('/api/auth/login', {
+    response = await authenticatedFetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ login: login.trim(), password }),
@@ -53,7 +54,7 @@ export async function loginAccount({ login, password }: LoginRequest): Promise<L
 
 export async function logoutAccount(session: AuthSession | null = getStoredAuthSession(), allSessions = false): Promise<void> {
   if (!session?.accessToken) return;
-  const response = await fetch('/api/auth/logout', {
+  const response = await authenticatedFetch('/api/auth/logout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.accessToken}` },
     body: JSON.stringify({ refreshToken: session.refreshToken, allSessions }),

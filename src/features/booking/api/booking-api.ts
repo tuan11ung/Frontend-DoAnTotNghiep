@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '../../auth/auth-storage';
 import { loadSearchPages, type SearchPage } from '@/src/shared/lib/search-pagination';
 import type { BhytBookingWindow, BhytSlot, BhytSpecialty, BookedAppointment, BookingHospital, BookingPatientProfile } from '../models/types/bhyt.types';
@@ -12,7 +13,7 @@ export class BookingApiError extends Error {
 export async function bookingRequest<T>(path: string, body: unknown, signal?: AbortSignal): Promise<T> {
   const session = getStoredAuthSession();
   if (!session?.roles.includes('PATIENT')) throw new BookingApiError('Vui lòng đăng nhập bằng tài khoản bệnh nhân để đặt khám.', 401);
-  const response = await fetch(`/api/patient/booking/${path}`, {
+  const response = await authenticatedFetch(`/api/patient/booking/${path}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body), signal, cache: 'no-store',

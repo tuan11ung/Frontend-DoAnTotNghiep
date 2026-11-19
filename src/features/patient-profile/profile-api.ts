@@ -1,7 +1,8 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import type { Allergy, AllergyInput, Condition, ConditionInput, PersonalProfile, ProfileData, ProfileInput } from './profile.types';
 
 export async function accountRequest(endpoint: string, token: string, body: object, signal?: AbortSignal): Promise<unknown> {
-  const response = await fetch(`/api/patient/account/${endpoint}`, {
+  const response = await authenticatedFetch(`/api/patient/account/${endpoint}`, {
     method: 'POST', cache: 'no-store', signal,
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify(body),

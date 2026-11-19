@@ -18,7 +18,7 @@ function sessionSnapshot() {
 export function useTechnicianAccess() {
   const owner = useSyncExternalStore(subscribe, sessionSnapshot, () => 'loading');
   const session = useMemo(() => owner === 'loading' ? null : JSON.parse(owner) as AuthSession | null, [owner]);
-  return { owner, session, loading: owner === 'loading', allowed: session?.roles.includes(TECHNICIAN_ROLE) ?? false };
+  return { owner: session ? JSON.stringify([session.hospitalId, session.staffId, session.roles]) : owner, session, loading: owner === 'loading', allowed: session?.roles.includes(TECHNICIAN_ROLE) ?? false };
 }
 
 export function technicianErrorMessage(error: unknown) {

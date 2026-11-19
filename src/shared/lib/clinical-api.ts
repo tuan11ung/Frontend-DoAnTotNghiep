@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '@/src/features/auth/auth-storage';
 
 export class ClinicalApiError extends Error {
@@ -7,7 +8,7 @@ export class ClinicalApiError extends Error {
 export async function clinicalResponse<T>(endpoint: string, body: object = {}, signal?: AbortSignal): Promise<{ data: T; warnings?: { message: string }[] }> {
   const session = getStoredAuthSession();
   if (!session) throw new ClinicalApiError('Vui lòng đăng nhập tài khoản nhân viên.', 401);
-  const response = await fetch(`/api/clinic/${endpoint}`, {
+  const response = await authenticatedFetch(`/api/clinic/${endpoint}`, {
     method: 'POST', cache: 'no-store',
     headers: { Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body), signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(20_000)]) : AbortSignal.timeout(20_000),

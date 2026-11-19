@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '@/src/features/auth/auth-storage';
 
 interface ApiResponse<T> {
@@ -65,7 +66,7 @@ async function doctorQueueRequest<T>(path: string, body: unknown, signal?: Abort
     throw new DoctorQueueApiError('Vui lòng đăng nhập bằng tài khoản bác sĩ để xem hàng chờ.', 401);
   }
 
-  const response = await fetch(`/api/clinic/${path}`, {
+  const response = await authenticatedFetch(`/api/clinic/${path}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authSession.accessToken}`,

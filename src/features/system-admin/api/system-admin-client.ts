@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '../../auth/auth-storage';
 import type { PageResponse } from '../types';
 
@@ -36,7 +37,7 @@ function getSystemSession() {
 export async function systemAdminRequest<T>(path: string, body: unknown, options: { preserveSessionOnForbidden?: boolean } = {}): Promise<T> {
   const authSession = getSystemSession();
   const isFormData = body instanceof FormData;
-  const response = await fetch(`/api/admin/system/${path}`, {
+  const response = await authenticatedFetch(`/api/admin/system/${path}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authSession.accessToken}`,
@@ -58,7 +59,7 @@ export async function systemAdminRequest<T>(path: string, body: unknown, options
 
 export async function systemAdminDownload(path: string, body: unknown): Promise<Blob> {
   const authSession = getSystemSession();
-  const response = await fetch(`/api/admin/system/${path}`, {
+  const response = await authenticatedFetch(`/api/admin/system/${path}`, {
     method: 'POST',
     headers: {
       Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -78,7 +79,7 @@ export async function systemAdminDownload(path: string, body: unknown): Promise<
 
 export async function systemAdminCommand(path: string, body: unknown): Promise<void> {
   const authSession = getSystemSession();
-  const response = await fetch(`/api/admin/system/${path}`, {
+  const response = await authenticatedFetch(`/api/admin/system/${path}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authSession.accessToken}`,
