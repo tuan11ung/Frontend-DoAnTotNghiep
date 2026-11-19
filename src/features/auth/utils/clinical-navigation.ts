@@ -15,8 +15,8 @@ export function getClinicalNavigationLinks(roles: readonly string[], departmentT
       { href: '/doctor/queue', label: 'Hàng chờ phòng khám', icon: 'queue', workspace: 'doctor' },
       { href: '/doctor/work-schedules', label: 'Lịch làm việc', icon: 'schedule', workspace: 'doctor' },
     );
-    if (departmentType === 'EMERGENCY') {
-      links.push({ href: '/doctor/emergency?demo=1', label: 'Tra cứu hồ sơ khẩn cấp', icon: 'emergency', workspace: 'doctor' });
+    if (departmentType === 'EMERGENCY' || roles.includes('DOCTOR')) {
+      links.push({ href: '/doctor/emergency', label: 'Tra cứu hồ sơ khẩn cấp', icon: 'emergency', workspace: 'doctor' });
     }
   }
   if (roles.includes('PARACLINICAL_TECHNICIAN')) {
