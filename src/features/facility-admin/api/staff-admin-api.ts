@@ -1,5 +1,5 @@
 import type { RankCatalogItem, StaffAccount, StaffRole } from '../types';
-import { ADMIN_PAGEABLE, adminRequest, type PageResponse } from './admin-api-client';
+import { ADMIN_PAGEABLE, loadAdminPages, adminRequest } from './admin-api-client';
 
 interface StaffResponse {
   id: number;
@@ -21,7 +21,7 @@ interface RankResponse {
   rankOrder: number;
 }
 
-const toStaff = (data: StaffResponse): StaffAccount => ({
+export const toStaff = (data: StaffResponse): StaffAccount => ({
   id: data.id,
   staffCode: data.staffCode,
   fullName: data.fullName,
@@ -37,21 +37,21 @@ const toStaff = (data: StaffResponse): StaffAccount => ({
 
 export const staffAdminApi = {
   async searchStaff() {
-    const page = await adminRequest<PageResponse<StaffResponse>>('staff/search', {
+    const content = await loadAdminPages<StaffResponse>('staff/search', {
       keyword: null,
       status: null,
       rankId: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'staffCode' },
     });
-    return page.content.map(toStaff);
+    return content.map(toStaff);
   },
 
   async searchRanks() {
-    const page = await adminRequest<PageResponse<RankResponse>>('staff/ranks', {
+    const content = await loadAdminPages<RankResponse>('staff/ranks', {
       keyword: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'rankOrder' },
     });
-    return page.content.map<RankCatalogItem>((item) => ({
+    return content.map<RankCatalogItem>((item) => ({
       id: item.id,
       code: item.code,
       name: item.name,

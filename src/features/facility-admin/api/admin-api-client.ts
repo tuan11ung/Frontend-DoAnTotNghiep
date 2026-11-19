@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '../../auth/auth-storage';
 
 interface ApiResponse<T> {
@@ -38,7 +39,7 @@ export async function adminRequest<T>(path: string, body: unknown, signal?: Abor
   }
 
   const isFormData = body instanceof FormData;
-  const response = await fetch(`/api/admin/facility/${path}`, {
+  const response = await authenticatedFetch(`/api/admin/facility/${path}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${authSession.accessToken}`,
@@ -62,4 +63,15 @@ export async function adminRequest<T>(path: string, body: unknown, signal?: Abor
   }
 
   return result.data;
+}
+
+export async function loadAdminPages<T>(path: string, body: Record<string, unknown>): Promise<T[]> {
+  const result: T[] = [];
+  for (let page = 0; page <= 10000; page++) {
+    const data = await adminRequest<PageResponse<T>>(path, { ...body, pageable: { ...(body.pageable as object ?? {}), page, size: 200 } });
+    if (!Array.isArray(data.content) || data.page !== page || !Number.isInteger(data.totalPages)) throw new Error('Dữ liệu phân trang không hợp lệ.');
+    result.push(...data.content);
+    if (page + 1 >= data.totalPages) return result;
+  }
+  throw new Error('Danh mục quá lớn. Vui lòng thu hẹp tìm kiếm.');
 }
