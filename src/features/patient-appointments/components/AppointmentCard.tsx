@@ -2,7 +2,7 @@
 
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { appointmentDoctorLabel, appointmentTimeRange, canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
@@ -11,7 +11,7 @@ import { AppointmentRoomLoad } from './AppointmentRoomLoad';
 import { AppointmentTicketNumber } from './AppointmentTicketNumber';
 import {
   Building2,
-  QrCode,
+  Menu,
   AlertCircle,
   FileText,
   User,
@@ -39,6 +39,27 @@ export function AppointmentCard({
   queueRoom,
   queueError,
 }: AppointmentCardProps) {
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const actionsRef = useRef<HTMLDivElement>(null);
+  const actionsButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!actionsOpen) return;
+    function dismiss(event: PointerEvent) {
+      if (!actionsRef.current?.contains(event.target as Node)) setActionsOpen(false);
+    }
+    function escape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setActionsOpen(false);
+        actionsButtonRef.current?.focus();
+      }
+    }
+    document.addEventListener('pointerdown', dismiss);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('pointerdown', dismiss);
+      document.removeEventListener('keydown', escape);
+    };
+  }, [actionsOpen]);
   const statusConfig = APPOINTMENT_STATUS_LABELS[appointment.status] || {
     label: appointment.status,
     colorClass: 'text-slate-700',
@@ -49,15 +70,15 @@ export function AppointmentCard({
   const isCheckedIn = appointment.status === 'CHECKED_IN' || appointment.status === 'IN_PROGRESS';
   const isCompleted = appointment.status === 'COMPLETED';
   const isCancelled = appointment.status === 'CANCELLED';
+  const canViewQueue = isCheckedIn || (appointment.source === 'api' && ['BOOKED', 'NO_SHOW'].includes(appointment.status));
 
   return (
-    <div data-appointment-id={appointment.id} className="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
+    <div data-appointment-id={appointment.id} className="group relative [&_button]:cursor-pointer [&_button]:pointer-events-auto [&_a]:pointer-events-auto bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between">
+      <button type="button" onClick={() => onOpenQr(appointment)} aria-label={`Xem chi tiết lịch khám của ${appointment.patientName} tại ${appointment.hospitalName}`} className="absolute inset-0 z-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600" />
       {/* Header bar */}
-      <div className="p-5 pb-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
-        <div className="flex items-center gap-2.5">
-          <span className="font-mono font-extrabold text-sm text-slate-800 bg-white border border-slate-200 px-2.5 py-1 rounded-xl shadow-xs">
-            {appointment.code}
-          </span>
+      <div className="pointer-events-none relative z-20 p-5 pb-4 border-b border-slate-100 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-slate-50/50 sm:grid-cols-[auto_minmax(0,1fr)_auto]">
+        <div className="col-start-1 row-start-1 flex items-center gap-2.5">
+
           <span
             className={`text-xs px-2.5 py-1 rounded-xl font-bold border ${statusConfig.bgClass} ${statusConfig.colorClass}`}
           >
@@ -66,18 +87,24 @@ export function AppointmentCard({
         </div>
 
         {/* Người khám badge */}
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 bg-blue-50/80 border border-blue-200/60 px-3 py-1 rounded-xl">
-          <User className="w-3.5 h-3.5 text-blue-600" />
+        <div className="col-span-2 row-start-2 flex min-w-0 items-center gap-1.5 text-xs font-semibold text-slate-700 sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:justify-self-end bg-blue-50/80 border border-blue-200/60 px-3 py-1 rounded-xl">
+          <User className="w-3.5 h-3.5 shrink-0 text-blue-600" />
           <span>Khám cho: </span>
           <strong className="text-blue-900 font-bold">
             {appointment.patientName}{' '}
             {appointment.patientRelationship ? `(${appointment.patientRelationship})` : '(Bản thân)'}
           </strong>
         </div>
+        {isBooked && canCancelAppointment(appointment) && <div ref={actionsRef} className="pointer-events-auto relative col-start-2 row-start-1 justify-self-end sm:col-start-3" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActionsOpen(false); }}>
+          <button ref={actionsButtonRef} type="button" aria-label="Thao tác lịch khám" aria-expanded={actionsOpen} aria-controls={`appointment-actions-${appointment.id}`} onClick={() => setActionsOpen(open => !open)} className="grid size-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600"><Menu className="size-5" aria-hidden="true" /></button>
+          {actionsOpen && <div id={`appointment-actions-${appointment.id}`} className="absolute right-0 top-full z-20 mt-2 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+            <button type="button" onClick={() => { setActionsOpen(false); onOpenCancel(appointment); }} className="min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-600 hover:bg-rose-50">Hủy lịch</button>
+          </div>}
+        </div>}
       </div>
 
       {/* Body Card */}
-      <div className="p-5 space-y-4 flex-1">
+      <div className="pointer-events-none relative z-10 p-5 space-y-4 flex-1">
         {/* Cơ sở y tế & Chuyên khoa */}
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex min-w-0 flex-1 basis-full items-start gap-3 sm:basis-0">
@@ -88,20 +115,20 @@ export function AppointmentCard({
               <h3 className="font-bold text-slate-900 text-base leading-snug">
                 {appointment.hospitalName}
               </h3>
-              <p className="mt-0.5 text-xs text-slate-500">{appointment.departmentName}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{appointment.hospitalAddress || 'Chưa cập nhật địa chỉ'}</p>
             </div>
           </div>
           <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />
         </div>
 
         {/* Thời gian & Bác sĩ */}
-        <div data-appointment-schedule className="grid grid-cols-[80px_minmax(0,1fr)] gap-3 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/60 text-xs sm:grid-cols-[100px_minmax(0,1fr)] sm:gap-4">
+        <div data-appointment-schedule className="grid grid-cols-[100px_minmax(0,1fr)] gap-3 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/60 text-xs sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-4">
           <AppointmentTicketNumber appointment={appointment} room={queueRoom} queueError={queueError} variant="prominent" />
           <dl className="min-w-0 space-y-2 leading-6">
-            <div data-schedule-row="date" className="overflow-x-auto whitespace-nowrap"><dt className="inline font-medium text-slate-500">Ngày khám: </dt><dd className="inline font-bold text-slate-900">{formatDisplayDate(appointment.workDate)}</dd></div>
-            <div data-schedule-row="time" className="overflow-x-auto whitespace-nowrap"><dt className="inline font-medium text-slate-500">Khung giờ: </dt><dd className="inline font-bold text-slate-900">{appointmentTimeRange(appointment)}</dd></div>
-            <div data-schedule-row="doctor" className="overflow-x-auto whitespace-nowrap" title={appointmentDoctorLabel(appointment)}><dt className="inline font-medium text-slate-500">Bác sĩ phụ trách: </dt><dd className="inline font-bold text-slate-900">{appointmentDoctorLabel(appointment)}</dd></div>
-            <div data-schedule-row="room" className="overflow-x-auto whitespace-nowrap" title={appointment.roomName}><dt className="inline font-medium text-slate-500">Phòng khám: </dt><dd className="inline font-bold text-slate-900">{appointment.roomName}</dd></div>
+            <div data-schedule-row="date" className="min-w-0 whitespace-normal break-words"><dt className="inline font-medium text-slate-500">Ngày khám: </dt><dd className="inline font-bold text-slate-900">{formatDisplayDate(appointment.workDate)}</dd></div>
+            <div data-schedule-row="time" className="min-w-0 whitespace-normal break-words"><dt className="inline font-medium text-slate-500">Khung giờ: </dt><dd className="inline font-bold text-slate-900">{appointmentTimeRange(appointment)}</dd></div>
+            <div data-schedule-row="doctor" className="min-w-0 whitespace-normal break-words" title={appointmentDoctorLabel(appointment)}><dt className="inline font-medium text-slate-500">Bác sĩ phụ trách: </dt><dd className="inline font-bold text-slate-900">{appointmentDoctorLabel(appointment)}</dd></div>
+            <div data-schedule-row="room" className="min-w-0 whitespace-normal break-words" title={appointment.roomName}><dt className="inline font-medium text-slate-500">Phòng khám: </dt><dd className="inline font-bold text-slate-900">{appointment.roomName}</dd></div>
           </dl>
         </div>
 
@@ -135,43 +162,23 @@ export function AppointmentCard({
       </div>
 
       {/* Action Footer */}
-      <div className="p-4 px-5 border-t border-slate-100 bg-white flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-slate-500 font-medium">Chi phí:</span>
-          <span className="font-bold text-sm text-slate-900">{appointment.priceFormatted}</span>
-          {appointment.bookingMode === 'bhyt' && (
-            <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-              BHYT
-            </span>
-          )}
-        </div>
-
+      {(canViewQueue || isCompleted || isCancelled) && <div className="pointer-events-none relative z-10 p-4 px-5 border-t border-slate-100 bg-white flex flex-wrap items-center justify-end gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {/* Lịch đang đặt: Xem QR & Hủy lịch */}
-          {isBooked && canCancelAppointment(appointment) && (
-            <>
-              <button
-                onClick={() => onOpenCancel(appointment)}
-                type="button"
-                className="px-3.5 py-2 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-all cursor-pointer"
-              >
-                Hủy lịch
-              </button>
-            </>
-          )}
+
 
           {/* Lịch đã checkin: Xem hàng chờ */}
-          {(isCheckedIn || (appointment.source === 'api' && ['BOOKED', 'NO_SHOW'].includes(appointment.status))) && (
+          {canViewQueue && (
             <button
               onClick={() => onOpenQueue(appointment)}
               type="button"
               className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm transition-all cursor-pointer"
             >
-              <span>Xem phòng & hàng chờ</span>
+              <span>Xem hàng chờ</span>
             </button>
           )}
 
-          <button onClick={() => onOpenQr(appointment)} type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-bold text-blue-700 transition-colors hover:bg-blue-100"><QrCode className="size-3.5" />Xem chi tiết</button>
+
 
           {/* Lịch hoàn tất: Xem kết quả */}
           {isCompleted && (
@@ -195,7 +202,7 @@ export function AppointmentCard({
             </Link>
           )}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

@@ -67,13 +67,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
                 </div>
                 <input
                   aria-label="Tìm kiếm bệnh viện hoặc chuyên khoa"
-                  className="w-full px-4 py-2.5 text-sm sm:text-base text-slate-800 placeholder-slate-400 bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  className="min-w-0 flex-1 px-4 py-2.5 text-sm sm:text-base text-slate-800 placeholder-slate-400 bg-transparent border-0 focus:ring-0 focus:outline-none"
                   name="query"
                   placeholder="Triệu chứng, bệnh viện, chuyên khoa..."
                   type="text"
                 />
                 <button
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 sm:px-8 py-3 rounded-full text-sm sm:text-base flex items-center gap-2 shadow-md hover:shadow-lg transition-all flex-shrink-0 cursor-pointer"
+                  style={{ borderRadius: '9999px' }}
                   type="submit"
                 >
                   <span>Tìm kiếm</span>

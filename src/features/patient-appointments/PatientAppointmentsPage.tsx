@@ -159,7 +159,8 @@ export function PatientAppointmentsPage() {
         </div>
 
         {/* Thanh công cụ: Chọn hồ sơ & Tìm kiếm */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <section aria-label="Quản lý lịch khám" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col items-center justify-between gap-4 border-b border-slate-100 p-4 md:flex-row sm:p-5">
           {/* Dropdown chọn Hồ sơ (Mục 8.1: Bản thân / từng người nhà) */}
           <div className="flex items-center gap-2.5 w-full md:w-auto">
             <Users className="w-4 h-4 text-blue-600 shrink-0" />
@@ -195,11 +196,11 @@ export function PatientAppointmentsPage() {
           </div>
         </div>
 
-        {(storageError || queueError) && <p role="alert" className="mb-5 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />{storageError || 'Chưa tải được hàng chờ. Vui lòng thử lại.'}</p>}
-        {currentTab === 'UPCOMING' && tabCounts.ongoing > 0 && <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-xs text-emerald-900"><p><strong>{tabCounts.ongoing}</strong> lịch đã check-in đang diễn ra.</p><button type="button" onClick={() => setCurrentTab('ONGOING')} className="rounded-lg px-3 py-2 font-bold hover:bg-emerald-100">Xem số thứ tự & phòng khám →</button></div>}
+        {(storageError || queueError) && <p role="alert" className="mx-4 mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />{storageError || 'Chưa tải được hàng chờ. Vui lòng thử lại.'}</p>}
+        {currentTab === 'UPCOMING' && tabCounts.ongoing > 0 && <div className="mx-4 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-xs text-emerald-900"><p><strong>{tabCounts.ongoing}</strong> lịch đã check-in đang diễn ra.</p><button type="button" onClick={() => setCurrentTab('ONGOING')} className="rounded-lg px-3 py-2 font-bold hover:bg-emerald-100">Xem số thứ tự & phòng khám →</button></div>}
 
         {/* Appointment status tabs */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div className="border-b border-slate-200 bg-white">
           <div className="px-6 pt-3">
             <AppointmentFilterTabs
               currentTab={currentTab}
@@ -209,13 +210,14 @@ export function PatientAppointmentsPage() {
           </div>
         </div>
 
+        <div className="bg-slate-50/50 p-4 sm:p-5">
         {/* Danh sách thẻ lịch khám */}
         {loading ? (
           <div className="py-24 text-center text-slate-400 text-sm">Đang tải danh sách lịch khám...</div>
         ) : storageError && appointments.length === 0 ? (
           <section className="rounded-2xl border border-rose-200 bg-white p-8 text-center"><h2 className="text-lg font-bold">Chưa tải được lịch khám</h2><p className="my-3 text-sm text-slate-600">Vui lòng thử lại để kiểm tra các lịch đã đặt.</p><button className="rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-bold text-white" type="button" onClick={refresh}>Thử lại</button></section>
         ) : filteredAppointments.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+          <div className="p-6 text-center sm:p-12">
             <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4">
               <CalendarClock className="w-8 h-8" />
             </div>
@@ -242,7 +244,7 @@ export function PatientAppointmentsPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5">
             {filteredAppointments.map((apt) => (
               <AppointmentCard
                 key={apt.id}
@@ -256,6 +258,8 @@ export function PatientAppointmentsPage() {
             ))}
           </div>
         )}
+        </div>
+        </section>
       </main>
 
       {/* Toast Notification */}

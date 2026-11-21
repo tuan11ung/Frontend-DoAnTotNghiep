@@ -17,7 +17,7 @@ export function AppointmentTicketNumber({ appointment, room, queueError = false,
 
   if (variant === 'prominent') return <div data-appointment-ticket={appointment.id} aria-label="Số thứ tự của bạn" className="flex min-w-0 flex-col justify-center border-r border-slate-200/70 pr-3 text-center sm:pr-4">
     <p className="text-[10px] font-bold leading-5 text-blue-700">Số thứ tự</p>
-    <p aria-live="polite" aria-atomic="true" className={`mt-2 break-words font-extrabold text-blue-700 ${number != null ? 'text-4xl leading-none tracking-tight tabular-nums sm:text-5xl' : 'text-sm leading-6'}`}>
+    <p aria-live="polite" aria-atomic="true" className={`mt-2 font-extrabold text-blue-700 ${number != null ? 'whitespace-nowrap text-4xl leading-none tracking-tight tabular-nums sm:text-5xl' : 'break-words text-sm leading-6'}`}>
       {number != null ? label : queueError ? 'Chưa tải được' : ['BOOKED', 'PENDING_SPECIALTY', 'CANCELLED'].includes(appointment.status) ? 'Chưa cấp' : 'Chưa có dữ liệu'}
     </p>
   </div>;

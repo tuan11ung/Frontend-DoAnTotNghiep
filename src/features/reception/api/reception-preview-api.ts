@@ -156,6 +156,15 @@ export function confirmPreviewPayment(token:string) {
 }
 export function resetReceptionPreview() { write(seed()); }
 export function previewDate() { return read().date; }
+export function previewReceptionSummary() {
+  const s = read();
+  return {
+    checkin: s.appointments.filter(a => a.appointmentDate === s.date && ['BOOKED', 'ABSENT'].includes(a.status)).length,
+    pending: s.appointments.filter(a => a.status === 'PENDING_SPECIALTY').length,
+    accepted: s.encounters.filter(e => s.appointments.some(a => a.appointmentId === e.appointmentId && a.appointmentDate === s.date)).length,
+    unpaid: s.invoices.filter(i => i.invoice.status === 'UNPAID').length,
+  };
+}
 export function pendingPreviewEncounters() { const s = read(); return s.encounters.filter(e => !e.completed).map(e => ({ ...e, patientName: s.appointments.find(a => a.appointmentId === e.appointmentId)!.patientName })); }
 export function completePreviewEncounter(id: number) {
   return run(s => {
