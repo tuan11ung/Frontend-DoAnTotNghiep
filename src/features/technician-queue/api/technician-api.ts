@@ -138,4 +138,13 @@ export const technicianApi = {
     form.append('file', file);
     return request('ordered-services/upload-result-media', form, isMedia, signal);
   },
+  deleteMedia: (orderedServiceId: number, mediaId: number, signal?: AbortSignal) =>
+    request('ordered-services/delete-result-media', { orderedServiceId, mediaId }, (value): value is boolean => typeof value === 'boolean', signal),
+  replaceMedia(orderedServiceId: number, mediaId: number, file: File, signal?: AbortSignal) {
+    const form = new FormData();
+    form.append('request', new Blob([JSON.stringify({ orderedServiceId, mediaId })], { type: 'application/json' }));
+    form.append('file', file);
+    return request('ordered-services/replace-result-media', form, isMedia, signal);
+  },
+
 };

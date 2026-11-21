@@ -60,12 +60,13 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
   const [detail, setDetail] = useState(initialDetail);
   const [draft, setDraft] = useState(() => createTechnicianDraft(initialDetail, parameters));
   const [savedSignature, setSavedSignature] = useState(() => JSON.stringify(createTechnicianDraft(initialDetail, parameters)));
-  const [pending, setPending] = useState<'start' | 'save' | 'complete' | 'upload' | null>(null);
+  const [pending, setPending] = useState<'start' | 'save' | 'complete' | 'upload' | 'replace' | 'delete' | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const pendingRef = useRef(false);
   const controllerRef = useRef<AbortController | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const replaceTarget = useRef<number | null>(null);
   const signature = JSON.stringify(draft);
   const dirty = signature !== savedSignature;
   const editable = detail.order.status === 'IN_PROGRESS';
@@ -89,7 +90,7 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
     action();
   }
 
-  async function runAction(action: NonNullable<typeof pending>, file?: File) {
+  async function runAction(action: NonNullable<typeof pending>, file?: File, mediaId?: number) {
     if (pendingRef.current) return;
     pendingRef.current = true;
     setPending(action);
@@ -102,6 +103,17 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
         if (signal?.aborted) return;
         setDetail(current => ({ ...current, order }));
         setNotice('Đã tiếp nhận chỉ định. Bạn có thể nhập kết quả.');
+      } else if (action === 'delete' && mediaId != null) {
+        await technicianApi.deleteMedia(detail.order.id, mediaId, signal);
+        if (signal?.aborted) return;
+        setDetail(current => ({ ...current, media: current.media.filter(item => item.id !== mediaId) }));
+        setNotice('Đã gỡ tệp kết quả và yêu cầu xóa tệp khỏi kho lưu trữ.');
+      } else if (action === 'replace' && file && mediaId != null) {
+        validateTechnicianUpload(file);
+        const replacement = await technicianApi.replaceMedia(detail.order.id, mediaId, file, signal);
+        if (signal?.aborted) return;
+        setDetail(current => ({ ...current, media: current.media.map(item => item.id === mediaId ? replacement : item) }));
+        setNotice('Đã thay tệp kết quả và yêu cầu xóa tệp cũ khỏi kho lưu trữ.');
       } else if (action === 'upload' && file) {
         validateTechnicianUpload(file);
         const media = await technicianApi.uploadResult(detail.order.id, file, signal);
@@ -149,7 +161,7 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
         })}</div></section>}
       </fieldset>
       {readOnly && detail.values.length > 0 && <section aria-label="Kết quả xét nghiệm đã lưu" className="space-y-2">{detail.values.map(value => <div className="flex flex-wrap justify-between gap-2 rounded-lg border border-slate-200 p-3 text-xs" key={value.id}><span className="font-semibold text-slate-700">{value.parameterName}</span><span className={value.isAbnormal ? 'font-bold text-rose-700' : 'text-slate-600'}>{[value.value, value.valueText].filter(item => item !== null && item !== '').join(' · ')} {value.unit}</span></div>)}</section>}
-      <section aria-labelledby="technician-media-title"><div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-sm font-extrabold text-slate-800" id="technician-media-title">Tệp kết quả</h3>{editable && <><input accept="image/jpeg,image/png,video/mp4" className="sr-only" disabled={Boolean(pending)} id="technician-media" onChange={event => { const file = event.target.files?.[0]; if (file) void runAction('upload', file); }} ref={fileRef} type="file" /><button className={buttonClass} disabled={Boolean(pending)} onClick={() => fileRef.current?.click()} type="button"><Upload aria-hidden="true" className="h-4 w-4" />{pending === 'upload' ? 'Đang tải tệp…' : 'Tải tệp kết quả'}</button></>}</div><p className="mt-2 text-[11px] leading-6 text-slate-500">JPEG/PNG tối đa 10 MB · MP4 tối đa 100 MB.</p>{detail.media.length ? <ul className="mt-3 space-y-2">{detail.media.map(media => <li key={media.id}><a className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" href={media.url} rel="noreferrer" target="_blank"><FileImage aria-hidden="true" className="h-4 w-4 shrink-0" /><span className="min-w-0 break-all">{media.name}</span><span className="ml-auto shrink-0 text-[10px] text-slate-400">{(media.sizeBytes / 1024 / 1024).toFixed(1)} MB</span><span className="sr-only"> (mở trong tab mới)</span></a></li>)}</ul> : <p className="mt-3 text-xs text-slate-400">Chưa có tệp kết quả đính kèm.</p>}</section>
+      <section aria-labelledby="technician-media-title"><div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-sm font-extrabold text-slate-800" id="technician-media-title">Tệp kết quả</h3>{editable && <><input accept="image/jpeg,image/png,video/mp4" className="sr-only" disabled={Boolean(pending)} id="technician-media" onChange={event => { const file = event.target.files?.[0]; const target = replaceTarget.current; replaceTarget.current = null; if (file) void runAction(target == null ? 'upload' : 'replace', file, target ?? undefined); }} ref={fileRef} type="file" /><button className={buttonClass} disabled={Boolean(pending)} onClick={() => { replaceTarget.current = null; fileRef.current?.click(); }} type="button"><Upload aria-hidden="true" className="h-4 w-4" />{pending === 'upload' ? 'Đang tải tệp…' : 'Tải tệp kết quả'}</button></>}</div><p className="mt-2 text-[11px] leading-6 text-slate-500">JPEG/PNG tối đa 10 MB · MP4 tối đa 100 MB.</p>{detail.media.length ? <ul className="mt-3 space-y-2">{detail.media.map(media => <li key={media.id} className="space-y-2"><a className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" href={media.url} rel="noreferrer" target="_blank"><FileImage aria-hidden="true" className="h-4 w-4 shrink-0" /><span className="min-w-0 break-all">{media.name}</span><span className="ml-auto shrink-0 text-[10px] text-slate-400">{(media.sizeBytes / 1024 / 1024).toFixed(1)} MB</span><span className="sr-only"> (mở trong tab mới)</span></a>{editable && <div className="flex gap-4 px-3 text-xs font-bold"><button type="button" disabled={Boolean(pending)} className="text-blue-700" onClick={() => { replaceTarget.current = media.id; fileRef.current?.click(); }}>Thay tệp</button><button type="button" disabled={Boolean(pending)} className="text-rose-700" onClick={() => { if (window.confirm('Xóa tệp kết quả này khỏi chỉ định và kho lưu trữ?')) void runAction('delete', undefined, media.id); }}>Xóa tệp</button></div>}</li>)}</ul> : <p className="mt-3 text-xs text-slate-400">Chưa có tệp kết quả đính kèm.</p>}</section>
     </div>
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6"><span aria-live="polite" className="text-[11px] text-slate-500">{pending ? 'Đang xử lý yêu cầu…' : dirty ? 'Có thay đổi chưa lưu' : ''}</span><div className="flex flex-wrap gap-2"><button className={buttonClass} disabled={Boolean(pending)} onClick={() => leave(onClose)} type="button">Đóng</button>{detail.order.status === 'ORDERED' && <button className={primaryButtonClass} disabled={Boolean(pending)} onClick={() => void runAction('start')} type="button">{pending ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Play aria-hidden="true" className="h-4 w-4" />}Tiếp nhận chỉ định</button>}{editable && <><button className={buttonClass} disabled={Boolean(pending)} onClick={() => void runAction('save')} type="button"><Save aria-hidden="true" className="h-4 w-4" />Lưu kết quả</button><button className={primaryButtonClass} disabled={Boolean(pending)} onClick={() => void runAction('complete')} type="button">{pending === 'complete' ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Check aria-hidden="true" className="h-4 w-4" />}Hoàn tất dịch vụ</button></>}</div></div>
   </>;
