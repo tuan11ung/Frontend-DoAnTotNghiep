@@ -10,11 +10,9 @@ export function generateStaticParams() {
   return HOME_GUIDES.map((guide) => ({ slug: guide.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
-  const guide = HOME_GUIDES.find((item) => item.slug === slug);
-  return { title: guide ? `${guide.title} | MedConnect` : 'Không tìm thấy hướng dẫn | MedConnect' };
-}
+export const metadata: Metadata = {
+  title: 'Hướng dẫn đặt khám và sử dụng | MedConnect',
+};
 
 async function GuideContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
