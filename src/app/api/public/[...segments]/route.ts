@@ -1,5 +1,5 @@
 const BACKEND = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '').replace(/\/api\/v1$/, '');
-const endpoints = new Set(['hospitals/search', 'hospitals/detail', 'hospitals/specialties/search', 'articles/search', 'articles/detail', 'directory/doctors/search', 'directory/doctors/detail', 'directory/services/search', 'directory/queue/rooms', 'directory/queue/display']);
+const endpoints = new Set(['time/current', 'hospitals/search', 'hospitals/detail', 'hospitals/specialties/search', 'articles/search', 'articles/detail', 'directory/doctors/search', 'directory/doctors/detail', 'directory/services/search', 'directory/queue/rooms', 'directory/queue/display']);
 export async function POST(request: Request, { params }: { params: Promise<{ segments: string[] }> }) {
   const endpoint = (await params).segments.join('/');
   if (!endpoints.has(endpoint)) return Response.json({ success: false, message: 'API không tồn tại.' }, { status: 404 });

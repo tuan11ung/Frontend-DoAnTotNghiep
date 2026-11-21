@@ -1,5 +1,8 @@
 'use client';
 
+import { businessNow } from '@/src/shared/lib/business-time';
+
+
 import { useState, type FormEvent } from 'react';
 import { HeartPulse, LockKeyhole, Pencil, Plus, ShieldCheck, Trash2 } from 'lucide-react';
 import { canEditHealth, type Allergy, type Condition, type ProfileData } from '../profile.types';
@@ -22,7 +25,7 @@ export function HealthInfo({ data, actions }: { data: ProfileData; actions: Prof
     if (!name || name.length > 255) { setError('Vui lòng nhập tên hợp lệ, tối đa 255 ký tự.'); return; }
     const yearText = String(form.get('diagnosedYear') ?? '');
     const year = yearText ? Number(yearText) : null;
-    if (editor.kind === 'conditions' && year !== null && (!Number.isInteger(year) || year < 1900 || year > new Date().getFullYear())) { setError('Năm phát hiện phải từ 1900 đến năm hiện tại.'); return; }
+    if (editor.kind === 'conditions' && year !== null && (!Number.isInteger(year) || year < 1900 || year > businessNow().getFullYear())) { setError('Năm phát hiện phải từ 1900 đến năm hiện tại.'); return; }
     setBusy(true); setError(''); setSuccess('');
     try {
       if (editor.kind === 'allergies') await actions.saveAllergy({ id: editor.entry?.id, name, type: String(form.get('allergyType')) as Allergy['type'], reaction: String(form.get('reaction') ?? '').trim() || null });
@@ -57,7 +60,7 @@ export function HealthInfo({ data, actions }: { data: ProfileData; actions: Prof
   }
   const editorForm = editor && <form key={`${editor.kind}-${editor.entry?.id ?? 'new'}-${editor.kind === 'allergies' ? editor.type : ''}`} onSubmit={save} aria-label="Khai báo sức khỏe" className="mt-3 space-y-4 rounded-xl border border-blue-200 bg-blue-50/40 p-4"><h3 className="font-semibold text-slate-800">{editor.entry ? 'Chỉnh sửa' : 'Thêm'} {editor.kind === 'allergies' ? 'dị ứng' : 'bệnh mạn tính'}</h3><fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><Field label={editor.kind === 'allergies' ? 'Tên thuốc / thực phẩm gây dị ứng *' : 'Tên bệnh *'} id="healthName"><input autoFocus id="healthName" name="healthName" required maxLength={255} defaultValue={editor.entry?.name ?? ''} className={inputClass} /></Field></div>
         {editor.kind === 'allergies' ? <><Field label="Loại dị ứng" id="allergyType"><select id="allergyType" name="allergyType" className={inputClass} defaultValue={editor.entry?.type ?? editor.type ?? 'DRUG'}><option value="DRUG">Thuốc</option><option value="FOOD">Thực phẩm</option><option value="OTHER">Khác</option></select></Field><Field label="Biểu hiện dị ứng" id="reaction"><input id="reaction" name="reaction" maxLength={255} defaultValue={editor.entry?.reaction ?? ''} placeholder="Ví dụ: nổi mẩn, ngứa…" className={inputClass} /></Field></>
-          : <><Field label="Năm phát hiện" id="diagnosedYear"><input id="diagnosedYear" name="diagnosedYear" type="number" min={1900} max={new Date().getFullYear()} defaultValue={editor.entry?.diagnosedYear ?? ''} placeholder="Ví dụ: 2023" className={inputClass} /></Field><label className="flex items-center gap-2 self-center text-sm text-slate-700"><input type="checkbox" name="recovered" defaultChecked={editor.entry?.recovered ?? false} className="size-4 accent-blue-600" />Đã khỏi</label></>}
+          : <><Field label="Năm phát hiện" id="diagnosedYear"><input id="diagnosedYear" name="diagnosedYear" type="number" min={1900} max={businessNow().getFullYear()} defaultValue={editor.entry?.diagnosedYear ?? ''} placeholder="Ví dụ: 2023" className={inputClass} /></Field><label className="flex items-center gap-2 self-center text-sm text-slate-700"><input type="checkbox" name="recovered" defaultChecked={editor.entry?.recovered ?? false} className="size-4 accent-blue-600" />Đã khỏi</label></>}
       </fieldset><div className="flex flex-wrap justify-end gap-2"><button type="button" disabled={busy} className={secondaryClass} onClick={() => { setEditor(null); setError(''); }}>Hủy</button><button type="submit" disabled={busy} className={primaryClass}>{busy ? 'Đang lưu…' : 'Lưu khai báo'}</button></div></form>;
   return <section id="health" aria-labelledby="health-heading" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5 sm:px-6"><span className="rounded-xl bg-rose-50 p-2.5 text-rose-500"><HeartPulse className="size-5" /></span><div><h2 id="health-heading" className="font-bold text-slate-900">Thông tin sức khỏe</h2><p className="mt-1 text-xs text-slate-500">Các thông tin y tế quan trọng như tiền sử dị ứng, tiền sử bệnh mãn tính.</p></div></div>

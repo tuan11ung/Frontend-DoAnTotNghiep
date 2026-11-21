@@ -1,7 +1,8 @@
+import { businessNow } from '@/src/shared/lib/business-time';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { DraftChange, DraftEdits, ScheduleSession, WorkScheduleCell, WorkScheduleWeek } from '../models/types/work-schedule.types';
 
-export function getScheduleToday(now = new Date()): string {
+export function getScheduleToday(now = businessNow()): string {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Ho_Chi_Minh',
     year: 'numeric',

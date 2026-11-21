@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Manrope } from 'next/font/google';
 import '@/src/styles/globals.css';
+import { BusinessTimeProvider } from '@/src/shared/components/BusinessTimeProvider';
 
 const manrope = Manrope({
   subsets: ['latin', 'vietnamese'],
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${manrope.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans bg-white text-slate-800">
-        {children}
+        <BusinessTimeProvider>{children}</BusinessTimeProvider>
         <div id="toast-region" data-toast-region className="toast-region" />
       </body>
     </html>

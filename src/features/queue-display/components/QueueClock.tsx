@@ -1,5 +1,8 @@
 'use client';
 
+import { businessNow } from '@/src/shared/lib/business-time';
+
+
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import { useEffect, useState } from 'react';
@@ -12,7 +15,7 @@ export function QueueClock() {
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    const timer = window.setInterval(() => setNow(businessNow()), 1000);
     return () => window.clearInterval(timer);
   }, []);
 

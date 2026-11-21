@@ -1,3 +1,4 @@
+import { businessNow, businessNowMs } from '@/src/shared/lib/business-time';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
 import type { VisitQueueRoom } from '../types';
@@ -52,14 +53,14 @@ export function effectiveAppointment(appointment: PatientAppointment, rooms: Vis
 }
 
 export function vietnamDate() {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' }).format(businessNow());
 }
 
 export function appointmentDate(date: string) {
   return formatDisplayDate(date);
 }
 
-export function canCancelAppointment(appointment: PatientAppointment, now = Date.now()) {
+export function canCancelAppointment(appointment: PatientAppointment, now = businessNowMs()) {
   if (!['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status)) return false;
   const cutoff = appointment.cancellationPolicy?.cutoffMinutes;
   if (cutoff === undefined) return true;

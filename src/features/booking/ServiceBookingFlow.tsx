@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { bookingApi } from './api/booking-api';
@@ -13,6 +13,7 @@ import { BookingTargetSelector } from './components/BookingTargetSelector';
 import { BookingStepper } from './components/BookingStepper';
 import { BookingStep1Mode } from './components/BookingStep1Mode';
 import { BookingStep2 } from './components/BookingStep2';
+import { BhytBookingCalendar } from './components/BhytBookingCalendar';
 import { BhytBookingSuccess, bookingBackClass, bookingButtonClass, bookingInputClass } from './components/BhytBookingSteps';
 
 const money = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
@@ -46,6 +47,14 @@ export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initial
   const slots = currentSlots.filter(s => s.serviceType === 'SERVICE' && s.specialtyId === specialtyId && s.remainingCapacity > 0
     && (!qualification || getDoctorQualification(s.rankName ?? '') === qualification)
     && (!requestedDoctor || String(s.staffId) === requestedDoctor));
+
+  const loadDates = useCallback(async (fromDate: string, toDate: string, signal: AbortSignal) => {
+    if (hospitalId === null) return [];
+    const items = await serviceBookingApi.slots(hospitalId, fromDate, toDate, signal);
+    return items.filter(s => s.serviceType === 'SERVICE' && s.specialtyId === specialtyId && s.remainingCapacity > 0
+      && (!qualification || getDoctorQualification(s.rankName ?? '') === qualification)
+      && (!requestedDoctor || String(s.staffId) === requestedDoctor)).map(s => s.appointmentDate);
+  }, [hospitalId, specialtyId, qualification, requestedDoctor]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -111,11 +120,12 @@ export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initial
         else setStep(2);
       }} />}
       {step === 2 && <BookingStep2 hospitals={bootstrap.hospitals} hospitalId={hospitalId} patientName={patient?.fullName} specialties={(specialties?.hospitalId === hospitalId ? specialties.items : []).map(s => ({ id: s.specialtyId, name: s.name }))} specialtyId={specialtyId} specialtiesLoading={hospitalId !== null && specialties?.hospitalId !== hospitalId} specialtyError={specialties?.hospitalId === hospitalId ? specialties.error : undefined}
-        qualification={{ value: qualification, available: true, onSelect: value => { setQualification(value); setSlot(null); } }}
-        onSelectHospital={id => { setHospitalId(id); setSpecialtyId(null); setSlot(null); setDate(''); }} onSelectSpecialty={id => { setSpecialtyId(id); setSlot(null); }} canContinue={Boolean(patient && hospital && specialty)} onBack={() => setStep(1)} onContinue={() => { setError(''); setStep(3); }} />}
+        qualification={{ value: qualification, available: true, onSelect: value => { setQualification(value); setSlot(null); setDate(''); } }}
+        onSelectHospital={id => { setHospitalId(id); setSpecialtyId(null); setSlot(null); setDate(''); }} onSelectSpecialty={id => { setSpecialtyId(id); setSlot(null); setDate(''); }} canContinue={Boolean(patient && hospital && specialty)} onBack={() => setStep(1)} onContinue={() => { setError(''); setStep(3); }} />}
       {step === 3 && <section className="space-y-5 rounded-2xl border bg-white p-6"><h1 className="text-xl font-bold">Chọn lịch khám dịch vụ</h1><p className="text-sm text-slate-600">{hospital?.name} · {specialty?.name} · {qualification ? doctorQualifications[qualification] : 'Tất cả trình độ'}</p>
         {requestedDoctor && <p className="text-sm text-blue-700">Đang lọc lịch của bác sĩ bạn đã chọn. <Link className="underline" href="/booking?mode=demand">Chọn lại từ đầu</Link></p>}
-        <label className="block text-sm font-bold">Ngày khám<input type="date" className={`${bookingInputClass} mt-2`} min={today} max={lastDate} value={date} onChange={e => { setDate(e.target.value); setSlot(null); }} /></label>
+        {hospital && <BhytBookingCalendar key={`${hospitalId}/${specialtyId}/${qualification}/${requestedDoctor}/${slotRevision}`} hospitalId={hospital.id} specialtyId={specialtyId} date={date} minDate={today} maxDate={lastDate} loadDates={loadDates} onDate={value => { setDate(value); setSlot(null); }} />}
+        <p className="text-sm text-slate-500">Chỉ chọn được ngày có bác sĩ còn lịch phù hợp với chuyên khoa và trình độ đã chọn. Ngày làm nhạt không có lịch phù hợp hoặc đã hết chỗ; bạn có thể đổi tháng hoặc quay lại đổi trình độ.</p>
         {date && !validDate && <p role="alert" className="text-sm text-rose-700">Ngày khám nằm ngoài thời gian cơ sở cho phép đặt.</p>}
         {validDate && availability?.key !== key && <p role="status">Đang tải khung giờ…</p>}
         {availability?.key === key && availability.error && <p role="alert" className="text-sm text-rose-700">{availability.error} <button type="button" className="font-bold" onClick={() => setSlotRevision(v => v + 1)}>Thử lại</button></p>}
