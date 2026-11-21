@@ -3,6 +3,12 @@ import { NextResponse } from 'next/server';
 const BACKEND_API_URL = process.env.BACKEND_API_URL ?? 'http://localhost:8081';
 
 const ENDPOINTS: Record<string, string> = {
+  'articles/search': '/admin/articles/search',
+  'articles/detail': '/admin/articles/detail',
+  'articles/import-url': '/admin/articles/import-url',
+  'articles/save': '/admin/articles/save',
+  'articles/publication': '/admin/articles/publication',
+  'articles/delete': '/admin/articles/delete',
   'rank-prices/search': '/admin/rank-prices/search',
   'rank-prices/save': '/admin/rank-prices/save',
   'lab-parameters/search': '/admin/lab-parameters/search',

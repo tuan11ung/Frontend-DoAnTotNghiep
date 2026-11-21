@@ -54,6 +54,7 @@ const NAVIGATION_GROUPS: { label: string; items: NavigationItem[] }[] = [
     items: [
       { id: 'staff', label: 'Tài khoản nhân viên', icon: UsersRound },
       { id: 'services', label: 'Dịch vụ & Bảng giá', icon: BadgeDollarSign },
+      { id: 'articles', label: 'Quản lý bài viết', icon: Building2 },
       { id: 'clinical-settings', label: 'Giá khám, xét nghiệm & thuốc', icon: Stethoscope },
     ],
   },

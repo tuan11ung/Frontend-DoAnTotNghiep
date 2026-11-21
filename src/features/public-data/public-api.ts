@@ -2,7 +2,7 @@ import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import type { PublicHospitalProfile } from '../hospital-detail/models/types/public-hospital.types';
 export interface PublicHospital extends Omit<PublicHospitalProfile, 'id' | 'specialties' | 'services'> { id: number }
 export interface PublicDoctor { id: number; name: string; hospitalId: number; hospitalName: string; address?: string; specialtyId?: number; specialtyName?: string; qualification?: string }
-export interface PublicArticle { id: number; title: string; summary?: string; content?: string; thumbnailUrl?: string; specialtyName?: string; publishedAt?: string }
+export interface PublicArticle { id: number; title: string; summary?: string; content?: string; thumbnailUrl?: string; specialtyName?: string; publishedAt?: string; sourceUrl?: string; hospitalId?: number }
 export async function publicRequest<T>(endpoint: string, body: object, signal?: AbortSignal): Promise<T> {
   const response = await fetch(`/api/public/${endpoint}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', signal });
   const result = await response.json().catch(() => null);
