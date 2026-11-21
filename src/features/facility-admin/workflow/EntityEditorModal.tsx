@@ -223,7 +223,7 @@ export function EntityEditorModal({
                     onChange={(value) => update('specialtyId', value)}
                     options={specialtyCatalog.map((item) => ({
                       value: String(item.id),
-                      label: `${item.code} · ${item.name}`,
+                      label: item.name,
                       searchText: item.name,
                     }))}
                     placeholder="Chọn chuyên khoa"

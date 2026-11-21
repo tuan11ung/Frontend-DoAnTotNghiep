@@ -1,5 +1,8 @@
 'use client';
 
+import { businessNow } from '@/src/shared/lib/business-time';
+
+
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import React, { useState } from 'react';
@@ -30,7 +33,7 @@ const HospitalBookingForm: React.FC<HospitalBookingModalProps> = ({
 }) => {
   const [patientName, setPatientName] = useState('');
   const [dob, setDob] = useState('');
-  const [bookingDate, setBookingDate] = useState(() => { const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); return tomorrow.toISOString().split('T')[0]; });
+  const [bookingDate, setBookingDate] = useState(() => { const tomorrow = businessNow(); tomorrow.setDate(tomorrow.getDate() + 1); return tomorrow.toISOString().split('T')[0]; });
   const [selectedService, setSelectedService] = useState(initialService || hospital.servicesList[0]?.title || '');
   const [phone, setPhone] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);

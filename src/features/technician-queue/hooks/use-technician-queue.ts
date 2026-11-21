@@ -1,5 +1,8 @@
 'use client';
 
+import { businessNow } from '@/src/shared/lib/business-time';
+
+
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { AUTH_STORAGE_KEY, getStoredAuthSession, type AuthSession } from '@/src/features/auth/utils/auth-storage';
 import { DISPLAY_TIME_ZONE } from '@/src/shared/utils/date-format';
@@ -28,7 +31,7 @@ export function technicianErrorMessage(error: unknown) {
 function defaultQueueFilters(): TechnicianQueueFilters {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: DISPLAY_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit',
-  }).formatToParts(new Date());
+  }).formatToParts(businessNow());
   const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value;
   const today = `${part('year')}-${part('month')}-${part('day')}`;
   return { status: 'ALL', serviceId: '', fromDate: today, toDate: today, page: 0 };
@@ -68,7 +71,7 @@ export function useTechnicianQueue() {
           setFilters(current => ({ ...current, page: lastPage }));
           return;
         }
-        setSnapshot({ key: filterKey, data, error: '', version: refreshVersion, loadedAt: new Date().toISOString() });
+        setSnapshot({ key: filterKey, data, error: '', version: refreshVersion, loadedAt: businessNow().toISOString() });
       } catch (error) {
         if (!controller.signal.aborted) setSnapshot(previous => ({ key: filterKey, data: previous.key === filterKey ? previous.data : null, error: technicianErrorMessage(error), version: refreshVersion, loadedAt: previous.key === filterKey ? previous.loadedAt : '' }));
       } finally {

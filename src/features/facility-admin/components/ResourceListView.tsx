@@ -24,6 +24,7 @@ import type {
   Room,
   Specialty,
   StaffAccount,
+  StaffRole,
 } from '../types';
 
 interface ResourceListViewProps {
@@ -112,6 +113,7 @@ function ActionButton({ children, label, onClick }: { children: React.ReactNode;
 export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdit, onToggle }: ResourceListViewProps) {
   const [query, setQuery] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('ALL');
+  const [roleFilter, setRoleFilter] = useState<StaffRole | 'ALL'>('ALL');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const meta = SECTION_META[kind];
   const SectionIcon = meta.icon;
@@ -119,6 +121,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   const filteredItems = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('vi');
     return items.filter((item) => {
+      if (kind === 'staff' && roleFilter !== 'ALL' && !(item as StaffAccount).roles.includes(roleFilter)) return false;
       if (kind === 'room' && specialtyFilter !== 'ALL') {
         const room = item as Room;
         if (specialtyFilter === 'NONE' ? room.specialtyId != null : room.specialtyId !== Number(specialtyFilter)) return false;
@@ -134,7 +137,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
           : `${item.code} ${item.name}`;
       return searchable.toLocaleLowerCase('vi').includes(normalizedQuery);
     });
-  }, [items, query, status, kind, specialtyFilter]);
+  }, [items, query, status, kind, specialtyFilter, roleFilter]);
 
   const departmentHeadNames = (departmentId: number) => staff
     .filter((item) => item.active && item.departmentId === departmentId && item.roles.includes('DEPARTMENT_HEAD'))
@@ -176,6 +179,15 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
             </select>
           </label>
         )}
+        {kind === 'staff' && (
+          <label className="w-full sm:w-56">
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Vai trò</span>
+            <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setRoleFilter(event.target.value as StaffRole | 'ALL')} value={roleFilter}>
+              <option value="ALL">Tất cả vai trò</option>
+              {Object.entries(STAFF_ROLE_LABELS).map(([role, label]) => <option key={role} value={role}>{label}</option>)}
+            </select>
+          </label>
+        )}
         <label className="w-44">
           <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Trạng thái</span>
           <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setStatus(event.target.value as typeof status)} value={status}>
@@ -184,7 +196,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
             <option value="INACTIVE">Tạm ngừng</option>
           </select>
         </label>
-        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{kind === 'room' ? `${filteredItems.length} / ${items.length} bản ghi` : `${items.length} bản ghi`} · {activeCount} đang hoạt động</p>
+        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{kind === 'room' || kind === 'staff' ? `${filteredItems.length} / ${items.length} bản ghi` : `${items.length} bản ghi`} · {activeCount} đang hoạt động</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -290,7 +302,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
           <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center">
             <Search className="h-9 w-9 text-slate-300" />
             <p className="mt-3 font-bold text-slate-700">Không tìm thấy dữ liệu phù hợp</p>
-            <p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc bộ lọc trạng thái.</p>
+            <p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc bộ lọc.</p>
           </div>
         )}
       </div>

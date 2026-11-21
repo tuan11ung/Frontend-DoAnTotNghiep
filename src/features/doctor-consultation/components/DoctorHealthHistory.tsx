@@ -1,4 +1,7 @@
 'use client';
+
+import { businessNow } from '@/src/shared/lib/business-time';
+
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { consultationApi, type ClinicalAllergy, type ClinicalCondition } from '../api/consultation-api';
@@ -34,7 +37,7 @@ export function DoctorHealthHistory({patientId,allergies,conditions,editable,onA
     const form=new FormData(e.currentTarget),name=String(form.get('name') || '').trim();
     if(!name){setError('Nhập tên trước khi lưu.');return;}
     const year=String(form.get('year') || ''),yearValue=year?Number(year):null;
-    if(editor.kind==='condition' && yearValue!==null && (!Number.isInteger(yearValue) || yearValue<1900 || yearValue>new Date().getFullYear())){setError('Năm phát hiện phải từ 1900 đến năm hiện tại.');return;}
+    if(editor.kind==='condition' && yearValue!==null && (!Number.isInteger(yearValue) || yearValue<1900 || yearValue>businessNow().getFullYear())){setError('Năm phát hiện phải từ 1900 đến năm hiện tại.');return;}
     lock.current=true;setBusy(true);setError('');setNotice('');
     try{
       if(editor.kind==='allergy'){
@@ -60,7 +63,7 @@ export function DoctorHealthHistory({patientId,allergies,conditions,editable,onA
       <fieldset disabled={busy || !editable} className="grid gap-3 sm:grid-cols-2">
         <label className="text-sm sm:col-span-2">{kind==='allergy'?'Tên thuốc / thực phẩm / tác nhân':'Tên bệnh'}<input autoFocus key={selection?.id || entry?.id || "new"} name="name" required maxLength={255} defaultValue={selection?.name || entry?.name} readOnly={!!linked} className={clinicalField}/>{linked && <span className="text-xs text-slate-500">Tên đã liên kết danh mục; bản ghi này giữ liên kết khi xác minh.</span>}</label>
         {kind==='allergy'?<><label className="text-sm">Loại dị ứng<select name="type" value={allergyType} onChange={e=>{setAllergyType(e.target.value);setSelection(undefined);}} className={clinicalField}>{Object.entries(types).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label className="text-sm">Biểu hiện / phản ứng<input name="reaction" maxLength={255} defaultValue={entry && 'reaction' in entry?entry.reaction || '':''} className={clinicalField}/></label></>:<>
-        <label className="text-sm">Năm phát hiện<input name="year" type="number" min={1900} max={new Date().getFullYear()} defaultValue={entry && 'diagnosedYear' in entry?entry.diagnosedYear || '':''} className={clinicalField}/></label>
+        <label className="text-sm">Năm phát hiện<input name="year" type="number" min={1900} max={businessNow().getFullYear()} defaultValue={entry && 'diagnosedYear' in entry?entry.diagnosedYear || '':''} className={clinicalField}/></label>
         <label className="flex items-center gap-2 text-sm"><input name="recovered" type="checkbox" defaultChecked={entry && 'recovered' in entry?entry.recovered:false}/>Đã khỏi</label></>}
         {!entry && <div className="sm:col-span-2">{kind==="allergy" ? allergyType==="DRUG" && <IngredientSearch disabled={busy || !editable} onSelect={setSelection}/> : <Icd10Picker selectedIds={selection?[selection.id]:[]} disabled={busy || !editable} onSelect={setSelection}/>} {selection && <p className="mt-2 text-sm">Đã chọn: {selection.name} <button type="button" className="text-blue-700 underline" onClick={()=>setSelection(undefined)}>Bỏ chọn</button></p>}</div>}
         <p className="text-xs text-slate-600 sm:col-span-2">Chỉ xác minh sau khi đối chiếu với người bệnh hoặc tài liệu y tế.</p>

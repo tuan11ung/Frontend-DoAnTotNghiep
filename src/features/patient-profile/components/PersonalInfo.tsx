@@ -1,5 +1,8 @@
 'use client';
 
+import { businessNow } from '@/src/shared/lib/business-time';
+
+
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import { useState, type FormEvent } from 'react';
@@ -13,7 +16,7 @@ export function PersonalInfo({ profile, onSave }: { profile: PersonalProfile; on
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [latestBirthDate] = useState(() => { const day = new Date(); day.setDate(day.getDate() - 1); return day.toLocaleDateString('en-CA'); });
+  const [latestBirthDate] = useState(() => { const day = businessNow(); day.setDate(day.getDate() - 1); return day.toLocaleDateString('en-CA'); });
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
@@ -28,7 +31,7 @@ export function PersonalInfo({ profile, onSave }: { profile: PersonalProfile; on
       nationalId: nationalId || undefined,
       phone: phone || undefined,
     };
-    const today = new Date().toLocaleDateString('en-CA');
+    const today = businessNow().toLocaleDateString('en-CA');
     if (!input.fullName || input.fullName.length > 255 || !/^\d{4}-\d{2}-\d{2}$/.test(input.dob) || input.dob >= today) {
       setError('Vui lòng nhập họ tên hợp lệ và ngày sinh trước hôm nay.'); return;
     }

@@ -13,13 +13,14 @@ function dateKey(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
-export function BhytBookingCalendar({ hospitalId, specialtyId, date, minDate, maxDate, onDate }: {
+export function BhytBookingCalendar({ hospitalId, specialtyId, date, minDate, maxDate, onDate, loadDates }: {
   hospitalId: number;
   specialtyId: number | null;
   date: string;
   minDate: string;
   maxDate: string;
   onDate: (date: string) => void;
+  loadDates?: (fromDate: string, toDate: string, signal: AbortSignal) => Promise<string[]>;
 }) {
   const firstMonth = minDate.slice(0, 7);
   const lastMonth = maxDate.slice(0, 7);
@@ -39,15 +40,18 @@ export function BhytBookingCalendar({ hospitalId, specialtyId, date, minDate, ma
 
   useEffect(() => {
     const controller = new AbortController();
-    bookingApi.slots(hospitalId, specialtyId, fromDate, toDate, controller.signal).then((slots) => {
+    const dates = loadDates
+      ? loadDates(fromDate, toDate, controller.signal)
+      : bookingApi.slots(hospitalId, specialtyId, fromDate, toDate, controller.signal).then(slots => slots.map(slot => slot.window.appointmentDate));
+    dates.then((items) => {
       if (controller.signal.aborted) return;
-      setAvailability({ key: requestKey, dates: new Set(slots.map((slot) => slot.window.appointmentDate)) });
+      setAvailability({ key: requestKey, dates: new Set(items) });
     }).catch(() => {
       if (controller.signal.aborted) return;
       setAvailability({ key: requestKey, dates: new Set(), error: 'Không thể tải lịch đặt khám trong tháng.' });
     });
     return () => controller.abort();
-  }, [hospitalId, specialtyId, fromDate, toDate, requestKey]);
+  }, [hospitalId, specialtyId, fromDate, toDate, requestKey, loadDates]);
 
   function moveMonth(offset: number) {
     setVisibleMonth(dateKey(calendarDate(year, month + offset, 1)).slice(0, 7));
