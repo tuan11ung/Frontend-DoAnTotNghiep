@@ -19,12 +19,18 @@ export function BookingSummary({ patient, hospital, specialtyName, pendingSpecia
   patient: BookingPatientProfile; hospital: BookingHospital; specialtyName: string; pendingSpecialty: boolean; slot: BhytSlot;
 }) {
   const { appointmentDate, startTime, endTime } = slot.window;
-  return <dl className="grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm sm:grid-cols-2">
-    <div><dt className="text-slate-500">Người khám · Bản thân</dt><dd className="mt-1 font-bold text-slate-900">{patient.fullName} · {patient.patientCode}</dd></div>
+  return <div className="grid grid-cols-1 items-start gap-6 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm sm:grid-cols-2">
+    <dl className="grid min-w-0 gap-4 break-words">
+    <div><dt className="text-slate-500">Người khám</dt><dd className="mt-1 font-bold text-slate-900">{patient.fullName}</dd></div>
+    <div><dt className="text-slate-500">Quan hệ</dt><dd className="mt-1 font-bold text-slate-900">{patient.relationship}</dd></div>
+    <div><dt className="text-slate-500">Ngày sinh</dt><dd className="mt-1 font-bold text-slate-900">{patient.dob || 'Chưa cập nhật'}</dd></div>
+    </dl>
+    <dl className="grid min-w-0 gap-4 break-words">
     <div><dt className="text-slate-500">Cơ sở y tế</dt><dd className="mt-1 font-bold text-slate-900">{hospital.name}</dd></div>
     <div><dt className="text-slate-500">Chuyên khoa</dt><dd className="mt-1 font-bold text-slate-900">{specialtyName}</dd><dd className="mt-1 text-slate-500">{pendingSpecialty ? 'Lễ tân sẽ xem lý do khám trước khi phân chuyên khoa và xác nhận lịch.' : 'Phòng khám sẽ được phân tự động khi đặt lịch thành công.'}</dd></div>
     <div><dt className="text-slate-500">{pendingSpecialty ? 'Khung giờ mong muốn' : 'Dự kiến check-in'}</dt><dd className="mt-1 font-bold text-slate-900">{displayBookingDate(appointmentDate)} · {startTime.slice(0, 5)}–{endTime.slice(0, 5)}</dd></div>
-  </dl>;
+    </dl>
+  </div>;
 }
 
 export function BhytScheduleStep({ hospitalId, specialtyId, date, minDate, maxDate, slots, loading, error, bookingError, selectedSlot, onDate, onSlot, onBack, onContinue }: {
