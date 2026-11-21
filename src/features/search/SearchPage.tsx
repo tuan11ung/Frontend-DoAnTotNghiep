@@ -11,7 +11,7 @@ type Tab = keyof typeof tabs;
 type Group = Exclude<Tab, 'all'>;
 const order: Group[] = ['articles','hospitals','doctors'];
 const icons = { articles: BookOpen, hospitals: Building2, doctors: Stethoscope };
-type Row = { id: number; title: string; description?: string | null; meta?: string; href: string; booking?: string };
+type Row = { id: number; title: string; description?: string | null; meta?: string; href: string };
 type Results = { group: Group; rows: Row[]; total: number; pages: number };
 function searchUrl(q: string, tab: Tab, page = 0) {
   const params = new URLSearchParams();
@@ -27,10 +27,10 @@ async function loadGroup(group: Group, q: string, page: number, size: number, si
   }
   if (group === 'hospitals') {
     const data = await publicApi.hospitals(q,page,size,signal);
-    return {group,total:data.totalElements,pages:data.totalPages,rows:data.content.map(h=>({id:h.id,title:h.name,description:h.address || h.province,meta:h.hotline || undefined,href:'/hospitals/'+h.id,booking:'/booking?hospitalId='+h.id}))};
+    return {group,total:data.totalElements,pages:data.totalPages,rows:data.content.map(h=>({id:h.id,title:h.name,description:h.address || h.province,meta:h.hotline || undefined,href:'/hospitals/'+h.id}))};
   }
   const data = await publicApi.doctors(q,page,size,signal);
-  return {group,total:data.totalElements,pages:data.totalPages,rows:data.content.map(d=>({id:d.id,title:d.name,description:d.hospitalName,meta:[d.qualification,d.specialtyName].filter(Boolean).join(' · '),href:'/doctors/'+d.id,booking:'/booking?mode=service&hospitalId='+d.hospitalId+'&doctorId='+d.id+(d.specialtyId?'&specialtyId='+d.specialtyId:'')}))};
+  return {group,total:data.totalElements,pages:data.totalPages,rows:data.content.map(d=>({id:d.id,title:d.name,description:d.hospitalName,meta:[d.qualification,d.specialtyName].filter(Boolean).join(' · '),href:'/doctors/'+d.id}))};
 }
 function ResultList({q,tab,page}: {q:string;tab:Tab;page:number}) {
   const [data,setData]=useState<Results[]>([]);
@@ -66,7 +66,7 @@ function ResultList({q,tab,page}: {q:string;tab:Tab;page:number}) {
               {lead && <p className="mb-2 text-xs font-bold uppercase tracking-wide text-blue-700">Kết quả đầu tiên</p>}
               <h3 className={lead?'text-xl font-bold text-slate-900':'font-bold text-slate-900'}><Link href={r.href} className="hover:text-blue-700 hover:underline">{r.title}</Link></h3>
               {r.meta && <p className="mt-1 text-xs text-slate-600">{r.meta}</p>}{r.description && <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-700">{r.description}</p>}
-              <div className="mt-3 flex gap-5 text-sm font-semibold text-blue-700"><Link className="inline-flex items-center gap-1" href={r.href}>{group==='articles'?'Đọc bài viết':'Xem chi tiết'} <ArrowRight size={14}/></Link>{r.booking && <Link href={r.booking}>Đặt khám</Link>}</div>
+              <div className="mt-3 flex gap-5 text-sm font-semibold text-blue-700"><Link className="inline-flex items-center gap-1" href={r.href}>{group==='articles'?'Đọc bài viết':'Xem chi tiết'} <ArrowRight size={14}/></Link></div>
             </li>;
           })}</ul>
         </section>;

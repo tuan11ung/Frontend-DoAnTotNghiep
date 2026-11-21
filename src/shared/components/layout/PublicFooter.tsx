@@ -60,7 +60,8 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onSelectTab }) => {
           <div className="lg:col-span-3">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Dịch vụ y tế</h4>
             <ul className="space-y-2.5 text-xs text-slate-400">
-              <li>
+              {/* Doctor booking temporarily hidden.
+<li>
                 <button
                   onClick={() => handleServiceClick('doctor')}
                   className="hover:text-white transition-colors text-left cursor-pointer"
@@ -69,6 +70,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onSelectTab }) => {
                   Đặt khám Bác sĩ Chuyên khoa
                 </button>
               </li>
+              */}
               <li>
                 <button
                   onClick={() => handleServiceClick('hospital')}

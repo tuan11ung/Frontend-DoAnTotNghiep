@@ -48,10 +48,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
           {/* Text Content & Search Form */}
           <div className="lg:col-span-7 text-center lg:text-left">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight text-white mb-4">
-              Đặt khám bác sĩ
+              {/* Đặt khám bác sĩ */}
+              Đặt khám bệnh viện
             </h1>
             <p className="text-blue-100 text-sm sm:text-base lg:text-lg font-normal mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Tra cứu bác sĩ, chọn cơ sở và đặt khung giờ còn chỗ để nhận phiếu khám trước khi đến bệnh viện
+              {/* Tra cứu bác sĩ, chọn cơ sở và đặt khung giờ còn chỗ để nhận phiếu khám trước khi đến bệnh viện */}
+              Tìm bệnh viện, chọn chuyên khoa và đặt khung giờ còn chỗ để nhận phiếu khám trước khi đến.
             </p>
 
             {/* Search Bar Wrapper */}
@@ -64,10 +66,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onSearch }) => {
                   <Search className="w-5 h-5 text-blue-500" />
                 </div>
                 <input
-                  aria-label="Tìm kiếm bác sĩ hoặc chuyên khoa"
+                  aria-label="Tìm kiếm bệnh viện hoặc chuyên khoa"
                   className="w-full px-4 py-2.5 text-sm sm:text-base text-slate-800 placeholder-slate-400 bg-transparent border-0 focus:ring-0 focus:outline-none"
                   name="query"
-                  placeholder="Triệu chứng, bác sĩ, bệnh viện, chuyên khoa..."
+                  placeholder="Triệu chứng, bệnh viện, chuyên khoa..."
                   type="text"
                 />
                 <button

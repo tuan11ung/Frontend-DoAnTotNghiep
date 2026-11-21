@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Activity, Building2, CalendarClock, Menu, Newspaper, Stethoscope, User, X } from 'lucide-react';
+import { Activity, Building2, CalendarClock, Menu, Newspaper, User, X } from 'lucide-react';
 import type { AppointmentTabType } from '@/src/shared/types/medical';
 import { clearPatientSession } from '@/src/features/auth/utils/auth-storage';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
@@ -30,7 +30,8 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   const searchType = pathname === '/search' ? searchParams.get('type') : null;
   const links = [
     { href: '/booking', label: mobile ? 'Đặt lịch khám' : 'Đặt lịch', Icon: CalendarClock, active: pathname === '/booking', tab: undefined },
-    { href: '/search?type=doctor', label: mobile ? 'Đặt khám Bác sĩ' : 'Bác sĩ', Icon: Stethoscope, active: searchType === 'doctor', tab: 'doctor' as const },
+    // Doctor booking temporarily hidden on desktop and mobile.
+    // { href: '/search?type=doctor', label: mobile ? 'Đặt khám Bác sĩ' : 'Bác sĩ', Icon: Stethoscope, active: searchType === 'doctor', tab: 'doctor' as const },
     { href: '/search?type=hospital', label: mobile ? 'Đặt khám Bệnh viện' : 'Bệnh viện', Icon: Building2, active: pathname === '/search' && (searchType === 'hospital' || !searchType), tab: 'hospital' as const },
     { href: '/news', label: 'Tin tức', Icon: Newspaper, active: pathname.startsWith('/news') || pathname.startsWith('/tin-tuc'), tab: undefined },
   ];

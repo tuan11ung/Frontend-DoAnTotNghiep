@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Stethoscope, Hospital } from 'lucide-react';
+import { Hospital } from 'lucide-react';
 import { AppointmentTabType } from '@/src/types/medical';
 
 interface AppointmentTabsProps {
@@ -19,6 +19,7 @@ export const AppointmentTabs: React.FC<AppointmentTabsProps> = ({ activeTab, onT
       <div className="flex flex-col px-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
         <nav aria-label="Loại hình đặt khám" className="flex items-center justify-center sm:justify-start sm:gap-6 overflow-x-auto custom-scrollbar-hide">
           {/* Tab 1: Bác sĩ */}
+          {/* Doctor booking tab temporarily hidden.
           <button
             className={`flex-shrink-0 flex items-center gap-2.5 py-4 px-3 sm:px-5 text-sm transition-colors cursor-pointer ${
               activeTab === 'doctor'
@@ -33,6 +34,7 @@ export const AppointmentTabs: React.FC<AppointmentTabsProps> = ({ activeTab, onT
             <Stethoscope className={`w-4 h-4 ${activeTab === 'doctor' ? 'text-blue-600' : 'text-slate-400'}`} />
             <span>Đặt khám Bác sĩ</span>
           </button>
+          */}
 
           {/* Tab 2: Bệnh viện */}
           <button

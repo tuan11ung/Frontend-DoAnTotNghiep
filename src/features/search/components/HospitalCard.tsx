@@ -6,7 +6,6 @@ import {
   MapPin,
   Clock,
   Phone,
-  Calendar,
   Hospital,
   Sparkles,
   Stethoscope,
@@ -23,7 +22,6 @@ interface HospitalCardProps {
 
 export const HospitalCard: React.FC<HospitalCardProps> = ({
   facility,
-  onBook,
   onViewDetails,
 }) => {
   const renderFallbackLogo = () => {
@@ -158,21 +156,14 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-3 pt-3 mt-3 border-t border-slate-100">
             {/* Action buttons */}
             <div className="flex items-center gap-2.5 w-full sm:w-auto">
-              <button
-                type="button"
-                className="px-4 py-2 rounded-xl text-blue-600 hover:bg-blue-50 text-xs sm:text-sm font-semibold transition-all cursor-pointer"
-                onClick={() => onViewDetails?.(facility)}
-              >
-                Xem chi tiết
-              </button>
+
 
               <button
                 type="button"
                 className="flex-1 sm:flex-none px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer"
-                onClick={() => onBook(facility)}
+                onClick={() => onViewDetails?.(facility)}
               >
-                <Calendar className="w-4 h-4" />
-                <span>Đặt khám</span>
+                <span>Xem chi tiết</span>
               </button>
             </div>
           </div>

@@ -22,7 +22,7 @@ interface TrustAndValuesSectionProps {
 export const TrustAndValuesSection: React.FC<TrustAndValuesSectionProps> = ({ onSelectTab }) => {
   const handleCtaClick = () => {
     if (onSelectTab) {
-      onSelectTab('doctor');
+      onSelectTab('hospital');
     }
     const element = document.getElementById('sub-nav-tabs');
     if (element) {
