@@ -77,7 +77,7 @@ export function AddFamilyMemberDialog({ isOpen, onClose, onAdd, showNote }: AddF
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900">Thêm người thân</h2>
-              <p className="text-xs text-slate-500">Tạo hồ sơ người nhà để đặt lịch khám online</p>
+              <p className="text-xs text-slate-500">Thêm người nhà để đặt lịch khám. CCCD đã có sẽ dùng lại hồ sơ hiện có.</p>
             </div>
           </div>
           <button
