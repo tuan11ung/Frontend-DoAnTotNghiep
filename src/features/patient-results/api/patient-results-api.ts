@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { resultEncounter, resultRecord, resultPrescription, type ResultPrescription } from './encounter-mapper';
 import type { EncounterDetail, EncounterSummary } from '@/src/features/doctor-consultation/api/consultation-api';
@@ -10,7 +11,7 @@ class ResultsApiError extends Error { constructor(message: string, public status
 async function request<T>(endpoint: string, body: object, signal?: AbortSignal): Promise<T> {
   const session = getStoredAuthSession();
   if (!session?.roles.includes('PATIENT')) throw new ResultsApiError('Vui lòng đăng nhập tài khoản bệnh nhân.', 401);
-  const response = await fetch(`/api/patient/records/${endpoint}`, { method: 'POST', headers: { Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', signal });
+  const response = await authenticatedFetch(`/api/patient/records/${endpoint}`, { method: 'POST', headers: { Authorization: `Bearer ${session.accessToken}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body), cache: 'no-store', signal });
   const result = await response.json().catch(() => null);
   if (!response.ok || result?.success !== true || result.data == null) throw new ResultsApiError(result?.message || 'Không thể tải kết quả khám.', response.status);
   return result.data as T;

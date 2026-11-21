@@ -11,7 +11,7 @@ export function useDoctorAccess() {
   const session = useMemo(() => owner === 'loading' ? null : JSON.parse(owner) as AuthSession | null, [owner]);
   const isDoctor = session?.roles.includes('DOCTOR') ?? false;
   return {
-    owner,
+    owner: session ? JSON.stringify([session.hospitalId, session.staffId, session.roles]) : owner,
     loading: owner === 'loading',
     session,
     isDoctor,

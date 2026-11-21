@@ -1,3 +1,4 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clearStoredAuthSession, getStoredAuthSession } from '@/src/features/auth/utils/auth-storage';
 import {
   ORDER_STATUSES,
@@ -82,7 +83,7 @@ async function request<T>(path: string, body: unknown, validate: (value: unknown
   const timeout = AbortSignal.timeout(multipart ? 125_000 : 20_000);
   let response: Response;
   try {
-    response = await fetch(`/api/clinic/${path}`, {
+    response = await authenticatedFetch(`/api/clinic/${path}`, {
       method: 'POST',
       headers: { Accept: 'application/json', Authorization: `Bearer ${session.accessToken}`, ...(!multipart ? { 'Content-Type': 'application/json' } : {}) },
       body: multipart ? body : JSON.stringify(body),

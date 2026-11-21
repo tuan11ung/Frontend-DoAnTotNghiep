@@ -1,4 +1,5 @@
 'use client';
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 
 import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { AUTH_STORAGE_KEY, getStoredAuthSession, updateStoredAccountName, type AuthSession } from '../utils/auth-storage';
@@ -18,7 +19,7 @@ function snapshot() {
 function loadAccountName(token: string): Promise<void> {
   const existing = pendingNames.get(token);
   if (existing) return existing;
-  const request = fetch('/api/auth/me', {
+  const request = authenticatedFetch('/api/auth/me', {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: '{}', cache: 'no-store', signal: AbortSignal.timeout(15_000),
   }).then(async response => {

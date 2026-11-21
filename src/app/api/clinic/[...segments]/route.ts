@@ -3,6 +3,19 @@ import { NextResponse } from 'next/server';
 const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 
 const ENDPOINTS: Record<string, string> = {
+  'emergency/doctor-options': '/clinic/emergency/doctor-options',
+  'emergency/grants/search': '/clinic/emergency/grants/search',
+  'emergency/grant': '/clinic/emergency/grant',
+  'emergency/revoke': '/clinic/emergency/revoke',
+  'emergency/my-grants': '/clinic/emergency/my-grants',
+  'emergency/records/search': '/clinic/emergency/records/search',
+  'emergency/records/detail': '/clinic/emergency/records/detail',
+
+  'reception/patients/account-status': '/clinic/reception/patients/account-status',
+  'reception/patients/create-account': '/clinic/reception/patients/create-account',
+  'reception/appointments/overdue/search': '/clinic/reception/appointments/overdue/search',
+  'reception/appointments/overdue/close': '/clinic/reception/appointments/overdue/close',
+
   'work-schedules/workload': '/clinic/work-schedules/workload',
   'work-schedules/intake': '/clinic/work-schedules/intake',
   'ingredients/search': '/clinic/ingredients/search',

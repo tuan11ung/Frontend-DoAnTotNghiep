@@ -1,4 +1,5 @@
 'use client';
+import { ClinicalSettings } from './components/ClinicalSettings';
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
@@ -45,6 +46,7 @@ import type {
 } from './types';
 
 const SECTION_CONTENT: Record<AdminSection, { eyebrow: string; title: string; description: string }> = {
+  'clinical-settings': { eyebrow: 'Chuyên môn', title: 'Giá khám, xét nghiệm và thuốc', description: 'Cấu hình giá khám dịch vụ, chỉ số xét nghiệm và danh mục thuốc của cơ sở.' },
   overview: { eyebrow: 'Điều hành', title: 'Tổng quan cơ sở', description: 'Theo dõi nhanh cấu hình tổ chức, nguồn lực và tình trạng vận hành của bệnh viện.' },
   facility: { eyebrow: 'Điều hành', title: 'Thông tin cơ sở y tế', description: 'Quản lý hồ sơ công khai, giờ làm việc và chính sách đặt hoặc hủy lịch khám.' },
   'work-schedules': { eyebrow: 'Điều hành', title: 'Phân công lịch làm việc', description: 'Sắp xếp bác sĩ theo phòng và ca khám để chủ động điều phối lịch làm việc trong tuần.' },
@@ -305,6 +307,7 @@ export function FacilityAdminPage() {
 
             {activeSection === 'overview' && <DashboardOverview departments={departments} onNavigate={navigateToSection} rooms={rooms} services={services} specialties={specialties} staff={staff} />}
             {activeSection === 'facility' && <FacilityInfoView key={facility.id} facility={facility} onSave={saveFacility} onUploadLogo={uploadLogo} />}
+            {activeSection === 'clinical-settings' && <ClinicalSettings ranks={rankCatalog} services={services} />}
             {activeSection === 'work-schedules' && <WorkScheduleScreen />}
             {currentKind && (
               <ResourceListView

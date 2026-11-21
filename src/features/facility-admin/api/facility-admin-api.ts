@@ -4,7 +4,7 @@ import type {
   Specialty,
   SpecialtyCatalogItem,
 } from '../types';
-import { ADMIN_PAGEABLE, adminRequest, type PageResponse } from './admin-api-client';
+import { ADMIN_PAGEABLE, loadAdminPages, adminRequest } from './admin-api-client';
 
 interface HospitalResponse {
   id: number;
@@ -95,7 +95,7 @@ function toFacility(data: HospitalResponse): FacilityInfo {
   };
 }
 
-const toSpecialty = (data: SpecialtyResponse): Specialty => ({
+export const toSpecialty = (data: SpecialtyResponse): Specialty => ({
   id: data.id,
   specialtyId: data.specialtyId,
   code: data.code,
@@ -104,7 +104,7 @@ const toSpecialty = (data: SpecialtyResponse): Specialty => ({
   active: data.isActive,
 });
 
-const toRoom = (data: RoomResponse): Room => ({
+export const toRoom = (data: RoomResponse): Room => ({
   id: data.id,
   code: data.code,
   name: data.name,
@@ -153,20 +153,20 @@ export const facilityAdminApi = {
   },
 
   async searchSpecialties() {
-    const page = await adminRequest<PageResponse<SpecialtyResponse>>('specialties/search', {
+    const content = await loadAdminPages<SpecialtyResponse>('specialties/search', {
       keyword: null,
       active: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'specialtyId' },
     });
-    return page.content.map(toSpecialty);
+    return content.map(toSpecialty);
   },
 
   async searchSpecialtyCatalog() {
-    const page = await adminRequest<PageResponse<SpecialtyCatalogResponse>>('specialties/catalog', {
+    const content = await loadAdminPages<SpecialtyCatalogResponse>('specialties/catalog', {
       keyword: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'name' },
     });
-    return page.content.map<SpecialtyCatalogItem>((item) => ({
+    return content.map<SpecialtyCatalogItem>((item) => ({
       id: item.id,
       code: item.code,
       name: item.name,
@@ -183,13 +183,13 @@ export const facilityAdminApi = {
   },
 
   async searchRooms() {
-    const page = await adminRequest<PageResponse<RoomResponse>>('rooms/search', {
+    const content = await loadAdminPages<RoomResponse>('rooms/search', {
       keyword: null,
       roomType: null,
       active: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'name' },
     });
-    return page.content.map(toRoom);
+    return content.map(toRoom);
   },
 
   async saveRoom(room: Room) {

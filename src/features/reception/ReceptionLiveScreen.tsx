@@ -6,13 +6,14 @@ import { useState } from 'react';
 import { AccountName } from '@/src/shared/components/layout/AccountName';
 import { ReceptionAppointments } from './components/ReceptionAppointments';
 import { ReceptionRegistration } from './components/ReceptionRegistration';
+import { ReceptionOverdue } from './components/ReceptionLifecycle';
 import { ReceptionBilling } from './components/ReceptionBilling';
 import { ReceptionDemoControls } from './components/ReceptionDemoControls';
 import { useReceptionData } from './ReceptionDataProvider';
 import { RECEPTION_PREVIEW_ENABLED } from './api/reception-preview-api';
 import './reception.css';
 
-const sections = [['patients', 'Tra cứu bệnh nhân'], ['registration', 'Đăng ký khám tại quầy'], ['pending-specialty', 'Chờ phân chuyên khoa'], ['checkin', 'Check-in lịch hẹn'], ['checkout', 'Thanh toán']] as const;
+const sections = [['patients', 'Tra cứu bệnh nhân'], ['registration', 'Đăng ký khám tại quầy'], ['pending-specialty', 'Chờ phân chuyên khoa'], ['checkin', 'Check-in lịch hẹn'], ['checkout', 'Thanh toán'], ['overdue', 'Đối soát lịch quá hạn']] as const;
 
 export function ReceptionLiveScreen() {
   const params = useSearchParams();
@@ -25,6 +26,7 @@ export function ReceptionLiveScreen() {
       <h1 className="mb-5 text-2xl font-extrabold">{sections.find(([id]) => id === tab)?.[1]}</h1>
       {(tab === 'patients' || tab === 'registration') && <ReceptionRegistration key={tab + revision} lookupOnly={tab === 'patients'} />}
       {(tab === 'checkin' || tab === 'pending-specialty') && <ReceptionAppointments key={tab + revision} pending={tab === 'pending-specialty'} />}
+      {tab === 'overdue' && (demo ? <p>Nghiệp vụ đối soát dùng dữ liệu thật tại cơ sở.</p> : <ReceptionOverdue />)}
       {tab === 'checkout' && <ReceptionBilling key={revision} />}
     </div>
   </div>;

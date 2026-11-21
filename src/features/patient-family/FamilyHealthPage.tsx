@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
 import { useProfile } from '@/src/features/patient-profile/use-profile';
+import { MedicalHistoryAccess } from '@/src/features/patient-profile/history-access/MedicalHistoryAccess';
 import { HealthInfo } from '@/src/features/patient-profile/components/HealthInfo';
 
 export function FamilyHealthPage() {
@@ -24,6 +25,6 @@ function FamilyHealthContent({ token, patientId }: { token: string | null; patie
     <Link href="/patient/family" className="text-sm font-semibold text-blue-700">← Hồ sơ gia đình</Link>
     <h1 className="text-2xl font-bold">Tiền sử & dị ứng{actions.data ? ` · ${actions.data.profile.fullName}` : ''}</h1>
     {actions.error ? <div role="alert"><p>{actions.error}</p><button type="button" onClick={actions.retry}>Thử lại</button></div>
-      : actions.data ? <HealthInfo key={patientId} data={actions.data} actions={actions} /> : <p role="status">Đang tải thông tin sức khỏe…</p>}
+      : actions.data ? <><HealthInfo key={patientId} data={actions.data} actions={actions} /><MedicalHistoryAccess patientId={patientId} /></> : <p role="status">Đang tải thông tin sức khỏe…</p>}
   </main>;
 }

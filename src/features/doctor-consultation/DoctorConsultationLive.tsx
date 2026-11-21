@@ -3,9 +3,11 @@ import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { clearEncounterDraft, useEncounterDraft } from '@/src/shared/lib/encounter-draft';
 import { ClinicalApiError } from '@/src/shared/lib/clinical-api';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { consultationApi, type ClinicalAllergy, type ClinicalCondition, type ClinicalPatient, type EncounterDetail, type PrescriptionDraft } from './api/consultation-api';
+import { EncounterDraftNotice } from './components/EncounterDraftNotice';
 import { DoctorHealthHistory } from './components/DoctorHealthHistory';
 import { LiveAllergyAlert } from './components/LiveAllergyAlert';
 import { Icd10Picker } from './Icd10Picker';
@@ -63,7 +65,18 @@ function ConsultationWorkspace({ initial, patient, allergies:initialAllergies, c
   const dirtyClinical = symptoms !== (encounter.symptoms ?? '') || notes !== (encounter.clinicalNotes ?? '');
   const savedDiagnoses = encounter.diagnoses.map(d => ({ icd10Id: d.icd10Id, diagnosisText: d.diagnosisText || d.icd10Name || '', primary: d.primary }));
   const dirtyDiagnoses = JSON.stringify(savedDiagnoses) !== JSON.stringify(diagnoses.map(({ icd10Id, diagnosisText, primary }) => ({ icd10Id, diagnosisText, primary })));
+  const baseline = JSON.stringify([encounter.symptoms ?? '', encounter.clinicalNotes ?? '', savedDiagnoses, encounter.finalConclusion ?? '', encounter.notable, encounter.notableReason ?? '']);
+  const dirtyDraft = dirtyClinical || dirtyDiagnoses || conclusion !== (encounter.finalConclusion ?? '') || notable !== encounter.notable || notableReason !== (encounter.notableReason ?? '');
+  const draftState = useEncounterDraft(encounter.encounterId, 'clinical', baseline,
+    { symptoms, notes, diagnoses, conclusion, notable, notableReason }, value => {
+      if (typeof value.symptoms !== 'string' || value.symptoms.length > 10000 || typeof value.notes !== 'string' || value.notes.length > 10000 || !Array.isArray(value.diagnoses) || value.diagnoses.length > 50
+        || value.diagnoses.some(d => !d || typeof d.diagnosisText !== 'string' || d.diagnosisText.length > 500 || (d.icd10Code != null && (typeof d.icd10Code !== 'string' || d.icd10Code.length > 50)) || typeof d.primary !== 'boolean' || (d.icd10Id != null && (!Number.isSafeInteger(d.icd10Id) || d.icd10Id <= 0)))
+        || typeof value.conclusion !== 'string' || typeof value.notable !== 'boolean' || typeof value.notableReason !== 'string' || value.notableReason.length > 500 || value.conclusion.length > 1000) return false;
+      setSymptoms(value.symptoms); setNotes(value.notes); setDiagnoses(value.diagnoses); setConclusion(value.conclusion); setNotable(value.notable); setNotableReason(value.notableReason);
+      return true;
+    }, dirtyDraft, dirtyDraft || healthDirty);
   async function save(action: () => Promise<EncounterDetail>, message: string) {
+    if (draftState.hasConflict) { setError('Vui lòng chọn phục hồi hoặc bỏ nháp cũ trước khi lưu.'); return; }
     if (lock.current) return; lock.current = true; setBusy(true); setError(''); setNotice('');
     try { setEncounter(await action()); setNotice(message); } catch (e) { setError(e instanceof Error ? e.message : 'Không thể lưu bệnh án.'); }
     finally { lock.current = false; setBusy(false); }
@@ -77,13 +90,15 @@ function ConsultationWorkspace({ initial, patient, allergies:initialAllergies, c
       if (orders.some(order => !['COMPLETED', 'CANCELLED'].includes(order.status))) throw new Error('Còn chỉ định CLS chưa hoàn tất. Vui lòng kiểm tra kết quả trước khi kết luận.');
       const result=await consultationApi.complete(encounter.encounterId, conclusion.trim(), notable, notableReason.trim(), prescription);
       clearPrescriptionDraft(encounter.encounterId);
+      clearEncounterDraft(encounter.encounterId, 'clinical');
+      clearEncounterDraft(encounter.encounterId, 'orders');
       onClosed();
       return result;
     }, 'Đã hoàn tất lượt khám. Hóa đơn được tạo để thanh toán tại quầy.');
   }
   return <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-7"><div className="mx-auto max-w-6xl space-y-5"><Link href="/doctor/queue" className="text-sm font-bold text-blue-700">← Hàng chờ phòng khám</Link>
     <header className={clinicalCard}><h1 className="text-2xl font-extrabold">Khám bệnh · {patient.fullName}</h1><p className="text-sm text-slate-500">{encounter.encounterCode} · {encounter.hospitalName} · {encounter.doctorName} · {editable ? 'Đang khám' : encounter.status === 'COMPLETED' ? 'Đã hoàn tất' : encounter.status}</p></header>
-    <LiveAllergyAlert allergies={allergies}/>
+    <EncounterDraftNotice state={draftState} onChoice={() => setError('')} /><LiveAllergyAlert allergies={allergies}/>
     <nav aria-label="Các phần bệnh án" className="flex flex-wrap gap-2">{[['profile', 'Hồ sơ & tiền sử'], ['clinical', 'Khám lâm sàng & chẩn đoán'], ['orders', 'Chỉ định & kết quả CLS'], ['prescription', 'Kê đơn thuốc'], ['conclusion', 'Kết luận']].map(([id, label]) => <button type="button" key={id} aria-pressed={tab === id} className={tab === id ? clinicalButton : 'rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold'} onClick={() => { if (id === 'orders') setOrdersVisited(true); setTab(id); }}>{label}</button>)}</nav>
     {error && <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}{<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
     {tab === 'profile' && <><section className={clinicalCard}><h2 className="text-lg font-bold">Thông tin bệnh nhân</h2><dl className="grid gap-4 text-sm sm:grid-cols-2">{[['Họ tên', patient.fullName], ['Mã bệnh nhân', patient.patientCode], ['Ngày sinh', formatDisplayDate(patient.dob)], ['Giới tính', patient.gender === 'MALE' ? 'Nam' : patient.gender === 'FEMALE' ? 'Nữ' : 'Khác'], ['CCCD', patient.maskedNationalId], ['Điện thoại', patient.maskedPhone], ['Địa chỉ', patient.address], ['BHYT', patient.insuranceNo]].map(([label, value]) => <div key={label}><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-semibold">{value || 'Chưa cập nhật'}</dd></div>)}</dl></section><DoctorHistoryLive patientId={patient.id} currentId={encounter.encounterId} /></>}

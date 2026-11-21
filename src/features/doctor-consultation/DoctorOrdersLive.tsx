@@ -1,5 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { EncounterDraftNotice } from './components/EncounterDraftNotice';
+import { clearEncounterDraft, useEncounterDraft } from '@/src/shared/lib/encounter-draft';
 import { consultationApi } from './api/consultation-api';
 import type { OrderedService, TechnicianMedicalService, TechnicianOrderDetail } from '@/src/features/technician-queue/technician-api.types';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
@@ -11,6 +13,10 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   const [keyword, setKeyword] = useState(''); const [query, setQuery] = useState(''); const [page, setPage] = useState(0);
   const [serviceId, setServiceId] = useState(''); const [note, setNote] = useState(''); const [result, setResult] = useState<TechnicianOrderDetail | null>(null);
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [revision, setRevision] = useState(0); const lock = useRef(false); const mutation = useRef(0);
+  const draftState = useEncounterDraft(encounterId, 'orders', 'v1', { serviceId, note }, value => {
+    if (typeof value.serviceId !== 'string' || (value.serviceId && !/^[1-9][0-9]*$/.test(value.serviceId)) || typeof value.note !== 'string' || value.note.length > 500) return false;
+    setServiceId(value.serviceId); setNote(value.note); return true;
+  }, editable && !!(serviceId || note));
   useEffect(() => {
     const controller = new AbortController();
     let running = false;
@@ -41,9 +47,10 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   }
   function create(event: FormEvent) {
     event.preventDefault();
-    void run(async () => { await consultationApi.createOrder(encounterId, Number(serviceId), note.trim()); setNote(''); setServiceId(''); setRevision(v => v + 1); });
+    if (draftState.hasConflict) { setError('Vui lòng phục hồi hoặc bỏ nháp cũ trước khi gửi chỉ định.'); return; }
+    void run(async () => { await consultationApi.createOrder(encounterId, Number(serviceId), note.trim()); clearEncounterDraft(encounterId, 'orders'); setNote(''); setServiceId(''); setRevision(v => v + 1); });
   }
-  return <div className="space-y-5">{error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
+  return <div className="space-y-5"><EncounterDraftNotice state={draftState} onChoice={() => setError('')} />{error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
     {editable && <section className={clinicalCard}><h2 className="text-lg font-bold">Chỉ định cận lâm sàng</h2><form onSubmit={event => { event.preventDefault(); setQuery(keyword.trim()); setPage(0); setServiceId(''); }} className="flex items-end gap-3"><label className="flex-1 text-sm font-bold">Tìm dịch vụ<input className={clinicalField} value={keyword} maxLength={255} onChange={e => setKeyword(e.target.value)} /></label><button className={clinicalButton} type="submit">Tìm kiếm</button></form>
       <form className="space-y-4" onSubmit={create}><fieldset disabled={busy} className="space-y-4"><label className="block text-sm font-bold">Dịch vụ<select required className={clinicalField} value={serviceId} onChange={e => setServiceId(e.target.value)}><option value="">Chọn dịch vụ</option>{catalogue?.content.map(s => <option key={s.id} value={s.id}>{s.code} · {s.name}</option>)}</select></label>{catalogue && <div className="flex gap-4 text-xs"><button type="button" disabled={!page} onClick={() => { setPage(v => v - 1); setServiceId(''); }}>Trang trước</button><span>{page + 1}/{Math.max(1, catalogue.totalPages)}</span><button type="button" disabled={catalogue.last} onClick={() => { setPage(v => v + 1); setServiceId(''); }}>Trang sau</button></div>}
       <label className="block text-sm font-bold">Ghi chú chỉ định<textarea className={clinicalField} maxLength={500} rows={2} value={note} onChange={e => setNote(e.target.value)} /></label><button type="submit" disabled={!serviceId} className={clinicalButton}>Lưu chỉ định</button></fieldset></form>

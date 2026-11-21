@@ -1,8 +1,9 @@
+import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import type { NotificationPage, PatientNotification } from '../types';
 import { isNotification, isNotificationPage } from '../utils/notification-validation';
 
 async function request(token: string, path: string, body: object = {}, signal?: AbortSignal): Promise<unknown> {
-  const response = await fetch(`/api/patient/notifications/${path}`, {
+  const response = await authenticatedFetch(`/api/patient/notifications/${path}`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(body), cache: 'no-store', signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000),
   });

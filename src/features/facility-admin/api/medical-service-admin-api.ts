@@ -1,5 +1,5 @@
 import type { MedicalService, ServiceCategory } from '../types';
-import { ADMIN_PAGEABLE, adminRequest, type PageResponse } from './admin-api-client';
+import { ADMIN_PAGEABLE, loadAdminPages, adminRequest } from './admin-api-client';
 
 interface MedicalServiceResponse {
   id: number;
@@ -24,7 +24,7 @@ interface ServiceCategoryResponse {
   name: string;
 }
 
-const toMedicalService = (data: MedicalServiceResponse): MedicalService => ({
+export const toMedicalService = (data: MedicalServiceResponse): MedicalService => ({
   id: data.id,
   serviceCategoryId: data.serviceCategoryId,
   serviceCategoryCode: data.serviceCategoryCode,
@@ -38,23 +38,23 @@ const toMedicalService = (data: MedicalServiceResponse): MedicalService => ({
 
 export const medicalServiceAdminApi = {
   async searchServices() {
-    const page = await adminRequest<PageResponse<MedicalServiceResponse>>('medical-services/search', {
+    const content = await loadAdminPages<MedicalServiceResponse>('medical-services/search', {
       keyword: null,
       serviceCategoryId: null,
       active: null,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'name' },
     });
-    return page.content.map(toMedicalService);
+    return content.map(toMedicalService);
   },
 
   async searchCategories() {
-    const page = await adminRequest<PageResponse<ServiceCategoryResponse>>('medical-services/categories', {
+    const content = await loadAdminPages<ServiceCategoryResponse>('medical-services/categories', {
       keyword: null,
       parentId: null,
       rootOnly: false,
       pageable: { ...ADMIN_PAGEABLE, sortBy: 'name' },
     });
-    return page.content.map<ServiceCategory>((item) => ({
+    return content.map<ServiceCategory>((item) => ({
       id: item.id,
       parentId: item.parentId ?? undefined,
       code: item.code,

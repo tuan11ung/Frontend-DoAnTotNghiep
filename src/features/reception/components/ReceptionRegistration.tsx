@@ -1,6 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { EmergencyGrantControl } from '@/src/features/doctor-emergency/EmergencyLive';
+import { receptionField, receptionButton, receptionCard, receptionError } from './reception-ui';
+export { receptionField, receptionButton, receptionCard, receptionError } from './reception-ui';
+import { AssistedPatientAccount } from './ReceptionLifecycle';
 import { ReceptionDialog } from './ReceptionDialog';
 import { ReceptionEmergencyAction } from '@/src/features/doctor-emergency/ReceptionEmergencyAction';
 import Link from 'next/link';
@@ -12,10 +16,10 @@ import { useReceptionData } from '../ReceptionDataProvider';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { money } from '@/src/features/patient-payments/payment.types';
 
-export const receptionField = 'mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm disabled:bg-slate-100';
-export const receptionButton = 'rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50';
-export const receptionCard = 'space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6';
-export const receptionError = (error: unknown) => error instanceof Error ? error.message : 'Không thể xử lý yêu cầu. Vui lòng thử lại.';
+
+
+
+
 
 export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
   const { api: receptionApi, href, demo } = useReceptionData();
@@ -71,7 +75,7 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
     {resultPage && !resultPage.last && <button type="button" disabled={busy} className="rounded-lg border px-4 py-2 text-sm font-semibold text-blue-700 disabled:opacity-50" onClick={() => void searchPage(resultPage.page + 1)}>{busy ? 'Đang tải…' : 'Tải thêm hồ sơ'}</button>}
     {results?.length === 0 && <button type="button" className="text-sm font-bold text-blue-700" onClick={() => setCreating(v => !v)}>{creating ? 'Đóng tạo hồ sơ' : 'Đăng ký bệnh nhân mới'}</button>}
     {creating && <CreateReceptionPatient onCreated={item => { setResultPage(null); setResults([item]); setPatient(item); setCreating(false); if (lookupOnly) router.push(href('registration', { patientCode: item.patientCode })); }} />}
-  </section>{!lookupOnly && patient && <OfflineBooking key={patient.id} patient={patient} onNext={() => { resetSearch(''); router.replace(href('registration')); }} />}</div>;
+  </section>{!demo && !lookupOnly && patient && <><AssistedPatientAccount key={patient.id} patientId={patient.id} /><EmergencyGrantControl key={`r8:${patient.id}`} patientId={patient.id} /></>}{!lookupOnly && patient && <OfflineBooking key={patient.id} patient={patient} onNext={() => { resetSearch(''); router.replace(href('registration')); }} />}</div>;
 }
 
 function CreateReceptionPatient({ onCreated }: { onCreated: (patient: ReceptionPatient) => void }) {

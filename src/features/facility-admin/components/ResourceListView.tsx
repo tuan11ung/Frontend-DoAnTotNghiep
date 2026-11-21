@@ -1,6 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { searchResourcePage } from '../api/resource-search';
+import type { PageResponse } from '../api/admin-api-client';
 import {
   BadgeDollarSign,
   Building2,
@@ -115,10 +117,24 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   const [specialtyFilter, setSpecialtyFilter] = useState('ALL');
   const [roleFilter, setRoleFilter] = useState<StaffRole | 'ALL'>('ALL');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
+  const [page, setPage] = useState(0);
+  const [remote, setRemote] = useState<PageResponse<AdminEntity> | null>(null);
+  const [error, setError] = useState('');
+  const local = kind === 'department';
+  useEffect(() => {
+    if (local) return;
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      searchResourcePage(kind, query, status === 'ALL' ? null : status === 'ACTIVE', page, controller.signal, specialtyFilter)
+        .then(data => { if (!controller.signal.aborted) { setRemote(data); setError(''); } })
+        .catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không tải được danh sách.'); });
+    }, 250);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [kind, query, status, page, items, local, specialtyFilter]);
   const meta = SECTION_META[kind];
   const SectionIcon = meta.icon;
 
-  const filteredItems = useMemo(() => {
+  const localItems = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('vi');
     return items.filter((item) => {
       if (kind === 'staff' && roleFilter !== 'ALL' && !(item as StaffAccount).roles.includes(roleFilter)) return false;
@@ -139,13 +155,16 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
     });
   }, [items, query, status, kind, specialtyFilter, roleFilter]);
 
+  const filteredItems = local ? localItems.slice(page * 20, (page + 1) * 20) : remote?.content ?? [];
+  const total = local ? localItems.length : remote?.totalElements ?? 0;
+  const totalPages = local ? Math.ceil(total / 20) : remote?.totalPages ?? 0;
   const departmentHeadNames = (departmentId: number) => staff
     .filter((item) => item.active && item.departmentId === departmentId && item.roles.includes('DEPARTMENT_HEAD'))
     .map((item) => item.fullName);
   const activeCount = items.filter((item) => item.active).length;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <section aria-busy={!local && !remote && !error} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
@@ -166,13 +185,13 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
           <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Tìm kiếm</span>
           <span className="relative block">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setQuery(event.target.value)} placeholder={meta.search} type="search" value={query} />
+            <input className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => { setQuery(event.target.value); setPage(0); setRemote(null); }} placeholder={meta.search} type="search" value={query} />
           </span>
         </label>
         {kind === 'room' && (
           <label className="w-full sm:w-56">
             <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Chuyên khoa</span>
-            <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setSpecialtyFilter(event.target.value)} value={specialtyFilter}>
+            <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => { setSpecialtyFilter(event.target.value); setPage(0); setRemote(null); }} value={specialtyFilter}>
               <option value="ALL">Tất cả chuyên khoa</option>
               <option value="NONE">Chưa gán chuyên khoa</option>
               {specialties.map((item) => <option key={item.specialtyId} value={item.specialtyId}>{item.name}{!item.active && ' (tạm ngừng)'}</option>)}
@@ -190,7 +209,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         )}
         <label className="w-44">
           <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Trạng thái</span>
-          <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setStatus(event.target.value as typeof status)} value={status}>
+          <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => { setStatus(event.target.value as typeof status); setPage(0); setRemote(null); }} value={status}>
             <option value="ALL">Tất cả</option>
             <option value="ACTIVE">Đang hoạt động</option>
             <option value="INACTIVE">Tạm ngừng</option>
@@ -298,13 +317,19 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
           </table>
         )}
 
-        {filteredItems.length === 0 && (
+        {filteredItems.length === 0 && (local || remote) && (
           <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center">
             <Search className="h-9 w-9 text-slate-300" />
             <p className="mt-3 font-bold text-slate-700">Không tìm thấy dữ liệu phù hợp</p>
             <p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc bộ lọc.</p>
           </div>
         )}
+      </div>
+      {!local && !remote && !error && <p role="status" className="p-4 text-sm text-slate-500">Đang tải dữ liệu…</p>}
+      {error && <p role="alert" className="p-4 text-sm text-rose-700">{error}</p>}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t p-4 text-sm">
+        <span>{total} kết quả · Trang {page + 1}/{Math.max(1, totalPages)}</span>
+        <div className="flex gap-4"><button type="button" disabled={page === 0} onClick={() => { setRemote(null); setPage(p => p - 1); }}>Trang trước</button><button type="button" disabled={page + 1 >= totalPages} onClick={() => { setRemote(null); setPage(p => p + 1); }}>Trang sau</button></div>
       </div>
     </section>
   );
