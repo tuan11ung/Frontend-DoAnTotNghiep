@@ -45,6 +45,8 @@ const ENDPOINTS: Record<string, string> = {
   'ordered-services/search-by-encounter': '/clinic/ordered-services/search-by-encounter',
   'ordered-services/cancel': '/clinic/ordered-services/cancel',
   'prescriptions/create': '/clinic/prescriptions/create',
+  'prescriptions/update': '/clinic/prescriptions/update',
+  'prescriptions/delete': '/clinic/prescriptions/delete',
   'prescriptions/detail': '/clinic/prescriptions/detail',
   'invoices/search': '/clinic/invoices/search',
   'invoices/detail': '/clinic/invoices/detail',
@@ -62,6 +64,8 @@ const ENDPOINTS: Record<string, string> = {
   'ordered-services/start': '/clinic/ordered-services/start',
   'ordered-services/save-result': '/clinic/ordered-services/save-result',
   'ordered-services/complete': '/clinic/ordered-services/complete',
+  'ordered-services/delete-result-media': '/clinic/ordered-services/delete-result-media',
+  'ordered-services/replace-result-media': '/clinic/ordered-services/replace-result-media',
   'ordered-services/upload-result-media': '/clinic/ordered-services/upload-result-media',
   'medical-services/search': '/clinic/medical-services/search',
   'medical-services/detail': '/clinic/medical-services/detail',
@@ -87,7 +91,7 @@ export async function POST(
   const { segments } = await params;
   const endpoint = ENDPOINTS[segments.join('/')];
   const authorization = request.headers.get('authorization');
-  const upload = endpoint === '/clinic/ordered-services/upload-result-media';
+  const upload = ['/clinic/ordered-services/upload-result-media','/clinic/ordered-services/replace-result-media'].includes(endpoint);
   const contentType = request.headers.get('content-type') ?? 'application/json';
 
   if (!endpoint) {
