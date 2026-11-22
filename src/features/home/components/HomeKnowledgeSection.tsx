@@ -11,7 +11,7 @@ type ArticleCategory = 'ALL' | 'HEALTH' | 'SYSTEM';
 import type { PublicArticle } from '../../public-data/public-api';
 export function HomeKnowledgeSection({published}: {published:PublicArticle[]}) {
   const [category, setCategory] = useState<ArticleCategory>('ALL');
-  const resources = [...published.map(a=>({ id:"article-"+a.id, title:a.title, excerpt:a.summary, category:"HEALTH" as const, image:a.thumbnailUrl || "/images/home/active-living.svg", href:"/news?article="+a.id, source:a.specialtyName || "MedConnect", external:false })), ...HOME_RESOURCE_ARTICLES];
+  const resources = [...published.map(a=>({ id:"article-"+a.id, title:a.title, excerpt:a.summary, category:"HEALTH" as const, image:a.thumbnailUrl || "/images/home/active-living.svg", href:"/news/"+a.id, source:a.specialtyName || "MedConnect", external:false })), ...HOME_RESOURCE_ARTICLES];
   const articles = resources.filter((article) => category === 'ALL' || article.category === category).slice(0, 3);
 
   return <section id="home-knowledge" aria-labelledby="home-knowledge-title" className="scroll-mt-24 bg-white py-12 sm:py-16"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

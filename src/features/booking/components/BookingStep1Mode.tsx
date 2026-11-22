@@ -236,7 +236,7 @@ export const BookingStep1Mode: React.FC<BookingStep1ModeProps> = ({
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div data-booking-continue className="mt-6 flex justify-end">
           <button
             type="button"
             onClick={onContinue}

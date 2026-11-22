@@ -29,7 +29,7 @@ function searchUrl(q: string, tab: Tab, page = 0) {
 async function loadGroup(group: Group, q: string, page: number, size: number, signal: AbortSignal): Promise<Results> {
   if (group === 'articles') {
     const data = await publicApi.articles(q,page,size,signal);
-    return {group,total:data.totalElements,pages:data.totalPages,rows:data.content.map(a=>({id:a.id,title:a.title,description:a.summary,meta:[a.specialtyName,a.publishedAt && formatDisplayDate(a.publishedAt)].filter(Boolean).join(' · '),href:'/news?article='+a.id}))};
+    return {group,total:data.totalElements,pages:data.totalPages,rows:data.content.map(a=>({id:a.id,title:a.title,description:a.summary,meta:[a.specialtyName,a.publishedAt && formatDisplayDate(a.publishedAt)].filter(Boolean).join(' · '),href:'/news/'+a.id}))};
   }
   if (group === 'hospitals') {
     const data = await publicApi.hospitals(q,page,size,signal);

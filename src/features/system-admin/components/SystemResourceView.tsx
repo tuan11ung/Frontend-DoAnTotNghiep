@@ -35,7 +35,8 @@ import type {
   SystemResource,
 } from '../types';
 import { getRankOrderLabel } from '../rank-levels';
-import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
+import { AdminTable as ScrollableTable, AdminTableColumns } from '@/src/shared/components/admin-table/AdminTable';
+import { AdminTableText } from '@/src/shared/components/admin-table/AdminTableText';
 import { SystemPagination } from './SystemPagination';
 
 interface SystemResourceViewProps {
@@ -103,7 +104,7 @@ function getActive(item: SystemResource): boolean | undefined {
 
 function StatusBadge({ active, activeLabel = 'Đang hoạt động', inactiveLabel = 'Tạm ngừng' }: { active: boolean; activeLabel?: string; inactiveLabel?: string }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+    <span className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
       {active ? activeLabel : inactiveLabel}
     </span>
@@ -123,7 +124,7 @@ function RowActions({ active, item, section, onEdit, onToggle, children }: { act
   return (
     <div className="flex flex-wrap items-center justify-end gap-2">
       {children}
-      <button className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" onClick={() => onEdit(section, item)} type="button">
+      <button className="inline-flex h-8 shrink-0 whitespace-nowrap items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" onClick={() => onEdit(section, item)} type="button">
         <Pencil className="h-3.5 w-3.5" /> Sửa
       </button>
       {typeof active === 'boolean' && <StatusAction active={active} section={section} item={item} onClick={() => onToggle(section, item)} />}
@@ -135,7 +136,7 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
   if (section === 'hospitals') {
     const hospital = item as HospitalSummary;
     const active = hospital.status === 'ACTIVE';
-    return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{hospital.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{hospital.code}</p></td><td className="px-4 py-4"><span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{LEVEL_LABELS[hospital.level]}</span></td><td className="px-4 py-4 font-medium text-slate-600">{hospital.province || 'Chưa cập nhật'}</td><td className="px-4 py-4"><StatusBadge active={active} inactiveLabel="Đã tạm ngừng" /></td><td className="px-5 py-4"><RowActions active={active} item={item} onEdit={onEdit} onToggle={onToggle} section={section}>
+    return <><td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={hospital.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={hospital.code} lines={1} /></p></td><td className="px-4 py-4"><span className="block max-w-full rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{LEVEL_LABELS[hospital.level]}</span></td><td className="px-4 py-4 font-medium text-slate-600">{hospital.province || 'Chưa cập nhật'}</td><td className="px-4 py-4"><StatusBadge active={active} inactiveLabel="Đã tạm ngừng" /></td><td className="px-5 py-4"><RowActions active={active} item={item} onEdit={onEdit} onToggle={onToggle} section={section}>
       <span className="inline-flex flex-col items-end gap-1">
         <button aria-label={`Cấp tài khoản quản trị cho ${hospital.name}`} className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-2.5 text-xs font-bold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400" disabled={!active} onClick={() => onCreateHospitalAdmin(hospital)} type="button"><UserPlus aria-hidden="true" className="h-3.5 w-3.5" /> Cấp tài khoản quản trị</button>
         {!active && <span className="text-xs text-slate-500">Cơ sở đang tạm ngừng</span>}
@@ -144,32 +145,34 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
   }
   if (section === 'specialties') {
     const specialty = item as SpecialtyItem;
-    return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{specialty.name}</p><p className="mt-1 text-xs text-slate-400">Danh mục toàn hệ thống</p></td><td className="max-w-md px-4 py-4 text-slate-600">{specialty.description || 'Chưa có mô tả'}</td><td className="px-4 py-4 font-mono text-sm font-bold text-slate-600">{specialty.code}</td><td className="px-5 py-4"><RowActions item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+    return <><td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={specialty.name} /></p><p className="mt-1 text-xs text-slate-400">Danh mục toàn hệ thống</p></td><td className="max-w-md px-4 py-4 text-slate-600"><AdminTableText text={specialty.description || 'Chưa có mô tả'} /></td><td className="px-4 py-4 font-mono text-sm font-bold text-slate-600">{specialty.code}</td><td className="px-5 py-4"><RowActions item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
   }
   if (section === 'service-categories') {
     const category = item as ServiceCategoryItem;
     const parent = (items as ServiceCategoryItem[]).find((entry) => entry.id === category.parentId);
-    return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{category.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{category.code}</p></td><td className="px-4 py-4 text-slate-600">{parent?.name || '— Danh mục gốc —'}</td><td className="px-4 py-4"><span className="rounded-md bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-700">{category.parentId ? 'Nhóm con' : 'Nhóm gốc'}</span></td><td className="px-4 py-4"><StatusBadge active={category.isActive} /></td><td className="px-5 py-4"><RowActions active={category.isActive} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+    return <><td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={category.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={category.code} lines={1} /></p></td><td className="px-4 py-4 text-slate-600"><AdminTableText text={parent?.name || '— Danh mục gốc —'} lines={1} /></td><td className="px-4 py-4"><span className="rounded-md bg-violet-50 px-2.5 py-1 text-xs font-bold text-violet-700">{category.parentId ? 'Nhóm con' : 'Nhóm gốc'}</span></td><td className="px-4 py-4"><StatusBadge active={category.isActive} /></td><td className="px-5 py-4"><RowActions active={category.isActive} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
   }
   if (section === 'ranks') {
     const rank = item as RankItem;
-    return <><td className="px-5 py-4 font-bold text-slate-900">{rank.name}</td><td className="px-4 py-4 font-mono text-sm text-slate-600">{rank.code}</td><td className="px-4 py-4"><span className="inline-flex min-h-8 items-center justify-center rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-extrabold text-slate-700">{getRankOrderLabel(rank.rankOrder)}</span></td></>;
+    return <><td className="px-5 py-4 font-bold text-slate-900"><AdminTableText text={rank.name} /></td><td className="px-4 py-4 font-mono text-sm text-slate-600">{rank.code}</td><td className="px-4 py-4"><span className="inline-flex min-h-8 items-center justify-center rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-extrabold text-slate-700">{getRankOrderLabel(rank.rankOrder)}</span></td></>;
   }
   if (section === 'icd10') {
     const icd = item as Icd10Item;
-    return <><td className="px-5 py-4"><span className="rounded-lg bg-rose-50 px-3 py-1.5 font-mono text-sm font-extrabold text-rose-700">{icd.code}</span></td><td className="px-4 py-4 font-semibold text-slate-800">{icd.name}</td><td className="px-4 py-4 font-mono text-xs text-slate-400">#{icd.id}</td><td className="px-5 py-4"><RowActions item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+    return <><td className="px-5 py-4"><span className="rounded-lg bg-rose-50 px-3 py-1.5 font-mono text-sm font-extrabold text-rose-700">{icd.code}</span></td><td className="px-4 py-4 font-semibold text-slate-800"><AdminTableText text={icd.name} /></td><td className="px-4 py-4 font-mono text-xs text-slate-400">#{icd.id}</td><td className="px-5 py-4"><RowActions item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
   }
   if (section === 'ingredients') {
     const ingredient = item as IngredientItem;
-    return <><td className="px-5 py-4 font-bold text-slate-900">{ingredient.name}</td><td className="px-4 py-4 font-mono text-xs text-slate-500">#{ingredient.id}</td><td className="px-4 py-4 text-slate-500">Danh mục dùng chung</td><td className="px-5 py-4"><RowActions item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+    return <><td className="px-5 py-4 font-bold text-slate-900"><AdminTableText text={ingredient.name} /></td><td className="px-4 py-4 font-mono text-xs text-slate-500">#{ingredient.id}</td><td className="px-4 py-4 text-slate-500">Danh mục dùng chung</td><td className="px-5 py-4"><RowActions item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
   }
   if (section === 'medicines') {
     const medicine = item as MedicineItem;
-    return <><td className="px-5 py-4"><p className="font-bold text-slate-900">{medicine.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{medicine.code}</p></td><td className="px-4 py-4"><p className="font-semibold text-slate-700">{medicine.strength || 'Chưa cập nhật'}</p><p className="mt-1 text-xs text-slate-500">{medicine.route || 'Chưa có đường dùng'}</p></td><td className="max-w-sm px-4 py-4"><div className="flex flex-wrap gap-1.5">{medicine.ingredients.map((entry) => <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700" key={`${entry.ingredientId}-${entry.strength}`}>{entry.ingredientName}{entry.strength ? ` ${entry.strength}` : ''}</span>)}</div></td><td className="px-4 py-4"><StatusBadge active={medicine.active} /></td><td className="px-5 py-4"><RowActions active={medicine.active} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+    return <><td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={medicine.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={medicine.code} lines={1} /></p></td><td className="px-4 py-4"><p className="font-semibold text-slate-700"><AdminTableText text={medicine.strength || 'Chưa cập nhật'} /></p><p className="mt-1 text-xs text-slate-500"><AdminTableText text={medicine.route || 'Chưa có đường dùng'} /></p></td><td className="max-w-sm px-4 py-4"><div className="flex flex-wrap gap-1.5">{medicine.ingredients.map((entry) => <span className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700" key={`${entry.ingredientId}-${entry.strength}`}>{entry.ingredientName}{entry.strength ? ` ${entry.strength}` : ''}</span>)}</div></td><td className="px-4 py-4"><StatusBadge active={medicine.active} /></td><td className="px-5 py-4"><RowActions active={medicine.active} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
   }
   const article = item as ArticleItem;
-  return <><td className="max-w-md px-5 py-4"><p className="line-clamp-2 font-bold text-slate-900">{article.title}</p><p className="mt-1 line-clamp-1 text-xs text-slate-500">{article.summary || 'Chưa có tóm tắt'}</p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600">{article.specialtyName || 'Tin chung'}</td><td className="px-4 py-4 text-xs text-slate-500">{formatDisplayDateTime(article.updatedAt)}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
+  return <><td className="max-w-md px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={article.title} /></p><p className="mt-1 line-clamp-1 text-xs text-slate-500"><AdminTableText text={article.summary || 'Chưa có tóm tắt'} /></p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600"><AdminTableText text={article.specialtyName || 'Tin chung'} lines={1} /></td><td className="px-4 py-4 text-xs text-slate-500">{formatDisplayDateTime(article.updatedAt)}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
 }
+
+const COLUMN_WIDTHS: Record<ResourceSection, number[]> = { hospitals: [300,160,200,180,420], specialties: [280,320,160,180], 'service-categories': [280,260,160,180,240], ranks: [280,180,160], icd10: [160,400,160,180], ingredients: [320,160,220,180], medicines: [300,240,320,180,240], articles: [380,220,180,160,240] };
 
 export function SystemResourceView({ initialQuery = '', initialStatus = 'ALL', onSearch, section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle, onCreateHospitalAdmin }: SystemResourceViewProps) {
   const [query, setQuery] = useState(initialQuery);
@@ -207,8 +210,8 @@ export function SystemResourceView({ initialQuery = '', initialStatus = 'ALL', o
         <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{totalElements} bản ghi</p>
       </form>
 
-      <ScrollableTable label="Danh sách quản trị hệ thống" maxHeight="none" key={`${page}:${size}`}>
-        <table className="min-w-[920px] w-full text-left text-sm">
+      <ScrollableTable stickyActions={section !== 'ranks'} label="Danh sách quản trị hệ thống" maxHeight="none" key={`${page}:${size}`}>
+        <table className="w-full text-left text-sm" style={{ minWidth: COLUMN_WIDTHS[section].reduce((sum, width) => sum + width, 0) }}><AdminTableColumns widths={COLUMN_WIDTHS[section]} />
           <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr>{meta.columns.map((column, index) => <th className={`${index === 0 ? 'px-5' : 'px-4'} py-3 ${index === meta.columns.length - 1 ? 'pr-5 text-right' : ''}`} key={column}>{column}</th>)}</tr></thead>
           <tbody className="divide-y divide-slate-100">{filteredItems.map((item) => <tr className={getActive(item) === false ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>{renderCells(section, item, items, onEdit, onToggle, onCreateHospitalAdmin)}</tr>)}</tbody>
         </table>

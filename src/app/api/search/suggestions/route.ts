@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const groups: SearchSuggestionGroup[] = [
       { id: 'hospitals', label: 'Bệnh viện', total: hospitals.totalElements, items: hospitals.content.map(r => ({ id: String(r.id), title: r.name ?? '', description: r.address ?? '', href: `/hospitals/${r.id}` })) },
       { id: 'doctors', label: 'Bác sĩ', total: doctors.totalElements, items: doctors.content.map(r => ({ id: String(r.id), title: r.name ?? '', description: r.specialtyName ?? '', href: `/doctors/${r.id}` })) },
-      { id: 'articles', label: 'Bài viết', total: articles.totalElements, items: articles.content.map(r => ({ id: String(r.id), title: r.title ?? '', description: r.summary ?? '', href: `/news?article=${r.id}` })) },
+      { id: 'articles', label: 'Bài viết', total: articles.totalElements, items: articles.content.map(r => ({ id: String(r.id), title: r.title ?? '', description: r.summary ?? '', href: `/news/${r.id}` })) },
     ];
     return Response.json({ query, groups: groups.filter(g => g.items.length) }, { headers });
   } catch { return Response.json({ message: 'Không thể tải gợi ý. Vui lòng thử lại.' }, { status: 502, headers }); }

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
+import { AdminTable as ScrollableTable, AdminTableColumns } from '@/src/shared/components/admin-table/AdminTable';
+import { AdminTableText } from '@/src/shared/components/admin-table/AdminTableText';
 import { ToggleSwitch } from '@/src/shared/components/ToggleSwitch';
 import { searchResourcePage } from '../api/resource-search';
 import type { PageResponse } from '../api/admin-api-client';
@@ -85,7 +86,7 @@ const SECTION_META = {
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+    <span className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
       {active ? 'Đang hoạt động' : 'Tạm ngừng'}
     </span>
@@ -98,7 +99,7 @@ function StaffStatusBadge({ status }: { status: StaffAccount['status'] }) {
     LOCKED: { label: 'Đã khóa', className: 'bg-amber-50 text-amber-700', dot: 'bg-amber-500' },
     DEACTIVATED: { label: 'Đã nghỉ việc', className: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' },
   }[status];
-  return <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold ${meta.className}`}><span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />{meta.label}</span>;
+  return <span className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold ${meta.className}`}><span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} />{meta.label}</span>;
 }
 
 function Toggle({ active, disabled = false, label, onClick }: { active: boolean; disabled?: boolean; label: string; onClick: () => void }) {
@@ -107,7 +108,7 @@ function Toggle({ active, disabled = false, label, onClick }: { active: boolean;
 
 function ActionButton({ children, label, onClick }: { children: React.ReactNode; label: string; onClick: () => void }) {
   return (
-    <button aria-label={label} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" onClick={onClick} type="button">
+    <button aria-label={label} className="inline-flex h-8 shrink-0 whitespace-nowrap items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-600 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700" onClick={onClick} type="button">
       {children}
     </button>
   );
@@ -233,17 +234,17 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{!local && !remote ? 'Đang tải…' : `${total} bản ghi phù hợp`}</p>
       </div>
 
-      <ScrollableTable label={`Danh sách ${meta.title.toLocaleLowerCase('vi')}`} maxHeight="none" key={`${page}:${pageSize}:${query}:${status}:${specialtyFilter}:${roleFilter}`}>
+      <ScrollableTable stickyActions label={`Danh sách ${meta.title.toLocaleLowerCase('vi')}`} maxHeight="none" key={`${page}:${pageSize}:${query}:${status}:${specialtyFilter}:${roleFilter}`}>
         {kind === 'department' && (
-          <table className="min-w-[960px] w-full text-left text-sm">
+          <table className="w-full text-left text-sm" style={{ minWidth: 1300 }}><AdminTableColumns widths={[280, 160, 220, 280, 170, 190]} />
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Khoa</th><th className="px-4 py-3">Loại khoa</th><th className="px-4 py-3">Trưởng khoa</th><th className="px-4 py-3">Mô tả</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {(filteredItems as Department[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
-                  <td className="px-5 py-4"><p className="font-bold text-slate-900">{item.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.code}</p></td>
+                  <td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={item.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={item.code} lines={1} /></p></td>
                   <td className="px-4 py-4"><span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{DEPARTMENT_TYPE_LABELS[item.type]}</span></td>
-                  <td className="px-4 py-4">{departmentHeadNames(item.id).length > 0 ? <div className="space-y-1">{departmentHeadNames(item.id).map((name) => <p className="font-semibold text-slate-700" key={name}>{name}</p>)}</div> : <span className="italic text-slate-400">Chưa phân công</span>}</td>
-                  <td className="max-w-sm px-4 py-4 text-slate-600">{item.description || 'Chưa có mô tả'}</td>
+                  <td className="px-4 py-4">{departmentHeadNames(item.id).length > 0 ? <AdminTableText text={departmentHeadNames(item.id).join(', ')} /> : <span className="italic text-slate-400">Chưa phân công</span>}</td>
+                  <td className="max-w-sm px-4 py-4 text-slate-600"><AdminTableText text={item.description} /></td>
                   <td className="px-4 py-4"><StatusBadge active={item.active} /></td>
                   <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.name}`} onClick={() => onEdit('department', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><Toggle active={item.active} label={`Đổi trạng thái ${item.name}`} onClick={() => void onToggle('department', item.id)} /></div></td>
                 </tr>
@@ -253,13 +254,13 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         )}
 
         {kind === 'specialty' && (
-          <table className="min-w-[940px] w-full text-left text-sm">
+          <table className="w-full text-left text-sm" style={{ minWidth: 1100 }}><AdminTableColumns widths={[280, 320, 160, 170, 170]} />
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Chuyên khoa</th><th className="px-4 py-3">Mô tả danh mục</th><th className="px-4 py-3">Mã danh mục</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {(filteredItems as Specialty[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
-                  <td className="px-5 py-4"><p className="font-bold text-slate-900">{item.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.code}</p></td>
-                  <td className="max-w-md px-4 py-4 text-slate-600">{item.description || 'Chưa có mô tả'}</td>
+                  <td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={item.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={item.code} lines={1} /></p></td>
+                  <td className="max-w-md px-4 py-4 text-slate-600"><AdminTableText text={item.description} /></td>
                   <td className="px-4 py-4 font-mono text-xs text-slate-500">#{item.specialtyId}</td>
                   <td className="px-4 py-4"><StatusBadge active={item.active} /></td>
                   <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><Toggle active={item.active} label={`Đổi trạng thái ${item.name}`} onClick={() => void onToggle('specialty', item.id)} /></div></td>
@@ -270,7 +271,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         )}
 
         {kind === 'room' && (
-          <table className="min-w-[1120px] w-full text-left text-sm">
+          <table className="w-full text-left text-sm" style={{ minWidth: 1260 }}><AdminTableColumns widths={[280, 230, 160, 230, 170, 190]} />
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
               <tr>
                 <th className="px-5 py-3">Phòng</th>
@@ -284,8 +285,8 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
             <tbody className="divide-y divide-slate-100">
               {(filteredItems as Room[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
-                  <td className="px-5 py-4"><p className="font-bold text-slate-900">{item.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.code}</p></td>
-                  <td className="px-4 py-4"><p className="font-semibold text-slate-700">{ROOM_TYPE_LABELS[item.type]}</p><p className="mt-1 text-xs text-slate-500">{item.location}</p></td>
+                  <td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={item.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={item.code} lines={1} /></p></td>
+                  <td className="px-4 py-4"><p className="font-semibold text-slate-700">{ROOM_TYPE_LABELS[item.type]}</p><p className="mt-1 text-xs text-slate-500"><AdminTableText text={item.location} /></p></td>
                   <td className="px-4 py-4 text-slate-700">{item.serviceType === 'SERVICE' ? 'Dịch vụ' : item.serviceType ?? '—'}</td>
                   <td className="px-4 py-4"><p className="font-semibold text-slate-700">{item.maxPatients == null ? 'Theo cấu hình bệnh viện' : `${item.maxPatients} bệnh nhân / khung`}</p><p className="mt-1 text-xs text-slate-500">{item.slotMinutes == null ? 'Thời lượng theo bệnh viện' : `${item.slotMinutes} phút mỗi khung`}</p></td>
                   <td className="px-4 py-4"><StatusBadge active={item.active} /></td>
@@ -297,17 +298,17 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         )}
 
         {kind === 'staff' && (
-          <table className="min-w-[1020px] w-full text-left text-sm">
+          <table className="w-full text-left text-sm" style={{ minWidth: 1380 }}><AdminTableColumns widths={[280, 190, 280, 260, 170, 200]} />
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Nhân viên</th><th className="px-4 py-3">Vai trò</th><th className="px-4 py-3">Chuyên khoa / Chức danh</th><th className="px-4 py-3">Email cơ quan</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {(filteredItems as StaffAccount[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
-                  <td className="px-5 py-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-xs font-extrabold text-blue-700">{item.fullName.split(' ').slice(-2).map((word) => word[0]).join('')}</div><div><p className="font-bold text-slate-900">{item.fullName}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.staffCode}</p></div></div></td>
+                  <td className="px-5 py-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-xs font-extrabold text-blue-700">{item.fullName.split(' ').slice(-2).map((word) => word[0]).join('')}</div><div className="min-w-0 flex-1"><p className="font-bold text-slate-900"><AdminTableText text={item.fullName} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={item.staffCode} lines={1} /></p></div></div></td>
                   <td className="px-4 py-4"><div className="flex max-w-xs flex-wrap gap-1.5">{item.roles.map((role) => <span className="rounded-md bg-violet-50 px-2 py-1 text-xs font-bold text-violet-700" key={role}>{STAFF_ROLE_LABELS[role]}</span>)}</div></td>
-                  <td className="px-4 py-4"><p className="font-medium text-slate-700">{specialties.find(specialty => specialty.specialtyId === item.specialtyId)?.name ?? 'Chưa gán chuyên khoa'}</p><p className="mt-1 text-xs text-slate-500">{item.rankName || 'Không có chức danh bác sĩ'}</p></td>
-                  <td className="px-4 py-4 font-medium text-slate-700">{item.email}</td>
+                  <td className="px-4 py-4"><p className="font-medium text-slate-700">{specialties.find(specialty => specialty.specialtyId === item.specialtyId)?.name ?? 'Chưa gán chuyên khoa'}</p><p className="mt-1 text-xs text-slate-500"><AdminTableText text={item.rankName || 'Không có chức danh bác sĩ'} /></p></td>
+                  <td className="px-4 py-4 font-medium text-slate-700"><AdminTableText text={item.email} lines={1} /></td>
                   <td className="px-4 py-4"><StaffStatusBadge status={item.status} /></td>
-                  <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.fullName}`} onClick={() => onEdit('staff', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><span className="inline-flex flex-col items-end gap-1"><Toggle active={item.active} disabled={item.status === 'DEACTIVATED' || item.roles.includes('HOSPITAL_ADMIN')} label={`Đổi trạng thái ${item.fullName}`} onClick={() => void onToggle('staff', item.id)} />{item.roles.includes('HOSPITAL_ADMIN') && <span className="max-w-48 text-right text-xs text-slate-500">Không được khóa hoặc vô hiệu hóa tài khoản quản trị cơ sở.</span>}</span></div></td>
+                  <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.fullName}`} onClick={() => onEdit('staff', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><span className="inline-flex flex-col items-end gap-1"><Toggle active={item.active} disabled={item.status === 'DEACTIVATED' || item.roles.includes('HOSPITAL_ADMIN')} label={`Đổi trạng thái ${item.fullName}`} onClick={() => void onToggle('staff', item.id)} /></span></div></td>
                 </tr>
               ))}
             </tbody>
@@ -315,16 +316,16 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         )}
 
         {kind === 'service' && (
-          <table className="min-w-[1000px] w-full text-left text-sm">
+          <table className="w-full text-left text-sm" style={{ minWidth: 1500 }}><AdminTableColumns widths={[300, 200, 190, 280, 170, 170, 190]} />
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Dịch vụ</th><th className="px-4 py-3">Nhóm dịch vụ</th><th className="px-4 py-3">Loại phòng thực hiện</th><th className="px-4 py-3">Mô tả</th><th className="px-4 py-3 text-right">Giá niêm yết</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {(filteredItems as MedicalService[]).map((item) => (
                 <tr className={!item.active ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>
-                  <td className="px-5 py-4"><p className="font-bold text-slate-900">{item.name}</p><p className="mt-1 font-mono text-xs text-slate-400">{item.code}</p></td>
-                  <td className="px-4 py-4"><span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{item.serviceCategoryName}</span><p className="mt-1 font-mono text-[11px] text-slate-400">{item.serviceCategoryCode}</p></td>
-                  <td className="px-4 py-4 text-slate-700">{item.roomType ? SERVICE_ROOM_TYPE_LABELS[item.roomType] ?? item.roomType : <span className="font-semibold text-amber-700">Chưa cấu hình</span>}</td>
-                  <td className="max-w-sm px-4 py-4 text-slate-600">{item.description || 'Chưa có mô tả'}</td>
-                  <td className="px-4 py-4 text-right text-base font-extrabold text-slate-900">{new Intl.NumberFormat('vi-VN').format(item.price)} ₫</td>
+                  <td className="px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={item.name} /></p><p className="mt-1 font-mono text-xs text-slate-400"><AdminTableText text={item.code} lines={1} /></p></td>
+                  <td className="px-4 py-4"><span className="block max-w-full rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700"><AdminTableText text={item.serviceCategoryName} lines={1} /></span></td>
+                  <td className="whitespace-nowrap px-4 py-4 text-slate-700">{item.roomType ? <AdminTableText text={SERVICE_ROOM_TYPE_LABELS[item.roomType] ?? item.roomType} lines={1} /> : <span className="font-semibold text-amber-700">Chưa cấu hình</span>}</td>
+                  <td className="max-w-sm px-4 py-4 text-slate-600"><AdminTableText text={item.description} /></td>
+                  <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-semibold text-slate-900">{new Intl.NumberFormat('vi-VN').format(item.price)} ₫</td>
                   <td className="px-4 py-4"><StatusBadge active={item.active} /></td>
                   <td className="px-5 py-4"><div className="flex items-center justify-end gap-2"><ActionButton label={`Sửa ${item.name}`} onClick={() => onEdit('service', item.id)}><Pencil className="h-3.5 w-3.5" /> Sửa</ActionButton><Toggle active={item.active} label={`Đổi trạng thái ${item.name}`} onClick={() => void onToggle('service', item.id)} /></div></td>
                 </tr>

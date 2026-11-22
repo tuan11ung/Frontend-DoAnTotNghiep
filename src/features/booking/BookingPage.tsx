@@ -4,7 +4,7 @@ import Link from 'next/link';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {useState} from 'react';
 import {toBookingTarget} from './models/booking-patient';
-import {BookingStepper} from './components/BookingStepper';
+import {ProgressiveBookingSection} from './components/ProgressiveBookingSection';
 import {BookingTargetSelector} from './components/BookingTargetSelector';
 import {BookingStep1Mode} from './components/BookingStep1Mode';
 import {BookingStep2} from './components/BookingStep2';
@@ -47,15 +47,14 @@ function BhytBookingFlow({initialPatientId, onSwitchMode}: {
         error, appointment, hospital, lastDate, pendingSpecialty, specialtyName,
         bookingSpecialtyId, slotKey, validDate, specialtiesLoading, slotsLoading, date,
         submit, retryBootstrap, selectPatient, continueMode, selectHospital, selectSpecialty,
-        selectDate, selectSlot, backToMode, continueToSchedule, backToSelection,
-        continueToConfirmation, backToSchedule, reset,
+        selectDate, selectSlot, continueToSchedule,
+        continueToConfirmation, reset,
     } = useBhytBooking(initialPatientId, onSwitchMode);
     return <div className="min-h-screen bg-slate-50/60 px-4 py-6 sm:px-6 sm:py-8">
-        <div className="mx-auto max-w-5xl">
+        <div className="mx-auto max-w-5xl space-y-6">
             <nav aria-label="Đường dẫn" className="mb-6 text-sm text-slate-500"><Link href="/">Trang chủ</Link><span
                 className="mx-2">/</span><Link href="/booking">Đặt khám</Link><span className="mx-2">/</span><span
                 className="font-bold text-slate-800">Khám BHYT</span></nav>
-            {step < 5 && <BookingStepper currentStep={step} mode="bhyt"/>}
             {!bootstrap.loaded &&
                 <p className="rounded-xl bg-white p-6 text-sm text-slate-500" role="status">Đang tải thông tin đặt
                     khám...</p>}
@@ -70,7 +69,7 @@ function BhytBookingFlow({initialPatientId, onSwitchMode}: {
                 </div>}
 
             {bootstrap.loaded && !bootstrap.error && <>
-                {step === 1 && (
+                {step < 5 && <ProgressiveBookingSection active={step === 1} label="Người khám và hình thức khám" busy={saving} scroll={false}>
                     <BookingStep1Mode
                         selectedMode={mode}
                         continueDisabled={!patient}
@@ -84,10 +83,10 @@ function BhytBookingFlow({initialPatientId, onSwitchMode}: {
                         onSelectMode={setMode}
                         onContinue={continueMode}
                     />
-                )}
+                </ProgressiveBookingSection>}
 
 
-                {step === 2 && (
+                {step >= 2 && step < 5 && <ProgressiveBookingSection active={step === 2} label="Cơ sở y tế và chuyên khoa" busy={saving}>
                     <BookingStep2<number, number | 'unknown'>
                         hospitals={bootstrap.hospitals}
                         hospitalId={hospitalId}
@@ -105,21 +104,20 @@ function BhytBookingFlow({initialPatientId, onSwitchMode}: {
                         onSelectHospital={selectHospital}
                         onSelectSpecialty={selectSpecialty}
                         canContinue={Boolean(patient && hospital && specialtyName && !specialtiesLoading)}
-                        onBack={backToMode}
                         onContinue={continueToSchedule}
                     />
-                )}
+                </ProgressiveBookingSection>}
 
-                {step === 3 && hospital && specialtyName &&
+                {step >= 3 && step < 5 && hospital && specialtyName && <ProgressiveBookingSection active={step === 3} label="Ngày và khung giờ khám" busy={saving}>
                     <BhytScheduleStep key={availabilityRevision} hospitalId={hospital.id}
                                       specialtyId={bookingSpecialtyId} bookingError={error || undefined} date={date}
                                       minDate={today} maxDate={lastDate}
                                       slots={slotData.key === slotKey ? slotData.slots : []} loading={slotsLoading}
                                       error={date && !validDate ? 'Vui lòng chọn ngày trong khoảng được phép đặt.' : slotData.key === slotKey ? slotData.error : undefined}
                                       selectedSlot={selectedSlot} onDate={selectDate} onSlot={selectSlot}
-                                      onBack={backToSelection} onContinue={continueToConfirmation}/>}
+                                      onContinue={continueToConfirmation}/></ProgressiveBookingSection>}
 
-                {step === 4 && patient && hospital && specialtyName && selectedSlot &&
+                {step === 4 && patient && hospital && specialtyName && selectedSlot && <ProgressiveBookingSection active label="Xác nhận đặt khám" scroll>
                     <form className="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"
                           onSubmit={submit}>
                         <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
@@ -140,14 +138,11 @@ function BhytBookingFlow({initialPatientId, onSwitchMode}: {
                                 tại bệnh viện.</p>}
                         {error &&
                             <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
-                        <div className="flex justify-between gap-3">
-                            <button className={bookingBackClass} disabled={saving} onClick={backToSchedule}
-                                    type="button">Quay lại
-                            </button>
+                        <div className="flex justify-end gap-3">
                             <button className={bookingButtonClass} disabled={saving || !reason.trim()}
                                     type="submit">{saving ? 'Đang gửi...' : pendingSpecialty ? 'Gửi yêu cầu đặt khám' : 'Xác nhận đặt lịch'}</button>
                         </div>
-                    </form>}
+                    </form></ProgressiveBookingSection>}
 
                 {step === 5 && appointment &&
                     <BhytBookingSuccess appointment={appointment} specialtyName={specialtyName ?? ''} onReset={reset}/>}

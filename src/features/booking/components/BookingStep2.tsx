@@ -21,7 +21,7 @@ interface BookingStep2Props<H extends string | number, S extends string | number
     onSelect: (value: DoctorQualification | null) => void;
   };
   canContinue: boolean;
-  onBack: () => void;
+  onBack?: () => void;
   onContinue: () => void;
 }
 
@@ -90,14 +90,19 @@ export function BookingStep2<H extends string | number, S extends string | numbe
             <p role="status" className="text-sm text-slate-500">Chuyên khoa tại cơ sở này chưa có lịch cho trình độ đã chọn.</p>
           )}
         </>
+      ) : null}
+      {qualification ? (
+        <p className="text-sm text-slate-500">
+          Nếu chưa rõ chuyên khoa cần khám, vui lòng liên hệ bộ phận tiếp đón của cơ sở y tế để được tư vấn chọn chuyên khoa phù hợp trước khi đặt lịch khám theo yêu cầu.
+        </p>
       ) : (
         <p className="text-sm text-slate-500">
           Nếu chưa rõ chuyên khoa cần khám, vui lòng chọn <strong className="font-semibold text-slate-700">“Không rõ”</strong>.
           Sau khi bạn đặt lịch thành công, nhân viên sẽ căn cứ vào triệu chứng bạn mô tả để sắp xếp chuyên khoa phù hợp và thông báo lại với bạn.
         </p>
       )}
-      <div className="flex justify-between gap-3">
-        <button className={bookingBackClass} onClick={onBack} type="button">Quay lại</button>
+      <div data-booking-continue className="flex justify-end gap-3">
+        {onBack && <button className={bookingBackClass} onClick={onBack} type="button">Quay lại</button>}
         <button className={bookingButtonClass} disabled={!canContinue} onClick={onContinue} type="button">Tiếp tục</button>
       </div>
     </section>

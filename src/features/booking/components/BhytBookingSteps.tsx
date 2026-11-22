@@ -37,7 +37,7 @@ export function BookingSummary({ patient, hospital, specialtyName, pendingSpecia
 export function BhytScheduleStep({ hospitalId, specialtyId, date, minDate, maxDate, slots, loading, error, bookingError, selectedSlot, onDate, onSlot, onBack, onContinue }: {
   hospitalId: number; specialtyId: number | null;
   date: string; minDate: string; maxDate: string; slots: BhytSlot[]; loading: boolean; error?: string; bookingError?: string; selectedSlot: BhytSlot | null;
-  onDate: (value: string) => void; onSlot: (slot: BhytSlot) => void; onBack: () => void; onContinue: () => void;
+  onDate: (value: string) => void; onSlot: (slot: BhytSlot) => void; onBack?: () => void; onContinue: () => void;
 }) {
   return <section className="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
     <div><h2 className="text-xl sm:text-2xl font-bold text-slate-900">{specialtyId === null ? 'Chọn ngày và khung giờ mong muốn' : 'Chọn ngày và khung giờ dự kiến check-in'}</h2><p className="mt-2 text-sm text-slate-500">{specialtyId === null ? 'Khung giờ sẽ được xác nhận sau khi lễ tân phân chuyên khoa.' : 'Đây là khoảng thời gian dự kiến có mặt tại bệnh viện, không phải giờ bắt đầu khám.'}</p></div>
@@ -64,7 +64,7 @@ export function BhytScheduleStep({ hospitalId, specialtyId, date, minDate, maxDa
         </div>
       </div>;
     })}
-    <div className="flex justify-between gap-3"><button className={bookingBackClass} onClick={onBack} type="button">Quay lại</button><button className={bookingButtonClass} disabled={loading || !selectedSlot || Boolean(error)} onClick={onContinue} type="button">Tiếp tục</button></div>
+    <div data-booking-continue className="flex justify-end gap-3">{onBack && <button className={bookingBackClass} onClick={onBack} type="button">Quay lại</button>}<button className={bookingButtonClass} disabled={loading || !selectedSlot || Boolean(error)} onClick={onContinue} type="button">Tiếp tục</button></div>
   </section>;
 }
 

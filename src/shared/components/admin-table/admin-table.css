@@ -1,0 +1,87 @@
+.medconnect-admin-table table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.medconnect-admin-table th {
+  vertical-align: middle;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: none;
+  overflow-wrap: normal;
+}
+
+.medconnect-admin-table td {
+  vertical-align: middle;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+  overflow-wrap: break-word;
+}
+
+.medconnect-admin-table td[class*="text-right"],
+.medconnect-admin-table td[class*="font-mono"],
+.medconnect-admin-table td p[class*="font-mono"] {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.medconnect-admin-table td button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.medconnect-admin-table td > div[class*="justify-end"] {
+  flex-wrap: nowrap;
+}
+
+.medconnect-admin-table td > div[class*="justify-end"] > * {
+  flex-shrink: 0;
+}
+
+.medconnect-admin-table td > div[class*="justify-end"] button {
+  white-space: nowrap;
+}
+
+/* Only tables that explicitly declare an actions column pin their last cell. */
+.medconnect-admin-table--sticky-actions > table > thead > tr > th:last-child,
+.medconnect-admin-table--sticky-actions > table > tbody > tr > td:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background-color: #fff;
+  box-shadow: -1px 0 0 #e2e8f0, -6px 0 10px -8px rgb(15 23 42 / 25%);
+}
+
+.medconnect-admin-table--sticky-actions > table > thead > tr > th:last-child {
+  z-index: 2;
+  background-color: #f8fafc;
+}
+
+.medconnect-admin-table--sticky-actions > table > tbody > tr:hover > td:last-child {
+  background-color: #f8fafc;
+}
+
+@media (max-width: 639px) {
+  .medconnect-admin-table--sticky-actions > table > colgroup > col:last-child {
+    width: 160px !important;
+  }
+
+  .medconnect-admin-table--sticky-actions > table > tbody > tr > td:last-child {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .medconnect-admin-table--sticky-actions > table > tbody > tr > td:last-child > div {
+    flex-wrap: wrap;
+  }
+
+  .medconnect-admin-table--sticky-actions > table > tbody > tr > td:last-child button {
+    max-width: 100%;
+    white-space: normal;
+    height: auto;
+    min-height: 32px;
+  }
+}

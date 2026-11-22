@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { adminRequest, type PageResponse } from '../api/admin-api-client';
 import { DataTablePagination } from '@/src/shared/components/pagination';
 import { Modal } from '@/src/shared/components/Modal';
-import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
+import { AdminTable as ScrollableTable, AdminTableColumns } from '@/src/shared/components/admin-table/AdminTable';
+import { AdminTableText } from '@/src/shared/components/admin-table/AdminTableText';
 import type { Specialty } from '../types';
 
 interface Article {
@@ -111,13 +112,13 @@ export function HospitalArticles({ specialties }: { specialties: Specialty[] }) 
         <button className={button} disabled={busy}>Tìm kiếm</button><button type="button" disabled={busy} onClick={refresh}>Làm mới</button>
       </form>
       {!data && !error && <p role="status">Đang tải bài viết…</p>}
-      <ScrollableTable maxHeight="none" label="Danh sách bài viết của cơ sở" key={`${page}:${pageSize}:${query}:${status}`}>
-        <table className="w-full min-w-[780px] text-left text-sm">
+      <ScrollableTable stickyActions maxHeight="none" label="Danh sách bài viết của cơ sở" key={`${page}:${pageSize}:${query}:${status}`}>
+        <table className="w-full text-left text-sm" style={{ minWidth: 1040 }}><AdminTableColumns widths={[540,160,340]} />
           <thead className="bg-slate-50"><tr><th className="p-3">Bài viết</th><th className="p-3">Trạng thái</th><th className="p-3">Thao tác</th></tr></thead>
           <tbody className="divide-y">{data?.content.map(article => <tr key={article.id}>
-            <td className="max-w-xl p-3"><strong>{article.title}</strong><p className="mt-1 text-sm text-slate-600">{article.summary}</p>{article.sourceUrl && <a className="break-all text-xs text-blue-700 underline" href={article.sourceUrl} target="_blank" rel="noreferrer">Xem nguồn</a>}</td>
+            <td className="max-w-xl p-3"><strong><AdminTableText text={article.title} /></strong><p className="mt-1 text-sm text-slate-600"><AdminTableText text={article.summary} /></p>{article.sourceUrl && <a className="break-all text-xs text-blue-700 underline" href={article.sourceUrl} target="_blank" rel="noreferrer">Xem nguồn</a>}</td>
             <td className="whitespace-nowrap p-3">{article.published ? 'Đã đăng' : 'Bản nháp'}</td>
-            <td className="p-3">        <div className="flex flex-wrap gap-4 text-sm font-bold">
+            <td className="p-3">        <div className="flex flex-nowrap items-center gap-4 whitespace-nowrap text-sm font-bold">
           <button type="button" disabled={busy} onClick={() => void run(async () => { setEditor(await adminRequest<Article>('articles/detail', { articleId: article.id })); })}>Chỉnh sửa</button>
           <button type="button" disabled={busy} className="text-blue-700" onClick={() => { if (window.confirm(article.published ? 'Ẩn bài viết này khỏi trang công khai?' : 'Đã kiểm tra nội dung và muốn duyệt đăng bài viết này?')) void run(async () => { await adminRequest('articles/publication', { articleId: article.id, published: !article.published }); refresh(); setNotice(article.published ? 'Đã ẩn bài viết.' : 'Đã duyệt đăng bài viết.'); }); }}>{article.published ? 'Ẩn bài' : 'Duyệt đăng'}</button>
           <button type="button" disabled={busy} className="text-rose-700" onClick={() => { if (window.confirm('Xóa bài viết này khỏi cơ sở?')) void run(async () => { await adminRequest('articles/delete', { articleId: article.id }); if (editor?.id === article.id) setEditor(null); refresh(); setNotice('Đã xóa bài viết.'); }); }}>Xóa bài</button>

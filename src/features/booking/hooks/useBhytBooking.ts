@@ -10,7 +10,7 @@ import { bookingToday, bookingLastDate } from '../utils/booking-dates';
 export function useBhytBooking(initialPatientId: number | undefined, onSwitchMode: (patientId: number) => void) {
   const params = useSearchParams();
   const requestedHospital = params.get('hospitalId');
-  const [step, setStep] = useState(params.get('step') === '1' ? 1 : 2);
+  const [step, setStep] = useState(initialPatientId === undefined ? 1 : 2);
   const [mode, setMode] = useState<BookingMode>('bhyt');
   const [bootstrap, setBootstrap] = useState<{ loaded: boolean; hospitals: BookingHospital[]; profiles: BookingPatientProfile[]; error?: string; auth?: boolean }>({ loaded: false, hospitals: [], profiles: [] });
   const [patientId, setPatientId] = useState<number | null>(initialPatientId ?? null);
@@ -113,13 +113,15 @@ export function useBhytBooking(initialPatientId: number | undefined, onSwitchMod
 
 
   const retryBootstrap = () => setRevision(value => value + 1);
-  const selectPatient = (id: string) => setPatientId(Number(id));
+  const selectPatient = (id: string) => { if (Number(id) === patientId) return; setPatientId(Number(id)); setStep(1); setError(''); };
   const continueMode = () => {
     if (!patient) return;
     if (mode === 'bhyt') setStep(2);
     else onSwitchMode(patient.id);
   };
   const selectHospital = (id: number) => {
+    if (id === hospitalId) return;
+    setStep(2);
     setHospitalId(id);
     setSpecialtyId(null);
     setDate('');
@@ -128,6 +130,8 @@ export function useBhytBooking(initialPatientId: number | undefined, onSwitchMod
     setError('');
   };
   const selectSpecialty = (id: number | 'unknown') => {
+    if (id === specialtyId) return;
+    setStep(2);
     setSpecialtyId(id);
     setDate('');
     setSelectedSlot(null);
@@ -136,12 +140,13 @@ export function useBhytBooking(initialPatientId: number | undefined, onSwitchMod
   };
   const selectDate = (value: string) => {
     if (value === date) return;
+    setStep(3);
     setSlotData({ key: '', slots: [] });
     setDate(value);
     setSelectedSlot(null);
     setError('');
   };
-  const selectSlot = (slot: BhytSlot) => { setSelectedSlot(slot); setError(''); };
+  const selectSlot = (slot: BhytSlot) => { if (slot === selectedSlot) return; setStep(3); setSelectedSlot(slot); setError(''); };
   const backToMode = () => setStep(1);
   const continueToSchedule = () => setStep(3);
   const backToSelection = () => { setError(''); setStep(2); };
@@ -158,7 +163,7 @@ export function useBhytBooking(initialPatientId: number | undefined, onSwitchMod
   };
 
   return {
-    step, mode, setMode, bootstrap, patient, hospitalId, specialtyId,
+    step, mode, setMode: (value: BookingMode) => { if (value === mode) return; setMode(value); setStep(1); setError(''); }, bootstrap, patient, hospitalId, specialtyId,
     specialtyData, today, slotData, availabilityRevision, selectedSlot,
     reason, setReason, saving, error, appointment, hospital, lastDate,
     pendingSpecialty, specialtyName, bookingSpecialtyId, slotKey,
