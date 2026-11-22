@@ -5,9 +5,8 @@ import { businessNow } from '@/src/shared/lib/business-time';
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { AUTH_STORAGE_KEY, getStoredAuthSession, type AuthSession } from '@/src/features/auth/utils/auth-storage';
-import { DISPLAY_TIME_ZONE } from '@/src/shared/utils/date-format';
 import { technicianApi, TECHNICIAN_ROLE } from '../api/technician-api';
-import type { OrderedService, TechnicianMedicalService, TechnicianPage, TechnicianQueueFilters } from '../technician-api.types';
+import type { TechnicianOrderGroup, TechnicianRoom, TechnicianMedicalService, TechnicianPage, TechnicianQueueFilters } from '../technician-api.types';
 
 function subscribe(callback: () => void) {
   const listener = (event: StorageEvent) => { if (event.key === null || event.key === AUTH_STORAGE_KEY) callback(); };
@@ -29,20 +28,16 @@ export function technicianErrorMessage(error: unknown) {
 }
 
 function defaultQueueFilters(): TechnicianQueueFilters {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: DISPLAY_TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit',
-  }).formatToParts(businessNow());
-  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find(item => item.type === type)?.value;
-  const today = `${part('year')}-${part('month')}-${part('day')}`;
-  return { status: 'ALL', serviceId: '', fromDate: today, toDate: today, page: 0 };
+  return { status: 'ACTIVE', roomId: '', pageSize: 20, serviceId: '', fromDate: '', toDate: '', page: 0 };
 }
 
 export function useTechnicianQueue() {
   const [filters, setFilters] = useState<TechnicianQueueFilters>(defaultQueueFilters);
+  const [rooms, setRooms] = useState<TechnicianRoom[]>([]);
   const [refreshVersion, setRefreshVersion] = useState(0);
   const [catalogVersion, setCatalogVersion] = useState(0);
   const [catalog, setCatalog] = useState<{ data: TechnicianMedicalService[]; error: string; version: number }>({ data: [], error: '', version: -1 });
-  const [snapshot, setSnapshot] = useState<{ key: string; data: TechnicianPage<OrderedService> | null; error: string; version: number; loadedAt: string }>({ key: '', data: null, error: '', version: -1, loadedAt: '' });
+  const [snapshot, setSnapshot] = useState<{ key: string; data: TechnicianPage<TechnicianOrderGroup> | null; error: string; version: number; loadedAt: string }>({ key: '', data: null, error: '', version: -1, loadedAt: '' });
   const filterKey = JSON.stringify(filters);
   const invalidDates = Boolean(filters.fromDate && filters.toDate && filters.fromDate > filters.toDate);
 
@@ -64,7 +59,8 @@ export function useTechnicianQueue() {
       if (inFlight || controller.signal.aborted || document.hidden) return;
       inFlight = true;
       try {
-        const data = await technicianApi.searchQueue(filters, controller.signal);
+        const [data, rooms] = await Promise.all([technicianApi.searchRoomQueue(filters, controller.signal), technicianApi.getRooms(controller.signal)]);
+        if (!controller.signal.aborted) setRooms(rooms);
         if (controller.signal.aborted) return;
         const lastPage = Math.max(0, data.totalPages - 1);
         if (filters.page > lastPage) {
@@ -88,6 +84,7 @@ export function useTechnicianQueue() {
   const current = snapshot.key === filterKey;
   return {
     filters,
+    rooms,
     changeFilters: (next: Partial<TechnicianQueueFilters>) => setFilters(current => ({ ...current, ...next, page: next.page ?? 0 })),
     resetFilters: () => setFilters(defaultQueueFilters()),
     data: current && !invalidDates ? snapshot.data : null,

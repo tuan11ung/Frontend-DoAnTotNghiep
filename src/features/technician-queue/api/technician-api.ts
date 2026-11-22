@@ -3,6 +3,8 @@ import { clearStoredAuthSession, getStoredAuthSession } from '@/src/features/aut
 import {
   ORDER_STATUSES,
   type OrderedService,
+  type TechnicianRoom,
+  type TechnicianOrderGroup,
   type TechnicianMedicalService,
   type TechnicianOrderDetail,
   type TechnicianPage,
@@ -35,7 +37,8 @@ function isOrder(value: unknown): value is OrderedService {
     && optionalText(value.patientDob) && typeof value.serviceCode === 'string' && typeof value.serviceName === 'string'
     && ORDER_STATUSES.some(status => status === value.status) && typeof value.statusLabel === 'string'
     && optionalText(value.clinicalNote) && typeof value.orderedDate === 'string'
-    && optionalText(value.completedDate) && numeric(value.detailedPrice);
+    && optionalText(value.completedDate) && numeric(value.detailedPrice)
+    && optionalNumber(value.roomId) && optionalText(value.roomName) && optionalText(value.roomLocation) && optionalText(value.performedDate);
 }
 
 function isService(value: unknown): value is TechnicianMedicalService {
@@ -116,6 +119,15 @@ export const technicianApi = {
     toDate: filters.toDate || null,
     pageable: { page: filters.page, size: 20, sortBy: 'orderedDate', sortDirection: 'ASC' },
   }, (value): value is TechnicianPage<OrderedService> => isPage(value, isOrder), signal),
+  searchRoomQueue: (filters: TechnicianQueueFilters, signal?: AbortSignal) => request('ordered-services/search-room-queue', {
+    roomId: filters.roomId ? Number(filters.roomId) : null,
+    serviceId: filters.serviceId ? Number(filters.serviceId) : null,
+    statuses: filters.status === 'ALL' ? ORDER_STATUSES : filters.status === 'ACTIVE' ? ['ORDERED', 'IN_PROGRESS', 'WAITING_RESULT'] : [filters.status],
+    fromDate: filters.fromDate || null, toDate: filters.toDate || null,
+    pageable: { page: filters.page, size: filters.pageSize },
+  }, (value): value is TechnicianPage<TechnicianOrderGroup> => isPage(value, (item): item is TechnicianOrderGroup => object(item) && id(item.encounterId) && id(item.patientId) && typeof item.patientFullName === 'string' && typeof item.patientCode === 'string' && optionalNumber(item.roomId) && optionalText(item.roomName) && optionalText(item.roomLocation) && Array.isArray(item.orders) && item.orders.every(isOrder)), signal),
+  getRooms: (signal?: AbortSignal) => request('ordered-services/rooms', {}, (value): value is TechnicianRoom[] => Array.isArray(value) && value.every(item => object(item) && id(item.id) && typeof item.name === 'string' && typeof item.code === 'string' && numeric(item.load)), signal),
+  finishPerformance: (orderedServiceId: number, signal?: AbortSignal) => request('ordered-services/finish-performance', { orderedServiceId }, (value): value is OrderedService => isOrder(value) && value.id === orderedServiceId, signal),
   getDetail: (orderedServiceId: number, signal?: AbortSignal) => request('ordered-services/detail', { orderedServiceId }, (value): value is TechnicianOrderDetail => isDetail(value) && value.order.id === orderedServiceId, signal),
   start: (orderedServiceId: number, signal?: AbortSignal) => request('ordered-services/start', { orderedServiceId }, (value): value is OrderedService => isOrder(value) && value.id === orderedServiceId, signal),
   saveResult: (body: TechnicianResultSave, signal?: AbortSignal) => request('ordered-services/save-result', body, (value): value is TechnicianOrderDetail => isDetail(value) && value.order.id === body.orderedServiceId, signal),

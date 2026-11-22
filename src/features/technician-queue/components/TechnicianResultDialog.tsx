@@ -37,7 +37,7 @@ export function TechnicianResultDialog({ orderId, onClose, onChanged }: { orderI
     async function load() {
       try {
         const detail = await technicianApi.getDetail(orderId, controller.signal);
-        const editable = detail.order.status === 'ORDERED' || detail.order.status === 'IN_PROGRESS';
+        const editable = detail.order.status === 'ORDERED' || detail.order.status === 'IN_PROGRESS' || detail.order.status === 'WAITING_RESULT';
         const service = editable ? await technicianApi.getServiceDetail(detail.order.serviceId, controller.signal) : null;
         if (controller.signal.aborted) return;
         if (detail.order.id !== orderId || service && service.service.id !== detail.order.serviceId) throw new Error('Dữ liệu chỉ định không khớp. Vui lòng tải lại.');
@@ -60,7 +60,7 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
   const [detail, setDetail] = useState(initialDetail);
   const [draft, setDraft] = useState(() => createTechnicianDraft(initialDetail, parameters));
   const [savedSignature, setSavedSignature] = useState(() => JSON.stringify(createTechnicianDraft(initialDetail, parameters)));
-  const [pending, setPending] = useState<'start' | 'save' | 'complete' | 'upload' | 'replace' | 'delete' | null>(null);
+  const [pending, setPending] = useState<'finish' | 'start' | 'save' | 'complete' | 'upload' | 'replace' | 'delete' | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const pendingRef = useRef(false);
@@ -69,7 +69,7 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
   const replaceTarget = useRef<number | null>(null);
   const signature = JSON.stringify(draft);
   const dirty = signature !== savedSignature;
-  const editable = detail.order.status === 'IN_PROGRESS';
+  const editable = detail.order.status === 'IN_PROGRESS' || detail.order.status === 'WAITING_RESULT';
   const readOnly = detail.order.status === 'COMPLETED' || detail.order.status === 'CANCELLED';
 
   useEffect(() => {
@@ -98,7 +98,12 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
     setNotice('');
     const signal = controllerRef.current?.signal;
     try {
-      if (action === 'start') {
+      if (action === 'finish') {
+        const order = await technicianApi.finishPerformance(detail.order.id, signal);
+        if (signal?.aborted) return;
+        setDetail(current => ({ ...current, order }));
+        setNotice('Đã hoàn tất thực hiện. Có thể nhập và công bố kết quả sau.');
+      } else if (action === 'start') {
         const order = await technicianApi.start(detail.order.id, signal);
         if (signal?.aborted) return;
         setDetail(current => ({ ...current, order }));
@@ -146,7 +151,7 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
   return <>
     <ResultHeader busy={Boolean(pending)} onClose={() => leave(onClose)} />
     <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-5 sm:p-6">
-      <section className="rounded-xl border border-blue-100 bg-blue-50/40 p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">{detail.order.patientCode} · Chỉ định #{detail.order.id}</p><h3 className="mt-2 text-base font-extrabold text-slate-900">{detail.order.patientFullName}</h3><p className="mt-1.5 text-xs text-slate-500">Ngày sinh: {formatDisplayDate(detail.order.patientDob)}</p></div><TechnicianStatusBadge status={detail.order.status} /></div><p className="mt-4 text-sm font-bold text-slate-800">{detail.order.serviceName}</p><p className="mt-1 text-[11px] text-slate-500">{detail.order.serviceCode} · Chỉ định lúc {formatDisplayDateTime(detail.order.orderedDate)}</p>{detail.order.clinicalNote && <p className="mt-3 border-t border-blue-100 pt-3 text-xs leading-6 text-slate-600"><strong className="font-bold">Lưu ý của bác sĩ: </strong>{detail.order.clinicalNote}</p>}</section>
+      <section className="rounded-xl border border-blue-100 bg-blue-50/40 p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">{detail.order.patientCode} · Chỉ định #{detail.order.id}</p><h3 className="mt-2 text-base font-extrabold text-slate-900">{detail.order.patientFullName}</h3><p className="mt-1.5 text-xs text-slate-500">Ngày sinh: {formatDisplayDate(detail.order.patientDob)}</p></div><TechnicianStatusBadge status={detail.order.status} /></div><p className="mt-4 text-sm font-bold text-slate-800">{detail.order.serviceName}</p><p className="mt-1 text-xs font-semibold text-blue-700">{detail.order.roomName ?? 'Chưa phân phòng'}{detail.order.roomLocation && ` · ${detail.order.roomLocation}`}</p><p className="mt-1 text-[11px] text-slate-500">{detail.order.serviceCode} · Chỉ định lúc {formatDisplayDateTime(detail.order.orderedDate)}</p>{detail.order.clinicalNote && <p className="mt-3 border-t border-blue-100 pt-3 text-xs leading-6 text-slate-600"><strong className="font-bold">Lưu ý của bác sĩ: </strong>{detail.order.clinicalNote}</p>}</section>
       {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs leading-6 text-rose-800" role="alert">{error}<button className="ml-2 rounded-lg px-2 py-1 font-bold underline focus-visible:outline-2 focus-visible:outline-rose-600" disabled={Boolean(pending)} onClick={() => leave(onReload)} type="button">Tải lại chỉ định</button></div>}
       {<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
       {detail.order.status === 'ORDERED' && <p className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-6 text-amber-800">Bấm <strong>Tiếp nhận chỉ định</strong> để bắt đầu thực hiện và nhập kết quả.</p>}
@@ -163,6 +168,6 @@ function TechnicianResultForm({ initialDetail, parameters, onClose, onChanged, o
       {readOnly && detail.values.length > 0 && <section aria-label="Kết quả xét nghiệm đã lưu" className="space-y-2">{detail.values.map(value => <div className="flex flex-wrap justify-between gap-2 rounded-lg border border-slate-200 p-3 text-xs" key={value.id}><span className="font-semibold text-slate-700">{value.parameterName}</span><span className={value.isAbnormal ? 'font-bold text-rose-700' : 'text-slate-600'}>{[value.value, value.valueText].filter(item => item !== null && item !== '').join(' · ')} {value.unit}</span></div>)}</section>}
       <section aria-labelledby="technician-media-title"><div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-sm font-extrabold text-slate-800" id="technician-media-title">Tệp kết quả</h3>{editable && <><input accept="image/jpeg,image/png,video/mp4" className="sr-only" disabled={Boolean(pending)} id="technician-media" onChange={event => { const file = event.target.files?.[0]; const target = replaceTarget.current; replaceTarget.current = null; if (file) void runAction(target == null ? 'upload' : 'replace', file, target ?? undefined); }} ref={fileRef} type="file" /><button className={buttonClass} disabled={Boolean(pending)} onClick={() => { replaceTarget.current = null; fileRef.current?.click(); }} type="button"><Upload aria-hidden="true" className="h-4 w-4" />{pending === 'upload' ? 'Đang tải tệp…' : 'Tải tệp kết quả'}</button></>}</div><p className="mt-2 text-[11px] leading-6 text-slate-500">JPEG/PNG tối đa 10 MB · MP4 tối đa 100 MB.</p>{detail.media.length ? <ul className="mt-3 space-y-2">{detail.media.map(media => <li key={media.id} className="space-y-2"><a className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" href={media.url} rel="noreferrer" target="_blank"><FileImage aria-hidden="true" className="h-4 w-4 shrink-0" /><span className="min-w-0 break-all">{media.name}</span><span className="ml-auto shrink-0 text-[10px] text-slate-400">{(media.sizeBytes / 1024 / 1024).toFixed(1)} MB</span><span className="sr-only"> (mở trong tab mới)</span></a>{editable && <div className="flex gap-4 px-3 text-xs font-bold"><button type="button" disabled={Boolean(pending)} className="text-blue-700" onClick={() => { replaceTarget.current = media.id; fileRef.current?.click(); }}>Thay tệp</button><button type="button" disabled={Boolean(pending)} className="text-rose-700" onClick={() => { if (window.confirm('Xóa tệp kết quả này khỏi chỉ định và kho lưu trữ?')) void runAction('delete', undefined, media.id); }}>Xóa tệp</button></div>}</li>)}</ul> : <p className="mt-3 text-xs text-slate-400">Chưa có tệp kết quả đính kèm.</p>}</section>
     </div>
-    <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6"><span aria-live="polite" className="text-[11px] text-slate-500">{pending ? 'Đang xử lý yêu cầu…' : dirty ? 'Có thay đổi chưa lưu' : ''}</span><div className="flex flex-wrap gap-2"><button className={buttonClass} disabled={Boolean(pending)} onClick={() => leave(onClose)} type="button">Đóng</button>{detail.order.status === 'ORDERED' && <button className={primaryButtonClass} disabled={Boolean(pending)} onClick={() => void runAction('start')} type="button">{pending ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Play aria-hidden="true" className="h-4 w-4" />}Tiếp nhận chỉ định</button>}{editable && <><button className={buttonClass} disabled={Boolean(pending)} onClick={() => void runAction('save')} type="button"><Save aria-hidden="true" className="h-4 w-4" />Lưu kết quả</button><button className={primaryButtonClass} disabled={Boolean(pending)} onClick={() => void runAction('complete')} type="button">{pending === 'complete' ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Check aria-hidden="true" className="h-4 w-4" />}Hoàn tất dịch vụ</button></>}</div></div>
+    <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6"><span aria-live="polite" className="text-[11px] text-slate-500">{pending ? 'Đang xử lý yêu cầu…' : dirty ? 'Có thay đổi chưa lưu' : ''}</span><div className="flex flex-wrap gap-2"><button className={buttonClass} disabled={Boolean(pending)} onClick={() => leave(onClose)} type="button">Đóng</button>{detail.order.status === 'ORDERED' && <button className={primaryButtonClass} disabled={Boolean(pending)} onClick={() => void runAction('start')} type="button">{pending ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Play aria-hidden="true" className="h-4 w-4" />}Tiếp nhận chỉ định</button>}{detail.order.status === 'IN_PROGRESS' && <button className={buttonClass} disabled={Boolean(pending)} onClick={() => void runAction('finish')} type="button">Hoàn tất thực hiện</button>}{editable && <><button className={buttonClass} disabled={Boolean(pending)} onClick={() => void runAction('save')} type="button"><Save aria-hidden="true" className="h-4 w-4" />Lưu kết quả</button><button className={primaryButtonClass} disabled={Boolean(pending)} onClick={() => void runAction('complete')} type="button">{pending === 'complete' ? <LoaderCircle aria-hidden="true" className="h-4 w-4 animate-spin" /> : <Check aria-hidden="true" className="h-4 w-4" />}Công bố kết quả</button></>}</div></div>
   </>;
 }

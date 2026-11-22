@@ -8,15 +8,20 @@ import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { clinicalButton, clinicalCard, clinicalField } from './components/clinical-ui';
 import { ClinicalResultReport } from './components/ClinicalResultReport';
 
+interface PendingOrder { serviceId: number; serviceName: string; clinicalNote: string }
+
 export function DoctorOrdersLive({ encounterId, editable, patientId }: { encounterId: number; editable: boolean; patientId?: number }) {
   const [orders, setOrders] = useState<OrderedService[] | null>(null); const [catalogue, setCatalogue] = useState<ApiPage<TechnicianMedicalService> | null>(null);
   const [keyword, setKeyword] = useState(''); const [query, setQuery] = useState(''); const [page, setPage] = useState(0);
+  const batchIdentity = useRef<{signature:string;key:string}|null>(null);
+  const [basket,setBasket] = useState<PendingOrder[]>([]);
   const [serviceId, setServiceId] = useState(''); const [note, setNote] = useState(''); const [result, setResult] = useState<TechnicianOrderDetail | null>(null);
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [revision, setRevision] = useState(0); const lock = useRef(false); const mutation = useRef(0);
-  const draftState = useEncounterDraft(encounterId, 'orders', 'v1', { serviceId, note }, value => {
+  const draftState = useEncounterDraft(encounterId, 'orders', 'v2', { serviceId, note, basket }, value => {
     if (typeof value.serviceId !== 'string' || (value.serviceId && !/^[1-9][0-9]*$/.test(value.serviceId)) || typeof value.note !== 'string' || value.note.length > 500) return false;
-    setServiceId(value.serviceId); setNote(value.note); return true;
-  }, editable && !!(serviceId || note));
+    if (value.basket != null && (!Array.isArray(value.basket) || !value.basket.every(item => item && typeof item === 'object' && Number.isSafeInteger(item.serviceId) && item.serviceId > 0 && typeof item.serviceName === 'string' && typeof item.clinicalNote === 'string' && item.clinicalNote.length <= 500))) return false;
+    setBasket((value.basket ?? []) as PendingOrder[]); setServiceId(value.serviceId); setNote(value.note); return true;
+  }, editable && !!(serviceId || note || basket.length));
   useEffect(() => {
     const controller = new AbortController();
     let running = false;
@@ -48,15 +53,22 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   function create(event: FormEvent) {
     event.preventDefault();
     if (draftState.hasConflict) { setError('Vui lòng phục hồi hoặc bỏ nháp cũ trước khi gửi chỉ định.'); return; }
-    void run(async () => { await consultationApi.createOrder(encounterId, Number(serviceId), note.trim()); clearEncounterDraft(encounterId, 'orders'); setNote(''); setServiceId(''); setRevision(v => v + 1); });
+    const services = [...basket, ...(serviceId ? [{serviceId:Number(serviceId),serviceName:catalogue?.content.find(item=>item.id===Number(serviceId))?.name ?? `Dịch vụ #${serviceId}`,clinicalNote:note.trim()}] : [])];
+    if (!services.length) { setError('Vui lòng chọn dịch vụ cần chỉ định.'); return; }
+    const payload = services.map(({serviceId,clinicalNote})=>({serviceId,clinicalNote}));
+    const signature = JSON.stringify(payload);
+    if (batchIdentity.current?.signature !== signature) batchIdentity.current = {signature,key:crypto.randomUUID()};
+    const requestId = batchIdentity.current.key;
+    void run(async () => { await consultationApi.createOrders(encounterId, payload, requestId); batchIdentity.current=null; setBasket([]); clearEncounterDraft(encounterId, 'orders'); setNote(''); setServiceId(''); setRevision(v => v + 1); });
   }
   return <div className="space-y-5"><EncounterDraftNotice state={draftState} onChoice={() => setError('')} />{error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
     {editable && <section className={clinicalCard}><h2 className="text-lg font-bold">Chỉ định cận lâm sàng</h2><form onSubmit={event => { event.preventDefault(); setQuery(keyword.trim()); setPage(0); setServiceId(''); }} className="flex items-end gap-3"><label className="flex-1 text-sm font-bold">Tìm dịch vụ<input className={clinicalField} value={keyword} maxLength={255} onChange={e => setKeyword(e.target.value)} /></label><button className={clinicalButton} type="submit">Tìm kiếm</button></form>
-      <form className="space-y-4" onSubmit={create}><fieldset disabled={busy} className="space-y-4"><label className="block text-sm font-bold">Dịch vụ<select required className={clinicalField} value={serviceId} onChange={e => setServiceId(e.target.value)}><option value="">Chọn dịch vụ</option>{catalogue?.content.map(s => <option key={s.id} value={s.id}>{s.code} · {s.name}</option>)}</select></label>{catalogue && <div className="flex gap-4 text-xs"><button type="button" disabled={!page} onClick={() => { setPage(v => v - 1); setServiceId(''); }}>Trang trước</button><span>{page + 1}/{Math.max(1, catalogue.totalPages)}</span><button type="button" disabled={catalogue.last} onClick={() => { setPage(v => v + 1); setServiceId(''); }}>Trang sau</button></div>}
-      <label className="block text-sm font-bold">Ghi chú chỉ định<textarea className={clinicalField} maxLength={500} rows={2} value={note} onChange={e => setNote(e.target.value)} /></label><button type="submit" disabled={!serviceId} className={clinicalButton}>Lưu chỉ định</button></fieldset></form>
+      <form className="space-y-4" onSubmit={create}><fieldset disabled={busy} className="space-y-4"><label className="block text-sm font-bold">Dịch vụ<select required={basket.length === 0} className={clinicalField} value={serviceId} onChange={e => setServiceId(e.target.value)}><option value="">Chọn dịch vụ</option>{catalogue?.content.map(s => <option key={s.id} value={s.id}>{s.code} · {s.name}</option>)}</select></label>{catalogue && <div className="flex gap-4 text-xs"><button type="button" disabled={!page} onClick={() => { setPage(v => v - 1); setServiceId(''); }}>Trang trước</button><span>{page + 1}/{Math.max(1, catalogue.totalPages)}</span><button type="button" disabled={catalogue.last} onClick={() => { setPage(v => v + 1); setServiceId(''); }}>Trang sau</button></div>}
+      <label className="block text-sm font-bold">Ghi chú chỉ định<textarea className={clinicalField} maxLength={500} rows={2} value={note} onChange={e => setNote(e.target.value)} /></label><div className="flex flex-wrap gap-3"><button type="button" disabled={!serviceId || basket.length >= 99} className={clinicalButton} onClick={() => { setBasket(items=>[...items,{serviceId:Number(serviceId),serviceName:catalogue?.content.find(item=>item.id===Number(serviceId))?.name ?? `Dịch vụ #${serviceId}`,clinicalNote:note.trim()}]); setServiceId(''); setNote(''); }}>Thêm dịch vụ vào đợt</button><button type="submit" disabled={!serviceId && !basket.length} className={clinicalButton}>Lưu chỉ định</button></div>
+      {basket.length > 0 && <ul aria-label="Dịch vụ chuẩn bị chỉ định" className="divide-y rounded-xl border p-3">{basket.map((item,index)=><li className="space-y-2 py-3" key={`${item.serviceId}:${index}`}><div className="flex items-center justify-between gap-3"><strong className="text-sm">{item.serviceName}</strong><button type="button" className="text-sm text-rose-700" onClick={()=>setBasket(items=>items.filter((_,i)=>i!==index))}>Bỏ dịch vụ</button></div><label className="block text-xs font-bold">Ghi chú cho {item.serviceName}<textarea className={clinicalField} rows={2} maxLength={500} value={item.clinicalNote} onChange={event=>setBasket(items=>items.map((row,i)=>i===index?{...row,clinicalNote:event.target.value}:row))}/></label></li>)}</ul>}</fieldset></form>
     </section>}
     <section className={clinicalCard}><div className="flex justify-between gap-3"><h2 className="text-lg font-bold">Chỉ định & kết quả</h2><button type="button" disabled={busy} className="text-sm font-bold text-blue-700" onClick={() => { setResult(null); setError(''); setRevision(v => v + 1); }}>Làm mới</button></div>{orders === null && !error && <p role="status">Đang tải chỉ định…</p>}{orders?.length === 0 && <p className="text-sm text-slate-500">Chưa có chỉ định CLS.</p>}
-    <ul className="divide-y">{orders?.map(order => <li key={order.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><p className="font-bold">{order.serviceName}</p><p className="mt-1 text-sm text-slate-500">{order.statusLabel} {order.clinicalNote && `· ${order.clinicalNote}`}</p></div><div className="flex gap-4">{order.status !== 'CANCELLED' && <button type="button" disabled={busy} className="text-sm font-bold text-blue-700" onClick={() => void run(async () => setResult(await consultationApi.order(order.id)))}>Xem kết quả</button>}{editable && order.status === 'ORDERED' && <button type="button" disabled={busy} className="text-sm font-bold text-rose-700" onClick={() => void run(async () => { await consultationApi.cancelOrder(order.id); setResult(null); setRevision(v => v + 1); })}>Hủy chỉ định</button>}</div></li>)}</ul>
+    <ul className="divide-y">{orders?.map(order => <li key={order.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div><p className="font-bold">{order.serviceName}</p><p className="mt-1 text-sm font-semibold text-blue-700">{order.roomName ?? 'Chưa phân phòng'}{order.roomLocation && ` · ${order.roomLocation}`}</p><p className="mt-1 text-sm text-slate-500">{order.statusLabel} {order.clinicalNote && `· ${order.clinicalNote}`}</p></div><div className="flex gap-4">{order.status !== 'CANCELLED' && <button type="button" disabled={busy} className="text-sm font-bold text-blue-700" onClick={() => void run(async () => setResult(await consultationApi.order(order.id)))}>Xem kết quả</button>}{editable && order.status === 'ORDERED' && <button type="button" disabled={busy} className="text-sm font-bold text-rose-700" onClick={() => void run(async () => { await consultationApi.cancelOrder(order.id); setResult(null); setRevision(v => v + 1); })}>Hủy chỉ định</button>}</div></li>)}</ul>
     {result && <ClinicalResultReport detail={result} />}</section>
   </div>;
 }

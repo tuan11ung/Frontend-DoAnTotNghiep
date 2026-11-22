@@ -4,7 +4,7 @@ export function resultService(order: OrderedService, detail?: TechnicianOrderDet
   return {
     id: String(order.id), name: order.serviceName, category: 'Cận lâm sàng', kind: 'OTHER',
     status: order.status === 'COMPLETED' ? 'RESULT_READY' : order.status === 'ORDERED' ? 'NOT_STARTED' : 'AWAITING_RESULT',
-    location: 'Xem hướng dẫn tại cơ sở', updatedAt: order.completedDate ?? undefined,
+    location: [order.roomName,order.roomLocation].filter(Boolean).join(' · ') || 'Chưa phân phòng', updatedAt: order.completedDate ?? undefined,
     report: detail ? { code: order.serviceCode, issuedAt: order.completedDate ?? order.orderedDate,
       description: detail.findings ?? undefined, conclusion: detail.conclusion ?? undefined,
       rows: detail.values.map(v => ({ name: v.parameterName, unit: v.unit ?? undefined, value: String(v.valueText ?? v.value ?? ''), reference: [v.referenceLow, v.referenceHigh].map(item => item ?? '—').join('–') })),

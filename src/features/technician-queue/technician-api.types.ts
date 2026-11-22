@@ -1,4 +1,4 @@
-export const ORDER_STATUSES = ['ORDERED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const;
+export const ORDER_STATUSES = ['ORDERED', 'IN_PROGRESS', 'WAITING_RESULT', 'COMPLETED', 'CANCELLED'] as const;
 export type OrderedServiceStatus = typeof ORDER_STATUSES[number];
 
 export interface OrderedService {
@@ -17,6 +17,10 @@ export interface OrderedService {
   orderedDate: string;
   completedDate?: string | null;
   detailedPrice: number;
+  roomId?: number | null;
+  roomName?: string | null;
+  roomLocation?: string | null;
+  performedDate?: string | null;
 }
 
 export interface TechnicianPage<T> {
@@ -81,7 +85,9 @@ export interface TechnicianServiceDetail {
 }
 
 export interface TechnicianQueueFilters {
-  status: OrderedServiceStatus | 'ALL';
+  status: OrderedServiceStatus | 'ALL' | 'ACTIVE';
+  roomId: string;
+  pageSize: number;
   serviceId: string;
   fromDate: string;
   toDate: string;
@@ -94,3 +100,6 @@ export interface TechnicianResultSave {
   conclusion: string;
   values: { labParameterId: number; value: number | null; valueText: string | null }[];
 }
+
+export interface TechnicianRoom { id: number; code: string; name: string; location?: string | null; roomType: string; active: boolean; load: number }
+export interface TechnicianOrderGroup { encounterId: number; roomId?: number | null; roomName?: string | null; roomLocation?: string | null; patientId: number; patientCode: string; patientFullName: string; orders: OrderedService[] }

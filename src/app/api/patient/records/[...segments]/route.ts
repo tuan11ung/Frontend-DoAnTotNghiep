@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 const endpoints: Record<string, string> = {
   'encounters/search': '/patient/encounters/search', 'encounters/detail': '/patient/encounters/detail',
+  'ordered-services/orders/search': '/patient/ordered-services/orders/search',
   'ordered-services/search': '/patient/ordered-services/search', 'ordered-services/detail': '/patient/ordered-services/detail',
   'prescriptions/detail': '/patient/prescriptions/detail',
 };

@@ -8,6 +8,7 @@ import { bookingApi } from '@/src/features/booking/api/booking-api';
 import { PatientResultsScreen } from './PatientResultsScreen';
 import { loadPatientResults } from './api/patient-results-api';
 import type { PatientResultsData } from './models/types/patient-results.types';
+import { PatientClsOrders } from './components/PatientClsOrders';
 import { PatientPublishedResult } from './PatientPublishedResult';
 
 export function PatientResultsPage() {
@@ -26,5 +27,5 @@ function LiveResults({ profileId, encounterId }: { profileId: string | null; enc
   }, [profileId, encounterId, revision]);
   if (error) return <section className="p-10 text-center"><p role="alert" className="text-sm text-rose-700">{error}</p><button type="button" className="mt-4 font-bold text-blue-700" onClick={() => { setError(''); setRevision(v => v + 1); }}>Thử lại</button></section>;
   if (!data) return <p role="status" className="p-10 text-center">Đang tải kết quả khám…</p>;
-  return <><div className="mx-auto max-w-7xl px-4 pt-4 text-right"><button type="button" className="text-sm font-bold text-blue-700" onClick={() => setRevision(v => v + 1)}>Làm mới kết quả</button></div>{!encounterId && Boolean(data.publishedResults?.length) && <section className="mx-auto mt-5 max-w-7xl rounded-xl border border-blue-100 bg-blue-50 p-5"><h2 className="font-bold text-blue-900">Kết quả CLS đã công bố của lượt khám đang diễn ra</h2><ul className="mt-3 space-y-3 text-sm">{data.publishedResults?.map(result => <li key={result.serviceId}><Link className="font-semibold text-blue-700 underline" href={`/patient/results?profile=${result.patientId}&encounter=${result.encounterId}&service=${result.serviceId}`}>{result.serviceName}</Link></li>)}</ul></section>}<PatientResultsScreen data={data} /></>;
+  return <><div className="mx-auto max-w-7xl px-4 pt-4 text-right"><button type="button" className="text-sm font-bold text-blue-700" onClick={() => setRevision(v => v + 1)}>Làm mới kết quả</button></div><PatientClsOrders key={`${profileId}:${encounterId}`} patientId={Number(!profileId||profileId==='self'?data.defaultProfileId:profileId)} encounterId={encounterId?Number(encounterId):undefined}/><PatientResultsScreen data={data} /></>;
 }
