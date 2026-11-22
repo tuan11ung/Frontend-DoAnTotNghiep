@@ -43,6 +43,8 @@ export const DEPARTMENT_TYPE_LABELS: Record<Department['type'], string> = {
 export const ROOM_TYPE_LABELS: Record<Room['type'], string> = {
   EXAM: 'Phòng khám',
   XRAY: 'X-quang',
+  CT: 'Cắt lớp vi tính (CT)',
+  MRI: 'Cộng hưởng từ (MRI)',
   ULTRASOUND: 'Siêu âm',
   LAB: 'Xét nghiệm',
   PROCEDURE: 'Thủ thuật',

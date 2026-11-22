@@ -66,7 +66,7 @@ export interface Room {
   departmentId?: number;
   specialtyId?: number;
   serviceType?: 'BHYT' | 'SERVICE';
-  type: 'EXAM' | 'XRAY' | 'ULTRASOUND' | 'LAB' | 'PROCEDURE' | 'RECEPTION' | 'CASHIER' | 'PHARMACY';
+  type: 'EXAM' | 'XRAY' | 'CT' | 'MRI' | 'ULTRASOUND' | 'LAB' | 'PROCEDURE' | 'RECEPTION' | 'CASHIER' | 'PHARMACY';
   location: string;
   slotMinutes: number | null;
   maxPatients: number | null;
