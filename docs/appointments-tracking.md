@@ -13,7 +13,7 @@ Mỗi thẻ có **Xem chi tiết**. Modal hiển thị mã lịch, người khá
 
 QR được tạo trực tiếp trong trình duyệt bằng [node-qrcode](https://github.com/soldair/node-qrcode#browser), có vùng trắng xung quanh và tải dưới dạng PNG. Nội dung là `MEDCONNECT:APPOINTMENT:<id>:<code>`, không chứa CCCD, số điện thoại hoặc tên bệnh nhân. Lễ tân tra cứu bằng mã lịch, nội dung QR mới hoặc `qrCodeData` cũ. Lịch đã hủy/kết thúc không hiển thị QR check-in. Đây là mã demo; backend thật cần phát hành và xác thực token check-in có thời hạn, không dùng mã đoán được thay quyền truy cập.
 
-Các lịch đang diễn ra có số thứ tự và nút **Xem phòng & hàng chờ**. Modal hiển thị khoa, tòa, tầng, số phòng, bác sĩ, số của mình, số người phía trước, thời gian ước tính, danh sách đang khám/sắp đến lượt và nhãn ưu tiên. Tên người khác luôn được viết tắt. Lượt của mình mang nhãn **Bạn**.
+Các lịch đang diễn ra có số thứ tự và nút **Xem hàng chờ**. Modal hiển thị khoa, tòa, tầng, số phòng, bác sĩ, số của mình, số người phía trước, thời gian ước tính, danh sách đang khám/sắp đến lượt và nhãn ưu tiên. Tên người khác luôn được viết tắt. Lượt của mình mang nhãn **Bạn**.
 
 ## Thử check-in và cập nhật trực tiếp
 

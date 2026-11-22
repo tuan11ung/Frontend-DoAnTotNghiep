@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { searchResourcePage } from '../api/resource-search';
 import type { PageResponse } from '../api/admin-api-client';
+import { DataTablePagination } from '@/src/shared/components/pagination';
+import { paginationModel } from '@/src/shared/components/pagination/pagination-model';
 import {
   BadgeDollarSign,
   Building2,
@@ -118,19 +120,29 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   const [roleFilter, setRoleFilter] = useState<StaffRole | 'ALL'>('ALL');
   const [status, setStatus] = useState<'ALL' | 'ACTIVE' | 'INACTIVE'>('ALL');
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
   const [remote, setRemote] = useState<PageResponse<AdminEntity> | null>(null);
   const [error, setError] = useState('');
-  const local = kind === 'department';
+  // The staff API does not accept a role filter; filter the full loaded catalog
+  // before slicing so matching staff on other pages are not lost.
+  const local = kind === 'department' || (kind === 'staff' && roleFilter !== 'ALL');
+  const reusablePagination = kind === 'room' || kind === 'staff' || kind === 'service';
   useEffect(() => {
     if (local) return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
-      searchResourcePage(kind, query, status === 'ALL' ? null : status === 'ACTIVE', page, controller.signal, specialtyFilter)
-        .then(data => { if (!controller.signal.aborted) { setRemote(data); setError(''); } })
+      searchResourcePage(kind, query, status === 'ALL' ? null : status === 'ACTIVE', page, controller.signal, specialtyFilter, pageSize)
+        .then(data => {
+          if (controller.signal.aborted) return;
+          if (page > 0 && page >= data.totalPages) {
+            setPage(Math.max(0, data.totalPages - 1)); setRemote(null); setError(''); return;
+          }
+          setRemote(data); setError('');
+        })
         .catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không tải được danh sách.'); });
     }, 250);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [kind, query, status, page, items, local, specialtyFilter]);
+  }, [kind, query, status, page, pageSize, items, local, specialtyFilter]);
   const meta = SECTION_META[kind];
   const SectionIcon = meta.icon;
 
@@ -155,9 +167,16 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
     });
   }, [items, query, status, kind, specialtyFilter, roleFilter]);
 
-  const filteredItems = local ? localItems.slice(page * 20, (page + 1) * 20) : remote?.content ?? [];
   const total = local ? localItems.length : remote?.totalElements ?? 0;
-  const totalPages = local ? Math.ceil(total / 20) : remote?.totalPages ?? 0;
+  const localPagination = paginationModel(total, page, pageSize);
+  const filteredItems = local ? localItems.slice(localPagination.pageIndex * pageSize, (localPagination.pageIndex + 1) * pageSize) : remote?.content ?? [];
+  const totalPages = local ? localPagination.pageCount : remote?.totalPages ?? 0;
+  function changePage(nextPage: number) {
+    setPage(nextPage); setRemote(null); setError('');
+  }
+  function changePageSize(size: number) {
+    setPageSize(size); changePage(0);
+  }
   const departmentHeadNames = (departmentId: number) => staff
     .filter((item) => item.active && item.departmentId === departmentId && item.roles.includes('DEPARTMENT_HEAD'))
     .map((item) => item.fullName);
@@ -201,7 +220,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         {kind === 'staff' && (
           <label className="w-full sm:w-56">
             <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Vai trò</span>
-            <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => setRoleFilter(event.target.value as StaffRole | 'ALL')} value={roleFilter}>
+            <select className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100" onChange={(event) => { setRoleFilter(event.target.value as StaffRole | 'ALL'); changePage(0); }} value={roleFilter}>
               <option value="ALL">Tất cả vai trò</option>
               {Object.entries(STAFF_ROLE_LABELS).map(([role, label]) => <option key={role} value={role}>{label}</option>)}
             </select>
@@ -215,7 +234,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
             <option value="INACTIVE">Tạm ngừng</option>
           </select>
         </label>
-        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{kind === 'room' || kind === 'staff' ? `${filteredItems.length} / ${items.length} bản ghi` : `${items.length} bản ghi`} · {activeCount} đang hoạt động</p>
+        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{reusablePagination ? (!local && !remote ? 'Đang tải…' : `${total} bản ghi phù hợp`) : `${items.length} bản ghi · ${activeCount} đang hoạt động`}</p>
       </div>
 
       <div className="overflow-x-auto">
@@ -327,10 +346,18 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
       </div>
       {!local && !remote && !error && <p role="status" className="p-4 text-sm text-slate-500">Đang tải dữ liệu…</p>}
       {error && <p role="alert" className="p-4 text-sm text-rose-700">{error}</p>}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t p-4 text-sm">
+      {reusablePagination ? <DataTablePagination
+        pageIndex={local ? localPagination.pageIndex : page}
+        pageSize={pageSize}
+        totalRecords={total}
+        disabled={!local && (!remote || Boolean(error))}
+        ariaLabel={`Phân trang ${meta.title.toLocaleLowerCase('vi')}`}
+        onPageChange={changePage}
+        onPageSizeChange={changePageSize}
+      /> : <div className="flex flex-wrap items-center justify-between gap-3 border-t p-4 text-sm">
         <span>{total} kết quả · Trang {page + 1}/{Math.max(1, totalPages)}</span>
         <div className="flex gap-4"><button type="button" disabled={page === 0} onClick={() => { setRemote(null); setPage(p => p - 1); }}>Trang trước</button><button type="button" disabled={page + 1 >= totalPages} onClick={() => { setRemote(null); setPage(p => p + 1); }}>Trang sau</button></div>
-      </div>
+      </div>}
     </section>
   );
 }
