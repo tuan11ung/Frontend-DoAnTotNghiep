@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { BadgeDollarSign, Building2, DoorOpen, Save, Stethoscope, UserPlus, X } from 'lucide-react';
 import { SearchableDropdown } from '@/src/shared/components/SearchableDropdown';
-import { STAFF_ROLE_LABELS } from '../data/facility-admin-data';
+import { SERVICE_ROOM_TYPE_LABELS, STAFF_ROLE_LABELS } from '../data/facility-admin-data';
 import type {
   AdminEntity,
   Department,
@@ -83,6 +83,7 @@ function initialForm(kind: EntityKind, entity?: AdminEntity): FormState {
   return {
     code: item?.code ?? '', name: item?.name ?? '',
     serviceCategoryId: String(item?.serviceCategoryId ?? ''),
+    roomType: item?.roomType ?? '',
     price: String(item?.price ?? 0), description: item?.description ?? '',
   };
 }
@@ -166,6 +167,10 @@ export function EntityEditorModal({
 
       const category = serviceCategories.find((item) => item.id === Number(form.serviceCategoryId));
       if (!category) throw new Error('Vui lòng chọn nhóm dịch vụ.');
+      const roomType = form.roomType as MedicalService['roomType'];
+      if (!roomType || !Object.hasOwn(SERVICE_ROOM_TYPE_LABELS, roomType)) {
+        throw new Error('Vui lòng chọn loại phòng thực hiện dịch vụ.');
+      }
       await onSave({
         id,
         active,
@@ -174,6 +179,7 @@ export function EntityEditorModal({
         serviceCategoryId: category.id,
         serviceCategoryCode: category.code,
         serviceCategoryName: category.name,
+        roomType,
         price: Number(form.price),
         description: String(form.description).trim(),
       });
@@ -259,6 +265,14 @@ export function EntityEditorModal({
 
             {kind === 'service' && (
               <>
+                <label className="sm:col-span-2">
+                  <span className={labelClass}>Loại phòng thực hiện <span className="text-rose-600">*</span></span>
+                  <select className={inputClass} onChange={(event) => update('roomType', event.target.value)} required value={String(form.roomType)}>
+                    <option value="">Chọn loại phòng</option>
+                    {Object.entries(SERVICE_ROOM_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                  <span className="mt-1 block text-xs text-slate-500">Chọn loại phòng thực hiện dịch vụ. Dịch vụ chưa cấu hình cần được chọn loại phòng trước khi lưu.</span>
+                </label>
                 <label className="sm:col-span-2"><span className={labelClass}>Nhóm dịch vụ <span className="text-rose-600">*</span></span><select className={inputClass} onChange={(event) => update('serviceCategoryId', event.target.value)} required value={String(form.serviceCategoryId)}><option value="">Chọn nhóm dịch vụ</option>{serviceCategories.map((item) => <option key={item.id} value={item.id}>{item.code} · {item.name}</option>)}</select></label>
                 <label><span className={labelClass}>Giá niêm yết (VNĐ) <span className="text-rose-600">*</span></span><input className={inputClass} max={999999999999} min={0} onChange={(event) => update('price', event.target.value)} required step={1} type="number" value={String(form.price)} /></label>
                 <label className="sm:col-span-2"><span className={labelClass}>Mô tả</span><textarea className={`${inputClass} min-h-24 py-3`} onChange={(event) => update('description', event.target.value)} value={String(form.description)} /></label>

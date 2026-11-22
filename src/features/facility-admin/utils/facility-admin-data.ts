@@ -2,6 +2,7 @@ import type {
   Department,
   FacilityInfo,
   Room,
+  ServiceRoomType,
   StaffRole,
 } from '../types';
 
@@ -48,6 +49,15 @@ export const ROOM_TYPE_LABELS: Record<Room['type'], string> = {
   RECEPTION: 'Tiếp đón',
   CASHIER: 'Thu ngân',
   PHARMACY: 'Nhà thuốc',
+};
+
+export const SERVICE_ROOM_TYPE_LABELS: Record<ServiceRoomType, string> = {
+  XRAY: 'X-quang',
+  CT: 'Cắt lớp vi tính (CT)',
+  MRI: 'Cộng hưởng từ (MRI)',
+  ULTRASOUND: 'Siêu âm',
+  LAB: 'Xét nghiệm',
+  PROCEDURE: 'Thủ thuật',
 };
 
 export const STAFF_ROLE_LABELS: Record<StaffRole, string> = {

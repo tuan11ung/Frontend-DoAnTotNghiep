@@ -11,6 +11,7 @@ interface MedicalServiceResponse {
   price: number;
   description?: string | null;
   isActive: boolean;
+  roomType?: MedicalService['roomType'];
 }
 
 interface MedicalServiceDetailResponse {
@@ -34,6 +35,7 @@ export const toMedicalService = (data: MedicalServiceResponse): MedicalService =
   price: Number(data.price),
   description: data.description ?? '',
   active: data.isActive,
+  roomType: data.roomType ?? null,
 });
 
 export const medicalServiceAdminApi = {
@@ -66,6 +68,7 @@ export const medicalServiceAdminApi = {
     const detail = await adminRequest<MedicalServiceDetailResponse>('medical-services/save', {
       id: service.id > 0 ? service.id : null,
       serviceCategoryId: service.serviceCategoryId,
+      roomType: service.roomType,
       code: service.code,
       name: service.name,
       price: service.price,

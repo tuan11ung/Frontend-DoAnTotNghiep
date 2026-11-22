@@ -113,6 +113,8 @@ export interface RankCatalogItem {
   rankOrder: number;
 }
 
+export type ServiceRoomType = 'XRAY' | 'CT' | 'MRI' | 'ULTRASOUND' | 'LAB' | 'PROCEDURE';
+
 export interface MedicalService {
   id: number;
   code: string;
@@ -120,6 +122,7 @@ export interface MedicalService {
   serviceCategoryId: number;
   serviceCategoryCode: string;
   serviceCategoryName: string;
+  roomType?: ServiceRoomType | null;
   price: number;
   description: string;
   active: boolean;
