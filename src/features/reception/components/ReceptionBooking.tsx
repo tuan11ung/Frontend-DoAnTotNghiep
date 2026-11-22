@@ -1,7 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BookingStep1Mode } from '@/src/features/booking/components/BookingStep1Mode';
-import { BookingStepper } from '@/src/features/booking/components/BookingStepper';
 import { BookingSearchSelect } from '@/src/features/booking/workflow/BookingSearchSelect';
 import { matchesBookingQuery } from '@/src/features/booking/workflow/hospital-search';
 import { BhytBookingCalendar } from '@/src/features/booking/components/BhytBookingCalendar';
@@ -56,7 +55,6 @@ export function ReceptionBooking({ patient, onNext }: { patient: ReceptionPatien
   return <section ref={panelRef} tabIndex={-1} aria-labelledby="reception-booking-title" className="scroll-mt-6 space-y-6 outline-none">
     <div className={receptionCard}><div className="flex flex-wrap items-start justify-between gap-3"><div><h2 id="reception-booking-title" className="text-xl font-bold text-slate-900">Đăng ký khám cho bệnh nhân</h2><p className="mt-2 font-semibold text-blue-800">{patient.fullName}</p><p className="mt-1 text-sm text-slate-500">Ngày sinh: {formatDisplayDate(patient.dob)} · CCCD: {patient.maskedNationalId || 'Chưa cập nhật'}</p></div><span className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700">Đăng ký tại cơ sở đang tiếp nhận</span></div></div>
     {encounter ? <ReceptionCheckInResult code={encounter} queue={acceptedQueue} slot={choice} onNext={onNext} /> : <>
-      <BookingStepper currentStep={step} mode={mode ?? 'bhyt'} />
       {error && <p role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</p>}
       {step === 1 && <BookingStep1Mode selectedMode={mode} onSelectMode={value => { setMode(value); setSpecialtyId(null); setDoctorId(null); setSlotId(''); }} onContinue={() => setStep(2)} continueDisabled={!mode} />}
       {step === 2 && <section className={receptionCard}>

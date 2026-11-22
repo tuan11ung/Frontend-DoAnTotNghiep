@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useRef, useState, type FormEvent, type ChangeEvent } from 'react';
+import React, { useState, type FormEvent, type ChangeEvent } from 'react';
+import { BirthDateInput } from '@/src/shared/components/BirthDateInput';
 import { AuthContinuationLink } from './AuthContinuation';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import {
   UserRound,
-  Calendar,
   CreditCard,
   Phone,
   Mail,
@@ -41,11 +41,9 @@ export function RegisterFormStep({
   const [errors, setErrors] = useState<RegisterFormErrors>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showDateInput, setShowDateInput] = useState(false);
   const [latestDob] = useState(() => (
     formatDisplayDate(new Date(Date.now() - 86_400_000)).split('/').reverse().join('-')
   ));
-  const dateInputRef = useRef<HTMLInputElement>(null);
   const dob = /^\d{2}\/\d{2}\/\d{4}$/.test(values.dob) && formatDisplayDate(values.dob) === values.dob
     ? values.dob.split('/').reverse().join('-')
     : '';
@@ -67,29 +65,6 @@ export function RegisterFormStep({
   const handleNationalIdChange = (e: ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 12);
     handleChange('nationalId', raw);
-  };
-
-  const handleDobChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value;
-    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-      handleChange('dob', text.split('-').reverse().join('/'));
-      return;
-    }
-    const digits = text.replace(/\D/g, '').slice(0, 8);
-    handleChange('dob', [digits.slice(0, 2), digits.slice(2, 4), digits.slice(4)].filter(Boolean).join('/'));
-  };
-
-  const openDatePicker = () => {
-    const dateInput = dateInputRef.current;
-    if (dateInput?.showPicker) {
-      try {
-        dateInput.showPicker();
-        return;
-      } catch {
-        // Embedded browsers may require using the native date input directly.
-      }
-    }
-    setShowDateInput((visible) => !visible);
   };
 
   const validate = (): boolean => {
@@ -224,45 +199,10 @@ export function RegisterFormStep({
               <span>Ngày sinh</span>
               <span className="text-rose-500 font-bold">*</span>
             </label>
-            <div className="relative flex items-center">
-              <input
-                id="reg-dob"
-                name="dob"
-                autoComplete="bday"
-                className={`w-full h-11 pl-3 pr-11 rounded-lg bg-slate-50 border text-sm font-mono text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${
-                  errors.dob
-                    ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100'
-                    : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'
-                }`}
-                placeholder="DD/MM/YYYY"
-                required
-                type="text"
-                inputMode="numeric"
-                aria-invalid={Boolean(errors.dob)}
-                aria-describedby={errors.dob ? 'reg-dob-error' : undefined}
-                value={values.dob}
-                onChange={handleDobChange}
-              />
-              <input
-                ref={dateInputRef}
-                className={showDateInput ? 'absolute left-0 top-full z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white p-2 text-sm' : 'sr-only absolute right-3'}
-                type="date"
-                max={latestDob}
-                value={dob}
-                tabIndex={showDateInput ? 0 : -1}
-                aria-hidden={!showDateInput}
-                aria-label="Chọn ngày sinh"
-                onChange={(e) => handleChange('dob', e.target.value ? formatDisplayDate(e.target.value) : '')}
-              />
-              <button
-                type="button"
-                className="absolute right-1 grid size-9 cursor-pointer place-items-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-blue-500"
-                aria-label={showDateInput ? 'Ẩn lịch chọn ngày sinh' : 'Mở lịch chọn ngày sinh'}
-                onClick={openDatePicker}
-              >
-                <Calendar className="size-5" aria-hidden="true" />
-              </button>
-            </div>
+            <BirthDateInput id="reg-dob" name="dob" value={values.dob} onChange={value => handleChange('dob', value)} max={latestDob}
+              invalid={Boolean(errors.dob)} describedBy={errors.dob ? 'reg-dob-error' : undefined}
+              className={`w-full h-11 pl-3 pr-11 rounded-lg bg-slate-50 border text-sm font-mono text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${errors.dob ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'}`}
+            />
             {errors.dob && <p id="reg-dob-error" className="text-xs text-rose-600 font-medium">{errors.dob}</p>}
           </div>
 

@@ -329,7 +329,7 @@ export function RegisterFormStep({
         {/* Địa chỉ */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-800" htmlFor="reg-address">
-            Địa chỉ <span className="text-xs font-normal text-slate-400">(không bắt buộc)</span>
+            Địa chỉ <span className="text-xs font-normal text-slate-400"></span>
           </label>
           <div className="relative flex items-start">
             <MapPin className="w-5 h-5 absolute left-3.5 top-3 text-slate-400 pointer-events-none" />
@@ -354,7 +354,7 @@ export function RegisterFormStep({
         {/* Số thẻ bảo hiểm y tế */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-semibold text-slate-800" htmlFor="reg-insurance-no">
-            Số thẻ bảo hiểm y tế <span className="text-xs font-normal text-slate-400">(không bắt buộc)</span>
+            Số thẻ bảo hiểm y tế <span className="text-xs font-normal text-slate-400"></span>
           </label>
           <div className="relative flex items-center">
             <ShieldPlus className="w-5 h-5 absolute left-3.5 text-slate-400 pointer-events-none" />
