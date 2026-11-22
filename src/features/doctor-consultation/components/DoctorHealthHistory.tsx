@@ -6,7 +6,7 @@ import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { consultationApi, type ClinicalAllergy, type ClinicalCondition } from '../api/consultation-api';
 import { clinicalButton, clinicalCard, clinicalField } from './clinical-ui';
-import { Icd10Picker } from '../Icd10Picker';
+import { Icd10Dropdown } from '../Icd10Picker';
 
 type Editor = {kind:'allergy';entry?:ClinicalAllergy} | {kind:'condition';entry?:ClinicalCondition};
 const types:Record<string,string>={DRUG:'Thuốc',FOOD:'Thực phẩm',OTHER:'Khác'};
@@ -65,7 +65,7 @@ export function DoctorHealthHistory({patientId,allergies,conditions,editable,onA
         {kind==='allergy'?<><label className="text-sm">Loại dị ứng<select name="type" value={allergyType} onChange={e=>{setAllergyType(e.target.value);setSelection(undefined);}} className={clinicalField}>{Object.entries(types).map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label><label className="text-sm">Biểu hiện / phản ứng<input name="reaction" maxLength={255} defaultValue={entry && 'reaction' in entry?entry.reaction || '':''} className={clinicalField}/></label></>:<>
         <label className="text-sm">Năm phát hiện<input name="year" type="number" min={1900} max={businessNow().getFullYear()} defaultValue={entry && 'diagnosedYear' in entry?entry.diagnosedYear || '':''} className={clinicalField}/></label>
         <label className="flex items-center gap-2 text-sm"><input name="recovered" type="checkbox" defaultChecked={entry && 'recovered' in entry?entry.recovered:false}/>Đã khỏi</label></>}
-        {!entry && <div className="sm:col-span-2">{kind==="allergy" ? allergyType==="DRUG" && <IngredientSearch disabled={busy || !editable} onSelect={setSelection}/> : <Icd10Picker selectedIds={selection?[selection.id]:[]} disabled={busy || !editable} onSelect={setSelection}/>} {selection && <p className="mt-2 text-sm">Đã chọn: {selection.name} <button type="button" className="text-blue-700 underline" onClick={()=>setSelection(undefined)}>Bỏ chọn</button></p>}</div>}
+        {!entry && <div className="sm:col-span-2">{kind==="allergy" ? allergyType==="DRUG" && <IngredientSearch disabled={busy || !editable} onSelect={setSelection}/> : <Icd10Dropdown selected={selection} disabled={busy || !editable} onSelect={setSelection}/>} {selection && <p className="mt-2 text-sm">Đã chọn: {selection.name} <button type="button" className="text-blue-700 underline" onClick={()=>setSelection(undefined)}>Bỏ chọn</button></p>}</div>}
         <p className="text-xs text-slate-600 sm:col-span-2">Chỉ xác minh sau khi đối chiếu với người bệnh hoặc tài liệu y tế.</p>
         <div className="flex gap-3 sm:col-span-2"><button className={clinicalButton}>{busy?'Đang lưu…':'Lưu và xác minh'}</button><button type="button" onClick={()=>{setEditor(null);setError('');}}>Hủy</button></div>
       </fieldset>

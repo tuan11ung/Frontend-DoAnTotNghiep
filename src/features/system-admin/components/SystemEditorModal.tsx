@@ -224,7 +224,7 @@ export function SystemEditorModal(props: SystemEditorModalProps) {
   };
 
   return (
-    <div aria-labelledby="system-editor-title" className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm" onKeyDown={handleKeyDown} role="dialog" aria-modal="true">
+    <div aria-labelledby="system-editor-title" className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/55 p-4" onKeyDown={handleKeyDown} role="dialog" aria-modal="true">
       <div className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" ref={panel}>
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6"><div><h2 className="text-lg font-extrabold text-slate-950" id="system-editor-title">{title}</h2><p className="mt-1 text-xs text-slate-500">Các trường có dấu * là bắt buộc.</p></div><button aria-label="Đóng" className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50" disabled={saving} onClick={onClose} type="button"><X className="h-5 w-5" /></button></div>
         <form className="min-h-0 flex-1 overflow-y-auto" onSubmit={submit}>

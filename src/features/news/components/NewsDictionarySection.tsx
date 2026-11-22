@@ -324,7 +324,7 @@ export const NewsDictionarySection: React.FC<NewsDictionarySectionProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label={selectedItem.name}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 animate-in fade-in duration-200"
         >
           <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh]">
             {/* Modal Header */}

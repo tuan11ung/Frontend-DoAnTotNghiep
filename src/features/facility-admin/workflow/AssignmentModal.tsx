@@ -43,7 +43,7 @@ export function AssignmentModal({ assignment, departments, specialties, rooms, s
   const title = assignment.kind === 'department' ? 'Phân công trưởng khoa' : 'Phân công bác sĩ phụ trách';
 
   return (
-    <div aria-modal="true" className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/55 p-0 backdrop-blur-sm sm:items-center sm:p-5" role="dialog">
+    <div aria-modal="true" className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/55 p-0 sm:items-center sm:p-5" role="dialog">
       <div className="w-full max-w-lg rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl">
         <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-4 sm:px-6">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"><UserCheck className="h-5 w-5" /></div>

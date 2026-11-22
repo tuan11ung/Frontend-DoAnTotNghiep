@@ -53,7 +53,7 @@ export function CancelAppointmentDialog({
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="cancel-appointment-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div role="dialog" aria-modal="true" aria-labelledby="cancel-appointment-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 animate-in fade-in duration-200">
       <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
         {/* Header */}
         <div className="bg-rose-50/70 border-b border-rose-100 px-6 py-4.5 flex items-center justify-between">
