@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { ToggleSwitch } from '@/src/shared/components/ToggleSwitch';
 import { searchResourcePage } from '../api/resource-search';
 import type { PageResponse } from '../api/admin-api-client';
 import { DataTablePagination } from '@/src/shared/components/pagination';
@@ -99,11 +100,7 @@ function StaffStatusBadge({ status }: { status: StaffAccount['status'] }) {
 }
 
 function Toggle({ active, disabled = false, label, onClick }: { active: boolean; disabled?: boolean; label: string; onClick: () => void }) {
-  return (
-    <button aria-label={label} aria-pressed={active} className={`relative h-7 w-12 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${active ? 'bg-emerald-600' : 'bg-slate-300'}`} disabled={disabled} onClick={onClick} type="button">
-      <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${active ? 'translate-x-6' : 'translate-x-1'}`} />
-    </button>
-  );
+  return <ToggleSwitch checked={active} disabled={disabled} label={label} onChange={onClick} />;
 }
 
 function ActionButton({ children, label, onClick }: { children: React.ReactNode; label: string; onClick: () => void }) {
