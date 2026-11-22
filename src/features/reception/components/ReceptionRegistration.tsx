@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { EmergencyGrantControl } from '@/src/features/doctor-emergency/EmergencyLive';
 import { receptionField, receptionButton, receptionCard, receptionError } from './reception-ui';
 export { receptionField, receptionButton, receptionCard, receptionError } from './reception-ui';
 import { AssistedPatientAccount } from './ReceptionLifecycle';
@@ -74,7 +73,7 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
     {resultPage && !resultPage.last && <button type="button" disabled={busy} className="rounded-lg border px-4 py-2 text-sm font-semibold text-blue-700 disabled:opacity-50" onClick={() => void searchPage(resultPage.page + 1)}>{busy ? 'Đang tải…' : 'Tải thêm hồ sơ'}</button>}
     {results?.length === 0 && <button type="button" className="text-sm font-bold text-blue-700" onClick={() => setCreating(v => !v)}>{creating ? 'Đóng tạo hồ sơ' : 'Đăng ký bệnh nhân mới'}</button>}
     {creating && <CreateReceptionPatient onCreated={item => { setResultPage(null); setResults([item]); setPatient(item); setCreating(false); if (lookupOnly) router.push(href('registration', { patientCode: item.patientCode })); }} />}
-  </section>{!demo && !lookupOnly && patient && <><AssistedPatientAccount key={patient.id} patientId={patient.id} /><EmergencyGrantControl key={`r8:${patient.id}`} patientId={patient.id} /></>}{!lookupOnly && patient && <ReceptionBooking key={patient.id} patient={patient} onNext={() => { resetSearch(''); router.replace(href('registration')); }} />}</div>;
+  </section>{!demo && !lookupOnly && patient && <AssistedPatientAccount key={patient.id} patientId={patient.id} />}{!lookupOnly && patient && <ReceptionBooking key={patient.id} patient={patient} onNext={() => { resetSearch(''); router.replace(href('registration')); }} />}</div>;
 }
 
 function CreateReceptionPatient({ onCreated }: { onCreated: (patient: ReceptionPatient) => void }) {
