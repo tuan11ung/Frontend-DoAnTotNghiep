@@ -63,6 +63,7 @@ export interface PatientAppointment {
   hospitalHotline: string;
   departmentName: string;
   roomName: string;
+  roomLocation?: string | null;
   doctorName: string;
   doctorTitle: string;
   doctorAvatar?: string;

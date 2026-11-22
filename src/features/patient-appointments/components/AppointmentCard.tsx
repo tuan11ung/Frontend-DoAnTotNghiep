@@ -132,14 +132,6 @@ export function AppointmentCard({
           </dl>
         </div>
 
-        {/* Triệu chứng đăng ký */}
-        {appointment.symptoms && (
-          <div className="text-xs text-slate-600 line-clamp-2 bg-white rounded-xl p-2.5 border border-slate-100">
-            <span className="font-semibold text-slate-700">Lý do khám: </span>
-            {appointment.symptoms}
-          </div>
-        )}
-
         {isCheckedIn && <AppointmentQueueSummary appointment={appointment} room={queueRoom} />}
 
         {/* Lý do hủy nếu đã hủy */}

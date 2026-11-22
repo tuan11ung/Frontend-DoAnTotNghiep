@@ -4,6 +4,8 @@ import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import Link from 'next/link';
 import { editPreviewBooking } from '../api/reception-preview-api';
 import { ReceptionDialog } from './ReceptionDialog';
+import { ReceptionQrScanner } from './ReceptionQrScanner';
+import { ReceptionQrImageUpload } from './ReceptionQrImageUpload';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { type PendingAppointment, type ReceptionAppointment, type ReceptionSlot } from '../api/reception-api';
 import { useReceptionData } from '../ReceptionDataProvider';
@@ -28,6 +30,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
     detailsRef.current?.focus({ preventScroll: true });
   }, [pending, appointment]);
   const [acceptedCode, setAcceptedCode] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
   useEffect(() => {
     if (!pending) return;
     const controller = new AbortController();
@@ -68,6 +71,9 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
   }
   if (acceptedCode && appointment) return <ReceptionCheckInResult code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { setAcceptedCode(null); setAppointment(null); setReference(''); setError(''); setNotice(''); }} />;
   return <div className="space-y-5">
+    {scanning && <ReceptionQrScanner onClose={() => setScanning(false)} onScan={value => { setScanning(false); setReference(value); void lookup(value); }} />}
+    {!pending && <button type="button" className={receptionButton} disabled={busy} onClick={() => { setAppointment(null); setError(''); setNotice(''); setScanning(true); }}>Quét bằng camera</button>}
+    {!pending && <ReceptionQrImageUpload disabled={busy || scanning} onScan={value => { setReference(value); void lookup(value); }} />}
     {pending ? <section className={receptionCard}><div className="flex justify-between"><h2 className="font-bold">Lịch hẹn chờ phân chuyên khoa</h2><button type="button" className="text-sm font-bold text-blue-700" disabled={busy} onClick={() => { setError(''); setRevision(v => v + 1); }}>Làm mới</button></div>
       {!records && !error && <p role="status">Đang tải lịch chờ…</p>}{records?.content.length === 0 && <p role="status" className="text-sm text-slate-500">Không có lịch hẹn chờ phân chuyên khoa.</p>}
       <ul className="divide-y">{records?.content.map(item => <li className="flex flex-wrap justify-between gap-3 py-4" key={item.appointmentId}><div><p className="font-bold">{item.patientName} · {item.appointmentCode}</p><p className="mt-1 text-sm text-slate-500">{formatDisplayDate(item.appointmentDate)} · {item.startTime.slice(0, 5)}–{item.endTime.slice(0, 5)}</p><p className="mt-2 whitespace-pre-wrap text-sm">{item.appointReason}</p></div><button disabled={busy} type="button" className="text-sm font-bold text-blue-700" aria-haspopup="dialog" onClick={() => void lookup(item.appointmentCode)}>Xem chi tiết và phân chuyên khoa</button></li>)}</ul>
