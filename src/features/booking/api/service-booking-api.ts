@@ -3,6 +3,7 @@ import { loadSearchPages, type SearchPage } from '@/src/shared/lib/search-pagina
 import type { BookedAppointment } from '../models/types/bhyt.types';
 
 export interface ServiceSlot {
+  session: 'MORNING' | 'AFTERNOON';
   hospitalId: number; staffId: number; doctorName: string; rankName?: string;
   roomId: number; roomName: string; roomLocation?: string; timeSlotId: number;
   appointmentDate: string; startTime: string; endTime: string; price: number;

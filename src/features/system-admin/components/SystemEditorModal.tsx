@@ -10,6 +10,7 @@ import type {
   HospitalAdminFormValues,
   IngredientItem,
   MedicineItem,
+  RankItem,
   ServiceCategoryItem,
   SpecialtyItem,
   SystemResource,
@@ -30,6 +31,7 @@ type SystemEditorModalProps = { onClose: () => void } & (
 );
 
 const SECTION_TITLES: Record<EditableSection, { create: string; edit: string }> = {
+  ranks: { create: 'Thêm trình độ bác sĩ', edit: 'Sửa trình độ bác sĩ' },
   hospitals: { create: 'Thêm cơ sở y tế', edit: 'Cập nhật cơ sở y tế' },
   specialties: { create: 'Thêm chuyên khoa', edit: 'Cập nhật chuyên khoa' },
   'service-categories': { create: 'Thêm nhóm dịch vụ', edit: 'Cập nhật nhóm dịch vụ' },
@@ -75,6 +77,14 @@ function HospitalFields({ item }: { item?: SystemResource }) {
 }
 
 function SectionFields({ section, item, ingredients, serviceCategories, specialties }: Pick<ResourceEditorProps, 'section' | 'item' | 'ingredients' | 'serviceCategories' | 'specialties'>) {
+  if (section === 'ranks') {
+    const rank = item as RankItem | undefined;
+    return <>
+      <Field label="Mã trình độ" required><input className={inputClass} defaultValue={rank?.code ?? ''} maxLength={20} name="code" required /></Field>
+      <Field label="Tên trình độ" required><input className={inputClass} defaultValue={rank?.name ?? ''} maxLength={100} name="name" required /></Field>
+      <Field label="Thứ tự / Bậc chuyên môn" required><input className={inputClass} defaultValue={rank?.rankOrder ?? 1} min={1} max={2147483647} name="rankOrder" required step={1} type="number" /></Field>
+    </>;
+  }
   if (section === 'hospitals') return <HospitalFields item={item} />;
   if (section === 'specialties') {
     const value = item as SpecialtyItem | undefined;
@@ -115,6 +125,13 @@ function buildPayload(section: EditableSection, item: SystemResource | undefined
     if (id) payload.id = id;
     else payload.code = String(form.get('code') ?? '').trim();
     return payload;
+  }
+  if (section === 'ranks') {
+    const code = String(form.get('code') ?? '').trim();
+    const name = String(form.get('name') ?? '').trim();
+    const rankOrder = Number(form.get('rankOrder'));
+    if (!code || !name || !Number.isInteger(rankOrder) || rankOrder < 1 || rankOrder > 2147483647) throw new Error('Nhập mã, tên và bậc trình độ là số nguyên dương hợp lệ.');
+    return { ...(id ? { id } : {}), code, name, rankOrder };
   }
   if (section === 'specialties') return { ...(id ? { id } : {}), code: String(form.get('code')).trim(), name: String(form.get('name')).trim(), description: optionalText(form, 'description') };
   if (section === 'service-categories') return { ...(id ? { id } : {}), parentId: optionalText(form, 'parentId') ? Number(form.get('parentId')) : undefined, code: String(form.get('code')).trim(), name: String(form.get('name')).trim() };

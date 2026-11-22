@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import type { BookingMode, BookingState, BookingTarget, DemandSubtype } from '../types';
 import { MOCK_HOSPITALS, MOCK_SPECIALTIES, MOCK_DOCTORS, MOCK_DATE_OPTIONS, findHospitalById, findDoctorById, findSpecialtyById, mockBookingSlotEnd } from '../utils/booking-mock-data';
 import { saveAppointment } from '@/src/shared/utils/patient-storage';
-import { getDoctorQualification, doctorQualifications, type DoctorQualification } from '../models/doctor-qualification';
+import { getDoctorQualification, doctorQualifications, isDoctorQualification, type DoctorQualification } from '../models/doctor-qualification';
 import { bookingApi } from '../api/booking-api';
 import { toBookingTarget } from '../models/booking-patient';
 import type { BookingPatientProfile } from '../models/types/bhyt.types';
@@ -72,7 +72,7 @@ export function useDemandBooking() {
 
   const [qualification, setQualification] = useState<DoctorQualification | null>(() => {
     const value = searchParams.get('qualification');
-    return value === 'MASTER' || value === 'CK1' || value === 'CK2' ? value : null;
+    return isDoctorQualification(value) ? value : null;
   });
   const [profiles, setProfiles] = useState<BookingPatientProfile[]>([]);
   const [profileError, setProfileError] = useState('');

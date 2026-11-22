@@ -1,4 +1,4 @@
-import { SYSTEM_PAGEABLE, systemAdminDownload, systemAdminRequest, type SystemPageable } from './system-admin-client';
+import { SYSTEM_PAGEABLE, systemAdminCommand, systemAdminDownload, systemAdminRequest, type SystemPageable } from './system-admin-client';
 import type {
   ArticleItem,
   HospitalDetail,
@@ -51,6 +51,13 @@ export const changeServiceCategoryStatus = (id: number, active: boolean) =>
 
 export const searchRanks = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
   systemAdminRequest<PageResponse<RankItem>>('ranks/search', { keyword, pageable });
+
+export const saveRank = (payload: Omit<RankItem, 'id'> & { id?: number }) =>
+  systemAdminRequest<RankItem>('ranks/save', payload);
+export const deleteRank = (id: number) => {
+  if (!Number.isSafeInteger(id) || id <= 0) throw new Error('Trình độ không hợp lệ.');
+  return systemAdminCommand(`ranks/${id}`, undefined, 'DELETE');
+};
 
 export const searchIcd10 = (keyword = '', pageable: SystemPageable = SYSTEM_PAGEABLE) =>
   systemAdminRequest<PageResponse<Icd10Item>>('icd10/search', { keyword, pageable });

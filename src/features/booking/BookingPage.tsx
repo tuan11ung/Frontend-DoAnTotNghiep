@@ -9,13 +9,13 @@ import {BookingTargetSelector} from './components/BookingTargetSelector';
 import {BookingStep1Mode} from './components/BookingStep1Mode';
 import {BookingStep2} from './components/BookingStep2';
 import {
-    BhytBookingSuccess,
     BhytScheduleStep,
-    bookingBackClass,
-    bookingButtonClass,
-    BookingSummary
+    bookingBackClass
 } from './components/BhytBookingSteps';
 import {ServiceBookingFlow} from './ServiceBookingFlow';
+import { BookingConfirmStep } from './components/BookingConfirmStep';
+import { BookingSuccessStep } from './components/BookingSuccessStep';
+import { toBhytSummary } from './api/booking-adapters';
 import {useBhytBooking} from './hooks/useBhytBooking';
 
 export function BookingPage() {
@@ -118,34 +118,15 @@ function BhytBookingFlow({initialPatientId, onSwitchMode}: {
                                       onContinue={continueToConfirmation}/></ProgressiveBookingSection>}
 
                 {step === 4 && patient && hospital && specialtyName && selectedSlot && <ProgressiveBookingSection active label="Xác nhận đặt khám" scroll>
-                    <form className="space-y-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7"
-                          onSubmit={submit}>
-                        <h1 className="text-xl sm:text-2xl font-bold text-slate-900">
-                            Xác nhận thông tin đặt khám
-                            BHYT
-                        </h1>
-
-                        <BookingSummary patient={patient} hospital={hospital} specialtyName={specialtyName}
-                                        pendingSpecialty={pendingSpecialty} slot={selectedSlot}/>
-                        <label className="block"><span className="mb-2 block text-sm font-bold">Lý do khám <span
-                            className="text-rose-600">*</span></span><textarea
-                            className="min-h-28 w-full rounded-lg border border-slate-200 p-3 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-                            disabled={saving} maxLength={500} onChange={(event) => setReason(event.target.value)}
-                            placeholder="Nhập triệu chứng hoặc lý do cần khám" required rows={4} value={reason}/><span
-                            className="mt-1 block text-right text-xs text-slate-500">{reason.length}/500</span></label>
-                        {!pendingSpecialty &&
-                            <p className="text-sm text-slate-500">Lễ tân sẽ kiểm tra thông tin BHYT khi bạn đến check-in
-                                tại bệnh viện.</p>}
-                        {error &&
-                            <p role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
-                        <div className="flex justify-end gap-3">
-                            <button className={bookingButtonClass} disabled={saving || !reason.trim()}
-                                    type="submit">{saving ? 'Đang gửi...' : pendingSpecialty ? 'Gửi yêu cầu đặt khám' : 'Xác nhận đặt lịch'}</button>
-                        </div>
-                    </form></ProgressiveBookingSection>}
+                    <BookingConfirmStep title="Xác nhận thông tin đặt khám BHYT"
+                        summary={toBhytSummary(patient, hospital, specialtyName, pendingSpecialty, selectedSlot)}
+                        reason={reason} onReason={setReason} saving={saving} error={error || undefined}
+                        note={!pendingSpecialty ? 'Lễ tân sẽ kiểm tra thông tin BHYT khi bạn đến check-in tại bệnh viện.' : undefined}
+                        submitLabel={pendingSpecialty ? 'Gửi yêu cầu đặt khám' : 'Xác nhận đặt lịch'} onSubmit={submit} />
+                </ProgressiveBookingSection>}
 
                 {step === 5 && appointment &&
-                    <BhytBookingSuccess appointment={appointment} specialtyName={specialtyName ?? ''} onReset={reset}/>}
+                    <BookingSuccessStep appointment={appointment} specialtyName={specialtyName ?? ''} onReset={reset}/>}
             </>}
 
         </div>

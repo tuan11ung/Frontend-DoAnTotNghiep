@@ -2,7 +2,7 @@
 
 import { BookingSearchSelect } from '../workflow/BookingSearchSelect';
 import { matchesBookingQuery, matchesHospital } from '../workflow/hospital-search';
-import { doctorQualifications, type DoctorQualification } from '../models/doctor-qualification';
+import { doctorQualifications, isDoctorQualification, type DoctorQualification } from '../models/doctor-qualification';
 import { bookingBackClass, bookingButtonClass, bookingInputClass } from './BhytBookingSteps';
 
 interface BookingStep2Props<H extends string | number, S extends string | number> {
@@ -77,7 +77,7 @@ export function BookingStep2<H extends string | number, S extends string | numbe
               onChange={(event) => {
                 const value = event.target.value;
                 if (value === '') qualification.onSelect(null);
-                else if (value === 'MASTER' || value === 'CK1' || value === 'CK2') qualification.onSelect(value);
+                else if (isDoctorQualification(value)) qualification.onSelect(value);
               }}
             >
               <option value="">Tất cả trình độ</option>

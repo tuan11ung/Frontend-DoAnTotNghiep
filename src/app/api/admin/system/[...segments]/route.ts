@@ -31,6 +31,30 @@ const ENDPOINTS: Record<string, string> = {
   'system-logs/export': '/system/system-logs/export',
 };
 
+export async function DELETE(request: Request, { params }: { params: Promise<{ segments: string[] }> }) {
+  const { segments } = await params;
+  const rank = /^ranks\/([1-9]\d*)$/.exec(segments.join('/'));
+  if (!rank || !Number.isSafeInteger(Number(rank[1]))) {
+    return NextResponse.json({ success: false, message: 'API xóa không tồn tại.' }, { status: 404 });
+  }
+  const authorization = request.headers.get('authorization');
+  if (!authorization?.startsWith('Bearer ')) {
+    return NextResponse.json({ success: false, message: 'Phiên đăng nhập không hợp lệ.' }, { status: 401 });
+  }
+  try {
+    const response = await fetch(`${BACKEND_API_URL}/api/v1/system/ranks/${rank[1]}`, {
+      method: 'DELETE', headers: { Authorization: authorization }, cache: 'no-store',
+    });
+    return new NextResponse(await response.arrayBuffer(), {
+      status: response.status,
+      headers: { 'Content-Type': response.headers.get('content-type') ?? 'application/json', 'Cache-Control': 'no-store' },
+    });
+  } catch {
+    return NextResponse.json({ success: false, message: 'Không thể kết nối đến máy chủ quản trị hệ thống.' },
+      { status: 502, headers: { 'Cache-Control': 'no-store' } });
+  }
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ segments: string[] }> },

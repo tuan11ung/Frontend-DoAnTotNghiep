@@ -7,5 +7,5 @@ export const RANK_ORDER_OPTIONS = [
 ] as const;
 
 export function getRankOrderLabel(rankOrder: number) {
-  return RANK_ORDER_OPTIONS.find((option) => option.value === rankOrder)?.label ?? 'Chưa phân loại';
+  return RANK_ORDER_OPTIONS.find((option) => option.value === rankOrder)?.label ?? `Bậc ${rankOrder}`;
 }

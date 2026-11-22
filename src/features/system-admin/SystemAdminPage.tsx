@@ -16,6 +16,7 @@ import {
   changeServiceCategoryStatus,
   createHospital,
   createHospitalAdmin,
+  deleteRank,
   exportSystemLogs,
   getArticleDetail,
   getHospitalDetail,
@@ -23,6 +24,7 @@ import {
   saveIcd10,
   saveIngredient,
   saveMedicine,
+  saveRank,
   saveServiceCategory,
   saveSpecialty,
   searchArticles,
@@ -54,6 +56,7 @@ import type {
   IngredientItem,
   MedicineItem,
   PageResponse,
+  RankItem,
   ServiceCategoryItem,
   SpecialtyItem,
   ResourceSection,
@@ -160,6 +163,7 @@ function HospitalAdminPreview() {
 }
 
 function SystemAdminLiveScreen() {
+  const deletingRank = useRef(false);
   const router = useRouter();
   const loadedSections = useRef(new Set<SystemSection>());
   const resourceFilters = useRef<Partial<Record<ResourceSection, { keyword: string; status: 'ALL' | 'ACTIVE' | 'INACTIVE' }>>>({});
@@ -375,6 +379,7 @@ function SystemAdminLiveScreen() {
       else await createHospital(payload as Parameters<typeof createHospital>[0]);
     } else if (section === 'specialties') await saveSpecialty(payload as Parameters<typeof saveSpecialty>[0]);
     else if (section === 'service-categories') await saveServiceCategory(payload as Parameters<typeof saveServiceCategory>[0]);
+    else if (section === 'ranks') await saveRank(payload as Parameters<typeof saveRank>[0]);
     else if (section === 'icd10') await saveIcd10(payload as Parameters<typeof saveIcd10>[0]);
     else if (section === 'ingredients') await saveIngredient(payload as Parameters<typeof saveIngredient>[0]);
     else if (section === 'medicines') await saveMedicine(payload as Parameters<typeof saveMedicine>[0]);
@@ -386,6 +391,23 @@ function SystemAdminLiveScreen() {
     setEditor(null);
     setNotice('Đã lưu thay đổi thành công.');
     await refreshSection(section);
+  };
+
+  const removeRank = async (rank: RankItem) => {
+    if (deletingRank.current || !window.confirm(`Xóa trình độ “${rank.name}” (${rank.code})?`)) return;
+    deletingRank.current = true;
+    setError('');
+    setNotice('');
+    try {
+      await deleteRank(rank.id);
+      resourceRequests.current.ranks = (resourceRequests.current.ranks ?? 0) + 1;
+      setResources(current => ({ ...current, ranks: current.ranks.filter(item => item.id !== rank.id) }));
+      const pagination = resourcePagination.ranks;
+      const page = resources.ranks.length === 1 && pagination.page > 0 ? pagination.page - 1 : pagination.page;
+      await loadSection('ranks', true, page, pagination.size);
+      setNotice('Đã xóa trình độ.');
+    } catch (caught) { handleError(caught); }
+    finally { deletingRank.current = false; }
   };
 
   const toggleResource = async (section: EditableSection, item: SystemResource) => {
@@ -473,7 +495,7 @@ function SystemAdminLiveScreen() {
           {error && <div className="mb-5 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert"><span className="flex-1">{error}</span><button aria-label="Đóng thông báo lỗi" onClick={() => setError('')} type="button"><X className="h-4 w-4" /></button></div>}
           {activeSection === 'overview' && loadingSection === 'overview' && !overviewLoaded ? <div className="flex min-h-[55vh] items-center justify-center"><RefreshCw className="h-7 w-7 animate-spin text-blue-700" /></div> : null}
           {activeSection === 'overview' && (overviewLoaded || loadingSection !== 'overview') && <SystemOverview onNavigate={setActiveSection} stats={stats} />}
-          {resourceSection && <SystemResourceView initialQuery={resourceFilters.current[resourceSection]?.keyword} initialStatus={resourceFilters.current[resourceSection]?.status} onSearch={(query, status) => searchResource(resourceSection, query, status)} onCreateHospitalAdmin={openHospitalAdmin} items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
+          {resourceSection && <SystemResourceView initialQuery={resourceFilters.current[resourceSection]?.keyword} initialStatus={resourceFilters.current[resourceSection]?.status} onSearch={(query, status) => searchResource(resourceSection, query, status)} onCreateHospitalAdmin={openHospitalAdmin} onDeleteRank={rank => void removeRank(rank)} items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
           {activeSection === 'system-logs' && <SystemLogView items={logs} loading={loadingSection === 'system-logs'} onExport={downloadLogs} onPageChange={(page) => filterLogs(logFilters, page, logPagination.size)} onPageSizeChange={(size) => filterLogs(logFilters, 0, size)} onSearch={filterLogs} page={logPagination.page} size={logPagination.size} totalElements={logPagination.totalElements} totalPages={logPagination.totalPages} />}
         </main>
       </div>

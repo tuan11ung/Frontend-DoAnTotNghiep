@@ -14,9 +14,10 @@ import { ProgressiveBookingSection } from './components/ProgressiveBookingSectio
 import { BookingStep1Mode } from './components/BookingStep1Mode';
 import { BookingStep2 } from './components/BookingStep2';
 import { BhytBookingCalendar } from './components/BhytBookingCalendar';
-import { BhytBookingSuccess, bookingButtonClass, bookingInputClass } from './components/BhytBookingSteps';
-
-const money = (value: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+import { BookingScheduleStep } from './components/BookingScheduleStep';
+import { BookingConfirmStep } from './components/BookingConfirmStep';
+import { BookingSuccessStep } from './components/BookingSuccessStep';
+import { toServiceSlotOption, toServiceSummary } from './api/booking-adapters';
 
 export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initialPatientId?: number; onSwitchMode: (patientId: number) => void }) {
   const params = useSearchParams();
@@ -108,7 +109,7 @@ export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initial
 
   return <main className="min-h-screen bg-slate-50/60 px-4 py-8"><div className="mx-auto max-w-5xl space-y-6">
     <nav className="text-sm text-slate-500" aria-label="Đường dẫn"><Link href="/">Trang chủ</Link> / Đặt khám dịch vụ</nav>
-    {error && <div role="alert" className="rounded-xl border border-rose-200 bg-white p-4 text-sm text-rose-700">{error} {!bootstrap && <><button type="button" className="ml-3 font-bold" onClick={() => setRevision(v => v + 1)}>Thử lại</button><Link href="/patient/login" className="ml-3 underline">Đăng nhập</Link></>}</div>}
+    {error && step !== 3 && step !== 4 && <div role="alert" className="rounded-xl border border-rose-200 bg-white p-4 text-sm text-rose-700">{error} {!bootstrap && <><button type="button" className="ml-3 font-bold" onClick={() => setRevision(v => v + 1)}>Thử lại</button><Link href="/patient/login" className="ml-3 underline">Đăng nhập</Link></>}</div>}
     {!bootstrap && !error && <p role="status">Đang tải thông tin đặt khám…</p>}
     {bootstrap && <>
       {doctorFromLink && !requestedDoctor && <p role="status" className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">Lịch bác sĩ từ trang giới thiệu chưa được xác nhận. Vui lòng chọn cơ sở, chuyên khoa và bác sĩ có lịch khả dụng ở các bước tiếp theo.</p>}
@@ -120,20 +121,29 @@ export function ServiceBookingFlow({ initialPatientId, onSwitchMode }: { initial
       {step >= 2 && step < 5 && <ProgressiveBookingSection active={step === 2} label="Cơ sở y tế và chuyên khoa" busy={saving}><BookingStep2 hospitals={bootstrap.hospitals} hospitalId={hospitalId} patientName={patient?.fullName} specialties={(specialties?.hospitalId === hospitalId ? specialties.items : []).map(s => ({ id: s.specialtyId, name: s.name }))} specialtyId={specialtyId} specialtiesLoading={hospitalId !== null && specialties?.hospitalId !== hospitalId} specialtyError={specialties?.hospitalId === hospitalId ? specialties.error : undefined}
         qualification={{ value: qualification, available: true, onSelect: value => { if (value === qualification) return; setStep(2); setQualification(value); setSlot(null); setDate(''); } }}
         onSelectHospital={id => { if (id === hospitalId) return; setStep(2); setHospitalId(id); setSpecialtyId(null); setSlot(null); setDate(''); }} onSelectSpecialty={id => { if (id === specialtyId) return; setStep(2); setSpecialtyId(id); setSlot(null); setDate(''); }} canContinue={Boolean(patient && hospital && specialty)} onContinue={() => { setError(''); setStep(3); }} /></ProgressiveBookingSection>}
-      {step >= 3 && step < 5 && <ProgressiveBookingSection active={step === 3} label="Ngày và khung giờ khám" busy={saving}><section className="space-y-5 rounded-2xl border bg-white p-6"><h1 className="text-xl font-bold">Chọn lịch khám dịch vụ</h1><p className="text-sm text-slate-600">{hospital?.name} · {specialty?.name} · {qualification ? doctorQualifications[qualification] : 'Tất cả trình độ'}</p>
-        {requestedDoctor && <p className="text-sm text-blue-700">Đang lọc lịch của bác sĩ bạn đã chọn. <Link className="underline" href="/booking?mode=demand">Chọn lại từ đầu</Link></p>}
-        {hospital && <BhytBookingCalendar key={`${hospitalId}/${specialtyId}/${qualification}/${requestedDoctor}/${slotRevision}`} hospitalId={hospital.id} specialtyId={specialtyId} date={date} minDate={today} maxDate={lastDate} loadDates={loadDates} onDate={value => { if (value === date) return; setStep(3); setDate(value); setSlot(null); }} />}
-        <p className="text-sm text-slate-500">Chỉ chọn được ngày có bác sĩ còn lịch phù hợp với chuyên khoa và trình độ đã chọn. Ngày làm nhạt không có lịch phù hợp hoặc đã hết chỗ; bạn có thể đổi tháng hoặc quay lại đổi trình độ.</p>
-        {date && !validDate && <p role="alert" className="text-sm text-rose-700">Ngày khám nằm ngoài thời gian cơ sở cho phép đặt.</p>}
-        {validDate && availability?.key !== key && <p role="status">Đang tải khung giờ…</p>}
-        {availability?.key === key && availability.error && <p role="alert" className="text-sm text-rose-700">{availability.error} <button type="button" className="font-bold" onClick={() => setSlotRevision(v => v + 1)}>Thử lại</button></p>}
-        {validDate && availability?.key === key && !availability.error && !slots.length && <p role="status" className="text-sm text-slate-600">Chưa có lịch phù hợp ngày và trình độ đã chọn. Vui lòng chọn ngày hoặc trình độ khác.</p>}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{slots.map(item => <button type="button" key={item.timeSlotId} aria-pressed={slot?.timeSlotId === item.timeSlotId} className={`space-y-1 rounded-xl border p-4 text-left text-sm ${slot?.timeSlotId === item.timeSlotId ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-slate-200 hover:border-blue-400'}`} onClick={() => { if (slot?.timeSlotId === item.timeSlotId) return; setStep(3); setSlot(item); }}><strong className="block">{item.startTime.slice(0, 5)}–{item.endTime.slice(0, 5)}</strong><span className="block">{item.rankName} · {item.doctorName}</span><span className="block text-slate-500">{item.roomName} · Còn {item.remainingCapacity} chỗ</span><strong className="block text-blue-700">{money(item.price)}</strong></button>)}</div>
-        <div data-booking-continue className="flex justify-end gap-3"><button className={bookingButtonClass} type="button" disabled={!slot || !validDate || availability?.key !== key} onClick={() => setStep(4)}>Tiếp tục</button></div>
-      </section></ProgressiveBookingSection>}
-      {step === 4 && slot && patient && <ProgressiveBookingSection active label="Xác nhận đặt khám"><form onSubmit={submit} className="space-y-5 rounded-2xl border bg-white p-6"><h1 className="text-xl font-bold">Xác nhận lịch khám dịch vụ</h1><dl className="grid gap-3 text-sm sm:grid-cols-2">{[['Người khám', patient.fullName], ['Cơ sở', hospital?.name], ['Chuyên khoa', specialty?.name], ['Bác sĩ', `${slot.rankName ?? ''} ${slot.doctorName}`], ['Ngày và giờ', `${slot.appointmentDate} · ${slot.startTime.slice(0, 5)}–${slot.endTime.slice(0, 5)}`], ['Phòng', `${slot.roomName} ${slot.roomLocation ?? ''}`], ['Giá khám', money(slot.price)]].map(([label, value]) => <div key={label}><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-bold">{value}</dd></div>)}</dl>
-        <label className="block text-sm font-bold">Lý do khám / triệu chứng<textarea disabled={saving} required maxLength={500} rows={4} className={`${bookingInputClass} mt-2`} value={reason} onChange={e => setReason(e.target.value)} /></label><p className="text-sm text-slate-500">Bạn thanh toán tại quầy lễ tân theo hóa đơn của bệnh viện.</p><div className="flex justify-end"><button disabled={saving || !reason.trim()} className={bookingButtonClass} type="submit">{saving ? 'Đang đặt lịch…' : 'Xác nhận đặt khám'}</button></div></form></ProgressiveBookingSection>}
-      {step === 5 && appointment && <><BhytBookingSuccess service appointment={appointment} specialtyName={specialty?.name ?? ''} onReset={() => { setAppointment(null); setSlot(null); setReason(''); setStep(1); setSlotRevision(v => v + 1); }} /><Link className="block text-center font-bold text-blue-700" href="/patient/appointments">Xem lịch khám của tôi</Link></>}
+      {step >= 3 && step < 5 && hospital && <ProgressiveBookingSection active={step === 3} label="Ngày và khung giờ khám" busy={saving}>
+        <BookingScheduleStep title="Chọn lịch khám dịch vụ"
+          description={<>{hospital.name} · {specialty?.name} · {qualification ? doctorQualifications[qualification] : 'Tất cả trình độ'}
+            {requestedDoctor && <p className="mt-2 text-blue-700">Đang lọc lịch của bác sĩ bạn đã chọn. <Link className="underline" href="/booking?mode=demand">Chọn lại từ đầu</Link></p>}</>}
+          calendar={<BhytBookingCalendar key={`${hospitalId}/${specialtyId}/${qualification}/${requestedDoctor}/${slotRevision}`} hospitalId={hospital.id} specialtyId={specialtyId} date={date} minDate={today} maxDate={lastDate} loadDates={loadDates} onDate={value => { if (value === date) return; setStep(3); setDate(value); setSlot(null); }} />}
+          calendarNote="Chỉ chọn được ngày có bác sĩ còn lịch phù hợp với chuyên khoa và trình độ đã chọn. Ngày làm nhạt không có lịch phù hợp hoặc đã hết chỗ; bạn có thể đổi tháng hoặc quay lại đổi trình độ."
+          date={date} minDate={today} maxDate={lastDate} slots={slots.map(toServiceSlotOption)}
+          selectedSlotId={slot ? toServiceSlotOption(slot).id : null}
+          loading={validDate && availability?.key !== key}
+          error={date && !validDate ? 'Ngày khám nằm ngoài thời gian cơ sở cho phép đặt.' : availability?.key === key ? availability.error : undefined}
+          bookingError={error || undefined} emptyMessage="Chưa có lịch phù hợp ngày và trình độ đã chọn. Vui lòng chọn ngày hoặc trình độ khác."
+          continueDisabled={!validDate || availability?.key !== key}
+          onRetry={() => setSlotRevision(value => value + 1)}
+          onSlot={id => { const selected = slots.find(item => toServiceSlotOption(item).id === id); if (!selected || selected.timeSlotId === slot?.timeSlotId) return; setStep(3); setSlot(selected); }}
+          onContinue={() => setStep(4)} />
+      </ProgressiveBookingSection>}
+      {step === 4 && slot && patient && hospital && <ProgressiveBookingSection active label="Xác nhận đặt khám">
+        <BookingConfirmStep title="Xác nhận lịch khám dịch vụ" summary={toServiceSummary(patient, hospital, specialty?.name ?? '', slot)}
+          reason={reason} onReason={setReason} saving={saving} error={error || undefined}
+          note="Bạn thanh toán tại quầy lễ tân theo hóa đơn của bệnh viện."
+          submitLabel="Xác nhận đặt khám" savingLabel="Đang đặt lịch…" onSubmit={submit} />
+      </ProgressiveBookingSection>}
+      {step === 5 && appointment && <BookingSuccessStep service appointment={appointment} specialtyName={specialty?.name ?? ''} onReset={() => { setAppointment(null); setSlot(null); setReason(''); setStep(1); setSlotRevision(v => v + 1); }} />}
     </>}
   </div></main>;
 }

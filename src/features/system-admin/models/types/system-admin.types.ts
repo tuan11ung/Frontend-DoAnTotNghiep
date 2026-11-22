@@ -11,7 +11,7 @@ export type SystemSection =
   | 'system-logs';
 
 export type ResourceSection = Exclude<SystemSection, 'overview' | 'system-logs'>;
-export type EditableSection = Exclude<ResourceSection, 'ranks'>;
+export type EditableSection = ResourceSection;
 export type HospitalLevel = 'CENTRAL' | 'PROVINCIAL' | 'DISTRICT';
 export type HospitalStatus = 'ACTIVE' | 'SUSPENDED';
 

@@ -270,7 +270,7 @@ export function FacilityAdminPage() {
 
     const currentContent = SECTION_CONTENT[activeSection];
     const currentKind = SECTION_TO_KIND[activeSection];
-    const containedList = Boolean(currentKind) || ['work-schedules', 'clinical-settings', 'articles'].includes(activeSection);
+    const containedList = Boolean(currentKind) || ['clinical-settings', 'articles'].includes(activeSection);
 
     return (
         <div className="min-h-screen bg-[#f4f7f7] text-slate-800">

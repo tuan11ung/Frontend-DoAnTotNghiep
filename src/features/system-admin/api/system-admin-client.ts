@@ -77,10 +77,10 @@ export async function systemAdminDownload(path: string, body: unknown): Promise<
   return response.blob();
 }
 
-export async function systemAdminCommand(path: string, body: unknown): Promise<void> {
+export async function systemAdminCommand(path: string, body: unknown, method: 'POST' | 'DELETE' = 'POST'): Promise<void> {
   const authSession = getSystemSession();
   const response = await authenticatedFetch(`/api/admin/system/${path}`, {
-    method: 'POST',
+    method,
     headers: {
       Authorization: `Bearer ${authSession.accessToken}`,
       'Content-Type': 'application/json',

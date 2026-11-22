@@ -37,6 +37,7 @@ import type {
 import { getRankOrderLabel } from '../rank-levels';
 import { AdminTable as ScrollableTable, AdminTableColumns } from '@/src/shared/components/admin-table/AdminTable';
 import { AdminTableText } from '@/src/shared/components/admin-table/AdminTableText';
+import { RankActions } from './RankActions';
 import { SystemPagination } from './SystemPagination';
 
 interface SystemResourceViewProps {
@@ -57,6 +58,7 @@ interface SystemResourceViewProps {
   onRefresh: () => void;
   onToggle: (section: EditableSection, item: SystemResource) => void;
   onCreateHospitalAdmin: (hospital: HospitalSummary) => void;
+  onDeleteRank?: (rank: RankItem) => void;
 }
 
 interface SectionMeta {
@@ -73,7 +75,7 @@ const SECTION_META: Record<ResourceSection, SectionMeta> = {
   hospitals: { title: 'Quản lý cơ sở y tế', subtitle: 'Khởi tạo, cập nhật và kiểm soát trạng thái các cơ sở trong mạng lưới.', addLabel: 'Thêm cơ sở', search: 'Tìm theo mã, tên hoặc tỉnh thành', icon: Building2, columns: ['Cơ sở y tế', 'Tuyến', 'Tỉnh / Thành', 'Trạng thái', 'Thao tác'], hasStatus: true },
   specialties: { title: 'Danh mục chuyên khoa', subtitle: 'Danh mục chuyên khoa chuẩn được sử dụng trên toàn hệ thống.', addLabel: 'Thêm chuyên khoa', search: 'Tìm theo mã hoặc tên chuyên khoa', icon: Stethoscope, columns: ['Chuyên khoa', 'Mô tả', 'Mã hệ thống', 'Thao tác'], hasStatus: false },
   'service-categories': { title: 'Nhóm dịch vụ cận lâm sàng', subtitle: 'Quản lý cấu trúc nhóm dịch vụ dùng chung cho các cơ sở.', addLabel: 'Thêm nhóm dịch vụ', search: 'Tìm theo mã hoặc tên nhóm', icon: Tags, columns: ['Nhóm dịch vụ', 'Nhóm cha', 'Cấp danh mục', 'Trạng thái', 'Thao tác'], hasStatus: true },
-  ranks: { title: 'Danh mục trình độ bác sĩ', subtitle: 'Danh mục chuẩn dùng chung toàn hệ thống; mỗi trình độ có một bậc chuyên môn cố định.', addLabel: '', search: 'Tìm theo mã hoặc tên trình độ', icon: UserCog, columns: ['Trình độ', 'Mã', 'Bậc chuyên môn'], hasStatus: false },
+  ranks: { title: 'Danh mục trình độ bác sĩ', subtitle: 'Danh mục chuẩn dùng chung toàn hệ thống; mỗi trình độ có một bậc chuyên môn cố định.', addLabel: 'Thêm mới', search: 'Tìm theo mã hoặc tên trình độ', icon: UserCog, columns: ['Trình độ', 'Mã', 'Bậc chuyên môn', 'Thao tác'], hasStatus: false },
   icd10: { title: 'Danh mục mã bệnh ICD-10', subtitle: 'Quản lý bộ mã chẩn đoán bệnh dùng trong hồ sơ khám chữa bệnh.', addLabel: 'Thêm mã ICD-10', search: 'Tìm theo mã hoặc tên bệnh', icon: FileHeart, columns: ['Mã ICD-10', 'Tên bệnh / Chẩn đoán', 'ID', 'Thao tác'], hasStatus: false },
   ingredients: { title: 'Danh mục hoạt chất', subtitle: 'Quản lý hoạt chất dùng để cấu thành danh mục thuốc.', addLabel: 'Thêm hoạt chất', search: 'Tìm theo tên hoạt chất', icon: Microscope, columns: ['Hoạt chất', 'ID hệ thống', 'Phạm vi sử dụng', 'Thao tác'], hasStatus: false },
   medicines: { title: 'Danh mục thuốc', subtitle: 'Quản lý thuốc, đường dùng, hàm lượng và thành phần hoạt chất.', addLabel: 'Thêm thuốc', search: 'Tìm theo mã, tên hoặc hoạt chất', icon: Pill, columns: ['Thuốc', 'Hàm lượng / Đường dùng', 'Hoạt chất', 'Trạng thái', 'Thao tác'], hasStatus: true },
@@ -132,7 +134,7 @@ function RowActions({ active, item, section, onEdit, onToggle, children }: { act
   );
 }
 
-function renderCells(section: ResourceSection, item: SystemResource, items: SystemResource[], onEdit: SystemResourceViewProps['onEdit'], onToggle: SystemResourceViewProps['onToggle'], onCreateHospitalAdmin: SystemResourceViewProps['onCreateHospitalAdmin']): ReactNode {
+function renderCells(section: ResourceSection, item: SystemResource, items: SystemResource[], onEdit: SystemResourceViewProps['onEdit'], onToggle: SystemResourceViewProps['onToggle'], onCreateHospitalAdmin: SystemResourceViewProps['onCreateHospitalAdmin'], onDeleteRank: SystemResourceViewProps['onDeleteRank']): ReactNode {
   if (section === 'hospitals') {
     const hospital = item as HospitalSummary;
     const active = hospital.status === 'ACTIVE';
@@ -154,7 +156,7 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
   }
   if (section === 'ranks') {
     const rank = item as RankItem;
-    return <><td className="px-5 py-4 font-bold text-slate-900"><AdminTableText text={rank.name} /></td><td className="px-4 py-4 font-mono text-sm text-slate-600">{rank.code}</td><td className="px-4 py-4"><span className="inline-flex min-h-8 items-center justify-center rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-extrabold text-slate-700">{getRankOrderLabel(rank.rankOrder)}</span></td></>;
+    return <><td className="px-5 py-4 font-bold text-slate-900"><AdminTableText text={rank.name} /></td><td className="px-4 py-4 font-mono text-sm text-slate-600">{rank.code}</td><td className="px-4 py-4"><span className="inline-flex min-h-8 items-center justify-center rounded-lg bg-slate-100 px-2.5 py-1 text-sm font-extrabold text-slate-700">{getRankOrderLabel(rank.rankOrder)}</span></td><td className="px-5 py-4"><RankActions rank={rank} onEdit={() => onEdit('ranks', rank)} onDelete={onDeleteRank ? () => onDeleteRank(rank) : undefined} /></td></>;
   }
   if (section === 'icd10') {
     const icd = item as Icd10Item;
@@ -172,9 +174,9 @@ function renderCells(section: ResourceSection, item: SystemResource, items: Syst
   return <><td className="max-w-md px-5 py-4"><p className="font-bold text-slate-900"><AdminTableText text={article.title} /></p><p className="mt-1 line-clamp-1 text-xs text-slate-500"><AdminTableText text={article.summary || 'Chưa có tóm tắt'} /></p></td><td className="px-4 py-4 text-sm font-semibold text-slate-600"><AdminTableText text={article.specialtyName || 'Tin chung'} lines={1} /></td><td className="px-4 py-4 text-xs text-slate-500">{formatDisplayDateTime(article.updatedAt)}</td><td className="px-4 py-4"><StatusBadge active={article.published} activeLabel="Đã đăng" inactiveLabel="Bản nháp" /></td><td className="px-5 py-4"><RowActions active={article.published} item={item} onEdit={onEdit} onToggle={onToggle} section={section} /></td></>;
 }
 
-const COLUMN_WIDTHS: Record<ResourceSection, number[]> = { hospitals: [300,160,200,180,420], specialties: [280,320,160,180], 'service-categories': [280,260,160,180,240], ranks: [280,180,160], icd10: [160,400,160,180], ingredients: [320,160,220,180], medicines: [300,240,320,180,240], articles: [380,220,180,160,240] };
+const COLUMN_WIDTHS: Record<ResourceSection, number[]> = { hospitals: [300,160,200,180,420], specialties: [280,320,160,180], 'service-categories': [280,260,160,180,240], ranks: [280,180,160,160], icd10: [160,400,160,180], ingredients: [320,160,220,180], medicines: [300,240,320,180,240], articles: [380,220,180,160,240] };
 
-export function SystemResourceView({ initialQuery = '', initialStatus = 'ALL', onSearch, section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle, onCreateHospitalAdmin }: SystemResourceViewProps) {
+export function SystemResourceView({ initialQuery = '', initialStatus = 'ALL', onSearch, section, items, loading, page, size, totalElements, totalPages, onAdd, onEdit, onPageChange, onPageSizeChange, onRefresh, onToggle, onCreateHospitalAdmin, onDeleteRank }: SystemResourceViewProps) {
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState(initialStatus);
   const meta = SECTION_META[section];
@@ -199,7 +201,7 @@ export function SystemResourceView({ initialQuery = '', initialStatus = 'ALL', o
         </div>
         <div className="flex gap-2">
           <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-600 hover:bg-slate-50" onClick={onRefresh} type="button">Làm mới</button>
-          {section !== 'ranks' && <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white shadow-sm hover:bg-blue-800" onClick={() => onAdd(section)} type="button"><Plus className="h-4 w-4" /> {meta.addLabel}</button>}
+          <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white shadow-sm hover:bg-blue-800" onClick={() => onAdd(section)} type="button"><Plus className="h-4 w-4" /> {meta.addLabel}</button>
         </div>
       </div>
 
@@ -210,10 +212,10 @@ export function SystemResourceView({ initialQuery = '', initialStatus = 'ALL', o
         <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{totalElements} bản ghi</p>
       </form>
 
-      <ScrollableTable stickyActions={section !== 'ranks'} label="Danh sách quản trị hệ thống" maxHeight="none" key={`${page}:${size}`}>
+      <ScrollableTable stickyActions label="Danh sách quản trị hệ thống" maxHeight="none" key={`${page}:${size}`}>
         <table className="w-full text-left text-sm" style={{ minWidth: COLUMN_WIDTHS[section].reduce((sum, width) => sum + width, 0) }}><AdminTableColumns widths={COLUMN_WIDTHS[section]} />
           <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr>{meta.columns.map((column, index) => <th className={`${index === 0 ? 'px-5' : 'px-4'} py-3 ${index === meta.columns.length - 1 ? 'pr-5 text-right' : ''}`} key={column}>{column}</th>)}</tr></thead>
-          <tbody className="divide-y divide-slate-100">{filteredItems.map((item) => <tr className={getActive(item) === false ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>{renderCells(section, item, items, onEdit, onToggle, onCreateHospitalAdmin)}</tr>)}</tbody>
+          <tbody className="divide-y divide-slate-100">{filteredItems.map((item) => <tr className={getActive(item) === false ? 'bg-slate-50/70' : 'hover:bg-blue-50/20'} key={item.id}>{renderCells(section, item, items, onEdit, onToggle, onCreateHospitalAdmin, onDeleteRank)}</tr>)}</tbody>
         </table>
         {!loading && filteredItems.length === 0 && <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center"><Search className="h-9 w-9 text-slate-300" /><p className="mt-3 font-bold text-slate-700">Không tìm thấy dữ liệu phù hợp</p><p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc tải lại dữ liệu.</p></div>}
         {loading && <div className="flex min-h-56 items-center justify-center text-sm font-semibold text-slate-500">Đang tải dữ liệu...</div>}
