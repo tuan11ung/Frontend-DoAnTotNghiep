@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { BadgeDollarSign, Building2, DoorOpen, Save, Stethoscope, UserPlus, X } from 'lucide-react';
 import { SearchableDropdown } from '@/src/shared/components/SearchableDropdown';
-import { SERVICE_ROOM_TYPE_LABELS, STAFF_ROLE_LABELS } from '../data/facility-admin-data';
+import { ROOM_TYPE_LABELS, SERVICE_ROOM_TYPE_LABELS, STAFF_ROLE_LABELS } from '../data/facility-admin-data';
 import type {
   AdminEntity,
   Department,
@@ -243,7 +243,7 @@ export function EntityEditorModal({
 
             {kind === 'room' && (
               <>
-                <label><span className={labelClass}>Loại phòng <span className="text-rose-600">*</span></span><select className={inputClass} onChange={(event) => update('type', event.target.value)} value={String(form.type)}><option value="EXAM">Phòng khám</option><option value="XRAY">X-quang</option><option value="ULTRASOUND">Siêu âm</option><option value="LAB">Xét nghiệm</option><option value="PROCEDURE">Thủ thuật</option><option value="RECEPTION">Tiếp đón</option><option value="CASHIER">Thu ngân</option><option value="PHARMACY">Nhà thuốc</option></select></label>
+                <label><span className={labelClass}>Loại phòng <span className="text-rose-600">*</span></span><select className={inputClass} onChange={(event) => update('type', event.target.value)} value={String(form.type)}>{Object.entries(ROOM_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
                 <label><span className={labelClass}>Vị trí</span><input className={inputClass} maxLength={255} onChange={(event) => update('location', event.target.value)} placeholder="VD: Tầng 2 · Khu A" value={String(form.location)} /></label>
                 <label><span className={labelClass}>Thời lượng mỗi khung (phút)</span><input className={inputClass} max={120} min={5} onChange={(event) => update('slotMinutes', event.target.value)} type="number" value={String(form.slotMinutes)} /></label>
                 <label><span className={labelClass}>Chuyên khoa{form.type === 'EXAM' && ' *'}</span><select name="specialtyId" className={inputClass} onChange={(event) => update('specialtyId', event.target.value)} required={form.type === 'EXAM'} value={String(form.specialtyId)}><option value="">Chọn chuyên khoa</option>{specialties.filter((item) => item.active || item.specialtyId === Number(form.specialtyId)).map((item) => <option disabled={!item.active} key={item.specialtyId} value={item.specialtyId}>{item.name}{!item.active && ' (tạm ngừng)'}</option>)}</select></label>
