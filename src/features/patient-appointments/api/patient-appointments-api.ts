@@ -5,7 +5,7 @@ import { APPOINTMENT_STATUS_LABELS, type PatientAppointment, type AppointmentSta
 export interface AppointmentResponse {
   appointmentId: number; appointmentCode: string; patientId: number; patientName: string;
   hospitalId: number; hospitalName: string; appointmentDate: string; startTime: string; endTime: string;
-  doctorName?: string; rankName?: string; roomName?: string; roomLocation?: string;
+  doctorName?: string; rankName?: string; roomName?: string | null; roomLocation?: string | null;
   patientGender?: PatientAppointment['patientGender']; patientMaskedNationalId?: string; patientMaskedPhone?: string;
   queueNumber?: number; price?: number; status: AppointmentStatus | 'ABSENT'; appointReason: string;
   qrToken?: string; bookedDate?: string; cancelledDate?: string; cancelReason?: string;
@@ -30,7 +30,8 @@ export function toPatientAppointment(item: AppointmentResponse, profiles: Bookin
     patientNationalId: item.patientMaskedNationalId ?? '', patientPhone: item.patientMaskedPhone ?? '', patientBhyt: profile.insuranceNo ?? undefined,
     hospitalId: String(item.hospitalId), hospitalName: item.hospitalName, hospitalAddress: hospital?.address ?? 'Chưa cập nhật', hospitalHotline: hospital?.hotline ?? '',
     departmentName: item.status === 'PENDING_SPECIALTY' ? 'Chờ phân chuyên khoa' : 'Phòng khám đã phân công',
-    roomName: [item.roomName, item.roomLocation].filter(Boolean).join(' · ') || 'Chưa phân phòng',
+    roomName: item.roomName?.trim() || 'Chưa phân phòng',
+    roomLocation: item.roomLocation?.trim() || null,
     doctorName: item.doctorName || 'Chưa phân bác sĩ', doctorTitle: item.rankName ?? '',
     bookingMode: 'unknown', specialtyName: '', workDate: item.appointmentDate,
     timeSlot: item.startTime.slice(0, 5), timeSlotEnd: item.endTime.slice(0, 5),

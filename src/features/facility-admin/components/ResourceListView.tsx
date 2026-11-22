@@ -183,8 +183,8 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   const activeCount = items.filter((item) => item.active).length;
 
   return (
-    <section aria-busy={!local && !remote && !error} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
+    <section aria-busy={!local && !remote && !error} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm [&>footer]:shrink-0">
+      <div className="flex shrink-0 flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100">
             <SectionIcon className="h-5 w-5" />
@@ -199,7 +199,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         </button>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
+      <div className="flex shrink-0 flex-wrap items-end gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-6">
         <label className="min-w-[240px] flex-1 sm:max-w-md">
           <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Tìm kiếm</span>
           <span className="relative block">
@@ -237,7 +237,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{reusablePagination ? (!local && !remote ? 'Đang tải…' : `${total} bản ghi phù hợp`) : `${items.length} bản ghi · ${activeCount} đang hoạt động`}</p>
       </div>
 
-      <div className="overflow-x-auto">
+      <div aria-label={`Danh sách ${meta.title.toLocaleLowerCase('vi')}`} role="region" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10">
         {kind === 'department' && (
           <table className="min-w-[960px] w-full text-left text-sm">
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Khoa</th><th className="px-4 py-3">Loại khoa</th><th className="px-4 py-3">Trưởng khoa</th><th className="px-4 py-3">Mô tả</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
@@ -343,9 +343,9 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
             <p className="mt-1 text-sm text-slate-500">Thử thay đổi từ khóa hoặc bộ lọc.</p>
           </div>
         )}
+        {!local && !remote && !error && <p role="status" className="p-4 text-sm text-slate-500">Đang tải dữ liệu…</p>}
+        {error && <p role="alert" className="p-4 text-sm text-rose-700">{error}</p>}
       </div>
-      {!local && !remote && !error && <p role="status" className="p-4 text-sm text-slate-500">Đang tải dữ liệu…</p>}
-      {error && <p role="alert" className="p-4 text-sm text-rose-700">{error}</p>}
       {reusablePagination ? <DataTablePagination
         pageIndex={local ? localPagination.pageIndex : page}
         pageSize={pageSize}
@@ -354,7 +354,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         ariaLabel={`Phân trang ${meta.title.toLocaleLowerCase('vi')}`}
         onPageChange={changePage}
         onPageSizeChange={changePageSize}
-      /> : <div className="flex flex-wrap items-center justify-between gap-3 border-t p-4 text-sm">
+      /> : <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t p-4 text-sm">
         <span>{total} kết quả · Trang {page + 1}/{Math.max(1, totalPages)}</span>
         <div className="flex gap-4"><button type="button" disabled={page === 0} onClick={() => { setRemote(null); setPage(p => p - 1); }}>Trang trước</button><button type="button" disabled={page + 1 >= totalPages} onClick={() => { setRemote(null); setPage(p => p + 1); }}>Trang sau</button></div>
       </div>}

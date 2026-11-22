@@ -8,6 +8,12 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 const tabs = { all: 'Tất cả', articles: 'Bài viết', hospitals: 'Bệnh viện', doctors: 'Bác sĩ' };
 type Tab = keyof typeof tabs;
+const visibleTabs: Tab[] = [
+  'all',
+  'articles',
+  'hospitals',
+  // 'doctors', // Tạm ẩn tab Bác sĩ trên trang tìm kiếm.
+];
 type Group = Exclude<Tab, 'all'>;
 const order: Group[] = ['articles','hospitals','doctors'];
 const icons = { articles: BookOpen, hospitals: Building2, doctors: Stethoscope };
@@ -90,6 +96,6 @@ export function SearchPage() {
     <div className="mx-auto max-w-5xl px-4 pb-14 sm:px-6"><nav aria-label="Đường dẫn" className="flex items-center gap-2 py-5 text-xs text-slate-600"><Link href="/" className="text-blue-700">Trang chủ</Link><ChevronRight size={13}/>Tìm kiếm</nav>
     <form role="search" aria-label="Tìm trong danh mục" className="mx-auto mt-2 flex max-w-2xl overflow-hidden rounded-xl border border-slate-300 bg-white focus-within:ring-2 focus-within:ring-blue-500" onSubmit={e=>{e.preventDefault();router.push(searchUrl(String(new FormData(e.currentTarget).get('q') || '').trim(),tab));}}>
       <input key={q} defaultValue={q} name="q" type="search" maxLength={255} aria-label="Từ khóa tìm kiếm" placeholder="Tìm bài viết, bệnh viện hoặc bác sĩ…" className="min-w-0 flex-1 px-4 py-4 outline-none"/><button aria-label="Tìm kiếm" className="grid w-16 place-items-center bg-blue-700 text-white hover:bg-blue-800"><Search size={21}/></button></form>
-    <nav aria-label="Nhóm kết quả" className="my-5 flex flex-wrap justify-center gap-x-2 sm:gap-x-7">{(Object.keys(tabs) as Tab[]).map(k=><Link key={k} aria-current={tab===k?'page':undefined} href={searchUrl(q,k)} className={'border-b-2 px-2 py-3 text-sm font-semibold '+(tab===k?'border-blue-700 text-blue-700':'border-transparent text-slate-600 hover:text-blue-700')}>{tabs[k]}</Link>)}</nav>
+    <nav aria-label="Nhóm kết quả" className="my-5 flex flex-wrap justify-center gap-x-2 sm:gap-x-7">{visibleTabs.map(k=><Link key={k} aria-current={tab===k?'page':undefined} href={searchUrl(q,k)} className={'border-b-2 px-2 py-3 text-sm font-semibold '+(tab===k?'border-blue-700 text-blue-700':'border-transparent text-slate-600 hover:text-blue-700')}>{tabs[k]}</Link>)}</nav>
     <ResultList key={JSON.stringify([q,tab,page])} q={q} tab={tab} page={page}/></div></div>;
 }

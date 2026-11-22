@@ -171,7 +171,7 @@ export function PatientAppointmentsPage() {
               onChange={(e) => setSelectedProfile(e.target.value)}
               className="min-w-0 flex-1 px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all text-slate-800"
             >
-              <option value="ALL">Toàn bộ gia đình (Tất cả)</option>
+              <option value="ALL">Toàn bộ gia đình</option>
               <option value="SELF">Bản thân{profiles.find(p => p.relationship === 'SELF')?.fullName ? ` (${profiles.find(p => p.relationship === 'SELF')?.fullName})` : ''}</option>
               {(profiles.filter(p => p.relationship !== 'SELF').map(p => ({ id: String(p.id), fullName: p.fullName, relationship: 'KHAC' }))).map((m) => (
                 <option key={m.id} value={m.id}>
