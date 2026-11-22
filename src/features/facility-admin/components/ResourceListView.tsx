@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
 import { ToggleSwitch } from '@/src/shared/components/ToggleSwitch';
 import { searchResourcePage } from '../api/resource-search';
 import type { PageResponse } from '../api/admin-api-client';
@@ -123,7 +124,6 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   // The staff API does not accept a role filter; filter the full loaded catalog
   // before slicing so matching staff on other pages are not lost.
   const local = kind === 'department' || (kind === 'staff' && roleFilter !== 'ALL');
-  const reusablePagination = kind === 'room' || kind === 'staff' || kind === 'service';
   useEffect(() => {
     if (local) return;
     const controller = new AbortController();
@@ -167,7 +167,6 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   const total = local ? localItems.length : remote?.totalElements ?? 0;
   const localPagination = paginationModel(total, page, pageSize);
   const filteredItems = local ? localItems.slice(localPagination.pageIndex * pageSize, (localPagination.pageIndex + 1) * pageSize) : remote?.content ?? [];
-  const totalPages = local ? localPagination.pageCount : remote?.totalPages ?? 0;
   function changePage(nextPage: number) {
     setPage(nextPage); setRemote(null); setError('');
   }
@@ -177,7 +176,6 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
   const departmentHeadNames = (departmentId: number) => staff
     .filter((item) => item.active && item.departmentId === departmentId && item.roles.includes('DEPARTMENT_HEAD'))
     .map((item) => item.fullName);
-  const activeCount = items.filter((item) => item.active).length;
 
   return (
     <section aria-busy={!local && !remote && !error} className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm [&>footer]:shrink-0">
@@ -231,10 +229,10 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
             <option value="INACTIVE">Tạm ngừng</option>
           </select>
         </label>
-        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{reusablePagination ? (!local && !remote ? 'Đang tải…' : `${total} bản ghi phù hợp`) : `${items.length} bản ghi · ${activeCount} đang hoạt động`}</p>
+        <p className="ml-auto pb-2 text-xs font-medium text-slate-500">{!local && !remote ? 'Đang tải…' : `${total} bản ghi phù hợp`}</p>
       </div>
 
-      <div aria-label={`Danh sách ${meta.title.toLocaleLowerCase('vi')}`} role="region" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10">
+      <ScrollableTable label={`Danh sách ${meta.title.toLocaleLowerCase('vi')}`} maxHeight="none" key={`${page}:${pageSize}:${query}:${status}:${specialtyFilter}:${roleFilter}`}>
         {kind === 'department' && (
           <table className="min-w-[960px] w-full text-left text-sm">
             <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Khoa</th><th className="px-4 py-3">Loại khoa</th><th className="px-4 py-3">Trưởng khoa</th><th className="px-4 py-3">Mô tả</th><th className="px-4 py-3">Trạng thái</th><th className="px-5 py-3 text-right">Thao tác</th></tr></thead>
@@ -342,8 +340,8 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         )}
         {!local && !remote && !error && <p role="status" className="p-4 text-sm text-slate-500">Đang tải dữ liệu…</p>}
         {error && <p role="alert" className="p-4 text-sm text-rose-700">{error}</p>}
-      </div>
-      {reusablePagination ? <DataTablePagination
+      </ScrollableTable>
+      <DataTablePagination
         pageIndex={local ? localPagination.pageIndex : page}
         pageSize={pageSize}
         totalRecords={total}
@@ -351,10 +349,7 @@ export function ResourceListView({ kind, items, specialties, staff, onAdd, onEdi
         ariaLabel={`Phân trang ${meta.title.toLocaleLowerCase('vi')}`}
         onPageChange={changePage}
         onPageSizeChange={changePageSize}
-      /> : <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t p-4 text-sm">
-        <span>{total} kết quả · Trang {page + 1}/{Math.max(1, totalPages)}</span>
-        <div className="flex gap-4"><button type="button" disabled={page === 0} onClick={() => { setRemote(null); setPage(p => p - 1); }}>Trang trước</button><button type="button" disabled={page + 1 >= totalPages} onClick={() => { setRemote(null); setPage(p => p + 1); }}>Trang sau</button></div>
-      </div>}
+      />
     </section>
   );
 }

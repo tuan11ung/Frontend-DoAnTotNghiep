@@ -270,6 +270,7 @@ export function FacilityAdminPage() {
 
     const currentContent = SECTION_CONTENT[activeSection];
     const currentKind = SECTION_TO_KIND[activeSection];
+    const containedList = Boolean(currentKind) || ['work-schedules', 'clinical-settings', 'articles'].includes(activeSection);
 
     return (
         <div className="min-h-screen bg-[#f4f7f7] text-slate-800">
@@ -284,7 +285,7 @@ export function FacilityAdminPage() {
             />
 
             <div
-                className={currentKind ? 'flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]' : 'min-h-screen lg:pl-[280px]'}>
+                className={containedList ? 'flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]' : 'min-h-screen lg:pl-[280px]'}>
                 <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200/90 bg-white/95 backdrop-blur">
                     <div className="flex h-20 items-center gap-4 px-4 pl-18 sm:px-6 sm:pl-20 lg:px-8 lg:pl-8 xl:px-10">
                         <div
@@ -312,9 +313,9 @@ export function FacilityAdminPage() {
                 </header>
 
                 <main
-                    className={`px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10 ${currentKind ? 'flex min-h-0 flex-1 flex-col overflow-hidden' : ''}`}>
+                    className={`px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10 ${containedList ? 'flex min-h-0 flex-1 flex-col overflow-hidden' : ''}`}>
                     <div
-                        className={`mx-auto w-full max-w-[1500px] ${currentKind ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
+                        className={`mx-auto w-full max-w-[1500px] ${containedList ? 'flex min-h-0 flex-1 flex-col' : ''}`}>
                         {activeSection === 'overview' &&
                             <DashboardOverview departments={departments} onNavigate={navigateToSection} rooms={rooms}
                                                services={services} specialties={specialties} staff={staff}/>}

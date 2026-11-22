@@ -22,7 +22,7 @@ export function ScheduleToolbar({ weekStart, specialties, specialtyId, loading, 
   const startYear = weekStart.slice(0, 4);
   const endYear = weekEnd.slice(0, 4);
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="flex shrink-0 flex-wrap items-center justify-between gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-1 shadow-sm">
           <button aria-label="Tuần trước" className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40" disabled={busy || loading || specialtyId === null} onClick={() => onWeek(-7)} type="button"><ChevronLeft aria-hidden="true" className="h-4 w-4" /></button>

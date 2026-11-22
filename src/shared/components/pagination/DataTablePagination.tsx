@@ -26,7 +26,7 @@ export function DataTablePagination({ pageIndex, pageSize, totalRecords, onPageC
   function changePage(index: number) {
     if (!disabled && index >= 0 && index < model.pageCount && index !== model.pageIndex) onPageChange(index);
   }
-  return <footer className={`border-t border-slate-200 bg-white px-4 py-3 sm:px-6 ${className}`} aria-busy={disabled}>
+  return <footer className={`shrink-0 border-t border-slate-200 bg-white px-4 py-3 sm:px-6 ${className}`} aria-busy={disabled}>
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-xs text-slate-500 sm:text-sm">Hiển thị <strong className="font-semibold text-slate-800">{model.from}–{model.to}</strong> / {model.total} bản ghi</p>
       <div className="flex flex-wrap items-center gap-3">

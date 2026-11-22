@@ -1,3 +1,8 @@
+import { useState } from 'react';
+import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
+import { DataTablePagination } from '@/src/shared/components/pagination';
+import { paginationModel } from '@/src/shared/components/pagination/pagination-model';
+
 import { DoorOpen, Lock, Plus } from 'lucide-react';
 import { cellKey, displayedCell, getDoctorDisplayName, scheduleDateLabel, scheduleLockLabel } from '../schedule-utils';
 import type { DraftEdits, SelectedScheduleCell, WorkScheduleWeek } from '../types';
@@ -9,12 +14,18 @@ interface ScheduleGridProps {
   today: string;
   disabled: boolean;
   onSelectCell: (cell: SelectedScheduleCell) => void;
+  onClearSelection: () => void;
 }
 
-export function ScheduleGrid({ week, edits, selectedCell, today, disabled, onSelectCell }: ScheduleGridProps) {
+export function ScheduleGrid({ week, edits, selectedCell, today, disabled, onSelectCell, onClearSelection }: ScheduleGridProps) {
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const pagination = paginationModel(week.rooms.length, page, pageSize);
+  const rooms = week.rooms.slice(pagination.pageIndex * pageSize, (pagination.pageIndex + 1) * pageSize);
   const indexedDays = week.days.map((day) => ({ ...day, byCell: new Map(day.cells.map((cell) => [`${cell.roomId}:${cell.session}`, cell])) }));
   return (
-    <div aria-label="Bảng phân công lịch làm việc, cuộn để xem đầy đủ" className="max-h-[70vh] overflow-auto overscroll-contain rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medblue-500" tabIndex={0}>
+    <>
+    <ScrollableTable label="Bảng phân công lịch làm việc, cuộn để xem đầy đủ" maxHeight="none" stickyHeader={false} className="rounded-xl" key={`${pagination.pageIndex}:${pageSize}`}>
       <table className="w-full min-w-[1080px] table-fixed border-separate border-spacing-0 text-left">
         <caption className="sr-only">Phân công theo phòng và ngày; mỗi ngày có ca sáng và chiều. Ca bị khóa không thể chỉnh sửa.</caption>
         <colgroup><col className="w-40" />{week.days.flatMap((day) => [<col key={`${day.date}-MORNING`} />, <col key={`${day.date}-AFTERNOON`} />])}</colgroup>
@@ -32,7 +43,7 @@ export function ScheduleGrid({ week, edits, selectedCell, today, disabled, onSel
             <th className={`sticky top-16 z-20 h-10 border-b border-slate-200 py-2 text-center text-xs font-semibold ${day.date <= today ? 'bg-slate-100 text-slate-500' : 'bg-white text-slate-700'} ${session === 'AFTERNOON' ? 'border-r' : ''}`} id={`${day.date}-${session}`} key={`${day.date}-${session}`} scope="col">{session === 'MORNING' ? 'Sáng' : 'Chiều'}</th>
           )))}</tr>
         </thead>
-        <tbody>{week.rooms.map((room) => (
+        <tbody>{rooms.map((room) => (
           <tr key={room.roomId}>
             <th className="sticky left-0 z-10 border-b border-r border-slate-200 bg-white px-3 py-3" id={`schedule-room-${room.roomId}`} scope="row">
               <span className="block text-sm font-extrabold text-slate-800">{room.name}</span>
@@ -60,6 +71,8 @@ export function ScheduleGrid({ week, edits, selectedCell, today, disabled, onSel
           </tr>
         ))}</tbody>
       </table>
-    </div>
+    </ScrollableTable>
+    <DataTablePagination pageIndex={pagination.pageIndex} pageSize={pageSize} totalRecords={week.rooms.length} disabled={disabled} ariaLabel="Phân trang phòng trong lịch làm việc" onPageChange={next => { onClearSelection(); setPage(next); }} onPageSizeChange={size => { onClearSelection(); setPage(0); setPageSize(size); }} />
+    </>
   );
 }

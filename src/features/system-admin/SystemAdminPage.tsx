@@ -140,12 +140,12 @@ function HospitalAdminPreview() {
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
       <SystemAdminSidebar activeSection="hospitals" mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={unavailable} onOpenMobile={() => setMobileOpen(true)} onSelect={unavailable} />
-      <div className="lg:pl-[280px]">
+      <div className="flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]">
         <header className="border-b border-slate-200 bg-white px-4 py-5 pl-20 sm:px-6 sm:pl-20 lg:px-8">
           <p className="text-xs font-bold uppercase tracking-wide text-blue-700">Quản trị hệ thống · Xem trước</p>
           <h1 className="mt-1 text-xl font-extrabold text-slate-950">Cơ sở y tế</h1>
         </header>
-        <main className="mx-auto max-w-[1600px] p-4 sm:p-6 lg:p-8">
+        <main className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col overflow-hidden p-4 sm:p-6 lg:p-8">
           <p className="mb-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">Dữ liệu mẫu. Chọn “Cấp tài khoản quản trị” tại bệnh viện đang hoạt động để xem form và thử thao tác.</p>
           <SystemResourceView section="hospitals" items={PREVIEW_HOSPITALS} loading={false} page={0} size={20} totalElements={PREVIEW_HOSPITALS.length} totalPages={1}
             onCreateHospitalAdmin={(item) => { if (item.status === 'ACTIVE') { setNotice(''); setHospital(item); } }}
@@ -162,6 +162,8 @@ function HospitalAdminPreview() {
 function SystemAdminLiveScreen() {
   const router = useRouter();
   const loadedSections = useRef(new Set<SystemSection>());
+  const resourceFilters = useRef<Partial<Record<ResourceSection, { keyword: string; status: 'ALL' | 'ACTIVE' | 'INACTIVE' }>>>({});
+  const resourceRequests = useRef<Partial<Record<ResourceSection, number>>>({});
   const [ready, setReady] = useState(false);
   const [activeSection, setActiveSection] = useState<SystemSection>('overview');
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -200,19 +202,35 @@ function SystemAdminLiveScreen() {
   }, []);
 
   const loadSection = useCallback(async (section: SystemSection, force = false, page = 0, size = EMPTY_PAGINATION.size) => {
-    if (!force && loadedSections.current.has(section)) return;
+    if (!force && section === 'system-logs' && loadedSections.current.has(section)) return;
     setLoadingSection(section);
     setError('');
     const pageable = { page, size, sortDirection: 'ASC' as const };
     try {
-      if (section === 'hospitals') { const response = await searchHospitals({}, pageable); setSectionData(section, response); }
-      else if (section === 'specialties') { const response = await searchSpecialties('', pageable); setSectionData(section, response); }
-      else if (section === 'service-categories') { const response = await searchServiceCategories({}, pageable); setSectionData(section, response); }
-      else if (section === 'ranks') { const response = await searchRanks('', pageable); setSectionData(section, response); }
-      else if (section === 'icd10') { const response = await searchIcd10('', pageable); setSectionData(section, response); }
-      else if (section === 'ingredients') { const response = await searchIngredients('', pageable); setSectionData(section, response); }
-      else if (section === 'medicines') { const response = await searchMedicines({}, pageable); setSectionData(section, response); }
-      else if (section === 'articles') { const response = await searchArticles({}, pageable); setSectionData(section, response); }
+      if (section !== 'overview' && section !== 'system-logs') {
+        const filters = resourceFilters.current[section] ?? { keyword: '', status: 'ALL' };
+        const active = filters.status === 'ALL' ? null : filters.status === 'ACTIVE';
+        const request = (resourceRequests.current[section] ?? 0) + 1;
+        resourceRequests.current[section] = request;
+        const search = () => {
+          switch (section) {
+            case 'hospitals': return searchHospitals({ keyword: filters.keyword, status: filters.status === 'ALL' ? null : filters.status === 'ACTIVE' ? 'ACTIVE' : 'SUSPENDED' }, pageable);
+            case 'specialties': return searchSpecialties(filters.keyword, pageable);
+            case 'service-categories': return searchServiceCategories({ keyword: filters.keyword, active }, pageable);
+            case 'ranks': return searchRanks(filters.keyword, pageable);
+            case 'icd10': return searchIcd10(filters.keyword, pageable);
+            case 'ingredients': return searchIngredients(filters.keyword, pageable);
+            case 'medicines': return searchMedicines({ keyword: filters.keyword, active }, pageable);
+            case 'articles': return searchArticles({ keyword: filters.keyword, published: active }, pageable);
+          }
+        };
+        let response = await search();
+        if (page > 0 && page >= response.totalPages) {
+          pageable.page = Math.max(0, response.totalPages - 1);
+          response = await search();
+        }
+        if (resourceRequests.current[section] === request) setSectionData(section, response);
+      }
       else if (section === 'system-logs') {
         const response = await searchSystemLogs({}, pageable);
         setLogs(response.content);
@@ -346,6 +364,11 @@ function SystemAdminLiveScreen() {
     await loadSection(section, true, page, size);
   };
 
+  const searchResource = (section: ResourceSection, keyword: string, status: 'ALL' | 'ACTIVE' | 'INACTIVE') => {
+    resourceFilters.current[section] = { keyword, status };
+    void loadSection(section, true, 0, resourcePagination[section].size);
+  };
+
   const saveEditor = async (section: EditableSection, payload: Record<string, unknown>) => {
     if (section === 'hospitals') {
       if (payload.id) await updateHospital(payload as Parameters<typeof updateHospital>[0]);
@@ -434,8 +457,8 @@ function SystemAdminLiveScreen() {
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
       <SystemAdminSidebar activeSection={activeSection} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={() => void logout()} onOpenMobile={() => setMobileOpen(true)} onSelect={setActiveSection} />
-      <div className="lg:pl-[280px]">
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className={activeSection === 'overview' ? 'min-h-screen lg:pl-[280px]' : 'flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]'}>
+        <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200 bg-white/95 backdrop-blur">
           <div className="flex min-h-20 items-center justify-between gap-4 px-4 pl-20 sm:px-6 sm:pl-20 lg:px-8">
             <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">Quản trị hệ thống</p><h1 className="mt-1 text-xl font-extrabold tracking-tight text-slate-950">{SECTION_TITLES[activeSection]}</h1></div>
             <div className="flex items-center gap-3">
@@ -446,11 +469,11 @@ function SystemAdminLiveScreen() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-[1600px] p-4 sm:p-6 lg:p-8">
+        <main className={`mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-8 ${activeSection === 'overview' ? '' : 'flex min-h-0 flex-1 flex-col overflow-hidden'}`}>
           {error && <div className="mb-5 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert"><span className="flex-1">{error}</span><button aria-label="Đóng thông báo lỗi" onClick={() => setError('')} type="button"><X className="h-4 w-4" /></button></div>}
           {activeSection === 'overview' && loadingSection === 'overview' && !overviewLoaded ? <div className="flex min-h-[55vh] items-center justify-center"><RefreshCw className="h-7 w-7 animate-spin text-blue-700" /></div> : null}
           {activeSection === 'overview' && (overviewLoaded || loadingSection !== 'overview') && <SystemOverview onNavigate={setActiveSection} stats={stats} />}
-          {resourceSection && <SystemResourceView onCreateHospitalAdmin={openHospitalAdmin} items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
+          {resourceSection && <SystemResourceView initialQuery={resourceFilters.current[resourceSection]?.keyword} initialStatus={resourceFilters.current[resourceSection]?.status} onSearch={(query, status) => searchResource(resourceSection, query, status)} onCreateHospitalAdmin={openHospitalAdmin} items={resources[resourceSection]} key={resourceSection} loading={loadingSection === resourceSection} onAdd={(section) => void openCreate(section)} onEdit={(section, item) => void openEdit(section, item)} onPageChange={(page) => void changeResourcePage(resourceSection, page)} onPageSizeChange={(size) => void changeResourcePage(resourceSection, 0, size)} onRefresh={() => void refreshSection(resourceSection)} onToggle={(section, item) => void toggleResource(section, item)} page={resourcePagination[resourceSection].page} section={resourceSection} size={resourcePagination[resourceSection].size} totalElements={resourcePagination[resourceSection].totalElements} totalPages={resourcePagination[resourceSection].totalPages} />}
           {activeSection === 'system-logs' && <SystemLogView items={logs} loading={loadingSection === 'system-logs'} onExport={downloadLogs} onPageChange={(page) => filterLogs(logFilters, page, logPagination.size)} onPageSizeChange={(size) => filterLogs(logFilters, 0, size)} onSearch={filterLogs} page={logPagination.page} size={logPagination.size} totalElements={logPagination.totalElements} totalPages={logPagination.totalPages} />}
         </main>
       </div>

@@ -6,6 +6,7 @@ import { useState, type FormEvent } from 'react';
 import { ClipboardList, Download, Filter, Search, ShieldAlert } from 'lucide-react';
 import type { SystemLogFilters } from '../api/system-admin-api';
 import type { SystemLogEventType, SystemLogItem } from '../types';
+import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
 import { SystemPagination } from './SystemPagination';
 
 interface SystemLogViewProps {
@@ -64,8 +65,8 @@ export function SystemLogView({ items, loading, page, size, totalElements, total
   };
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
+    <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex shrink-0 flex-wrap items-start justify-between gap-4 border-b border-slate-100 px-5 py-5 sm:px-6">
         <div className="flex items-start gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100"><ClipboardList className="h-5 w-5" /></div>
           <div><h2 className="text-lg font-extrabold text-slate-950">Nhật ký hệ thống</h2><p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500">Giám sát hoạt động truy cập dữ liệu y khoa và xuất báo cáo phục vụ kiểm tra.</p></div>
@@ -73,7 +74,7 @@ export function SystemLogView({ items, loading, page, size, totalElements, total
         <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 text-sm font-bold text-emerald-700 hover:bg-emerald-100 disabled:opacity-60" disabled={exporting} onClick={() => void exportData()} type="button"><Download className="h-4 w-4" />{exporting ? 'Đang xuất...' : 'Xuất Excel'}</button>
       </div>
 
-      <form className="grid gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:grid-cols-2 xl:grid-cols-6 sm:px-6" onSubmit={submit}>
+      <form className="grid max-h-[35dvh] shrink-0 gap-3 overflow-y-auto md:max-h-none border-b border-slate-100 bg-slate-50/70 px-5 py-4 sm:grid-cols-2 xl:grid-cols-6 sm:px-6" onSubmit={submit}>
         <label><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Loại sự kiện</span><select className={inputClass} name="eventType"><option value="">Tất cả sự kiện</option>{EVENT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         <label><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">ID lượt khám</span><input className={inputClass} min={1} name="encounterId" placeholder="Tất cả" type="number" /></label>
         <label><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">ID tài khoản</span><input className={inputClass} min={1} name="accountId" placeholder="Tất cả" type="number" /></label>
@@ -82,7 +83,7 @@ export function SystemLogView({ items, loading, page, size, totalElements, total
         <button className="mt-auto inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-bold text-white hover:bg-blue-800" type="submit"><Filter className="h-4 w-4" /> Lọc dữ liệu</button>
       </form>
 
-      <div className="overflow-x-auto">
+      <ScrollableTable label="Nhật ký hệ thống" maxHeight="none" key={`${page}:${size}`}>
         <table className="min-w-[1050px] w-full text-left text-sm">
           <thead className="bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500"><tr><th className="px-5 py-3">Thời gian</th><th className="px-4 py-3">Sự kiện</th><th className="px-4 py-3">Tài khoản</th><th className="px-4 py-3">Lượt khám</th><th className="px-4 py-3">Chi tiết</th><th className="px-5 py-3 text-right">Mã log</th></tr></thead>
           <tbody className="divide-y divide-slate-100">
@@ -94,7 +95,7 @@ export function SystemLogView({ items, loading, page, size, totalElements, total
         </table>
         {!loading && items.length === 0 && <div className="flex min-h-56 flex-col items-center justify-center px-6 text-center"><Search className="h-9 w-9 text-slate-300" /><p className="mt-3 font-bold text-slate-700">Chưa có nhật ký phù hợp</p><p className="mt-1 text-sm text-slate-500">Thử thay đổi điều kiện lọc và tìm lại.</p></div>}
         {loading && <div className="flex min-h-56 items-center justify-center text-sm font-semibold text-slate-500">Đang tải nhật ký...</div>}
-      </div>
+      </ScrollableTable>
       <SystemPagination loading={loading} onPageChange={(nextPage) => void onPageChange(nextPage)} onPageSizeChange={(nextSize) => void onPageSizeChange(nextSize)} page={page} size={size} totalElements={totalElements} totalPages={totalPages} />
     </section>
   );

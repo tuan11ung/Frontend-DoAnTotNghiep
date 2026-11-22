@@ -5,3 +5,4 @@ export * from './SearchableDropdown';
 export * from './Modal';
 export * from './RadioButton';
 export * from './ToggleSwitch';
+export * from './ScrollableTable';
