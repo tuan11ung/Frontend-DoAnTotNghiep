@@ -1,7 +1,7 @@
 import { formatDisplayDateTime } from '@/src/shared/utils/date-format';
 import type { PatientNotification } from '../types';
 
-const patientRoutes = new Set(['/patient/results', '/patient/appointments', '/patient/profile', '/patient/family', '/patient/notifications', '/patient/payments', '/booking']);
+const patientRoutes = new Set(['/patient/results', '/patient/appointments', '/patient/profile', '/patient/history-access', '/patient/family', '/patient/notifications', '/patient/payments', '/booking']);
 export function safeNotificationAction(value?: string | null): string | null {
   if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\u0000-\u0020]/.test(value)) return null;
   try {
@@ -9,6 +9,7 @@ export function safeNotificationAction(value?: string | null): string | null {
     if (url.origin !== 'https://medconnect.invalid' || !patientRoutes.has(url.pathname)) return null;
     // A result deep link must explicitly identify its patient profile.
     if (url.pathname === '/patient/results' && (url.searchParams.has('encounter') || url.searchParams.has('service')) && !url.searchParams.get('profile')) return null;
+    if (url.pathname === '/patient/profile' && url.hash === '#history-access') return '/patient/history-access';
     return `${url.pathname}${url.search}${url.hash}`;
   } catch { return null; }
 }
@@ -23,6 +24,7 @@ export function notificationHref(item: PatientNotification): string {
   }
   if (item.type === 'RETURN_TO_ORIGINAL_ROOM') return '/patient/appointments?tab=ongoing';
   if (item.type === 'FOLLOW_UP_REMINDER') return '/patient/appointments';
+  if (item.type === 'RECORD_ACCESS_GRANTED' || item.type === 'RECORD_ACCESS_REVOKED') return '/patient/history-access';
   if (item.type === 'PAYMENT_REQUEST' && item.patientId && item.encounterId) return `/patient/payments?${new URLSearchParams({ profile: String(item.patientId), encounter: String(item.encounterId) })}`;
   return notificationDetailHref(item.id);
 }

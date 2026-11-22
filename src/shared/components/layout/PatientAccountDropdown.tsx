@@ -5,10 +5,11 @@ import { AccountName } from '@/src/shared/components/layout/AccountName';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, ChevronDown, CircleUserRound, ClipboardList, LoaderCircle, LogOut, Users, Wallet } from 'lucide-react';
+import { CalendarDays, ChevronDown, CircleUserRound, ClipboardList, LoaderCircle, LogOut, ShieldCheck, Users, Wallet } from 'lucide-react';
 
 const accountLinks = [
   { href: '/patient/profile', label: 'Hồ sơ cá nhân', Icon: CircleUserRound },
+  { href: '/patient/history-access', label: 'Quyền truy cập bệnh sử', Icon: ShieldCheck },
   { href: '/patient/appointments', label: 'Xem lịch khám', Icon: CalendarDays },
   { href: '/patient/results', label: 'Kết quả khám', Icon: ClipboardList },
   { href: '/patient/payments', label: 'Thanh toán & hóa đơn', Icon: Wallet },

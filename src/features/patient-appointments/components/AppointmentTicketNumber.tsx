@@ -3,7 +3,7 @@ import type { PatientAppointment } from '../models/types/appointment.types';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { appointmentQueueKey } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 
-export function AppointmentTicketNumber({ appointment, room, queueError = false, variant = 'badge' }: { appointment: PatientAppointment; room?: VisitQueueRoom; queueError?: boolean; variant?: 'badge' | 'prominent' }) {
+export function AppointmentTicketNumber({ appointment, room, queueError = false, variant = 'badge' }: { appointment: PatientAppointment; room?: VisitQueueRoom; queueError?: boolean; variant?: 'badge' | 'prominent' | 'card' }) {
   if (appointment.status === 'CANCELLED' && variant === 'badge') return null;
   const own = !queueError && room?.key === appointmentQueueKey(appointment)
     ? room.tickets.find(ticket => ticket.appointmentId === appointment.id)
@@ -14,6 +14,13 @@ export function AppointmentTicketNumber({ appointment, room, queueError = false,
     : own ? String(own.number).padStart(3, '0')
     : appointment.status === 'BOOKED' ? 'Chưa cấp số thứ tự'
     : 'Chưa có dữ liệu số thứ tự';
+
+  if (variant === 'card') return <div data-appointment-ticket={appointment.id} aria-label="Số thứ tự của bạn" className="min-w-0">
+    <p className="text-sm text-slate-600">Số thứ tự</p>
+    <p aria-live="polite" aria-atomic="true" className={`mt-1 font-bold text-blue-700 ${number != null && !queueError ? 'whitespace-nowrap text-3xl leading-9 tracking-tight tabular-nums' : 'text-base leading-6 [overflow-wrap:anywhere]'}`}>
+      {queueError ? 'Chưa tải được' : number != null ? label : ['BOOKED', 'PENDING_SPECIALTY', 'CANCELLED'].includes(appointment.status) ? 'Chưa cấp' : 'Chưa có dữ liệu'}
+    </p>
+  </div>;
 
   if (variant === 'prominent') return <div data-appointment-ticket={appointment.id} aria-label="Số thứ tự của bạn" className="flex min-w-0 flex-col justify-center border-r border-slate-200/70 pr-3 text-center sm:pr-4">
     <p className="text-[10px] font-bold leading-5 text-blue-700">Số thứ tự</p>
