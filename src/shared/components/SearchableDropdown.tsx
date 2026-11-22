@@ -19,6 +19,9 @@ interface SearchableDropdownProps {
   searchPlaceholder?: string;
   emptyMessage?: string;
   className?: string;
+  disabled?: boolean;
+  /** Optional remote results, retaining the dropdown's search and focus handling. */
+  renderResults?: (query: string, close: () => void) => ReactNode;
 }
 
 const fieldClass = 'h-11 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100';
@@ -36,6 +39,8 @@ export function SearchableDropdown({
   searchPlaceholder = 'Tìm kiếm',
   emptyMessage = 'Không tìm thấy kết quả',
   className,
+  disabled = false,
+  renderResults,
 }: SearchableDropdownProps) {
   const id = useId();
   const trigger = useRef<HTMLButtonElement>(null);
@@ -69,6 +74,8 @@ export function SearchableDropdown({
     >
       <span className="mb-1.5 block text-sm font-bold text-slate-700" id={id + '-label'}>{label}</span>
       <button
+        id={id + '-trigger'}
+        disabled={disabled}
         aria-controls={open ? id + '-options' : undefined}
         aria-expanded={open}
         aria-labelledby={id + '-label ' + id + '-value'}
@@ -83,6 +90,7 @@ export function SearchableDropdown({
       {open && (
         <div className="mt-1 rounded-lg border border-slate-200 bg-white p-2 shadow-lg" id={id + '-options'}>
           <input
+            disabled={disabled}
             aria-label={searchPlaceholder}
             className={fieldClass}
             onChange={(event) => setQuery(event.target.value)}
@@ -94,7 +102,7 @@ export function SearchableDropdown({
             type="search"
             value={query}
           />
-          {matches.length > 0 ? (
+          {renderResults ? renderResults(query, () => { document.getElementById(id + '-trigger')?.focus(); close(); }) : matches.length > 0 ? (
             <ul className="mt-1 max-h-48 overflow-y-auto">
               {matches.map((option) => (
                 <li key={option.value}>

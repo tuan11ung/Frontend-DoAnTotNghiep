@@ -3,6 +3,37 @@
 import { useEffect, useRef, useState } from 'react';
 import { consultationApi, type Icd10Choice } from './api/consultation-api';
 import { clinicalField } from './components/clinical-ui';
+import { SearchableDropdown } from '@/src/shared/components/SearchableDropdown';
+
+export function Icd10Dropdown({ selected, onSelect, disabled }: {
+  selected?: { id: number; name: string };
+  onSelect: (item: Icd10Choice) => void;
+  disabled: boolean;
+}) {
+  return <SearchableDropdown
+    label="Tìm mã hoặc tên bệnh ICD-10"
+    placeholder="Chọn bệnh ICD-10"
+    searchPlaceholder="Nhập mã hoặc tên bệnh ICD-10"
+    value={selected ? String(selected.id) : ''}
+    options={selected ? [{ value: String(selected.id), label: selected.name }] : []}
+    onChange={() => { /* Remote result buttons handle selection below. */ }}
+    disabled={disabled}
+    renderResults={(query, close) => <DropdownResults query={query} selectedIds={selected ? [selected.id] : []}
+      disabled={disabled} onSelect={item => { onSelect(item); close(); }} />}
+  />;
+}
+
+function DropdownResults({ query, ...props }: {
+  query: string; selectedIds: number[]; disabled: boolean; onSelect: (item: Icd10Choice) => void;
+}) {
+  const [keyword, setKeyword] = useState(query.trim());
+  useEffect(() => {
+    const timer = setTimeout(() => setKeyword(query.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+  return query.trim() !== keyword ? <p role="status" className="p-3 text-sm">Đang tìm ICD-10…</p>
+    : <Icd10Results key={keyword} keyword={keyword} {...props} />;
+}
 
 export function Icd10Picker({ selectedIds, onSelect, disabled }: { selectedIds: number[]; onSelect: (item: Icd10Choice) => void; disabled: boolean }) {
   const [input, setInput] = useState('');

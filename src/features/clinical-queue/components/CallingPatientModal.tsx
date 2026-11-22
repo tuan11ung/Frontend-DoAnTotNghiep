@@ -54,7 +54,7 @@ export function CallingPatientModal({ patient, room, initialCallCount = 1, title
   }
 
   return (
-    <dialog aria-labelledby="calling-title" className="fixed inset-0 m-auto max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-[500px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 text-slate-800 shadow-2xl backdrop:bg-slate-950/45 backdrop:backdrop-blur-sm" onCancel={(event) => { event.preventDefault(); if (!pendingAction) onClose(); }} ref={dialogRef}>
+    <dialog aria-labelledby="calling-title" className="fixed inset-0 m-auto max-h-[calc(100dvh_-_2rem)] w-[calc(100%_-_2rem)] max-w-[500px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 text-slate-800 shadow-2xl backdrop:bg-slate-950/45" onCancel={(event) => { event.preventDefault(); if (!pendingAction) onClose(); }} ref={dialogRef}>
       <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-600"><DoorOpen aria-hidden="true" className="h-4 w-4 text-blue-700" />{room}</div>
         <button aria-label="Đóng thông tin đang gọi" className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50" disabled={Boolean(pendingAction)} onClick={onClose} type="button"><X aria-hidden="true" className="h-5 w-5" /></button>

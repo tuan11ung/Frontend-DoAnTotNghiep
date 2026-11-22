@@ -114,7 +114,7 @@ export const NewsFeaturedVideo: React.FC<NewsFeaturedVideoProps> = ({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in"
         >
           <div className="relative bg-slate-900 rounded-2xl overflow-hidden max-w-3xl w-full shadow-2xl border border-slate-800">
             <div className="p-4 flex items-center justify-between text-white border-b border-slate-800">
