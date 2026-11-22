@@ -60,11 +60,18 @@ export function appointmentDate(date: string) {
   return formatDisplayDate(date);
 }
 
+export function isAppointmentExpired(appointment: PatientAppointment, today = vietnamDate()) {
+  return ['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status)
+    && /^\d{4}-\d{2}-\d{2}$/.test(appointment.workDate)
+    && appointment.workDate < today;
+}
+
 export function canCancelAppointment(appointment: PatientAppointment, now = businessNowMs()) {
   if (!['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status)) return false;
-  const cutoff = appointment.cancellationPolicy?.cutoffMinutes;
-  if (cutoff === undefined) return true;
-  return Date.parse(`${appointment.workDate}T${appointment.timeSlot}:00+07:00`) - now > cutoff * 60000;
+  const cutoff = Math.max(0, appointment.cancellationPolicy?.cutoffMinutes ?? 0);
+  const time = /^\d{2}:\d{2}$/.test(appointment.timeSlot) ? `${appointment.timeSlot}:00` : appointment.timeSlot;
+  const start = Date.parse(`${appointment.workDate}T${time}+07:00`);
+  return Number.isFinite(start) && start - now > cutoff * 60000;
 }
 
 export function appointmentQueueProgress(room: VisitQueueRoom, appointment: PatientAppointment) {

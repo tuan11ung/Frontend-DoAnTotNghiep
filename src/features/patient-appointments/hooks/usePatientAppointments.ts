@@ -8,6 +8,7 @@ import type { BookingHospital, BookingPatientProfile } from '@/src/features/book
 import { cancelPatientAppointment, searchPatientAppointments, toPatientAppointment } from '../api/patient-appointments-api';
 import type { PatientAppointment } from '../models/types/appointment.types';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
+import { canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 
 const NO_DEMO_ROOMS: VisitQueueRoom[] = [];
 
@@ -62,6 +63,10 @@ export function usePatientAppointments() {
     try {
 
       if (!token || !data) throw new Error('Vui lòng đăng nhập và tải lại lịch khám.');
+      const target = data.appointments.find(appointment => appointment.id === id);
+      if (!target || !canCancelAppointment(target)) {
+        throw new Error('Lịch khám đã quá hạn hủy hoặc không còn ở trạng thái được phép hủy.');
+      }
       const result = await cancelPatientAppointment(Number(id), reason);
       const appointment = toPatientAppointment(result, data.profiles, data.hospitals);
       setRemote(current => current?.token === token ? { ...current, appointments: current.appointments.map(a => a.id === id ? appointment : a) } : current);

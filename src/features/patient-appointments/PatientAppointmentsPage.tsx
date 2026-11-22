@@ -20,7 +20,7 @@ import { AppointmentFilterTabs } from './components/AppointmentFilterTabs';
 import { CancelAppointmentDialog } from './workflow/CancelAppointmentDialog';
 import { AppointmentQrDialog } from './workflow/AppointmentQrDialog';
 import { AppointmentQueueDialog } from './workflow/AppointmentQueueDialog';
-import { findAppointmentQueue } from '@/src/features/appointment-tracking/utils/appointment-tracking';
+import { findAppointmentQueue, isAppointmentExpired, vietnamDate } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { PatientAppointment, AppointmentFilterTab } from './models/types/appointment.types';
 
 export function PatientAppointmentsPage() {
@@ -57,16 +57,17 @@ export function PatientAppointmentsPage() {
     return res.success;
   };
 
+  const today = vietnamDate();
   // Lọc danh sách lịch hẹn
   const filteredAppointments = useMemo(() => {
     return appointments.filter((apt) => {
       // 1. Tab filter
       if (currentTab === 'UPCOMING') {
-        if (!['BOOKED', 'PENDING_SPECIALTY'].includes(apt.status)) return false;
+        if (!['BOOKED', 'PENDING_SPECIALTY'].includes(apt.status) || isAppointmentExpired(apt, today)) return false;
       } else if (currentTab === 'ONGOING') {
         if (!['CHECKED_IN', 'IN_PROGRESS'].includes(apt.status)) return false;
       } else if (currentTab === 'HISTORY') {
-        if (!['COMPLETED', 'NO_SHOW'].includes(apt.status)) return false;
+        if (!['COMPLETED', 'NO_SHOW'].includes(apt.status) && !isAppointmentExpired(apt, today)) return false;
       } else if (currentTab === 'CANCELLED') {
         if (apt.status !== 'CANCELLED') return false;
       }
@@ -92,7 +93,7 @@ export function PatientAppointmentsPage() {
 
       return true;
     });
-  }, [appointments, currentTab, selectedProfile, searchQuery]);
+  }, [appointments, currentTab, selectedProfile, searchQuery, today]);
 
   // Counts use the same status rules as the filtered lists.
   const tabCounts = useMemo(() => {
@@ -103,12 +104,12 @@ export function PatientAppointmentsPage() {
       : appointments.filter((a) => a.patientId === selectedProfile);
 
     return {
-      upcoming: baseList.filter((a) => ['BOOKED', 'PENDING_SPECIALTY'].includes(a.status)).length,
+      upcoming: baseList.filter((a) => ['BOOKED', 'PENDING_SPECIALTY'].includes(a.status) && !isAppointmentExpired(a, today)).length,
       ongoing: baseList.filter((a) => ['CHECKED_IN', 'IN_PROGRESS'].includes(a.status)).length,
-      history: baseList.filter((a) => ['COMPLETED', 'NO_SHOW'].includes(a.status)).length,
+      history: baseList.filter((a) => ['COMPLETED', 'NO_SHOW'].includes(a.status) || isAppointmentExpired(a, today)).length,
       cancelled: baseList.filter((a) => a.status === 'CANCELLED').length,
     };
-  }, [appointments, selectedProfile]);
+  }, [appointments, selectedProfile, today]);
 
   if (auth.isReady && !auth.isAuthenticated) return <main className="mx-auto max-w-5xl p-8 text-center"><h1 className="text-xl font-bold">Lịch khám của tôi</h1><p className="my-4">Vui lòng đăng nhập để xem lịch khám.</p><Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link></main>;
 
@@ -181,19 +182,19 @@ export function PatientAppointmentsPage() {
             </select>
           </div>
 
-          {/* Search box */}
-          <div className="relative w-full md:w-80">
-            <label htmlFor="appointment-search" className="sr-only">Tìm lịch hẹn</label>
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              id="appointment-search"
-              placeholder="Tìm mã lịch, bệnh viện, bác sĩ..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all"
-            />
-          </div>
+          {/*/!* Search box *!/*/}
+          {/*<div className="relative w-full md:w-80">*/}
+          {/*  <label htmlFor="appointment-search" className="sr-only">Tìm lịch hẹn</label>*/}
+          {/*  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />*/}
+          {/*  <input*/}
+          {/*    type="text"*/}
+          {/*    id="appointment-search"*/}
+          {/*    placeholder="Tìm mã lịch, bệnh viện, bác sĩ..."*/}
+          {/*    value={searchQuery}*/}
+          {/*    onChange={(e) => setSearchQuery(e.target.value)}*/}
+          {/*    className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all"*/}
+          {/*  />*/}
+          {/*</div>*/}
         </div>
 
         {(storageError || queueError) && <p role="alert" className="mx-4 mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />{storageError || 'Chưa tải được hàng chờ. Vui lòng thử lại.'}</p>}

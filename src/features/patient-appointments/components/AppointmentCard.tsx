@@ -5,7 +5,7 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
-import { canCancelAppointment } from '@/src/features/appointment-tracking/utils/appointment-tracking';
+import { canCancelAppointment, isAppointmentExpired } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from './AppointmentQueueSummary';
 import { AppointmentRoomLoad } from './AppointmentRoomLoad';
 import { AppointmentScheduleDetails } from './AppointmentScheduleDetails';
@@ -60,7 +60,12 @@ export function AppointmentCard({
       document.removeEventListener('keydown', escape);
     };
   }, [actionsOpen]);
-  const statusConfig = APPOINTMENT_STATUS_LABELS[appointment.status] || {
+  const isExpired = isAppointmentExpired(appointment);
+  const statusConfig = isExpired ? {
+    label: 'Đã quá hạn',
+    colorClass: 'text-slate-700',
+    bgClass: 'bg-slate-100 border-slate-200',
+  } : APPOINTMENT_STATUS_LABELS[appointment.status] || {
     label: appointment.status,
     colorClass: 'text-slate-700',
     bgClass: 'bg-slate-100 border-slate-200',
@@ -70,7 +75,7 @@ export function AppointmentCard({
   const isCheckedIn = appointment.status === 'CHECKED_IN' || appointment.status === 'IN_PROGRESS';
   const isCompleted = appointment.status === 'COMPLETED';
   const isCancelled = appointment.status === 'CANCELLED';
-  const canViewQueue = isCheckedIn || (appointment.source === 'api' && ['BOOKED', 'NO_SHOW'].includes(appointment.status));
+  const canViewQueue = !isExpired && (isCheckedIn || (appointment.source === 'api' && ['BOOKED', 'NO_SHOW'].includes(appointment.status)));
 
   return (
     <div data-appointment-id={appointment.id} className="@container group relative min-w-0 [overflow-wrap:anywhere] [&_button]:cursor-pointer [&_button]:pointer-events-auto [&_a]:pointer-events-auto bg-white rounded-2xl border border-slate-200 shadow-sm hover:border-blue-300 transition-colors overflow-hidden flex flex-col justify-between">
