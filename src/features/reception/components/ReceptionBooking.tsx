@@ -1,4 +1,5 @@
 'use client';
+import { CareCostBreakdown } from '@/src/shared/components/CareCostBreakdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BookingStep1Mode } from '@/src/features/booking/components/BookingStep1Mode';
 import { BookingSearchSelect } from '@/src/features/booking/workflow/BookingSearchSelect';
@@ -82,8 +83,9 @@ export function ReceptionBooking({ patient, onNext }: { patient: ReceptionPatien
       {step === 4 && <form className={receptionCard} onSubmit={event => { event.preventDefault(); void submit(); }}>
         <h3 className="text-xl font-bold text-slate-900">Xác nhận đăng ký khám</h3>
         <dl className="grid gap-4 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm sm:grid-cols-2">{[
-          ['Người khám', patient.fullName], ['Ngày khám', formatDisplayDate(today)], ['Hình thức', mode === 'bhyt' ? 'Khám BHYT' : 'Khám theo yêu cầu'], ['Chuyên khoa', choice?.specialtyName], ['Bác sĩ', [choice?.rankName, choice?.doctorName].filter(Boolean).join(' ')], ['Khung giờ', choice ? `${choice.startTime.slice(0,5)} – ${choice.endTime.slice(0,5)}` : ''], ['Phòng khám', [choice?.roomName, choice?.roomLocation].filter(Boolean).join(' · ')], ['Phí dự kiến', choice?.price == null ? 'Chưa xác định' : money(choice.price)],
+          ['Người khám', patient.fullName], ['Ngày khám', formatDisplayDate(today)], ['Hình thức', mode === 'bhyt' ? 'Khám BHYT' : 'Khám theo yêu cầu'], ['Chuyên khoa', choice?.specialtyName], ['Bác sĩ', [choice?.rankName, choice?.doctorName].filter(Boolean).join(' ')], ['Khung giờ', choice ? `${choice.startTime.slice(0,5)} – ${choice.endTime.slice(0,5)}` : ''], ['Phòng khám', [choice?.roomName, choice?.roomLocation].filter(Boolean).join(' · ')], ['Bệnh nhân trả dự kiến', choice?.price == null ? 'Chưa xác định' : money(choice.price)],
         ].map(([label, value]) => <div key={label}><dt className="text-slate-500">{label}</dt><dd className="mt-1 font-semibold text-slate-900">{value || 'Chưa cập nhật'}</dd></div>)}</dl>
+        {choice && <CareCostBreakdown cost={choice} estimated />}
         <label className="block text-sm font-semibold">Lý do khám<textarea required maxLength={500} rows={3} disabled={busy || Boolean(created)} className={`${receptionField} h-auto py-3`} value={reason} onChange={event => setReason(event.target.value)} /></label>
         {created && <p role="status" className="text-sm text-blue-700">Đã tạo lịch {created.appointmentCode}. Thử lại để tiếp tục check-in, không tạo lịch mới.</p>}
         <div className="flex flex-wrap justify-between gap-3"><button type="button" className={bookingBackClass} disabled={busy || Boolean(created)} onClick={() => setStep(3)}>Quay lại</button><button type="submit" className={bookingButtonClass} disabled={busy || (!created && (!choice || choice.remainingCapacity < 1 || !reason.trim()))}>{busy ? 'Đang xử lý…' : created ? 'Thử lại check-in' : 'Xác nhận đăng ký và check-in'}</button></div>

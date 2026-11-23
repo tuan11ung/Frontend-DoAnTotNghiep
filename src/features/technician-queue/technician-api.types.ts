@@ -17,6 +17,7 @@ export interface OrderedService {
   orderedDate: string;
   completedDate?: string | null;
   detailedPrice: number;
+  originalPrice?: number; insuranceDiscountAmount?: number; insuranceDiscountPercent?: number;
   roomId?: number | null;
   roomName?: string | null;
   roomLocation?: string | null;

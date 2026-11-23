@@ -1,3 +1,4 @@
+import { CareCostBreakdown } from '@/src/shared/components/CareCostBreakdown';
 import type { ReactNode } from 'react';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import type { BookingSummaryData } from '../models/types/booking-view.types';
@@ -7,7 +8,7 @@ function SummaryField({ label, children }: { label: string; children: ReactNode 
 }
 
 export function BookingSummary({ data }: { data: BookingSummaryData }) {
-  const { patient, hospitalName, specialtyName, window, timeLabel, assignmentNote, doctorName, roomName, roomLocation, price } = data;
+  const { patient, hospitalName, specialtyName, window, timeLabel, assignmentNote, doctorName, roomName, roomLocation } = data;
   return <div className="grid grid-cols-1 items-start gap-6 rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm sm:grid-cols-2">
     <dl className="grid min-w-0 gap-4 break-words">
       <SummaryField label="Người khám">{patient.fullName}</SummaryField>
@@ -21,7 +22,7 @@ export function BookingSummary({ data }: { data: BookingSummaryData }) {
       <SummaryField label={timeLabel}>{formatDisplayDate(window.appointmentDate)} · {window.startTime.slice(0, 5)}–{window.endTime.slice(0, 5)}</SummaryField>
       {roomName && <SummaryField label="Phòng">{roomName}</SummaryField>}
       {roomLocation && <SummaryField label="Vị trí phòng">{roomLocation}</SummaryField>}
-      {price != null && <SummaryField label="Giá khám">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}</SummaryField>}
+      {data.price != null && <div><dt className="sr-only">Chi phí khám dự kiến</dt><dd><CareCostBreakdown cost={data} estimated /></dd></div>}
     </dl>
   </div>;
 }

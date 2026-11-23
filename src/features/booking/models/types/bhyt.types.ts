@@ -1,3 +1,5 @@
+import type { CareCost } from '@/src/shared/components/CareCostBreakdown';
+
 export interface BookingHospital {
   id: number;
   code: string;
@@ -33,12 +35,12 @@ export interface BhytBookingWindow {
   endTime: string;
 }
 
-export interface BhytSlot {
+export interface BhytSlot extends CareCost {
   window: BhytBookingWindow;
   remainingCapacity?: number;
 }
 
-export interface BookedAppointment {
+export interface BookedAppointment extends CareCost {
   appointmentId: number;
   appointmentCode: string;
   price?: number | null;

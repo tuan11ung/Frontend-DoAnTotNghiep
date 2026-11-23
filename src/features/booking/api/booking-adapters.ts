@@ -15,6 +15,7 @@ export function toServiceSlotOption(slot: ServiceSlot): BookingSlotOption {
 export function toBhytSummary(patient: BookingPatientProfile, hospital: BookingHospital,
   specialtyName: string, pendingSpecialty: boolean, slot: BhytSlot): BookingSummaryData {
   return { patient, hospitalName: hospital.name, specialtyName, window: slot.window,
+    price: slot.price, originalPrice: slot.originalPrice, insuranceDiscountAmount: slot.insuranceDiscountAmount, insuranceDiscountPercent: slot.insuranceDiscountPercent,
     timeLabel: pendingSpecialty ? 'Khung giờ mong muốn' : 'Dự kiến check-in',
     assignmentNote: pendingSpecialty
       ? 'Lễ tân sẽ xem lý do khám trước khi phân chuyên khoa và xác nhận lịch.'

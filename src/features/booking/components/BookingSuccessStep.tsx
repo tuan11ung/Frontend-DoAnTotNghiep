@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CareCostBreakdown } from '@/src/shared/components/CareCostBreakdown';
 import { QRCodeSVG } from 'qrcode.react';
 import { ShieldCheck, Ticket } from 'lucide-react';
 import { formatDisplayDate as displayBookingDate } from '@/src/shared/utils/date-format';
@@ -14,7 +15,7 @@ export function BookingSuccessStep({ appointment, specialtyName, onReset, servic
   const pending = appointment.status === 'PENDING_SPECIALTY';
   return <section className="mx-auto w-full max-w-3xl space-y-5 rounded-2xl border border-emerald-200 bg-white p-6 text-center shadow-sm sm:p-8">
     <h1 className="text-xl sm:text-2xl font-extrabold text-emerald-700">{pending ? 'Đã gửi yêu cầu đặt khám' : 'Đặt lịch thành công'}</h1>
-    {pending && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800" role="status">Đang chờ lễ tân phân chuyên khoa. Khung giờ mong muốn chưa được giữ chỗ.</p>}
+    {pending && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800" role="status">Đã giữ chỗ tiếp nhận trong khung giờ. Lễ tân sẽ phân chuyên khoa, bác sĩ và phòng; phí khám được xác định sau khi phân công.</p>}
     <div className="grid items-start gap-5 text-left md:grid-cols-[minmax(0,1fr)_280px]">
     <dl className="min-w-0 space-y-3 break-words text-sm"><div><dt className="text-slate-500">Người khám</dt><dd className="font-bold">{appointment.patientName}</dd></div>
       <div><dt className="text-slate-500">Số CCCD</dt><dd className="font-bold">{appointment.patientMaskedNationalId || 'Chưa cập nhật'}</dd></div>
@@ -41,7 +42,7 @@ export function BookingSuccessStep({ appointment, specialtyName, onReset, servic
       </aside>
     </div>
     {!pending && <p className="text-sm text-slate-500">{service ? 'Mang theo giấy tờ tùy thân để lễ tân kiểm tra khi check-in.' : 'Mang theo giấy tờ tùy thân và thông tin BHYT để lễ tân kiểm tra khi check-in.'}</p>}
-    {!pending && appointment.price != null && <div className="space-y-3 rounded-xl border border-blue-100 bg-blue-50 p-4"><p className="text-sm text-blue-900">Phiếu tiền khám đã được tạo cho lịch hẹn. Nếu đã thanh toán trước, khi đến bệnh viện bạn chỉ cần check-in và chờ gọi theo số thứ tự.</p><Link className="inline-flex rounded-lg bg-blue-700 px-4 py-3 text-sm font-bold text-white" href={paymentsHref(String(appointment.patientId),{appointment:String(appointment.appointmentId)})}>Xem phiếu tiền khám</Link></div>}
+    {!pending && appointment.price != null && <div className="space-y-3 rounded-xl border border-blue-100 bg-blue-50 p-4"><p className="text-sm text-blue-900">Phiếu tiền khám đã được tạo cho lịch hẹn. Nếu đã thanh toán trước, khi đến bệnh viện bạn chỉ cần check-in và chờ gọi theo số thứ tự.</p><CareCostBreakdown cost={appointment} /><Link className="inline-flex rounded-lg bg-blue-700 px-4 py-3 text-sm font-bold text-white" href={paymentsHref(String(appointment.patientId),{appointment:String(appointment.appointmentId)})}>Xem phiếu tiền khám</Link></div>}
     <Link className="block text-sm font-bold text-blue-700" href="/patient/appointments">Xem lịch khám của tôi</Link>
     <button className={bookingButtonClass} onClick={onReset} type="button">Đặt lịch khác</button>
   </section>;

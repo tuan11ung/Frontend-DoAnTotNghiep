@@ -2,13 +2,14 @@ import { formatDisplayDateTime } from '@/src/shared/utils/date-format';
 export type PaymentMethod = 'VNPAY' | 'MOMO' | 'CARD' | 'CASH';
 export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
 export interface BillingProfile { id: string; name: string; relationship: string }
-export interface InvoiceLine { id: string; group: 'CONSULTATION' | 'CLS' | 'MEDICINE'; name: string; quantity: number; unit: string; unitPrice: number }
+export interface InvoiceLine { id: string; group: 'CONSULTATION' | 'CLS' | 'MEDICINE'; name: string; quantity: number; unit: string; unitPrice: number; originalUnitPrice?: number; insuranceDiscountAmount?: number; insuranceDiscountPercent?: number }
 export interface Invoice {
   id: string; code: string; profileId: string; encounterId: string | null; encounterCode: string; facility: string; issuedAt: string;
   status: 'UNPAID' | 'PAID' | 'CANCELLED'; total: number; subtotal: number | null;
   kind?: 'CONSULTATION_ADJUST' | 'CONSULTATION' | 'PARACLINICAL' | 'LEGACY'; kindLabel?: string;
   appointmentId?: string; appointmentCode?: string;
   consultationPaymentStatus?: 'PAID' | 'UNPAID' | 'FEE_PENDING'; consultationInvoiceId?: number | null;
+  insuranceDiscountPercent?: number; insuranceDiscountAmount?: number;
   refunds?: PaymentRefund[];
   lines: InvoiceLine[]; discounts: { label: string; amount: number }[] | null; completeBreakdown: boolean;
 }

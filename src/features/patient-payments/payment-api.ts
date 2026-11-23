@@ -38,15 +38,21 @@ export async function loadPayments(token: string, requestedProfile: string | nul
       if (bill.id !== summaries[start + index].id || (bill.encounterId != null && !id(bill.encounterId)) || (bill.encounterId == null && !id(bill.appointmentId)) || typeof bill.invoiceCode !== 'string' || !amount(bill.totalAmount) || !['PAID', 'UNPAID', 'CANCELLED'].includes(String(bill.status)) || typeof bill.createdAt !== 'string' || !Number.isFinite(Date.parse(bill.createdAt)) || !amount(detail.consultationAmount) || !amount(detail.paraclinicalAmount)) throw invalid();
       if (bill.kind != null && !['CONSULTATION', 'CONSULTATION_ADJUST', 'PARACLINICAL', 'LEGACY'].includes(String(bill.kind))) throw invalid();
       if (detail.lines != null && (!Array.isArray(detail.lines) || !detail.lines.every(line => object(line) && typeof line.name === 'string' && typeof line.code === 'string' && amount(line.amount) && typeof line.cancelled === 'boolean'))) throw invalid();
-      const suppliedLines = detail.lines as { orderedServiceId?: number; code: string; name: string; amount: number; cancelled: boolean }[] | undefined;
+      const gross = detail.originalTotalAmount ?? bill.totalAmount;
+      const insuranceDiscount = detail.insuranceDiscountAmount ?? 0;
+      const insurancePercent = detail.insuranceDiscountPercent ?? 0;
+      if (!amount(gross) || !amount(insuranceDiscount) || ![0, 80].includes(Number(insurancePercent)) || gross !== bill.totalAmount + insuranceDiscount) throw invalid();
+      if (Array.isArray(detail.lines) && detail.lines.some(line => object(line) && line.originalAmount != null && (!amount(line.originalAmount) || !amount(line.insuranceDiscountAmount) || line.originalAmount !== Number(line.amount) + line.insuranceDiscountAmount))) throw invalid();
+      const suppliedLines = detail.lines as { orderedServiceId?: number; code: string; name: string; amount: number; originalAmount?: number; insuranceDiscountAmount?: number; insuranceDiscountPercent?: number; cancelled: boolean }[] | undefined;
       const lines: Invoice['lines'] = suppliedLines ? suppliedLines.filter(line => !line.cancelled).map((line, lineIndex) => ({
         id: String(line.orderedServiceId ?? `${line.code}-${lineIndex}`), group: line.code.startsWith('CONSULTATION') ? 'CONSULTATION' : 'CLS',
-        name: line.name, quantity: 1, unit: 'khoản', unitPrice: line.amount,
+        name: line.name, quantity: 1, unit: 'khoản', unitPrice: line.amount, originalUnitPrice: line.originalAmount, insuranceDiscountAmount: line.insuranceDiscountAmount, insuranceDiscountPercent: line.insuranceDiscountPercent,
       })) : [
         { id: 'consultation', group: 'CONSULTATION', name: 'Chi phí khám bệnh', quantity: 1, unit: 'khoản', unitPrice: detail.consultationAmount },
         { id: 'cls', group: 'CLS', name: 'Chi phí cận lâm sàng', quantity: 1, unit: 'khoản', unitPrice: detail.paraclinicalAmount },
       ];
       if (suppliedLines && lines.reduce((sum, line) => sum + line.unitPrice, 0) !== bill.totalAmount) throw invalid();
+      if (suppliedLines && bill.kind !== 'LEGACY' && lines.reduce((sum, line) => sum + (line.originalUnitPrice ?? line.unitPrice), 0) !== gross) throw invalid();
       if (detail.refunds != null && (!Array.isArray(detail.refunds) || !detail.refunds.every(r => object(r) && id(r.id) && amount(r.amount) && ['PENDING', 'PROCESSING', 'SUCCESS', 'FAILED'].includes(String(r.status)) && typeof r.method === 'string' && typeof r.reason === 'string' && typeof r.createdAt === 'string'))) throw invalid();
       if (detail.consultationPayment != null && (!object(detail.consultationPayment) || !['PAID', 'UNPAID', 'FEE_PENDING'].includes(String(detail.consultationPayment.status)) || (detail.consultationPayment.invoiceId != null && !id(detail.consultationPayment.invoiceId)))) throw invalid();
       const consultationPayment = detail.consultationPayment as { status: Invoice['consultationPaymentStatus']; invoiceId: number | null } | undefined;
@@ -55,7 +61,7 @@ export async function loadPayments(token: string, requestedProfile: string | nul
       invoices.push({ id: String(bill.id), profileId, code: bill.invoiceCode, encounterId: bill.encounterId == null ? null : String(bill.encounterId), encounterCode: typeof bill.encounterCode === 'string' ? bill.encounterCode : bill.encounterId != null ? `Ca khám #${bill.encounterId}` : `Lịch hẹn ${typeof bill.appointmentCode === 'string' ? bill.appointmentCode : '#' + bill.appointmentId}`, facility: typeof bill.hospitalName === 'string' ? bill.hospitalName : 'Cơ sở y tế của lịch khám', issuedAt: bill.createdAt, status: bill.status as Invoice['status'], total: bill.totalAmount,
         appointmentId: id(bill.appointmentId) ? String(bill.appointmentId) : undefined, appointmentCode: typeof bill.appointmentCode === 'string' ? bill.appointmentCode : undefined,
         kind: bill.kind as Invoice['kind'], kindLabel: typeof bill.kindLabel === 'string' ? bill.kindLabel : undefined,
-        consultationPaymentStatus: consultationPayment?.status, consultationInvoiceId: consultationPayment?.invoiceId, refunds, subtotal: completeBreakdown ? bill.totalAmount : null, discounts: completeBreakdown ? [] : null, completeBreakdown, lines,
+        consultationPaymentStatus: consultationPayment?.status, consultationInvoiceId: consultationPayment?.invoiceId, refunds, insuranceDiscountPercent: Number(insurancePercent), insuranceDiscountAmount: insuranceDiscount, subtotal: completeBreakdown ? gross : null, discounts: completeBreakdown ? (insuranceDiscount > 0 ? [{ label: 'Giảm BHYT (80%)', amount: insuranceDiscount }] : []) : null, completeBreakdown, lines,
       });
       detail.transactions.forEach(t => {
         if (!object(t) || !id(t.id) || !amount(t.amount) || typeof t.transactionRef !== 'string' || !['VNPAY', 'MOMO', 'CASH'].includes(String(t.method)) || !['PENDING', 'SUCCESS', 'FAILED'].includes(String(t.status)) || typeof t.createdAt !== 'string' || !Number.isFinite(Date.parse(t.createdAt)) || (t.paidDate != null && (typeof t.paidDate !== 'string' || !Number.isFinite(Date.parse(t.paidDate))))) throw invalid();

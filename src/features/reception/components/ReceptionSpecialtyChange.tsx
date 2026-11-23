@@ -5,6 +5,7 @@ import { useReceptionData } from '../ReceptionDataProvider';
 import type { ReceptionAppointment, ReceptionSlot, ReceptionSpecialtyChangeResult, SpecialtyTransferQuote } from '../api/reception-api';
 import { ReceptionDialog } from './ReceptionDialog';
 import { receptionButton, receptionError, receptionField } from './reception-ui';
+import { CareCostBreakdown } from '@/src/shared/components/CareCostBreakdown';
 import { money } from '@/src/features/patient-payments/payment.types';
 
 export function ReceptionSpecialtyChange({ appointment, onClose, onChanged }: {
@@ -59,6 +60,7 @@ export function ReceptionSpecialtyChange({ appointment, onClose, onChanged }: {
         <label className="block text-sm font-semibold">Chuyên khoa đúng<select required className={receptionField} value={specialtyId} onChange={event => { setSpecialtyId(event.target.value); setSlotId(''); }}><option value="">Chọn chuyên khoa</option>{specialties.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
         <label className="block text-sm font-semibold">Bác sĩ, phòng và khung giờ<select required className={receptionField} value={slotId} onChange={event => setSlotId(event.target.value)}><option value="">Chọn phòng còn chỗ</option>{slots?.filter(slot => String(slot.specialtyId) === specialtyId).map(slot => <option key={slot.timeSlotId} value={slot.timeSlotId}>{[slot.rankName, slot.doctorName].filter(Boolean).join(' ')} · {slot.roomName} · {slot.startTime.slice(0, 5)}–{slot.endTime.slice(0, 5)} · Còn {slot.remainingCapacity} chỗ</option>)}</select></label>
         {choice && <dl className="rounded-lg bg-blue-50 p-3 text-sm"><dt className="text-slate-500">Phòng tiếp nhận</dt><dd className="font-semibold">{choice.roomName} · {choice.roomLocation}</dd><dt className="mt-2 text-slate-500">Phí khám dự kiến</dt><dd className="font-semibold">{choice.price == null ? 'Chưa xác định' : money(choice.price)}</dd></dl>}
+        {choice && <CareCostBreakdown cost={choice} estimated />}
         {choice && !quote && <p role="status" className="text-sm">Đang tính chênh lệch phí…</p>}
         {quote && <div className="space-y-2 rounded-lg border border-blue-200 p-3 text-sm"><p>Đã thanh toán được bảo lưu: <strong>{money(quote.paidAmount)}</strong></p>{quote.targetFee == null ? <p className="text-amber-800">Chưa xác định phí mới nên chưa thể chuyển chuyên khoa.</p> : <><p>Cần thu thêm: <strong>{money(quote.additionalAmount ?? 0)}</strong></p><p>Cần hoàn: <strong>{money(quote.refundAmount ?? 0)}</strong></p><p className="text-slate-500">Phiếu đã thu được giữ nguyên. Phần thu thêm phải thanh toán trước khi vào khám; phần chờ hoàn không chặn khám khi đã trả đủ phí mới.</p></>}</div>}
         <label className="block text-sm font-semibold">Lý do đổi chuyên khoa<textarea required maxLength={300} rows={3} className={receptionField} value={reason} onChange={event => setReason(event.target.value)} /></label>
