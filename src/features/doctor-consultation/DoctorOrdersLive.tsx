@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { EncounterDraftNotice } from './components/EncounterDraftNotice';
 import { clearEncounterDraft, useEncounterDraft } from '@/src/shared/lib/encounter-draft';
-import { consultationApi } from './api/consultation-api';
+import { consultationApi, type ClinicalServiceCategory } from './api/consultation-api';
+import { DataTablePagination } from '@/src/shared/components/pagination';
 import type { OrderedService, TechnicianMedicalService, TechnicianOrderDetail } from '@/src/features/technician-queue/technician-api.types';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { clinicalButton, clinicalCard, clinicalField } from './components/clinical-ui';
@@ -11,8 +12,18 @@ import { ClinicalResultReport } from './components/ClinicalResultReport';
 interface PendingOrder { serviceId: number; serviceName: string; clinicalNote: string }
 
 export function DoctorOrdersLive({ encounterId, editable, patientId }: { encounterId: number; editable: boolean; patientId?: number }) {
-  const [orders, setOrders] = useState<OrderedService[] | null>(null); const [catalogue, setCatalogue] = useState<ApiPage<TechnicianMedicalService> | null>(null);
+  const [orders, setOrders] = useState<OrderedService[] | null>(null);
+  const [catalogueResult, setCatalogueResult] = useState<{ key: string; data: ApiPage<TechnicianMedicalService> | null; error: string } | null>(null);
   const [keyword, setKeyword] = useState(''); const [query, setQuery] = useState(''); const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [categories, setCategories] = useState<ClinicalServiceCategory[]>([]);
+  const [categoryId, setCategoryId] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+  const [catalogueRevision, setCatalogueRevision] = useState(0);
+  const catalogueKey = JSON.stringify([query, page, categoryId, pageSize, catalogueRevision]);
+  const catalogue = catalogueResult?.key === catalogueKey ? catalogueResult.data : null;
+  const catalogueError = catalogueResult?.key === catalogueKey ? catalogueResult.error : '';
+  const catalogueLoading = editable && catalogueResult?.key !== catalogueKey;
   const batchIdentity = useRef<{signature:string;key:string}|null>(null);
   const [basket,setBasket] = useState<PendingOrder[]>([]);
   const [serviceId, setServiceId] = useState(''); const [note, setNote] = useState(''); const [result, setResult] = useState<TechnicianOrderDetail | null>(null);
@@ -42,9 +53,19 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   useEffect(() => {
     if (!editable) return;
     const controller = new AbortController();
-    consultationApi.services(query, page, controller.signal).then(items => { if (!controller.signal.aborted) setCatalogue(items); }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải danh mục dịch vụ.'); });
+    consultationApi.serviceCategories(controller.signal)
+      .then(items => { if (!controller.signal.aborted) { setCategories(items); setCategoryError(''); } })
+      .catch(e => { if (!controller.signal.aborted) setCategoryError(e instanceof Error ? e.message : 'Không thể tải nhóm dịch vụ.'); });
     return () => controller.abort();
-  }, [editable, query, page]);
+  }, [editable, catalogueRevision]);
+  useEffect(() => {
+    if (!editable) return;
+    const controller = new AbortController();
+    consultationApi.services(query, page, controller.signal, categoryId ? Number(categoryId) : undefined, pageSize)
+      .then(items => { if (!controller.signal.aborted) setCatalogueResult({ key: catalogueKey, data: items, error: '' }); })
+      .catch(e => { if (!controller.signal.aborted) setCatalogueResult({ key: catalogueKey, data: null, error: e instanceof Error ? e.message : 'Không thể tải danh mục dịch vụ.' }); });
+    return () => controller.abort();
+  }, [editable, query, page, categoryId, pageSize, catalogueKey]);
   async function run(action: () => Promise<void>) {
     if (lock.current) return; lock.current = true; mutation.current++; setBusy(true); setError('');
     try { await action(); } catch (e) { setError(e instanceof Error ? e.message : 'Không thể xử lý chỉ định.'); }
@@ -62,8 +83,17 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
     void run(async () => { await consultationApi.createOrders(encounterId, payload, requestId); batchIdentity.current=null; setBasket([]); clearEncounterDraft(encounterId, 'orders'); setNote(''); setServiceId(''); setRevision(v => v + 1); });
   }
   return <div className="space-y-5"><EncounterDraftNotice state={draftState} onChoice={() => setError('')} />{error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
-    {editable && <section className={clinicalCard}><h2 className="text-lg font-bold">Chỉ định cận lâm sàng</h2><form onSubmit={event => { event.preventDefault(); setQuery(keyword.trim()); setPage(0); setServiceId(''); }} className="flex items-end gap-3"><label className="flex-1 text-sm font-bold">Tìm dịch vụ<input className={clinicalField} value={keyword} maxLength={255} onChange={e => setKeyword(e.target.value)} /></label><button className={clinicalButton} type="submit">Tìm kiếm</button></form>
-      <form className="space-y-4" onSubmit={create}><fieldset disabled={busy} className="space-y-4"><label className="block text-sm font-bold">Dịch vụ<select required={basket.length === 0} className={clinicalField} value={serviceId} onChange={e => setServiceId(e.target.value)}><option value="">Chọn dịch vụ</option>{catalogue?.content.map(s => <option key={s.id} value={s.id}>{s.code} · {s.name}</option>)}</select></label>{catalogue && <div className="flex gap-4 text-xs"><button type="button" disabled={!page} onClick={() => { setPage(v => v - 1); setServiceId(''); }}>Trang trước</button><span>{page + 1}/{Math.max(1, catalogue.totalPages)}</span><button type="button" disabled={catalogue.last} onClick={() => { setPage(v => v + 1); setServiceId(''); }}>Trang sau</button></div>}
+    {editable && <section className={clinicalCard}><h2 className="text-lg font-bold">Chỉ định cận lâm sàng</h2>
+      <form onSubmit={event => { event.preventDefault(); setQuery(keyword.trim()); setPage(0); setServiceId(''); setCatalogueRevision(value => value + 1); }} className="flex flex-wrap items-end gap-3">
+        <label className="min-w-52 flex-1 text-sm font-bold">Nhóm dịch vụ<select className={clinicalField} value={categoryId} disabled={busy} onChange={event => { setCategoryId(event.target.value); setKeyword(''); setQuery(''); setPage(0); setServiceId(''); }}><option value="">Tất cả nhóm dịch vụ</option>{categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
+        <label className="min-w-52 flex-1 text-sm font-bold">Tìm dịch vụ<input className={clinicalField} value={keyword} placeholder="Nhập tên hoặc mã, ví dụ Glucose, LAB-…" maxLength={255} onChange={e => setKeyword(e.target.value)} /></label><button className={clinicalButton} type="submit" disabled={busy}>Tìm kiếm</button>
+      </form>
+      <p className="text-sm text-slate-500">Chọn nhóm Xét nghiệm hóa sinh hoặc Xét nghiệm huyết học để xem dịch vụ xét nghiệm. Ô tìm kiếm lọc theo tên hoặc mã dịch vụ.</p>
+      {categoryError && <p role="alert" className="text-sm text-amber-800">{categoryError} Bạn vẫn có thể tìm theo tên hoặc mã dịch vụ.</p>}
+      {catalogueLoading && <p role="status" className="text-sm text-slate-500">Đang tải danh mục dịch vụ…</p>}
+      {catalogueError && <p role="alert" className="text-sm text-rose-700">{catalogueError} <button type="button" className="font-bold underline" onClick={() => setCatalogueRevision(value => value + 1)}>Tải lại danh mục</button></p>}
+      {catalogue?.totalElements === 0 && <p role="status" className="text-sm text-slate-500">Không có dịch vụ phù hợp. Hãy đổi nhóm hoặc tìm theo tên, mã dịch vụ.</p>}
+      <form className="space-y-4" onSubmit={create}><fieldset disabled={busy} className="space-y-4"><label className="block text-sm font-bold">Dịch vụ<select required={basket.length === 0} disabled={catalogueLoading || !catalogue?.content.length} className={clinicalField} value={serviceId} onChange={e => setServiceId(e.target.value)}><option value="">Chọn dịch vụ</option>{catalogue?.content.map(s => <option key={s.id} value={s.id}>{s.code} · {s.name}</option>)}</select></label>{catalogue && <DataTablePagination pageIndex={catalogue.page} pageSize={catalogue.size} totalRecords={catalogue.totalElements} recordLabel="dịch vụ" pageSizeLabel="Số dịch vụ" pageSizeAriaLabel="Số dịch vụ mỗi trang" ariaLabel="Phân trang danh mục dịch vụ CLS" disabled={busy || catalogueLoading} onPageChange={index => { setPage(index); setServiceId(''); }} onPageSizeChange={size => { setPageSize(size); setPage(0); setServiceId(''); }} />}
       <label className="block text-sm font-bold">Ghi chú chỉ định<textarea className={clinicalField} maxLength={500} rows={2} value={note} onChange={e => setNote(e.target.value)} /></label><div className="flex flex-wrap gap-3"><button type="button" disabled={!serviceId || basket.length >= 99} className={clinicalButton} onClick={() => { setBasket(items=>[...items,{serviceId:Number(serviceId),serviceName:catalogue?.content.find(item=>item.id===Number(serviceId))?.name ?? `Dịch vụ #${serviceId}`,clinicalNote:note.trim()}]); setServiceId(''); setNote(''); }}>Thêm dịch vụ vào đợt</button><button type="submit" disabled={!serviceId && !basket.length} className={clinicalButton}>Lưu chỉ định</button></div>
       {basket.length > 0 && <ul aria-label="Dịch vụ chuẩn bị chỉ định" className="divide-y rounded-xl border p-3">{basket.map((item,index)=><li className="space-y-2 py-3" key={`${item.serviceId}:${index}`}><div className="flex items-center justify-between gap-3"><strong className="text-sm">{item.serviceName}</strong><button type="button" className="text-sm text-rose-700" onClick={()=>setBasket(items=>items.filter((_,i)=>i!==index))}>Bỏ dịch vụ</button></div><label className="block text-xs font-bold">Ghi chú cho {item.serviceName}<textarea className={clinicalField} rows={2} maxLength={500} value={item.clinicalNote} onChange={event=>setBasket(items=>items.map((row,i)=>i===index?{...row,clinicalNote:event.target.value}:row))}/></label></li>)}</ul>}</fieldset></form>
     </section>}

@@ -74,6 +74,7 @@ const ENDPOINTS: Record<string, string> = {
   'ordered-services/replace-result-media': '/clinic/ordered-services/replace-result-media',
   'ordered-services/upload-result-media': '/clinic/ordered-services/upload-result-media',
   'medical-services/search': '/clinic/medical-services/search',
+  'service-categories/search': '/clinic/service-categories/search',
   'medical-services/detail': '/clinic/medical-services/detail',
 };
 

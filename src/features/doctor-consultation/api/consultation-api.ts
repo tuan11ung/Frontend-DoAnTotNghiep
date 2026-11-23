@@ -29,6 +29,7 @@ export interface ClinicalCondition { id: number; patientId?: number; icd10Id?: n
 export interface AllergyInput { id?: number; patientId: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null }
 export interface ConditionInput { id?: number; patientId: number; icd10Id?: number | null; name: string; diagnosedYear: number | null; recovered: boolean }
 export interface Icd10Choice { id: number; code: string; name: string }
+export interface ClinicalServiceCategory { id: number; parentId?: number | null; code: string; name: string }
 export interface PrescriptionDraft {
   note: string;
   medicines: { hospitalMedicineId: number; quantity: number; dosage: string; usageInstruction: string; durationDays: number }[];
@@ -59,6 +60,16 @@ export const consultationApi = {
   createOrders: (encounterId: number, services: {serviceId:number;clinicalNote:string}[], requestId: string) => clinicalRequest<OrderedService[]>('ordered-services/create-batch', { encounterId, services, requestId }),
   createOrder: (encounterId: number, serviceId: number, clinicalNote: string) => clinicalRequest<OrderedService>('ordered-services/create', { encounterId, serviceId, clinicalNote }),
   cancelOrder: (orderedServiceId: number) => clinicalRequest<OrderedService>('ordered-services/cancel', { orderedServiceId }),
-  services: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<TechnicianMedicalService>>('medical-services/search', { keyword, active: true, pageable: { page, size: 20 } }, signal),
+  async serviceCategories(signal?: AbortSignal) {
+    const items: ClinicalServiceCategory[] = [];
+    for (let page = 0; page < 100; page++) {
+      const data = await clinicalRequest<ApiPage<ClinicalServiceCategory>>('service-categories/search', { rootOnly: false, pageable: { page, size: 100, sortBy: 'name' } }, signal);
+      if (!Array.isArray(data.content) || typeof data.last !== 'boolean') throw new Error('Danh mục nhóm dịch vụ không hợp lệ.');
+      items.push(...data.content);
+      if (data.last) return items.filter(item => !items.some(child => child.parentId === item.id));
+    }
+    throw new Error('Không thể tải đầy đủ nhóm dịch vụ CLS.');
+  },
+  services: (keyword: string, page: number, signal?: AbortSignal, serviceCategoryId?: number, size = 20) => clinicalRequest<ApiPage<TechnicianMedicalService>>('medical-services/search', { keyword, serviceCategoryId, pageable: { page, size } }, signal),
   history: (patientId: number, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<EncounterSummary>>('encounters/history/search', { patientId, pageable: { page, size: 20 } }, signal),
 };
