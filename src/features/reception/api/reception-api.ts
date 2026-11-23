@@ -8,6 +8,10 @@ export interface ReceptionPatient {
   id: number; patientCode: string; fullName: string; dob: string; gender: 'MALE' | 'FEMALE' | 'OTHER';
   maskedNationalId?: string; maskedPhone?: string; address?: string; insuranceNo?: string;
 }
+export interface ReceptionPatientCreated extends ReceptionPatient {
+  // Supplied only when the server provisions an account with the new profile.
+  createdAccount?: { username: string; initialPassword: string };
+}
 export interface ReceptionSlot extends CareCost {
   timeSlotId: number; staffId: number; doctorName: string; rankName?: string; roomId: number; roomName: string;
   roomLocation?: string; specialtyId: number; specialtyName: string; serviceType: 'BHYT' | 'SERVICE';
@@ -30,7 +34,7 @@ export interface ReceptionInvoiceDetail { originalTotalAmount?: number; insuranc
 export const receptionApi = {
   patientsPage: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page, size: 20 } }, signal),
   patients: async (keyword: string, signal?: AbortSignal) => (await clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page: 0, size: 20 } }, signal)).content,
-  createPatient: (input: object) => clinicalRequest<ReceptionPatient>('reception/patients/create', input),
+  createPatient: (input: object) => clinicalRequest<ReceptionPatientCreated>('reception/patients/create', input),
   appointment: (reference: string) => clinicalRequest<ReceptionAppointment>('reception/appointments/detail', { reference }),
   slots: (date: string, offline: boolean, signal?: AbortSignal, appointmentId?: number) =>
     loadSearchPages(page => clinicalRequest<ApiPage<ReceptionSlot>>('reception/slots/search', { date, offline, appointmentId, pageable: { page, size: 100 } }, signal), signal),

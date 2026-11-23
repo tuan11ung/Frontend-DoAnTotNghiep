@@ -90,7 +90,9 @@ export const receptionPreviewApi: typeof receptionApi = {
     if (s.patients.some(p => p.nationalId === nationalId || (phone && p.phone === phone))) throw new Error('CCCD hoặc số điện thoại đã có trong hồ sơ khác.');
     const p: Patient = { id: ++s.nextId, patientCode: 'BN' + s.nextId, fullName, nationalId, phone, dob,
       gender: text('gender') === 'FEMALE' ? 'FEMALE' : text('gender') === 'MALE' ? 'MALE' : 'OTHER', address: text('address'), insuranceNo: text('insuranceNo'), maskedNationalId: maskId(nationalId), maskedPhone: maskPhone(phone) };
-    s.patients.push(p); return p;
+    s.patients.push(p);
+    const [year, month, day] = dob.split('-');
+    return { ...p, createdAccount: phone ? { username: phone, initialPassword: day + month + year } : undefined };
   }, true),
   appointment: reference => run(s => {
     const a = findAppointment(s, reference), encounter = s.encounters.find(e => e.appointmentId === a.appointmentId);
