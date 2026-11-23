@@ -13,6 +13,7 @@ import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { receptionButton, receptionCard, receptionError, receptionField } from './ReceptionRegistration';
 import { money } from '@/src/features/patient-payments/payment.types';
 import { ReceptionCheckInResult } from './ReceptionCheckInResult';
+import { ReceptionSpecialtyChange } from './ReceptionSpecialtyChange';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 export function ReceptionAppointments({ pending }: { pending: boolean }) {
@@ -22,6 +23,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
   const [revision, setRevision] = useState(0); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
   const [slots, setSlots] = useState<ReceptionSlot[] | null>(null); const [slotId, setSlotId] = useState(''); const [notice, setNotice] = useState('');
   const [edit,setEdit]=useState<string|null>(null);
+  const [changingSpecialty, setChangingSpecialty] = useState(false);
   const lock = useRef(false);
   const detailsRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -71,6 +73,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
   }
   if (acceptedCode && appointment) return <ReceptionCheckInResult code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { setAcceptedCode(null); setAppointment(null); setReference(''); setError(''); setNotice(''); }} />;
   return <div className="space-y-5">
+    {changingSpecialty && appointment && <ReceptionSpecialtyChange key={appointment.appointmentId} appointment={appointment} onClose={() => setChangingSpecialty(false)} onChanged={result => { setChangingSpecialty(false); setAppointment(result.appointment); setAcceptedCode(result.encounterCode); setError(''); }} />}
     {scanning && <ReceptionQrScanner onClose={() => setScanning(false)} onScan={value => { setScanning(false); setReference(value); void lookup(value); }} />}
     {!pending && <button type="button" className={receptionButton} disabled={busy} onClick={() => { setAppointment(null); setError(''); setNotice(''); setScanning(true); }}>Quét bằng camera</button>}
     {!pending && <ReceptionQrImageUpload disabled={busy || scanning} onScan={value => { setReference(value); void lookup(value); }} />}
@@ -86,6 +89,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
       {pending && error && <p role="alert" className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
       <section id="reception-appointment-details" ref={detailsRef} tabIndex={-1} aria-labelledby="reception-appointment-title" className={pending ? "space-y-5" : `${receptionCard} scroll-mt-6`}><div className="flex items-start justify-between gap-4"><h2 id="reception-appointment-title" className="text-lg font-bold">Lịch {appointment.appointmentCode}</h2></div><dl className="grid gap-4 text-sm sm:grid-cols-2">{[['Người khám', appointment.patientName], ['CCCD', appointment.maskedNationalId], ['Điện thoại', appointment.maskedPhone], ['Trạng thái', appointment.status === 'PENDING_SPECIALTY' ? 'Chờ phân chuyên khoa' : appointment.status === 'BOOKED' ? 'Đã đặt lịch' : appointment.status === 'CHECKED_IN' ? 'Đã check-in' : appointment.status === 'CANCELLED' ? 'Đã hủy' : appointment.status], ['Cơ sở', appointment.hospitalName], ['Chuyên khoa', appointment.specialtyName], ['Bác sĩ', [appointment.rankName, appointment.doctorName].filter(Boolean).join(' ')], ['Phòng', [appointment.roomName, appointment.roomLocation].filter(Boolean).join(' · ')], ['Ngày và giờ', `${formatDisplayDate(appointment.appointmentDate)} · ${appointment.startTime.slice(0, 5)}–${appointment.endTime?.slice(0, 5) ?? ''}`], ['Số thứ tự', appointment.queueNumber], ['Giá khám', appointment.price == null ? 'Chưa xác định' : money(appointment.price)], ['Email xác nhận', appointment.emailStatus === 'SENT' ? 'Đã gửi' : appointment.emailStatus === 'QUEUED' ? 'Đang chờ gửi / gửi lại' : undefined]].map(([label, value]) => <div key={String(label)}><dt className="text-slate-500">{label}</dt><dd className="mt-1 break-words font-semibold">{value ?? 'Chưa cập nhật'}</dd></div>)}</dl><p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-sm">Lý do khám: {appointment.appointReason}</p>
       {!pending && demo && appointment.status==='BOOKED' && <button type="button" className="font-semibold text-blue-700" onClick={()=>setEdit(appointment.appointReason)}>Chỉnh sửa thông tin</button>}
+      {!pending && appointment.canChangeSpecialty && <button type="button" disabled={busy} className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900" onClick={() => setChangingSpecialty(true)}>Đặt sai chuyên khoa: đổi và tiếp nhận offline</button>}
       <form onSubmit={act} className="space-y-4">{pending && appointment.status === 'PENDING_SPECIALTY' && <><label className="block text-sm font-bold">Phân chuyên khoa và phòng theo khung giờ đã đăng ký<select className={receptionField} required value={slotId} disabled={busy} onChange={e => setSlotId(e.target.value)}><option value="">Chọn chuyên khoa, bác sĩ và phòng</option>{slots?.map(s => <option key={s.timeSlotId} value={s.timeSlotId}>{s.specialtyName} · {s.rankName} {s.doctorName} · {s.roomName} · {s.held ? 'Chỗ đã giữ cho lịch này' : `Còn ${s.remainingCapacity} chỗ`}</option>)}</select></label>{slots?.length === 0 && <p className="text-sm text-amber-800">Chưa có phòng phù hợp còn chỗ trong khung giờ này. Cần liên hệ người đặt để thống nhất phương án khác.</p>}<button type="submit" className={receptionButton} disabled={busy || !slotId}>Xác nhận phân chuyên khoa và gửi email</button></>}
       {!pending && <><p className="text-sm text-slate-500">Đối chiếu giấy tờ và thông tin lịch khám trước khi xác nhận tiếp nhận.</p><button className={receptionButton} type="submit" disabled={busy || !['BOOKED', 'ABSENT'].includes(appointment.status)}>{busy ? 'Đang tiếp nhận…' : appointment.status === 'ABSENT' ? 'Check-in lại sau khi lỡ lượt' : 'Xác nhận check-in'}</button></>}
       </form></section></AppointmentDetailsContainer>}

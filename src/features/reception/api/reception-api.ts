@@ -18,7 +18,9 @@ export interface ReceptionAppointment {
   roomName?: string; roomLocation?: string; specialtyName?: string; doctorName?: string; rankName?: string;
   serviceType?: string; appointmentDate: string; startTime: string; endTime?: string; price?: number;
   appointReason: string; queueNumber?: number; qrToken?: string; emailStatus?: 'QUEUED' | 'SENT';
+  channel?: 'ONLINE' | 'OFFLINE'; specialtyId?: number; canChangeSpecialty?: boolean;
 }
+export interface ReceptionSpecialtyChangeResult { appointment: ReceptionAppointment; encounterId: number; encounterCode: string }
 export interface PendingAppointment { appointmentId: number; appointmentCode: string; patientName: string; patientCode: string; appointmentDate: string; startTime: string; endTime: string; appointReason: string }
 export interface ReceptionInvoice { id: number; invoiceCode: string; encounterId: number; totalAmount: number; status: 'UNPAID' | 'PAID'; statusLabel: string }
 export interface ReceptionInvoiceDetail { lines?: {name:string; amount:number}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; transactionRef?: string }[] }
@@ -31,6 +33,10 @@ export const receptionApi = {
   slots: (date: string, offline: boolean, signal?: AbortSignal, appointmentId?: number) =>
     loadSearchPages(page => clinicalRequest<ApiPage<ReceptionSlot>>('reception/slots/search', { date, offline, appointmentId, pageable: { page, size: 100 } }, signal), signal),
   assign: (appointmentId: number, timeSlotId: number) => clinicalRequest<ReceptionAppointment>('reception/appointments/assign-specialty', { appointmentId, timeSlotId }),
+  specialtyChangeSlots: (appointmentId: number, signal?: AbortSignal) =>
+    loadSearchPages(page => clinicalRequest<ApiPage<ReceptionSlot>>('reception/appointments/change-specialty/slots', { appointmentId, pageable: { page, size: 100 } }, signal), signal),
+  changeSpecialty: (appointmentId: number, timeSlotId: number, reason: string) =>
+    clinicalRequest<ReceptionSpecialtyChangeResult>('reception/appointments/change-specialty', { appointmentId, timeSlotId, reason }),
   checkIn: (qrToken: string) => clinicalRequest<{ encounterId: number; encounterCode: string }>('encounters/check-in', { qrToken }),
   createBooking: (patientId: number, timeSlotId: number, appointReason: string) => clinicalRequest<{ appointmentId: number; appointmentCode: string; qrToken: string; queueNumber?: number }>('appointments/create', { patientId, timeSlotId, appointReason }),
   async pending(page: number, signal?: AbortSignal): Promise<ApiPage<PendingAppointment>> {

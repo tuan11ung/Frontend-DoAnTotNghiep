@@ -18,7 +18,7 @@ const hospital = 'Bệnh viện Demo';
 const maskId = (s: string) => s ? s.slice(0, 3) + '••••••' + s.slice(-3) : undefined;
 const maskPhone = (s: string) => s ? '•••••••' + s.slice(-3) : undefined;
 function slotDetails(slot: ReceptionSlot) {
-  return { roomName: slot.roomName, roomLocation: slot.roomLocation, specialtyName: slot.specialtyName, doctorName: slot.doctorName, rankName: slot.rankName, serviceType: slot.serviceType, startTime: slot.startTime, endTime: slot.endTime, price: slot.price };
+  return { specialtyId: slot.specialtyId, roomName: slot.roomName, roomLocation: slot.roomLocation, specialtyName: slot.specialtyName, doctorName: slot.doctorName, rankName: slot.rankName, serviceType: slot.serviceType, startTime: slot.startTime, endTime: slot.endTime, price: slot.price };
 }
 function makeInvoice(id: number, e: Encounter, a: ReceptionAppointment, p: Patient): ReceptionInvoiceDetail {
   const consultationAmount = a.price ?? 200000, paraclinicalAmount = 220000, deduction = p.insuranceNo ? 30000 : 0;
@@ -43,7 +43,7 @@ function seed(): State {
     appointmentId: id, appointmentCode: 'AP-' + id, patientId: p.id, patientName: p.fullName,
     maskedNationalId: p.maskedNationalId, maskedPhone: p.maskedPhone, hospitalName: hospital,
     hospitalAddress: '01 Đường Demo, TP. Hồ Chí Minh', ...slotDetails(slots[0]), appointmentDate: date, status,
-    queueNumber: status === 'CHECKED_IN' ? id - 1000 : undefined, appointReason: 'Khám theo lịch hẹn mẫu', qrToken: 'DEMO:AP-' + id, emailStatus: 'SENT',
+    channel: 'ONLINE', canChangeSpecialty: status === 'BOOKED', queueNumber: status === 'CHECKED_IN' ? id - 1000 : undefined, appointReason: 'Khám theo lịch hẹn mẫu', qrToken: 'DEMO:AP-' + id, emailStatus: 'SENT',
   });
   const appointments = [appointment(1001, patients[0], 'BOOKED'), appointment(1002, patients[1], 'PENDING_SPECIALTY'), appointment(1003, patients[2], 'CANCELLED'), appointment(1004, patients[1], 'CHECKED_IN'), { ...appointment(1005, patients[2], 'BOOKED'), appointmentDate: bookingLastDate(date, 1) }];
   Object.assign(appointments[1], { specialtyName: undefined, doctorName: undefined, roomName: undefined, roomLocation: undefined, rankName: undefined });
@@ -92,7 +92,26 @@ export const receptionPreviewApi: typeof receptionApi = {
       gender: text('gender') === 'FEMALE' ? 'FEMALE' : text('gender') === 'MALE' ? 'MALE' : 'OTHER', address: text('address'), insuranceNo: text('insuranceNo'), maskedNationalId: maskId(nationalId), maskedPhone: maskPhone(phone) };
     s.patients.push(p); return p;
   }, true),
-  appointment: reference => run(s => findAppointment(s, reference)),
+  appointment: reference => run(s => {
+    const a = findAppointment(s, reference), encounter = s.encounters.find(e => e.appointmentId === a.appointmentId);
+    return { ...a, channel: a.channel ?? 'ONLINE', canChangeSpecialty: (a.channel ?? 'ONLINE') === 'ONLINE' && a.appointmentDate === s.date && ['BOOKED', 'CHECKED_IN'].includes(a.status) && !encounter?.completed && Boolean(a.specialtyName) };
+  }),
+  specialtyChangeSlots: (appointmentId, signal) => run(s => {
+    const a = s.appointments.find(item => item.appointmentId === appointmentId);
+    if (!a || (a.channel ?? 'ONLINE') !== 'ONLINE' || !['BOOKED', 'CHECKED_IN'].includes(a.status) || a.appointmentDate !== s.date || s.encounters.some(e => e.appointmentId === appointmentId && e.completed)) throw new Error('Lịch này không còn được phép đổi chuyên khoa.');
+    return s.slots.filter(slot => slot.appointmentDate === a.appointmentDate && slot.serviceType === a.serviceType && slot.specialtyName !== a.specialtyName && slot.remainingCapacity > 0);
+  }, false, signal),
+  changeSpecialty: (appointmentId, timeSlotId, reason) => run(s => {
+    const a = s.appointments.find(item => item.appointmentId === appointmentId), slot = s.slots.find(item => item.timeSlotId === timeSlotId);
+    let encounter = s.encounters.find(e => e.appointmentId === appointmentId);
+    if (!a || (a.channel ?? 'ONLINE') !== 'ONLINE' || !['BOOKED', 'CHECKED_IN'].includes(a.status) || a.appointmentDate !== s.date || encounter?.completed || !slot || slot.appointmentDate !== a.appointmentDate || slot.serviceType !== a.serviceType || slot.specialtyName === a.specialtyName || slot.remainingCapacity < 1 || !reason.trim() || reason.trim().length > 300) throw new Error('Lịch hoặc phòng mới không còn phù hợp để chuyển chuyên khoa.');
+    const oldSlot = s.slots.find(item => item.appointmentDate === a.appointmentDate && item.roomName === a.roomName && item.startTime === a.startTime);
+    const queue = 1 + Math.max(10, ...s.appointments.filter(item => item.roomName === slot.roomName && item.appointmentDate === slot.appointmentDate).map(item => item.queueNumber ?? 0));
+    allocate(s, a, slot); if (oldSlot) oldSlot.remainingCapacity++;
+    Object.assign(a, {channel: 'OFFLINE', canChangeSpecialty: false, queueNumber: queue, status: 'CHECKED_IN', qrToken: 'DEMO:TRANSFER:' + a.appointmentId, emailStatus: undefined});
+    if (!encounter) { encounter = {id: ++s.nextId, code: 'LK-' + s.nextId, appointmentId: a.appointmentId, completed: false}; s.encounters.push(encounter); }
+    return {appointment: a, encounterId: encounter.id, encounterCode: encounter.code};
+  }, true),
   slots: (date, _offline, signal) => run(s => s.slots.filter(slot => slot.appointmentDate === date), false, signal),
   pending: (page, signal) => run(s => pageOf(s.appointments.filter(a => a.status === 'PENDING_SPECIALTY').map(a => ({
     appointmentId: a.appointmentId, appointmentCode: a.appointmentCode, patientName: a.patientName,
@@ -108,7 +127,7 @@ export const receptionPreviewApi: typeof receptionApi = {
     if (!p || !slot || !appointReason.trim() || appointReason.length > 500) throw new Error('Chọn bệnh nhân, khung giờ và nhập lý do khám hợp lệ.');
     if (s.appointments.some(a => a.patientId === patientId && a.appointmentDate === s.date && a.specialtyName === slot.specialtyName && ['BOOKED', 'CHECKED_IN'].includes(a.status))) throw new Error('Bệnh nhân đã có lịch đang tiếp nhận tại chuyên khoa này.');
     const id = ++s.nextId;
-    const a: ReceptionAppointment = { appointmentId: id, appointmentCode: 'AP-' + id, patientId, patientName: p.fullName, maskedNationalId: p.maskedNationalId, maskedPhone: p.maskedPhone, hospitalName: hospital, appointmentDate: s.date, startTime: slot.startTime, endTime: slot.endTime, appointReason: appointReason.trim(), status: 'BOOKED', qrToken: 'DEMO:AP-' + id };
+    const a: ReceptionAppointment = { appointmentId: id, appointmentCode: 'AP-' + id, patientId, patientName: p.fullName, maskedNationalId: p.maskedNationalId, maskedPhone: p.maskedPhone, hospitalName: hospital, appointmentDate: s.date, startTime: slot.startTime, endTime: slot.endTime, appointReason: appointReason.trim(), channel: 'OFFLINE', canChangeSpecialty: false, status: 'BOOKED', qrToken: 'DEMO:AP-' + id };
     allocate(s, a, slot); s.appointments.push(a);
     return { appointmentId: id, appointmentCode: a.appointmentCode, qrToken: a.qrToken!, queueNumber: a.queueNumber };
   }, true),
