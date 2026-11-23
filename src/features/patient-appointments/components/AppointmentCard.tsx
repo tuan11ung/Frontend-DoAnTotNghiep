@@ -4,6 +4,7 @@ import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { paymentsHref } from '@/src/features/patient-payments/payment.types';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { canCancelAppointment, isAppointmentExpired } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from './AppointmentQueueSummary';
@@ -149,6 +150,7 @@ export function AppointmentCard({
         )}
       </div>
 
+      {appointment.source === 'api' && ['BOOKED','CHECKED_IN'].includes(appointment.status) && !isExpired && <div className="relative z-10 border-t border-slate-100 p-4"><Link onClick={event=>event.stopPropagation()} className="pointer-events-auto inline-flex min-h-11 items-center rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700" href={paymentsHref(appointment.patientId,{appointment:appointment.id})}>Xem phiếu tiền khám</Link></div>}
       {/* Action Footer */}
       {(canViewQueue || isCompleted || isCancelled) && <div className="pointer-events-none relative z-10 p-4 border-t border-slate-100 bg-white flex flex-wrap items-center justify-end gap-3">
         <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">

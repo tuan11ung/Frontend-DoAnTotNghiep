@@ -20,10 +20,11 @@ export interface ReceptionAppointment {
   appointReason: string; queueNumber?: number; qrToken?: string; emailStatus?: 'QUEUED' | 'SENT';
   channel?: 'ONLINE' | 'OFFLINE'; specialtyId?: number; canChangeSpecialty?: boolean;
 }
-export interface ReceptionSpecialtyChangeResult { appointment: ReceptionAppointment; encounterId: number; encounterCode: string }
+export interface SpecialtyTransferQuote { originalFee: number | null; targetFee: number | null; paidAmount: number; additionalAmount: number | null; refundAmount: number | null; invoiceId: number | null; paymentStatus: 'PAID' | 'UNPAID' | 'FEE_PENDING' }
+export interface ReceptionSpecialtyChangeResult { settlement?: SpecialtyTransferQuote; appointment: ReceptionAppointment; encounterId: number; encounterCode: string }
 export interface PendingAppointment { appointmentId: number; appointmentCode: string; patientName: string; patientCode: string; appointmentDate: string; startTime: string; endTime: string; appointReason: string }
-export interface ReceptionInvoice { id: number; invoiceCode: string; encounterId: number; totalAmount: number; status: 'UNPAID' | 'PAID'; statusLabel: string }
-export interface ReceptionInvoiceDetail { lines?: {name:string; amount:number}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; transactionRef?: string }[] }
+export interface ReceptionInvoice { id: number; invoiceCode: string; encounterId?: number | null; appointmentId?: number; appointmentCode?: string; totalAmount: number; status: 'UNPAID' | 'PAID' | 'CANCELLED'; statusLabel: string; kind?: 'CONSULTATION_ADJUST' | 'CONSULTATION' | 'PARACLINICAL' | 'LEGACY'; kindLabel?: string }
+export interface ReceptionInvoiceDetail { consultationPayment?: { invoiceId: number | null; invoiceCode: string | null; status: 'PAID' | 'UNPAID' | 'FEE_PENDING' }; refunds?: import('@/src/features/patient-payments/payment.types').PaymentRefund[]; lines?: {orderedServiceId?:number; name:string; amount:number; cancelled?:boolean}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode?: string | null; appointmentCode?: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; transactionRef?: string }[] }
 
 export const receptionApi = {
   patientsPage: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page, size: 20 } }, signal),
@@ -35,9 +36,10 @@ export const receptionApi = {
   assign: (appointmentId: number, timeSlotId: number) => clinicalRequest<ReceptionAppointment>('reception/appointments/assign-specialty', { appointmentId, timeSlotId }),
   specialtyChangeSlots: (appointmentId: number, signal?: AbortSignal) =>
     loadSearchPages(page => clinicalRequest<ApiPage<ReceptionSlot>>('reception/appointments/change-specialty/slots', { appointmentId, pageable: { page, size: 100 } }, signal), signal),
-  changeSpecialty: (appointmentId: number, timeSlotId: number, reason: string) =>
-    clinicalRequest<ReceptionSpecialtyChangeResult>('reception/appointments/change-specialty', { appointmentId, timeSlotId, reason }),
-  checkIn: (qrToken: string) => clinicalRequest<{ encounterId: number; encounterCode: string }>('encounters/check-in', { qrToken }),
+  specialtyChangePreview: (appointmentId: number, timeSlotId: number, signal?: AbortSignal) => clinicalRequest<SpecialtyTransferQuote>('reception/appointments/change-specialty/preview', { appointmentId, timeSlotId }, signal),
+  changeSpecialty: (appointmentId: number, timeSlotId: number, reason: string, expectedFee?: number, expectedPaidAmount?: number) =>
+    clinicalRequest<ReceptionSpecialtyChangeResult>('reception/appointments/change-specialty', { appointmentId, timeSlotId, reason, expectedFee, expectedPaidAmount }),
+  checkIn: (qrToken: string) => clinicalRequest<{ encounterId: number; encounterCode: string; consultationInvoiceId?: number; consultationInvoiceCode?: string; consultationPaymentStatus?: 'PAID' | 'UNPAID' | 'FEE_PENDING' }>('encounters/check-in', { qrToken }),
   createBooking: (patientId: number, timeSlotId: number, appointReason: string) => clinicalRequest<{ appointmentId: number; appointmentCode: string; qrToken: string; queueNumber?: number }>('appointments/create', { patientId, timeSlotId, appointReason }),
   async pending(page: number, signal?: AbortSignal): Promise<ApiPage<PendingAppointment>> {
     const session = getStoredAuthSession();
@@ -55,5 +57,6 @@ export const receptionApi = {
     ]);
     return { ...detail, context };
   },
-  payCash: (invoiceId: number) => clinicalRequest<ReceptionInvoiceDetail>('invoices/pay-cash', { invoiceId }),
+  refund: (refundId: number, expectedAmount: number) => clinicalRequest('invoices/refund', { refundId, expectedAmount }),
+  payCash: (invoiceId: number, expectedAmount?: number) => clinicalRequest<ReceptionInvoiceDetail>('invoices/pay-cash', { invoiceId, expectedAmount }),
 };

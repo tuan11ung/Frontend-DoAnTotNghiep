@@ -1,9 +1,14 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
+import { CarePaymentBadge } from '@/src/shared/components/CarePaymentBadge';
+import { paymentsHref } from '../payment.types';
 import { money, paymentDate, type BillingProfile, type Invoice, type PaymentTransaction } from '../payment.types';
 import { PaymentDialog } from './PaymentDialog';
 import { InvoiceStatus } from './InvoiceTable';
 import { PaymentHistory } from './PaymentHistory';
+import { VnpayPayButton } from './VnpayPayButton';
+import { PaymentRefunds } from './PaymentRefunds';
 
 const cell = 'border border-slate-200 px-3 py-3';
 export function InvoiceDetail({ invoice, profile, transactions, onReceipt, onClose }: { invoice: Invoice; profile: BillingProfile; transactions: PaymentTransaction[]; onReceipt: (id: string) => void; onClose: () => void }) {
@@ -20,9 +25,9 @@ export function InvoiceDetail({ invoice, profile, transactions, onReceipt, onClo
     { label: 'Tổng chi phí', content: invoice.subtotal === null ? 'Chưa cung cấp' : money(invoice.subtotal) },
     { label: 'Số tiền giảm trừ', content: discount === undefined ? 'Chưa cung cấp' : money(discount) },
     { label: 'Số tiền đã trả', content: money(paid ? invoice.total : 0) },
-    { label: 'Số tiền còn phải trả', content: <span className={!paid ? 'font-bold text-rose-600' : 'font-medium'}>{money(paid ? 0 : invoice.total)}</span> },
+    { label: 'Số tiền còn phải trả', content: <span className={!paid ? 'font-bold text-rose-600' : 'font-medium'}>{money(invoice.status === 'UNPAID' ? invoice.total : 0)}</span> },
   ];
-  return <PaymentDialog title="Thông tin thanh toán" onClose={onClose} wide>
+  return <PaymentDialog title={`Thông tin thanh toán${invoice.kindLabel ? ` · ${invoice.kindLabel}` : ''}`} onClose={onClose} wide>
     <div className="space-y-5 p-4 sm:p-5">
       <p className="text-xs text-slate-500">Mã hóa đơn: <strong className="font-mono font-medium text-slate-800">{invoice.code}</strong> · {invoice.encounterCode}</p>
       <dl className="grid overflow-hidden rounded border-t border-l border-slate-200 md:grid-cols-2">{summary.map(item => <div key={item.label} className="grid grid-cols-[minmax(100px,0.8fr)_minmax(0,1.5fr)] border-r border-b border-slate-200 text-xs leading-6"><dt className="flex items-center border-r border-slate-200 bg-slate-50 px-3 py-3 font-medium text-slate-600">{item.label}</dt><dd className="min-w-0 px-4 py-3 break-words text-slate-800">{item.content}</dd></div>)}</dl>
@@ -35,10 +40,13 @@ export function InvoiceDetail({ invoice, profile, transactions, onReceipt, onClo
           </table>
         </div>
         {!invoice.completeBreakdown && <p className="text-xs leading-6 text-amber-700">Cơ sở chưa cung cấp đầy đủ chi tiết thuốc, giảm trừ hoặc tổng chi phí trước giảm trừ. Tổng thanh toán được lấy từ hóa đơn.</p>}
+        {invoice.kind !== 'PARACLINICAL' && invoice.consultationPaymentStatus && <div className="space-y-2 rounded-lg bg-blue-50 p-3 text-sm"><p>Phí khám hiện tại: <CarePaymentBadge status={invoice.consultationPaymentStatus} /></p>{invoice.consultationPaymentStatus === 'UNPAID' && <p>Cần thanh toán đủ phí khám mới trước khi vào phòng khám.</p>}{invoice.consultationInvoiceId && String(invoice.consultationInvoiceId) !== invoice.id && <Link className="font-semibold text-blue-700 underline" href={paymentsHref(invoice.profileId, { invoice: String(invoice.consultationInvoiceId) })}>Xem phiếu phí khám hiện tại</Link>}</div>}
+        <VnpayPayButton invoice={invoice} />
+        <PaymentRefunds refunds={invoice.refunds ?? []} />
         <div className="flex flex-wrap items-center gap-3">
 
           {success && <button type="button" onClick={() => onReceipt(success.id)} className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">{'Xác nhận giao dịch'}</button>}
-          <p className="text-xs text-slate-500">{paid ? 'Hóa đơn đã được thanh toán đủ.' : 'Vui lòng thanh toán tại quầy lễ tân. Trạng thái hóa đơn cập nhật sau khi nhân viên ghi nhận thu tiền.'}</p>
+          <p className="text-xs text-slate-500">{paid ? invoice.consultationPaymentStatus === 'UNPAID' && invoice.kind !== 'PARACLINICAL' ? 'Phiếu này đã trả. Phí khám hiện tại còn thiếu; vui lòng xem phiếu thu bổ sung.' : invoice.kind === 'CONSULTATION' && !invoice.encounterId ? 'Đã thanh toán tiền khám trước. Khi đến bệnh viện, vui lòng check-in và chờ gọi tại phòng khám.' : 'Phiếu thu đã được thanh toán đủ.' : invoice.status === 'CANCELLED' ? 'Phiếu thu đã hủy. Bạn không cần thanh toán phiếu này.' : invoice.kind === 'CONSULTATION' ? 'Tiền khám cần được thanh toán trước khi vào khám. Nếu đã trả trước, khi đến bệnh viện bạn chỉ cần check-in và chờ gọi.' : invoice.kind === 'PARACLINICAL' ? 'Vui lòng thanh toán đợt CLS tại quầy trước khi tới phòng thực hiện.' : 'Vui lòng thanh toán tại quầy lễ tân.'}</p>
         </div>
       </div>}
       <div className="flex justify-center border-t border-slate-100 pt-4"><button type="button" onClick={onClose} className="rounded border border-slate-200 px-5 py-2 text-xs text-slate-600 hover:bg-slate-50">Đóng</button></div>

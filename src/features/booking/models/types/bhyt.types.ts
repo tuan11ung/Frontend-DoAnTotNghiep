@@ -41,6 +41,7 @@ export interface BhytSlot {
 export interface BookedAppointment {
   appointmentId: number;
   appointmentCode: string;
+  price?: number | null;
   queueNumber?: number | null;
   patientId: number;
   patientName: string;

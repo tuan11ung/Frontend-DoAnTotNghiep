@@ -5,7 +5,7 @@ import { RefreshCw, Users, X } from 'lucide-react';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
 import { bookingRequest } from '@/src/features/booking/api/booking-api';
 
-type Ticket = { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS'; own: boolean };
+type Ticket = { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'WAITING_PAYMENT'; own: boolean };
 type Continuation = { number: number; status: 'WAITING_CLS' | 'RETURN_READY'; own: boolean };
 const ongoing = (status: string) => ['IN_PROGRESS', 'WAITING_CLS', 'RETURN_READY', 'RETURN_CALLED'].includes(status);
 type Queue = {
@@ -59,7 +59,7 @@ function usePatientQueue(appointmentId: string, interval: number) {
 }
 
 const ticketLabel = (number: number) => String(number).padStart(3, '0');
-const statusLabel = (status: Ticket['status']) => ({ WAITING: 'Đang chờ', CALLED: 'Đang được gọi', IN_PROGRESS: 'Đang khám' })[status];
+const statusLabel = (status: Ticket['status']) => ({ WAITING: 'Đang chờ', CALLED: 'Đang được gọi', IN_PROGRESS: 'Đang khám', WAITING_PAYMENT: 'Chờ thanh toán tiền khám' })[status];
 
 function QueueProgress({ data }: { data: Queue }) {
   const own = data.tickets.find(ticket => ticket.own);
@@ -71,14 +71,15 @@ function QueueProgress({ data }: { data: Queue }) {
             : data.status === 'WAITING_CLS' ? 'Bạn đang thực hiện hoặc chờ kết quả cận lâm sàng'
               : data.status === 'RETURN_READY' ? 'Đã có đủ kết quả CLS — chờ bác sĩ tiếp tục lượt khám'
             : data.status === 'ABSENT' ? 'Bạn đã lỡ lượt gọi — vui lòng check-in lại tại lễ tân'
+              : data.status === 'WAITING_PAYMENT' ? 'Vui lòng thanh toán tiền khám tại quầy trước khi chờ gọi'
               : data.status === 'BOOKED' ? 'Bạn chưa check-in tại quầy tiếp đón'
                 : data.sessionState === 'UPCOMING' ? 'Ca khám chưa bắt đầu' : 'Đang chờ đến lượt';
   return <section aria-live="polite" aria-label="Tiến độ hàng chờ" className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-xs leading-relaxed">
     <p className="font-bold text-slate-800">Số phiếu {ticketLabel(data.number)} · {title}</p>
-    {data.aheadCount != null && data.status !== 'COMPLETED' && !['ENDED', 'CANCELLED'].includes(data.sessionState) && <p className="mt-2 flex items-center gap-2 text-blue-800"><Users className="size-4 shrink-0" /><span>Còn <strong>{data.aheadCount}</strong> người trước bạn{data.aheadCount === 0 && own?.status === 'WAITING' ? ' — sắp đến lượt, hãy ở gần phòng khám.' : '.'}</span></p>}
-    {data.missed && data.status !== 'COMPLETED' && !ongoing(data.status) && <p className="mt-2 text-amber-800">Bạn đã lỡ lượt. Sau khi check-in, bạn được xếp theo thứ tự đến trong nhóm muộn; khi có đủ hai nhóm, phòng khám xen kẽ 2 lượt thường và 1 lượt muộn.{data.remainingNormalTurns > 0 ? ` Còn ${data.remainingNormalTurns} lượt thường để hoàn tất mức lùi hiện tại.` : ''}</p>}
+    {data.aheadCount != null && !['COMPLETED','WAITING_PAYMENT'].includes(data.status) && !['ENDED', 'CANCELLED'].includes(data.sessionState) && <p className="mt-2 flex items-center gap-2 text-blue-800"><Users className="size-4 shrink-0" /><span>Còn <strong>{data.aheadCount}</strong> người trước bạn{data.aheadCount === 0 && own?.status === 'WAITING' ? ' — sắp đến lượt, hãy ở gần phòng khám.' : '.'}</span></p>}
+    {data.missed && data.status !== 'COMPLETED' && !ongoing(data.status) && <p className="mt-2 text-amber-800">Bạn đã lỡ lượt. Sau khi check-in và thanh toán tiền khám, bạn được xếp theo thứ tự đến trong nhóm muộn; khi có đủ hai nhóm, phòng khám xen kẽ 2 lượt thường và 1 lượt muộn.{data.remainingNormalTurns > 0 ? ` Còn ${data.remainingNormalTurns} lượt thường để hoàn tất mức lùi hiện tại.` : ''}</p>}
     {['WAITING_CLS', 'RETURN_READY'].includes(data.status) && <p className="mt-2 text-slate-600">Bạn tiếp tục cùng lượt khám và số phiếu cũ sau CLS, không cần check-in lại. Phòng có thể khám người khác trong lúc bạn chờ kết quả; người đã được gọi hoặc đang khám được giữ lượt.</p>}
-    {data.status === 'BOOKED' && <p className="mt-2 text-slate-600">Bạn chỉ có vị trí chờ thực tế sau khi check-in. Vui lòng có mặt trước lượt gọi; số phiếu được giữ nguyên.</p>}
+    {data.status === 'BOOKED' && <p className="mt-2 text-slate-600">Bạn chỉ đủ điều kiện được gọi sau khi check-in và thanh toán tiền khám. Vui lòng có mặt trước lượt gọi; số phiếu được giữ nguyên.</p>}
   </section>;
 }
 

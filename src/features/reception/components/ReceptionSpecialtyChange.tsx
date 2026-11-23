@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useReceptionData } from '../ReceptionDataProvider';
-import type { ReceptionAppointment, ReceptionSlot, ReceptionSpecialtyChangeResult } from '../api/reception-api';
+import type { ReceptionAppointment, ReceptionSlot, ReceptionSpecialtyChangeResult, SpecialtyTransferQuote } from '../api/reception-api';
 import { ReceptionDialog } from './ReceptionDialog';
 import { receptionButton, receptionError, receptionField } from './reception-ui';
 import { money } from '@/src/features/patient-payments/payment.types';
@@ -14,6 +14,7 @@ export function ReceptionSpecialtyChange({ appointment, onClose, onChanged }: {
   const [slots, setSlots] = useState<ReceptionSlot[] | null>(null);
   const [specialtyId, setSpecialtyId] = useState('');
   const [slotId, setSlotId] = useState('');
+  const [quoted, setQuoted] = useState<{ slotId: string; value: SpecialtyTransferQuote } | null>(null);
   const [reason, setReason] = useState('Bệnh nhân đặt online sai chuyên khoa.');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -28,11 +29,20 @@ export function ReceptionSpecialtyChange({ appointment, onClose, onChanged }: {
   }, [api, appointment.appointmentId, revision]);
   const specialties = [...new Map(slots?.map(slot => [slot.specialtyId, slot.specialtyName])).entries()];
   const choice = slots?.find(slot => String(slot.timeSlotId) === slotId);
+  const quote = quoted?.slotId === slotId ? quoted.value : null;
+  useEffect(() => {
+    if (!slotId) return;
+    const controller = new AbortController();
+    api.specialtyChangePreview(appointment.appointmentId, Number(slotId), controller.signal)
+      .then(value => { if (!controller.signal.aborted) setQuoted({ slotId, value }); })
+      .catch(e => { if (!controller.signal.aborted) setError(receptionError(e)); });
+    return () => controller.abort();
+  }, [api, appointment.appointmentId, slotId]);
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (lock.current || !choice || !reason.trim()) return;
+    if (lock.current || !choice || !quote || quote.targetFee == null || !reason.trim()) return;
     lock.current = true; setBusy(true); setError('');
-    try { onChanged(await api.changeSpecialty(appointment.appointmentId, choice.timeSlotId, reason.trim())); }
+    try { onChanged(await api.changeSpecialty(appointment.appointmentId, choice.timeSlotId, reason.trim(), quote.targetFee, quote.paidAmount)); }
     catch (e) { setError(receptionError(e)); }
     finally { lock.current = false; setBusy(false); }
   }
@@ -49,9 +59,11 @@ export function ReceptionSpecialtyChange({ appointment, onClose, onChanged }: {
         <label className="block text-sm font-semibold">Chuyên khoa đúng<select required className={receptionField} value={specialtyId} onChange={event => { setSpecialtyId(event.target.value); setSlotId(''); }}><option value="">Chọn chuyên khoa</option>{specialties.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
         <label className="block text-sm font-semibold">Bác sĩ, phòng và khung giờ<select required className={receptionField} value={slotId} onChange={event => setSlotId(event.target.value)}><option value="">Chọn phòng còn chỗ</option>{slots?.filter(slot => String(slot.specialtyId) === specialtyId).map(slot => <option key={slot.timeSlotId} value={slot.timeSlotId}>{[slot.rankName, slot.doctorName].filter(Boolean).join(' ')} · {slot.roomName} · {slot.startTime.slice(0, 5)}–{slot.endTime.slice(0, 5)} · Còn {slot.remainingCapacity} chỗ</option>)}</select></label>
         {choice && <dl className="rounded-lg bg-blue-50 p-3 text-sm"><dt className="text-slate-500">Phòng tiếp nhận</dt><dd className="font-semibold">{choice.roomName} · {choice.roomLocation}</dd><dt className="mt-2 text-slate-500">Phí khám dự kiến</dt><dd className="font-semibold">{choice.price == null ? 'Chưa xác định' : money(choice.price)}</dd></dl>}
+        {choice && !quote && <p role="status" className="text-sm">Đang tính chênh lệch phí…</p>}
+        {quote && <div className="space-y-2 rounded-lg border border-blue-200 p-3 text-sm"><p>Đã thanh toán được bảo lưu: <strong>{money(quote.paidAmount)}</strong></p>{quote.targetFee == null ? <p className="text-amber-800">Chưa xác định phí mới nên chưa thể chuyển chuyên khoa.</p> : <><p>Cần thu thêm: <strong>{money(quote.additionalAmount ?? 0)}</strong></p><p>Cần hoàn: <strong>{money(quote.refundAmount ?? 0)}</strong></p><p className="text-slate-500">Phiếu đã thu được giữ nguyên. Phần thu thêm phải thanh toán trước khi vào khám; phần chờ hoàn không chặn khám khi đã trả đủ phí mới.</p></>}</div>}
         <label className="block text-sm font-semibold">Lý do đổi chuyên khoa<textarea required maxLength={300} rows={3} className={receptionField} value={reason} onChange={event => setReason(event.target.value)} /></label>
       </fieldset>
-      <div className="flex flex-wrap justify-end gap-3"><button type="button" disabled={busy} className="text-sm font-semibold text-blue-700" onClick={reload}>Tải lại phòng</button><button type="button" disabled={busy} className="rounded-lg border px-4 py-2 text-sm font-semibold" onClick={onClose}>Hủy</button><button type="submit" disabled={busy || !choice || !reason.trim()} className={receptionButton}>{busy ? 'Đang chuyển chuyên khoa…' : 'Xác nhận đổi và check-in'}</button></div>
+      <div className="flex flex-wrap justify-end gap-3"><button type="button" disabled={busy} className="text-sm font-semibold text-blue-700" onClick={reload}>Tải lại phòng</button><button type="button" disabled={busy} className="rounded-lg border px-4 py-2 text-sm font-semibold" onClick={onClose}>Hủy</button><button type="submit" disabled={busy || !choice || !quote || quote.targetFee == null || !reason.trim()} className={receptionButton}>{busy ? 'Đang chuyển chuyên khoa…' : 'Xác nhận đổi và check-in'}</button></div>
     </form>
   </ReceptionDialog>;
 }

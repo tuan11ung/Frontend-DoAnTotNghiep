@@ -54,6 +54,8 @@ const ENDPOINTS: Record<string, string> = {
   'prescriptions/detail': '/clinic/prescriptions/detail',
   'invoices/search': '/clinic/invoices/search',
   'invoices/detail': '/clinic/invoices/detail',
+  'invoices/refund': '/clinic/invoices/refund',
+  'reception/appointments/change-specialty/preview': '/clinic/reception/appointments/change-specialty/preview',
   'invoices/pay-cash': '/clinic/invoices/pay-cash',
   'appointments/create': '/clinic/appointments/create',
   'reception/patients/search': '/clinic/reception/patients/search',

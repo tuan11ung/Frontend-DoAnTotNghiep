@@ -53,7 +53,7 @@ function mapPatient(patient: DoctorQueuePatientResponse): QueuePatient {
     maskedCitizenId: patient.maskedNationalId || 'Chưa cập nhật',
     gender,
     avatar: null,
-    detail: patient.missedTurn && status === 'waiting' ? `Đã lỡ lượt · Nhóm đến muộn · ${detail}` : detail,
+    detail: patient.encounterId && status === 'waiting' && patient.consultationPaymentStatus && patient.consultationPaymentStatus !== 'PAID' ? `${patient.consultationPaymentStatus === 'FEE_PENDING' ? 'Chưa xác định phí khám' : 'Chờ thanh toán tiền khám'} · ${detail}` : patient.missedTurn && status === 'waiting' ? `Đã lỡ lượt · Nhóm đến muộn · ${detail}` : detail,
     checkIn: patient.checkedInAt ? formatTime(patient.checkedInAt) : 'Chưa check-in',
     status,
     tags,

@@ -101,6 +101,12 @@ export const receptionPreviewApi: typeof receptionApi = {
     if (!a || (a.channel ?? 'ONLINE') !== 'ONLINE' || !['BOOKED', 'CHECKED_IN'].includes(a.status) || a.appointmentDate !== s.date || s.encounters.some(e => e.appointmentId === appointmentId && e.completed)) throw new Error('Lịch này không còn được phép đổi chuyên khoa.');
     return s.slots.filter(slot => slot.appointmentDate === a.appointmentDate && slot.serviceType === a.serviceType && slot.specialtyName !== a.specialtyName && slot.remainingCapacity > 0);
   }, false, signal),
+  specialtyChangePreview: (appointmentId, timeSlotId, signal) => run(s => {
+    const a = s.appointments.find(item => item.appointmentId === appointmentId), slot = s.slots.find(item => item.timeSlotId === timeSlotId);
+    if (!a || !slot) throw new Error('Không tìm thấy lịch hoặc phòng.');
+    return { originalFee: a.price ?? null, targetFee: slot.price ?? null, paidAmount: 0, additionalAmount: slot.price ?? null, refundAmount: 0, invoiceId: null, paymentStatus: 'UNPAID' as const };
+  }, false, signal),
+  refund: async () => { throw new Error('Hoàn phí chỉ có trên dữ liệu thật.'); },
   changeSpecialty: (appointmentId, timeSlotId, reason) => run(s => {
     const a = s.appointments.find(item => item.appointmentId === appointmentId), slot = s.slots.find(item => item.timeSlotId === timeSlotId);
     let encounter = s.encounters.find(e => e.appointmentId === appointmentId);

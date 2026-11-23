@@ -1,10 +1,10 @@
-// Only booking destinations are accepted from the public `next` parameter.
+// Only these internal patient flows are accepted from the public `next` parameter.
 export function getBookingReturnTo(value: string | null | undefined): string | null {
-  if (!value || !/^\/booking(?:[?#]|$)/.test(value) || /[\\\u0000-\u0020\u007f]/.test(value)) return null;
+  if (!value || !/^\/(?:booking|patient\/payments\/vnpay\/return)(?:[?#]|$)/.test(value) || /[\\\u0000-\u0020\u007f]/.test(value)) return null;
 
   try {
     const url = new URL(value, 'https://medconnect.invalid');
-    if (url.origin !== 'https://medconnect.invalid' || url.pathname !== '/booking') return null;
+    if (url.origin !== 'https://medconnect.invalid' || !['/booking', '/patient/payments/vnpay/return'].includes(url.pathname)) return null;
     return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return null;

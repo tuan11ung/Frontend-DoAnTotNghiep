@@ -40,6 +40,8 @@ export interface DoctorQueuePatientResponse {
   appointReason: string | null;
   online: boolean;
   status: 'WAITING' | 'IN_PROGRESS' | 'ABSENT' | 'COMPLETED';
+  consultationPaymentStatus?: 'PAID' | 'UNPAID' | 'FEE_PENDING';
+  consultationInvoiceId?: number | null;
   inRoom: boolean;
   clsQueueStatus: 'NONE' | 'WAITING_RESULTS' | 'RETURN_READY' | 'RETURNED';
   clsCompletedAt: string | null;

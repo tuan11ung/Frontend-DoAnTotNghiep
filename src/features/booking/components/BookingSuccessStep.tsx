@@ -6,6 +6,7 @@ import { ShieldCheck, Ticket } from 'lucide-react';
 import { formatDisplayDate as displayBookingDate } from '@/src/shared/utils/date-format';
 import type { BookedAppointment } from '../models/types/bhyt.types';
 import { bookingButtonClass } from './booking-styles';
+import { paymentsHref } from '@/src/features/patient-payments/payment.types';
 
 const genderLabels = { MALE: 'Nam', FEMALE: 'Nữ', OTHER: 'Khác' };
 
@@ -40,6 +41,7 @@ export function BookingSuccessStep({ appointment, specialtyName, onReset, servic
       </aside>
     </div>
     {!pending && <p className="text-sm text-slate-500">{service ? 'Mang theo giấy tờ tùy thân để lễ tân kiểm tra khi check-in.' : 'Mang theo giấy tờ tùy thân và thông tin BHYT để lễ tân kiểm tra khi check-in.'}</p>}
+    {!pending && appointment.price != null && <div className="space-y-3 rounded-xl border border-blue-100 bg-blue-50 p-4"><p className="text-sm text-blue-900">Phiếu tiền khám đã được tạo cho lịch hẹn. Nếu đã thanh toán trước, khi đến bệnh viện bạn chỉ cần check-in và chờ gọi theo số thứ tự.</p><Link className="inline-flex rounded-lg bg-blue-700 px-4 py-3 text-sm font-bold text-white" href={paymentsHref(String(appointment.patientId),{appointment:String(appointment.appointmentId)})}>Xem phiếu tiền khám</Link></div>}
     <Link className="block text-sm font-bold text-blue-700" href="/patient/appointments">Xem lịch khám của tôi</Link>
     <button className={bookingButtonClass} onClick={onReset} type="button">Đặt lịch khác</button>
   </section>;

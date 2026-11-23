@@ -7,12 +7,13 @@ import { ReceptionDialog } from './ReceptionDialog';
 import { ReceptionQrScanner } from './ReceptionQrScanner';
 import { ReceptionQrImageUpload } from './ReceptionQrImageUpload';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { type PendingAppointment, type ReceptionAppointment, type ReceptionSlot } from '../api/reception-api';
+import { type SpecialtyTransferQuote, type PendingAppointment, type ReceptionAppointment, type ReceptionSlot } from '../api/reception-api';
 import { useReceptionData } from '../ReceptionDataProvider';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { receptionButton, receptionCard, receptionError, receptionField } from './ReceptionRegistration';
 import { money } from '@/src/features/patient-payments/payment.types';
 import { ReceptionCheckInResult } from './ReceptionCheckInResult';
+import type { CarePaymentStatus } from '@/src/shared/components/CarePaymentBadge';
 import { ReceptionSpecialtyChange } from './ReceptionSpecialtyChange';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
@@ -31,7 +32,9 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
     detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     detailsRef.current?.focus({ preventScroll: true });
   }, [pending, appointment]);
+  const [acceptedSettlement, setAcceptedSettlement] = useState<SpecialtyTransferQuote>();
   const [acceptedCode, setAcceptedCode] = useState<string | null>(null);
+  const [acceptedPaymentStatus,setAcceptedPaymentStatus]=useState<CarePaymentStatus>();
   const [scanning, setScanning] = useState(false);
   useEffect(() => {
     if (!pending) return;
@@ -62,7 +65,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
       } else {
         if (!appointment.qrToken) throw new Error('Lịch chưa có mã tiếp nhận hợp lệ.');
         const accepted = await receptionApi.checkIn(appointment.qrToken);
-        setAcceptedCode(accepted.encounterCode);
+        setAcceptedCode(accepted.encounterCode);setAcceptedPaymentStatus(accepted.consultationPaymentStatus);
         setAppointment(await receptionApi.appointment(appointment.appointmentCode));
         setNotice(`Đã check-in. Mã lượt khám: ${accepted.encounterCode}.`);
       }
@@ -71,9 +74,9 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
       try { setAppointment(await receptionApi.appointment(appointment.appointmentCode)); } catch { /* Keep the reviewed details until a successful reload. */ }
     } finally { lock.current = false; setBusy(false); }
   }
-  if (acceptedCode && appointment) return <ReceptionCheckInResult code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { setAcceptedCode(null); setAppointment(null); setReference(''); setError(''); setNotice(''); }} />;
+  if (acceptedCode && appointment) return <ReceptionCheckInResult settlement={acceptedSettlement} paymentStatus={acceptedPaymentStatus} code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { setAcceptedSettlement(undefined); setAcceptedCode(null); setAcceptedPaymentStatus(undefined); setAppointment(null); setReference(''); setError(''); setNotice(''); }} />;
   return <div className="space-y-5">
-    {changingSpecialty && appointment && <ReceptionSpecialtyChange key={appointment.appointmentId} appointment={appointment} onClose={() => setChangingSpecialty(false)} onChanged={result => { setChangingSpecialty(false); setAppointment(result.appointment); setAcceptedCode(result.encounterCode); setError(''); }} />}
+    {changingSpecialty && appointment && <ReceptionSpecialtyChange key={appointment.appointmentId} appointment={appointment} onClose={() => setChangingSpecialty(false)} onChanged={result => { setChangingSpecialty(false); setAppointment(result.appointment); setAcceptedSettlement(result.settlement);setAcceptedCode(result.encounterCode);setAcceptedPaymentStatus(result.settlement?.paymentStatus); setError(''); }} />}
     {scanning && <ReceptionQrScanner onClose={() => setScanning(false)} onScan={value => { setScanning(false); setReference(value); void lookup(value); }} />}
     {!pending && <button type="button" className={receptionButton} disabled={busy} onClick={() => { setAppointment(null); setError(''); setNotice(''); setScanning(true); }}>Quét bằng camera</button>}
     {!pending && <ReceptionQrImageUpload disabled={busy || scanning} onScan={value => { setReference(value); void lookup(value); }} />}

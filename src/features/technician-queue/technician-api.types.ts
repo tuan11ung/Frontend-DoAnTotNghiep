@@ -21,6 +21,9 @@ export interface OrderedService {
   roomName?: string | null;
   roomLocation?: string | null;
   performedDate?: string | null;
+  invoiceId?: number | null;
+  invoiceCode?: string | null;
+  paymentStatus?: import('@/src/shared/components/CarePaymentBadge').CarePaymentStatus;
 }
 
 export interface TechnicianPage<T> {
