@@ -73,6 +73,8 @@ export function AppointmentCard({
   };
 
   const isBooked = ['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status);
+  const canCancel = isBooked && canCancelAppointment(appointment);
+  const canViewInvoice = appointment.source === 'api' && ['BOOKED', 'CHECKED_IN'].includes(appointment.status) && !isExpired;
   const isCheckedIn = appointment.status === 'CHECKED_IN' || appointment.status === 'IN_PROGRESS';
   const isCompleted = appointment.status === 'COMPLETED';
   const isCancelled = appointment.status === 'CANCELLED';
@@ -101,10 +103,19 @@ export function AppointmentCard({
             {appointment.patientRelationship ? `(${appointment.patientRelationship})` : '(Bản thân)'}
           </strong>
         </div>
-        {isBooked && canCancelAppointment(appointment) && <div ref={actionsRef} className="pointer-events-auto relative col-start-2 row-start-1 justify-self-end @min-[36rem]:col-start-3" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActionsOpen(false); }}>
+        {(canViewInvoice || canCancel) && <div ref={actionsRef} className="pointer-events-auto relative col-start-2 row-start-1 justify-self-end @min-[36rem]:col-start-3" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActionsOpen(false); }}>
           <button ref={actionsButtonRef} type="button" aria-label="Thao tác lịch khám" aria-expanded={actionsOpen} aria-controls={`appointment-actions-${appointment.id}`} onClick={() => setActionsOpen(open => !open)} className="grid size-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600"><Menu className="size-5" aria-hidden="true" /></button>
           {actionsOpen && <div id={`appointment-actions-${appointment.id}`} className="absolute right-0 top-full z-20 mt-2 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
-            <button type="button" onClick={() => { setActionsOpen(false); onOpenCancel(appointment); }} className="min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-600 hover:bg-rose-50">Hủy lịch</button>
+            {canViewInvoice && (
+              <Link
+                href={paymentsHref(appointment.patientId, { appointment: appointment.id })}
+                onClick={() => setActionsOpen(false)}
+                className="flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50"
+              >
+                Xem hóa đơn
+              </Link>
+            )}
+            {canCancel && <button type="button" onClick={() => { actionsButtonRef.current?.focus(); setActionsOpen(false); onOpenCancel(appointment); }} className="min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-600 hover:bg-rose-50">Hủy lịch</button>}
           </div>}
         </div>}
       </div>
@@ -150,7 +161,6 @@ export function AppointmentCard({
         )}
       </div>
 
-      {appointment.source === 'api' && ['BOOKED','CHECKED_IN'].includes(appointment.status) && !isExpired && <div className="relative z-10 border-t border-slate-100 p-4"><Link onClick={event=>event.stopPropagation()} className="pointer-events-auto inline-flex min-h-11 items-center rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700" href={paymentsHref(appointment.patientId,{appointment:appointment.id})}>Xem phiếu tiền khám</Link></div>}
       {/* Action Footer */}
       {(canViewQueue || isCompleted || isCancelled) && <div className="pointer-events-none relative z-10 p-4 border-t border-slate-100 bg-white flex flex-wrap items-center justify-end gap-3">
         <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">

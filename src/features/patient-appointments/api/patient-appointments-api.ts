@@ -55,4 +55,4 @@ export async function searchPatientAppointments(signal?: AbortSignal) {
 }
 
 export const cancelPatientAppointment = (appointmentId: number, cancelReason: string) =>
-  bookingRequest<AppointmentResponse>('appointments/cancel', { appointmentId, cancelReason });
+  bookingRequest<AppointmentResponse>('appointments/cancel', { appointmentId, cancelReason }, AbortSignal.timeout(30000));
