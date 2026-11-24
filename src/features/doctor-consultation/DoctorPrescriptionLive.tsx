@@ -1,11 +1,12 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ClinicalApiError, clinicalRequest, type ApiPage } from '@/src/shared/lib/clinical-api';
+import { Search, X } from 'lucide-react';
+import { MedicineSearchResults, type MedicineSearchItem, type MedicineSearchCursorResponse } from './components/MedicineSearchResults';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ClinicalApiError, clinicalRequest } from '@/src/shared/lib/clinical-api';
 import { getStoredAuthSession } from '@/src/features/auth/auth-storage';
 import type { PrescriptionDraft } from './api/consultation-api';
-import { clinicalButton, clinicalCard, clinicalField } from './components/clinical-ui';
+import { clinicalCard, clinicalField } from './components/clinical-ui';
 
-interface Medicine { id: number; medicineName: string; strength?: string; form?: string; route?: string; total: number }
 interface Item { hospitalMedicineId: number; medicineName: string; quantity: number; dosage: string; usageInstruction: string; durationDays: number; total: number | null }
 interface Prescription { id: number; note?: string; prescriptedDate: string; medicines: { id: number; hospitalMedicineId: number; medicineName: string; strength?: string; quantity: number; dosage: string; usageInstruction?: string; durationDays?: number }[] }
 
@@ -18,7 +19,13 @@ export function clearPrescriptionDraft(encounterId: number) {
 
 export function DoctorPrescriptionLive({ encounterId, editable, disabled = false, onDraftChange }: { encounterId: number; editable: boolean; disabled?: boolean; onDraftChange?: (draft: PrescriptionDraft | undefined, ready: boolean) => void }) {
   const [saved, setSaved] = useState<Prescription | null>(null); const [loaded, setLoaded] = useState(false);
-  const [catalogue, setCatalogue] = useState<ApiPage<Medicine> | null>(null); const [keyword, setKeyword] = useState(''); const [query, setQuery] = useState(''); const [page, setPage] = useState(0);
+  const [catalogue, setCatalogue] = useState<MedicineSearchCursorResponse | null>(null); const [keyword, setKeyword] = useState(''); const [query, setQuery] = useState(''); const [afterId, setAfterId] = useState<number | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState('');
+  const [searchRevision, setSearchRevision] = useState(0);
+  const [searchGeneration, setSearchGeneration] = useState(0);
+  const searchTerm = keyword.trim();
+  const searchPending = searchTerm !== query;
   const [items, setItems] = useState<Item[]>([]); const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -72,11 +79,46 @@ export function DoctorPrescriptionLive({ encounterId, editable, disabled = false
     return () => controller.abort();
   }, [encounterId, editable]);
   useEffect(() => {
-    if (!editable || !loaded) return;
+    if (searchTerm === query) return;
+    const timer = setTimeout(() => {
+      setQuery(searchTerm); setAfterId(null); setCatalogue(null); setSearchError('');
+      setSearchLoading(!!searchTerm); setSearchGeneration(v => v + 1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, query]);
+  useEffect(() => {
+    if (!editable || !loaded || !query || searchTerm !== query) return;
     const controller = new AbortController();
-    clinicalRequest<ApiPage<Medicine>>('hospital-medicines/search', { keyword: query, pageable: { page, size: 20 } }, controller.signal).then(data => { if (!controller.signal.aborted) setCatalogue(data); }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không tải được danh mục thuốc.'); });
+    Promise.resolve().then(() => {
+      if (controller.signal.aborted) return;
+      setSearchLoading(true); setSearchError('');
+      return clinicalRequest<MedicineSearchCursorResponse>('hospital-medicines/search-cursor', { keyword: query, afterId, size: 20 }, controller.signal)
+        .then(data => {
+          if (controller.signal.aborted) return;
+          if (data.hasMore && (!Number.isSafeInteger(data.nextCursor) || (data.nextCursor ?? 0) <= (afterId ?? 0))) throw new Error('Không thể tải tiếp kết quả thuốc. Vui lòng tìm kiếm lại.');
+          setCatalogue(current => afterId == null ? data : ({ ...data,
+            content: Array.from(new Map([...(current?.content ?? []), ...data.content].map(medicine => [medicine.id, medicine])).values()),
+          }));
+        })
+        .catch(e => { if (!controller.signal.aborted) setSearchError(e instanceof Error ? e.message : 'Không tải được danh mục thuốc.'); })
+        .finally(() => { if (!controller.signal.aborted) setSearchLoading(false); });
+    });
     return () => controller.abort();
-  }, [editable, loaded, saved, query, page]);
+  }, [editable, loaded, saved, query, searchTerm, afterId, searchRevision]);
+  function resetSearch() {
+    setQuery(''); setCatalogue(null); setSearchError(''); setSearchLoading(false); setAfterId(null);
+  }
+  const loadMoreMedicines = useCallback(() => {
+    if (blocked || searchPending || searchLoading || searchError || !catalogue?.hasMore || catalogue.nextCursor == null) return;
+    setSearchLoading(true); setAfterId(catalogue.nextCursor);
+  }, [blocked, searchPending, searchLoading, searchError, catalogue]);
+  function addMedicine(medicine: MedicineSearchItem) {
+    if (blocked || !editable || medicine.total <= 0) return;
+    setItems(current => current.length >= 100 || current.some(item => item.hospitalMedicineId === medicine.id) ? current : [...current, {
+      hospitalMedicineId: medicine.id, medicineName: [medicine.medicineName, medicine.strength].filter(Boolean).join(' '),
+      total: medicine.total, quantity: 1, dosage: '', usageInstruction: '', durationDays: 1,
+    }]);
+  }
   async function deleteSaved() {
     if (deleteLock.current || blocked || !window.confirm('Xóa đơn thuốc đã lưu của lượt khám đang điều trị?')) return;
     deleteLock.current = true; setDeleting(true); setError('');
@@ -90,9 +132,25 @@ export function DoctorPrescriptionLive({ encounterId, editable, disabled = false
     {saved && !editable ? <><p className="text-sm text-slate-500">Đơn #{saved.id} · {new Date(saved.prescriptedDate).toLocaleString('vi-VN')} · Đã lưu</p>{saved.note && <p className="whitespace-pre-wrap text-sm">{saved.note}</p>}<ul className="divide-y">{saved.medicines.map(m => <li key={m.id} className="space-y-1 py-3 text-sm"><h3 className="font-bold">{m.medicineName} {m.strength}</h3><p>Số lượng: {m.quantity} · {m.durationDays ? `${m.durationDays} ngày` : 'Theo chỉ dẫn'}</p><p>Liều dùng: {m.dosage}</p>{m.usageInstruction && <p>Cách dùng: {m.usageInstruction}</p>}</li>)}</ul></> : loaded && !editable ? <><p className="text-sm text-slate-500">{items.length ? 'Đơn thuốc đã lưu cùng lượt khám.' : 'Lượt khám chưa có đơn thuốc.'}</p><ul>{items.map(i => <li key={i.hospitalMedicineId} className="py-2 text-sm">{i.medicineName} · {i.quantity} · {i.dosage}</li>)}</ul></> : loaded && <>
       {saved && <div className="flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-amber-800">Đang chỉnh sửa đơn #{saved.id}. Nội dung mới được lưu khi hoàn tất lượt khám.</p><button type="button" disabled={blocked} className="text-sm font-bold text-rose-700" onClick={() => void deleteSaved()}>Xóa đơn đã lưu</button></div>}
       <p className="text-sm text-slate-500">Đơn thuốc đang được soạn nháp. Bạn có thể sửa hoặc bỏ thuốc; đơn chỉ được lưu khi xác nhận hoàn tất lượt khám.</p>
-      <form className="flex gap-3" onSubmit={e => { e.preventDefault(); setQuery(keyword.trim()); setPage(0); }}><label className="min-w-0 flex-1 text-sm font-bold">Tìm thuốc trong cơ sở<input className={clinicalField} maxLength={255} value={keyword} onChange={e => setKeyword(e.target.value)} /></label><button type="submit" className={`${clinicalButton} self-end`}>Tìm</button></form>
-      <ul className="max-h-64 divide-y overflow-auto">{catalogue?.content.map(m => <li key={m.id} className="flex items-center justify-between gap-3 py-3 text-sm"><div><p className="font-bold">{m.medicineName} {m.strength}</p><p>{[m.form, m.route].filter(Boolean).join(' · ')} · Tồn: {m.total}</p></div><button type="button" disabled={blocked || items.length >= 100 || items.some(i => i.hospitalMedicineId === m.id)} className="font-bold text-blue-700 disabled:text-slate-400" onClick={() => { setItems(v => [...v, { hospitalMedicineId: m.id, medicineName: [m.medicineName, m.strength].filter(Boolean).join(' '), total: m.total, quantity: 1, dosage: '', usageInstruction: '', durationDays: 1 }]); }}>Thêm</button></li>)}</ul>
-      {catalogue?.content.length === 0 && <p className="text-sm">Không tìm thấy thuốc phù hợp.</p>}{catalogue && <div className="flex gap-4 text-sm"><button type="button" disabled={!page} onClick={() => setPage(v => v - 1)}>Trang trước</button><span>{page + 1}/{Math.max(1, catalogue.totalPages)}</span><button type="button" disabled={catalogue.last} onClick={() => setPage(v => v + 1)}>Trang sau</button></div>}
+      <div className="space-y-4" aria-label="Tìm và chọn thuốc">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <label className="min-w-0 flex-1 text-sm font-bold text-slate-700">Tìm thuốc trong cơ sở
+            <span className="relative mt-2 block">
+              <Search aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <input className="w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100"
+                maxLength={255} value={keyword} disabled={blocked} placeholder="Tìm theo tên thuốc hoặc hoạt chất"
+                onChange={e => { setKeyword(e.target.value); if (!e.target.value.trim()) resetSearch(); }} />
+            </span>
+          </label>
+          {keyword && <button type="button" aria-label="Xóa từ khóa tìm thuốc" disabled={blocked} onClick={() => { setKeyword(''); resetSearch(); }} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-500 hover:bg-slate-100"><X aria-hidden="true" className="size-4" />Xóa</button>}
+        </div>
+        {!searchTerm ? <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center text-sm text-slate-400">Kết quả tìm kiếm sẽ hiển thị ở đây</p>
+          : searchPending ? <p role="status" className="px-4 py-10 text-center text-sm text-slate-500">Đang tìm thuốc…</p>
+          : <MedicineSearchResults key={`${query}:${searchGeneration}`} catalogue={catalogue} loading={searchLoading} error={searchError}
+              selectedIds={items.map(item => item.hospitalMedicineId)} disabled={blocked}
+              onAdd={addMedicine} onRetry={() => { setSearchLoading(true); setSearchRevision(v => v + 1); }}
+              onLoadMore={loadMoreMedicines} />}
+      </div>
       <div className="space-y-4"><fieldset disabled={!editable || blocked} className="space-y-4">{items.map((item, index) => <div key={item.hospitalMedicineId} className="space-y-3 rounded-xl border p-4"><div className="flex justify-between gap-3"><h3 className="font-bold">{item.medicineName}</h3><button type="button" className="text-sm text-rose-700" onClick={() => { setItems(v => v.filter((_, i) => i !== index)); }}>Bỏ thuốc</button></div>{item.total != null && item.quantity > item.total && <p className="text-sm text-amber-800">Số lượng kê vượt tồn kho ({item.total}); cần thông báo người bệnh.</p>}<div className="grid gap-3 sm:grid-cols-2">{(['quantity', 'durationDays', 'dosage', 'usageInstruction'] as const).map(key => <label key={key} className="text-sm font-semibold">{{ quantity: 'Số lượng', durationDays: 'Số ngày', dosage: 'Liều dùng', usageInstruction: 'Hướng dẫn sử dụng' }[key]}<input required={key !== 'usageInstruction'} type={key === 'quantity' || key === 'durationDays' ? 'number' : 'text'} min={1} step={1} max={key === 'quantity' || key === 'durationDays' ? 2147483647 : undefined} maxLength={key === 'dosage' ? 255 : 300} className={clinicalField} value={item[key]} onChange={e => setItems(v => v.map((m, i) => i === index ? { ...m, [key]: key === 'quantity' || key === 'durationDays' ? Number(e.target.value) : e.target.value } : m))} /></label>)}</div></div>)}<label className="block text-sm font-bold">Lời dặn<textarea className={clinicalField} maxLength={500} value={note} onChange={e => setNote(e.target.value)} /></label>{invalidDraft && <p role="alert" className="text-sm text-amber-800">Kiểm tra số lượng, số ngày, liều dùng cho từng thuốc. Nếu bỏ toàn bộ thuốc của đơn đã lưu, hãy chọn Xóa đơn đã lưu. Lời dặn cần đi cùng ít nhất một thuốc.</p>}<p role="status" className="text-sm text-slate-500">{items.length ? `${items.length} thuốc trong bản nháp · Lưu cùng lúc hoàn tất khám` : 'Chưa kê thuốc cho lượt khám này.'}</p></fieldset></div>
     </>}
   </section>;

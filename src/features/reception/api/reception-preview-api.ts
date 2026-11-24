@@ -120,6 +120,7 @@ export const receptionPreviewApi: typeof receptionApi = {
     if (!encounter) { encounter = {id: ++s.nextId, code: 'LK-' + s.nextId, appointmentId: a.appointmentId, completed: false}; s.encounters.push(encounter); }
     return {appointment: a, encounterId: encounter.id, encounterCode: encounter.code};
   }, true),
+  bookingWindow: signal => run(s => ({ today: s.date, latestDate: s.date }), false, signal),
   slots: (date, _offline, signal) => run(s => s.slots.filter(slot => slot.appointmentDate === date), false, signal),
   pending: (page, signal) => run(s => pageOf(s.appointments.filter(a => a.status === 'PENDING_SPECIALTY').map(a => ({
     appointmentId: a.appointmentId, appointmentCode: a.appointmentCode, patientName: a.patientName,

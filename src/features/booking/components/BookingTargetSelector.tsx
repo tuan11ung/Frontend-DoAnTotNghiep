@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type FC, type KeyboardEvent } from 'react';
-import { Check, ChevronDown, Users } from 'lucide-react';
+import { ChevronDown, Users } from 'lucide-react';
 import { BookingTarget } from '../types';
+import { DropdownOption, DropdownResults } from '@/src/shared/components/DropdownOptions';
 import { BookingSectionHeading } from './BookingSectionHeading';
 
 interface BookingTargetSelectorProps {
@@ -116,29 +117,22 @@ export const BookingTargetSelector: FC<BookingTargetSelectorProps> = ({
         </button>
 
         {open && (
-          <div
-            id={listId}
-            role="listbox"
-            aria-labelledby={labelId}
-            className="absolute inset-x-0 top-full z-30 mt-1 max-h-[min(18rem,50dvh)] overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1 shadow-lg"
+          <DropdownResults
+            id={listId} role="listbox" aria-labelledby={labelId}
+            placement="overlay" maxHeight="min(18rem, 50dvh)"
           >
             {options.map((option, index) => (
-              <button
+              <DropdownOption
                 key={`${option.type}:${option.id}`}
-                id={`${listId}-${index}`}
-                type="button"
-                role="option"
-                tabIndex={-1}
-                aria-selected={index === selectedIndex}
+                id={`${listId}-${index}`} role="option" tabIndex={-1}
+                selected={index === selectedIndex} active={active === index}
                 onMouseDown={(event) => event.preventDefault()}
                 onClick={() => choose(index)}
-                className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-lg px-4 py-2.5 text-left hover:bg-slate-100 aria-selected:bg-blue-50 ${active === index ? 'ring-2 ring-inset ring-blue-400' : ''}`}
-              >
-                <TargetText target={option} />
-                {index === selectedIndex && <Check aria-hidden="true" className="size-4 shrink-0 text-blue-600" />}
-              </button>
+                label={option.name}
+                description={<span className="text-xs text-slate-600">{option.type === 'SELF' ? 'Bản thân' : option.relationshipLabel || 'Người nhà'}</span>}
+              />
             ))}
-          </div>
+          </DropdownResults>
         )}
       </div>
     </div>

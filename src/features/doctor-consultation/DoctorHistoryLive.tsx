@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { consultationApi, type EncounterDetail } from './api/consultation-api';
 import { publicRequest, type PublicDoctor } from '../public-data/public-api';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
-import { clinicalCard, clinicalField, clinicalButton } from './components/clinical-ui';
+import { clinicalCard, clinicalEmpty, clinicalField, clinicalButton } from './components/clinical-ui';
 type Row = EncounterDetail & { specialty: string };
 const empty = {facility:'',specialty:'',from:'',to:'',icd:''};
 export function DoctorHistoryLive({patientId,currentId}:{patientId:number;currentId:number}) {
@@ -36,7 +36,7 @@ export function DoctorHistoryLive({patientId,currentId}:{patientId:number;curren
     return ()=>controller.abort();
   },[patientId,currentId,revision]);
   const filtered=(rows || []).filter(r=>(!filters.facility || String(r.hospitalId)===filters.facility) && (!filters.specialty || r.specialty===filters.specialty) && (!filters.from || r.appointmentDate.slice(0,10)>=filters.from) && (!filters.to || r.appointmentDate.slice(0,10)<=filters.to) && (!filters.icd || r.diagnoses.some(d=>d.icd10Code?.toUpperCase().includes(filters.icd.trim().toUpperCase()))));
-  return <section className={clinicalCard}><h2 className="text-lg font-bold">Lịch sử khám</h2>
+  return <section className={clinicalCard}><h2 className="flex items-center gap-2 text-lg font-bold">Lịch sử khám{rows && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600" aria-label={`${filtered.length} phiên khám phù hợp`}>{filtered.length}</span>}<span tabIndex={0} aria-label="Thông tin về bệnh sử" title="Chuyên khoa lấy theo hồ sơ bác sĩ hiện tại; API chưa cung cấp chuyên khoa tại thời điểm khám. Chỉ hiển thị bệnh sử được backend cấp quyền." className="cursor-help text-sm font-normal text-slate-400">ⓘ</span></h2>
     <form aria-label="Lọc lịch sử khám" className="grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-3" onSubmit={e=>{e.preventDefault();if(draft.from && draft.to && draft.from>draft.to)return;setFilters(draft);setPage(0);}}>
       <label className="text-sm">Cơ sở<select className={clinicalField} value={draft.facility} onChange={e=>setDraft({...draft,facility:e.target.value})}><option value="">Tất cả cơ sở được cấp quyền</option>{[...new Map(rows?.map(r=>[r.hospitalId,r.hospitalName])).entries()].map(([id,name])=><option key={id} value={id}>{name}</option>)}</select></label>
       <label className="text-sm">Chuyên khoa bác sĩ<select className={clinicalField} value={draft.specialty} onChange={e=>setDraft({...draft,specialty:e.target.value})}><option value="">Tất cả chuyên khoa</option>{[...new Set(rows?.map(r=>r.specialty))].map(s=><option key={s}>{s}</option>)}</select></label>
@@ -46,9 +46,8 @@ export function DoctorHistoryLive({patientId,currentId}:{patientId:number;curren
       <div className="flex items-end gap-3"><button className={clinicalButton}>Áp dụng</button><button type="button" onClick={()=>{setDraft(empty);setFilters(empty);setPage(0);}}>Đặt lại</button></div>
       {draft.from && draft.to && draft.from>draft.to && <p role="alert" className="text-sm text-red-700">Ngày kết thúc phải từ ngày bắt đầu trở đi.</p>}
     </form>
-    <p className="text-xs text-slate-500">Chuyên khoa lấy theo hồ sơ bác sĩ hiện tại; API chưa cung cấp chuyên khoa tại thời điểm khám. Chỉ hiển thị bệnh sử được backend cấp quyền.</p>
     {error?<p role="alert">{error} <button className="text-blue-700 underline" onClick={()=>{setError('');setRows(null);retry(n=>n+1);}}>Thử lại</button></p>:!rows?<p role="status">Đang tải bệnh sử và chẩn đoán…</p>:<>
-    <p role="status" className="text-sm">{filtered.length} phiên khám phù hợp</p>
+    {filtered.length === 0 && <p role="status" className={clinicalEmpty}>{rows.length === 0 ? 'Chưa có lượt khám trước đó.' : 'Không có lượt khám phù hợp với bộ lọc.'}</p>}
     <ul className="divide-y">{filtered.slice(page*10,page*10+10).map(r=><li key={r.encounterId} className="space-y-2 py-4 text-sm"><p className="font-bold">{formatDisplayDate(r.appointmentDate)} · {r.hospitalName}</p><p>{r.encounterCode} · {r.specialty} · {r.doctorName}</p><p>{r.diagnoses.map(d=>[d.icd10Code,d.diagnosisText || d.icd10Name].filter(Boolean).join(' · ')).join('; ') || 'Chưa có chẩn đoán'}</p><Link className="font-bold text-blue-700" href={`/doctor/encounters/${currentId}/history/${r.encounterId}?patientId=${patientId}`}>Xem bệnh án →</Link></li>)}</ul>
     {filtered.length>10 && <div className="flex gap-4 text-sm"><button disabled={!page} onClick={()=>setPage(p=>p-1)}>Trang trước</button><span>Trang {page+1}/{Math.ceil(filtered.length/10)}</span><button disabled={(page+1)*10>=filtered.length} onClick={()=>setPage(p=>p+1)}>Trang sau</button></div>}</>}
   </section>;

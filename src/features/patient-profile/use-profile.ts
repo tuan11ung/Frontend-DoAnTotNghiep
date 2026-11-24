@@ -33,7 +33,7 @@ export function useProfile(token: string | null, selectedPatientId?: number) {
       const id = requirePatient();
       const profile = await updateProfile(token!, id, input);
       if (profile.relationship === 'SELF') updateStoredAccountName(token!, profile.fullName);
-      if (active.current) setRemote(d => d ? { ...d, profile } : d);
+      if (active.current) setRemote(d => d ? { ...d, profile: { ...profile, email: d.profile.email } } : d);
     },
     async saveAllergy(input: AllergyInput) {
       const id = requirePatient();
