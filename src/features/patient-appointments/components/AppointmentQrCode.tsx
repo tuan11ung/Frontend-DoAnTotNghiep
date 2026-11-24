@@ -5,7 +5,7 @@ import { Download, LoaderCircle } from 'lucide-react';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
 import { appointmentCheckInPayload } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 
-export function AppointmentQrCode({ appointment }: { appointment: PatientAppointment }) {
+export function AppointmentQrCode({ appointment, canPresent }: { appointment: PatientAppointment; canPresent: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
@@ -28,11 +28,31 @@ export function AppointmentQrCode({ appointment }: { appointment: PatientAppoint
     link.click();
   }
 
-  return <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-4 text-center">
-    <div className="mx-auto w-fit max-w-full rounded-xl border border-slate-200 bg-white p-1"><canvas ref={canvasRef} role="img" aria-label={`Mã QR lịch hẹn ${appointment.code}`} className={`mx-auto h-auto max-w-full ${ready ? '' : 'hidden'}`} />{!ready && <div className="grid size-52 max-w-full place-items-center text-sm text-slate-500">{error ? <p role="alert" className="p-4 text-xs">Chưa tạo được QR. Vui lòng đóng và mở lại chi tiết lịch hẹn.</p> : <LoaderCircle aria-label="Đang tạo QR" className="size-6 animate-spin text-blue-600" />}</div>}</div>
-    <p className="mt-3 break-all font-mono text-sm font-bold text-slate-800">{appointment.code}</p>
-    <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-slate-500">Xuất trình QR và giấy tờ tại quầy tiếp đón để nhân viên đối chiếu lịch hẹn.</p>
-    <button type="button" onClick={download} disabled={!ready} className="mt-4 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50"><Download className="size-4" />Tải QR (.png)</button>
-    <p className="mt-3 text-[10px] leading-relaxed text-slate-400">{appointment.source === 'api' ? 'Mã tiếp nhận do bệnh viện cấp. Chỉ chia sẻ với nhân viên tiếp đón.' : 'QR mô phỏng chứa mã lịch hẹn, không chứa CCCD hoặc số điện thoại.'}</p>
-  </div>;
+  return (
+    <div className="space-y-3">
+      <h3 className="font-semibold text-slate-900">Mã QR tiếp nhận</h3>
+      <div className="mx-auto aspect-square w-full max-w-[260px] overflow-hidden rounded-lg bg-white">
+        <canvas ref={canvasRef} role="img" aria-label={`Mã QR lịch hẹn ${appointment.code}`} className={`h-auto w-full ${ready ? '' : 'hidden'}`} />
+        {!ready && (
+          <div className="grid h-full place-items-center p-4 text-slate-600">
+            {error ? (
+              <p role="alert">Chưa tạo được QR. Vui lòng đóng và mở lại chi tiết lịch hẹn.</p>
+            ) : (
+              <div role="status" className="flex flex-col items-center gap-2">
+                <LoaderCircle className="size-5 animate-spin text-blue-600 motion-reduce:animate-none" aria-hidden="true" />
+                Đang tạo mã QR…
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {canPresent && <p className="text-slate-700">Xuất trình mã QR và giấy tờ tại quầy tiếp nhận.</p>}
+      <button type="button" onClick={download} disabled={!ready} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 font-semibold text-white enabled:hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-50">
+        <Download className="size-4" aria-hidden="true" /> Lưu mã QR
+      </button>
+      <p className="text-xs leading-relaxed text-slate-600">
+        {appointment.source === 'api' ? 'Chỉ chia sẻ mã với nhân viên tiếp đón.' : 'QR mô phỏng chứa mã lịch hẹn, không chứa CCCD hoặc số điện thoại.'}
+      </p>
+    </div>
+  );
 }

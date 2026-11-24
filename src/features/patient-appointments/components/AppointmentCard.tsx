@@ -103,9 +103,20 @@ export function AppointmentCard({
             {appointment.patientRelationship ? `(${appointment.patientRelationship})` : '(Bản thân)'}
           </strong>
         </div>
-        {(canViewInvoice || canCancel) && <div ref={actionsRef} className="pointer-events-auto relative col-start-2 row-start-1 justify-self-end @min-[36rem]:col-start-3" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActionsOpen(false); }}>
+        <div ref={actionsRef} className="pointer-events-auto relative col-start-2 row-start-1 justify-self-end @min-[36rem]:col-start-3" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActionsOpen(false); }}>
           <button ref={actionsButtonRef} type="button" aria-label="Thao tác lịch khám" aria-expanded={actionsOpen} aria-controls={`appointment-actions-${appointment.id}`} onClick={() => setActionsOpen(open => !open)} className="grid size-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600"><Menu className="size-5" aria-hidden="true" /></button>
           {actionsOpen && <div id={`appointment-actions-${appointment.id}`} className="absolute right-0 top-full z-20 mt-2 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+            <button
+              type="button"
+              onClick={() => {
+                actionsButtonRef.current?.focus();
+                setActionsOpen(false);
+                onOpenQr(appointment);
+              }}
+              className="min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-blue-700 hover:bg-blue-50"
+            >
+              Xem chi tiết
+            </button>
             {canViewInvoice && (
               <Link
                 href={paymentsHref(appointment.patientId, { appointment: appointment.id })}
@@ -117,7 +128,7 @@ export function AppointmentCard({
             )}
             {canCancel && <button type="button" onClick={() => { actionsButtonRef.current?.focus(); setActionsOpen(false); onOpenCancel(appointment); }} className="min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-600 hover:bg-rose-50">Hủy lịch</button>}
           </div>}
-        </div>}
+        </div>
       </div>
 
       {/* Body Card */}

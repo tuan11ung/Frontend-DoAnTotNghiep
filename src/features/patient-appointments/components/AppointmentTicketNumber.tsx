@@ -3,8 +3,8 @@ import type { PatientAppointment } from '../models/types/appointment.types';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
 import { appointmentQueueKey } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 
-export function AppointmentTicketNumber({ appointment, room, queueError = false, variant = 'badge' }: { appointment: PatientAppointment; room?: VisitQueueRoom; queueError?: boolean; variant?: 'badge' | 'prominent' | 'card' }) {
-  if (appointment.status === 'CANCELLED' && variant === 'badge') return null;
+export function AppointmentTicketNumber({ appointment, room, queueError = false, variant = 'badge' }: { appointment: PatientAppointment; room?: VisitQueueRoom; queueError?: boolean; variant?: 'badge' | 'prominent' | 'card' | 'ticket' }) {
+  if (appointment.status === 'CANCELLED' && (variant === 'badge' || variant === 'ticket')) return null;
   const own = !queueError && room?.key === appointmentQueueKey(appointment)
     ? room.tickets.find(ticket => ticket.appointmentId === appointment.id)
     : undefined;
@@ -14,6 +14,15 @@ export function AppointmentTicketNumber({ appointment, room, queueError = false,
     : own ? String(own.number).padStart(3, '0')
     : appointment.status === 'BOOKED' ? 'Chưa cấp số thứ tự'
     : 'Chưa có dữ liệu số thứ tự';
+
+  if (variant === 'ticket') return (
+    <div data-appointment-ticket={appointment.id}>
+      <p className="font-semibold text-slate-700">Số thứ tự của bạn</p>
+      <p aria-live="polite" aria-atomic="true" className={`mt-1 font-bold ${number != null && !queueError ? 'text-4xl leading-none text-blue-700 tabular-nums' : 'text-sm text-slate-600'}`}>
+        {label}
+      </p>
+    </div>
+  );
 
   if (variant === 'card') return <div data-appointment-ticket={appointment.id} aria-label="Số thứ tự của bạn" className="min-w-0">
     <p className="text-sm text-slate-600">Số thứ tự</p>
