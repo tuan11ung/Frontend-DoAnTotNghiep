@@ -12,7 +12,7 @@ export const RECEPTION_SECTIONS = [
   { id: 'registration', label: 'Đăng ký tại quầy', group: 'Tiếp nhận khám', icon: ClipboardPlus },
   { id: 'checkin', label: 'Check-in lịch hẹn', group: 'Tiếp nhận khám', icon: CalendarCheck },
   { id: 'pending-specialty', label: 'Phân chuyên khoa', group: 'Tiếp nhận khám', icon: GitBranch },
-  { id: 'checkout', label: 'Thanh toán', group: 'Viện phí', icon: Wallet },
+  { id: 'checkout', label: 'Thu viện phí', group: 'Viện phí', icon: Wallet },
 ] as const;
 
 export type ReceptionSection = typeof RECEPTION_SECTIONS[number]['id'];

@@ -1,9 +1,10 @@
 'use client';
 
-import Link from 'next/link';
+import { FlaskConical, House } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { AccountName } from '@/src/shared/components/layout/AccountName';
+import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
+import { WorkspaceHeader } from '@/src/shared/components/layout/WorkspaceHeader';
 import { ReceptionAppointments } from './components/ReceptionAppointments';
 import { ReceptionRegistration } from './components/ReceptionRegistration';
 import { ReceptionBilling } from './components/ReceptionBilling';
@@ -19,12 +20,28 @@ export function ReceptionLiveScreen({ section }: { section?: ReceptionSection })
   const [revision, setRevision] = useState(0);
   const requestedTab = section ?? params.get('tab');
   const tab: ReceptionSection = requestedTab === 'patients' ? 'registration' : sections.find(section => section.id === requestedTab)?.id ?? 'registration';
+  const title = sections.find(section => section.id === tab)?.label ?? 'Đăng ký tại quầy';
+  const accountLinks = [{ href: '/', label: 'Trang chủ', Icon: House }];
+  if (RECEPTION_PREVIEW_ENABLED) {
+    const modeParams = new URLSearchParams(params.toString());
+    modeParams.set('tab', tab);
+    if (demo) modeParams.delete('demo');
+    else modeParams.set('demo', '1');
+    accountLinks.push({
+      href: `/reception?${modeParams}`,
+      label: demo ? 'Thoát chế độ demo' : 'Thử với dữ liệu demo',
+      Icon: FlaskConical,
+    });
+  }
   return <div className="reception-portal min-h-screen bg-slate-50 text-slate-800 lg:pl-[280px]">
     <ReceptionSidebar activeSection={tab} />
-    <div className="min-w-0"><header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white py-4 pr-5 pl-20 sm:pr-8 lg:px-8"><p className="text-xs text-slate-500">Tiếp đón <span className="px-2">/</span><span className="font-semibold text-slate-800">{sections.find(section => section.id === tab)?.label}</span></p><div className="flex flex-wrap items-center gap-4 text-xs">{demo ? <span>Lễ tân demo</span> : <AccountName fallback="Lễ tân" />}{!demo && RECEPTION_PREVIEW_ENABLED && <Link className="text-blue-700" href={`/reception?demo=1&tab=${tab}`}>Thử với dữ liệu demo</Link>}<Link className="text-blue-700" href="/">Trang chủ</Link></div></header>
+    <div className="min-w-0">
+    <WorkspaceHeader workspace="Tiếp đón" section={title}>
+      <ClinicalAccountMenu previewName={demo ? 'Lễ tân demo' : undefined} additionalLinks={accountLinks} />
+    </WorkspaceHeader>
     <main className="mx-auto max-w-7xl p-5 sm:p-8">
-      <h1 className="mb-2 text-2xl font-extrabold text-slate-900">{sections.find(section => section.id === tab)?.label}</h1>
-      <p className="mb-6 text-sm text-slate-500">{demo ? 'Bệnh viện Demo · Dữ liệu thử nghiệm' : 'Quản lý tiếp nhận và hỗ trợ người bệnh tại cơ sở.'}</p>
+      <h1 className="mb-2 text-2xl font-extrabold text-slate-900">{title}</h1>
+      <p className="mb-6 text-sm text-slate-500">{tab === 'checkout' ? 'Tra cứu hóa đơn, đối chiếu thông tin bệnh nhân và thực hiện thu tiền khám, dịch vụ cận lâm sàng.' : tab === 'checkin' ? 'Tra cứu và tiếp nhận bệnh nhân đã đặt lịch khám trước.' : demo ? 'Bệnh viện Demo · Dữ liệu thử nghiệm' : 'Quản lý tiếp nhận và hỗ trợ người bệnh tại cơ sở.'}</p>
       {demo && <details className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"><summary className="cursor-pointer text-sm font-semibold text-amber-900">Công cụ dữ liệu demo</summary><div className="mt-4"><ReceptionDemoControls onReset={() => setRevision(v => v + 1)} /></div></details>}
       {tab === 'registration' && <ReceptionRegistration key={tab + revision} lookupOnly={false} />}
       {(tab === 'checkin' || tab === 'pending-specialty') && <ReceptionAppointments key={tab + revision} pending={tab === 'pending-specialty'} />}

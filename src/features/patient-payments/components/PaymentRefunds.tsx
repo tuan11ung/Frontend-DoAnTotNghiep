@@ -18,7 +18,7 @@ export function PaymentRefunds({ refunds, onRefund }: { refunds: PaymentRefund[]
   if (!refunds.length) return null;
   return <section className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm">
     <h3 className="font-semibold">Khoản hoàn tiền</h3>
-    <p className="text-xs text-slate-600">Khoản hoàn được theo dõi riêng; phiếu thu và giao dịch gốc được giữ để đối chiếu.</p>
+    <p className="text-xs text-slate-600">Khoản hoàn được theo dõi riêng. Hóa đơn và giao dịch gốc được giữ để đối chiếu.</p>
     <ul className="space-y-3">{refunds.map(refund => <li key={refund.id} className="space-y-2 border-t border-amber-200 pt-3">
       <p><strong>{money(refund.amount)}</strong> · {labels[refund.status]} · {refund.method === 'CASH' ? 'Tiền mặt' : refund.method}</p>
       <p className="text-xs text-slate-600">{refund.reason}</p>

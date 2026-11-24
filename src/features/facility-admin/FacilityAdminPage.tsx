@@ -4,10 +4,11 @@ import {ClinicalSettings} from './components/ClinicalSettings';
 import {ToastMessage} from '@/src/shared/components/ToastMessage';
 
 import {ClinicalAccountMenu} from '@/src/shared/components/layout/ClinicalAccountMenu';
+import {WorkspaceHeader} from '@/src/shared/components/layout/WorkspaceHeader';
 
 import {useCallback, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {Bell, ChevronRight, CircleAlert, HelpCircle, LoaderCircle, RefreshCw, Search,} from 'lucide-react';
+import {Bell, CircleAlert, HelpCircle, LoaderCircle, RefreshCw, Search,} from 'lucide-react';
 import {clearStoredAuthSession, getStoredAuthSession} from '../auth/auth-storage';
 import {WorkScheduleScreen} from '../work-schedules/WorkScheduleScreen';
 import {AdminApiError} from './api/admin-api-client';
@@ -286,13 +287,7 @@ export function FacilityAdminPage() {
 
             <div
                 className={containedList ? 'flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]' : 'min-h-screen lg:pl-[280px]'}>
-                <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200/90 bg-white/95 backdrop-blur">
-                    <div className="flex h-20 items-center gap-4 px-4 pl-18 sm:px-6 sm:pl-20 lg:px-8 lg:pl-8 xl:px-10">
-                        <div
-                            className="hidden min-w-0 flex-1 items-center gap-2 text-xs font-semibold text-slate-400 sm:flex">
-                            <span>Quản trị cơ sở</span><ChevronRight className="h-3.5 w-3.5"/><span
-                            className="truncate text-slate-600">{currentContent.title}</span>
-                        </div>
+                <WorkspaceHeader workspace="Quản trị cơ sở" section={currentContent.title}>
                         <div className="relative ml-auto hidden w-full max-w-xs xl:block">
                             <Search
                                 className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"/>
@@ -309,8 +304,7 @@ export function FacilityAdminPage() {
                                 type="button"><Bell className="h-5 w-5"/><span
                             className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white"/>
                         </button>
-                    </div>
-                </header>
+                </WorkspaceHeader>
 
                 <main
                     className={`px-4 py-6 sm:px-6 lg:px-8 lg:py-8 xl:px-10 ${containedList ? 'flex min-h-0 flex-1 flex-col overflow-hidden' : ''}`}>

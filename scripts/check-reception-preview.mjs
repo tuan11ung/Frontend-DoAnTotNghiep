@@ -16,8 +16,9 @@ function load(file) {
   const { outputText } = ts.transpileModule(fs.readFileSync(input, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } });
   const mod = { exports: {} };
   const dependency = id => {
-    assert.equal(id, '@/src/features/booking/utils/booking-dates');
-    return load('src/features/booking/utils/booking-dates.ts');
+    if (id === '@/src/features/booking/utils/booking-dates') return load('src/features/booking/utils/booking-dates.ts');
+    if (id === '@/src/shared/lib/business-time') return load('src/shared/lib/business-time.ts');
+    assert.fail(`Unexpected demo dependency: ${id}`);
   };
   new Function('require', 'module', 'exports', outputText)(dependency, mod, mod.exports);
   cache.set(input, mod.exports);

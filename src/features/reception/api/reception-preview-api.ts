@@ -20,9 +20,9 @@ const maskPhone = (s: string) => s ? '•••••••' + s.slice(-3) : und
 function slotDetails(slot: ReceptionSlot) {
   return { specialtyId: slot.specialtyId, roomName: slot.roomName, roomLocation: slot.roomLocation, specialtyName: slot.specialtyName, doctorName: slot.doctorName, rankName: slot.rankName, serviceType: slot.serviceType, startTime: slot.startTime, endTime: slot.endTime, price: slot.price };
 }
-function makeInvoice(id: number, e: Encounter, a: ReceptionAppointment, p: Patient): ReceptionInvoiceDetail {
+function makeInvoice(id: number, e: Encounter, a: ReceptionAppointment, p: Patient, createdAt: string): ReceptionInvoiceDetail {
   const consultationAmount = a.price ?? 200000, paraclinicalAmount = 220000, deduction = p.insuranceNo ? 30000 : 0;
-  return { invoice: { id, invoiceCode: 'HD-' + id, encounterId: e.id, totalAmount: consultationAmount + paraclinicalAmount - deduction, status: 'UNPAID', statusLabel: 'Chưa thanh toán' },
+  return { invoice: { id, invoiceCode: 'HD-' + id, encounterId: e.id, createdAt, totalAmount: consultationAmount + paraclinicalAmount - deduction, status: 'UNPAID', statusLabel: 'Chưa thanh toán' },
     lines: [{name:'Khám '+a.specialtyName,amount:consultationAmount},{name:'Xét nghiệm huyết học',amount:120000},{name:'Siêu âm',amount:100000}], deduction, consultationAmount, paraclinicalAmount, transactions: [],
     context: { patientId: p.id, patientName: p.fullName, patientCode: p.patientCode, maskedNationalId: p.maskedNationalId, encounterCode: e.code, hospitalName: hospital } };
 }
@@ -48,7 +48,7 @@ function seed(): State {
   const appointments = [appointment(1001, patients[0], 'BOOKED'), appointment(1002, patients[1], 'PENDING_SPECIALTY'), appointment(1003, patients[2], 'CANCELLED'), appointment(1004, patients[1], 'CHECKED_IN'), { ...appointment(1005, patients[2], 'BOOKED'), appointmentDate: bookingLastDate(date, 1) }];
   Object.assign(appointments[1], { specialtyName: undefined, doctorName: undefined, roomName: undefined, roomLocation: undefined, rankName: undefined });
   const encounter = { id: 2001, code: 'LK-2001', appointmentId: 1004, completed: true };
-  return { version: 2, date, nextId: 5000, patients, slots, appointments, encounters: [encounter], invoices: [makeInvoice(4001, encounter, appointments[3], patients[1])] };
+  return { version: 2, date, nextId: 5000, patients, slots, appointments, encounters: [encounter], invoices: [makeInvoice(4001, encounter, appointments[3], patients[1], `${date}T09:00:00+07:00`)] };
 }
 function read(): State {
   const raw = window.localStorage.getItem(RECEPTION_PREVIEW_KEY);
@@ -94,10 +94,10 @@ export const receptionPreviewApi: typeof receptionApi = {
     const [year, month, day] = dob.split('-');
     return { ...p, createdAccount: phone ? { username: phone, initialPassword: day + month + year } : undefined };
   }, true),
-  appointment: reference => run(s => {
+  appointment: (reference, signal) => run(s => {
     const a = findAppointment(s, reference), encounter = s.encounters.find(e => e.appointmentId === a.appointmentId);
     return { ...a, channel: a.channel ?? 'ONLINE', canChangeSpecialty: (a.channel ?? 'ONLINE') === 'ONLINE' && a.appointmentDate === s.date && ['BOOKED', 'CHECKED_IN'].includes(a.status) && !encounter?.completed && Boolean(a.specialtyName) };
-  }),
+  }, false, signal),
   specialtyChangeSlots: (appointmentId, signal) => run(s => {
     const a = s.appointments.find(item => item.appointmentId === appointmentId);
     if (!a || (a.channel ?? 'ONLINE') !== 'ONLINE' || !['BOOKED', 'CHECKED_IN'].includes(a.status) || a.appointmentDate !== s.date || s.encounters.some(e => e.appointmentId === appointmentId && e.completed)) throw new Error('Lịch này không còn được phép đổi chuyên khoa.');
@@ -154,7 +154,7 @@ export const receptionPreviewApi: typeof receptionApi = {
       d.invoice.invoiceCode, d.context?.appointmentCode, d.context?.encounterCode, d.context?.patientName, d.context?.patientCode,
       s.patients.find(p => p.id === d.context?.patientId)?.nationalId,
       s.appointments.find(a => a.appointmentId === s.encounters.find(e => e.id === d.invoice.encounterId)?.appointmentId)?.qrToken,
-    ].join(' ')).includes(normalize(keyword))).map(d => d.invoice), page, options?.size), false, options?.signal),
+    ].join(' ')).includes(normalize(keyword))).map(d => ({ ...d.invoice, patientName: d.context?.patientName, patientCode: d.context?.patientCode, appointmentCode: d.context?.appointmentCode, encounterCode: d.context?.encounterCode ?? undefined })), page, options?.size), false, options?.signal),
   invoice: id => run(s => { const d = s.invoices.find(item => item.invoice.id === id); if (!d) throw new Error('Không tìm thấy hóa đơn.'); return d; }),
   payCash: id => run(s=>settle(s,id,'Tiền mặt'),true),
 };
@@ -163,7 +163,7 @@ function settle(s: State,id:number,method:string) {
     if (!d || !s.encounters.find(e => e.id === d.invoice.encounterId)?.completed) throw new Error('Ca khám chưa hoàn tất, chưa được thu tiền.');
     if (d.invoice.status === 'PAID') throw new Error('Hóa đơn đã được thanh toán, không thu tiền trùng.');
     d.invoice.status = 'PAID'; d.invoice.statusLabel = 'Đã thanh toán';
-    d.transactions.push({ id: ++s.nextId, amount: d.invoice.totalAmount, methodLabel: method, statusLabel: 'Thành công', transactionRef: 'BL-DEMO-' + s.nextId }); return d;
+    d.transactions.push({ id: ++s.nextId, amount: d.invoice.totalAmount, methodLabel: method, status: 'SUCCESS', statusLabel: 'Thành công', transactionRef: 'BL-DEMO-' + s.nextId }); return d;
 }
 export function editPreviewBooking(code:string, reason:string) {
   return run(s=>{const a=findAppointment(s,code); if(a.status!=='BOOKED' || !reason.trim() || reason.trim().length>500) throw Error('Lịch hoặc lý do khám không hợp lệ.'); a.appointReason=reason.trim(); return a;},true);
@@ -204,6 +204,6 @@ export function completePreviewEncounter(id: number) {
     const e = s.encounters.find(item => item.id === id); if (!e || e.completed) throw new Error('Ca đã hoàn tất hoặc không còn tồn tại.');
     const a = s.appointments.find(item => item.appointmentId === e.appointmentId)!;
     const p = s.patients.find(item => item.id === a.patientId)!;
-    e.completed = true; const d = makeInvoice(++s.nextId, e, a, p); s.invoices.push(d); return d.invoice.invoiceCode;
+    e.completed = true; const d = makeInvoice(++s.nextId, e, a, p, new Date().toISOString()); s.invoices.push(d); return d.invoice.invoiceCode;
   }, true);
 }

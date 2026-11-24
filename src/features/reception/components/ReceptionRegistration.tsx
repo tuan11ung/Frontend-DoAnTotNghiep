@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { receptionField, receptionButton, receptionCard, receptionError } from './reception-ui';
 export { receptionField, receptionButton, receptionCard, receptionError } from './reception-ui';
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
+import { RadioButton } from '@/src/shared/components/RadioButton';
+import { Modal } from '@/src/shared/components/Modal';
 import { ReceptionEmergencyAction } from '@/src/features/doctor-emergency/ReceptionEmergencyAction';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -25,6 +27,7 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
   const params = useSearchParams(); const patientCode = params.get('patientCode');
   const [keyword, setKeyword] = useState(patientCode ?? ''); const [results, setResults] = useState<ReceptionPatient[] | null>(null);
   const [patient, setPatient] = useState<ReceptionPatient | null>(null); const [error, setError] = useState('');
+  const [nextPatient, setNextPatient] = useState<ReceptionPatient | null>(null);
   const [busy, setBusy] = useState(false); const [creating, setCreating] = useState(false);
   const [choosingPatient, setChoosingPatient] = useState(true);
   const bookingVisible = !lookupOnly && Boolean(patient) && !choosingPatient;
@@ -54,9 +57,14 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
     setKeyword(value); setResults(null); setResultPage(null); setBusy(false); setError(''); setCreating(false);
   }
   function confirmPatient(item: ReceptionPatient) {
-    if (patient && patient.id !== item.id && !window.confirm(
-      `Chuyển từ ${patient.fullName} sang ${item.fullName}? Các lựa chọn đăng ký chưa lưu của hồ sơ trước sẽ bị xóa.`
-    )) return;
+    if (patient && patient.id !== item.id) {
+      setNextPatient(item);
+      return;
+    }
+    selectPatient(item);
+  }
+  function selectPatient(item: ReceptionPatient) {
+    setNextPatient(null);
     setPatient(item);
     setCreating(false);
     setChoosingPatient(false);
@@ -81,7 +89,26 @@ export function ReceptionRegistration({ lookupOnly }: { lookupOnly: boolean }) {
   function search(event: FormEvent) { event.preventDefault(); setCreating(false); void searchPage(0); }
 
   return <div className="max-w-5xl space-y-5">
-    <ToastMessage durationMs={5000} message={notice} onDismiss={() => setNotice('')} />
+    {!nextPatient && <ToastMessage durationMs={5000} message={notice} onDismiss={() => setNotice('')} />}
+    <Modal open={Boolean(nextPatient)} size="lg" aria-label="Đổi bệnh nhân đăng ký khám" aria-describedby="reception-switch-patient-description" onClose={() => setNextPatient(null)}>
+      {nextPatient && <>
+        <div className="min-h-0 space-y-4 overflow-y-auto p-5 sm:p-6">
+          <h2 className="text-lg font-bold text-slate-900">Đổi bệnh nhân đăng ký khám?</h2>
+          <dl className="space-y-2 rounded-lg bg-slate-50 p-3 text-sm [overflow-wrap:anywhere]">
+            <div><dt className="text-slate-600">Hồ sơ đang đăng ký</dt><dd className="font-semibold">{patient?.fullName}</dd></div>
+            <div><dt className="text-slate-600">Hồ sơ muốn chuyển sang</dt><dd className="font-semibold">{nextPatient.fullName}</dd></div>
+          </dl>
+          <p id="reception-switch-patient-description" className="text-sm leading-relaxed text-slate-600">
+            Khi chuyển hồ sơ, các lựa chọn đăng ký khám chưa lưu của bệnh nhân hiện tại sẽ bị bỏ.
+          </p>
+          <ToastMessage durationMs={5000} message={notice} onDismiss={() => setNotice('')} />
+        </div>
+        <footer className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-slate-200 px-5 py-3 sm:px-6">
+          <button type="button" className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50" onClick={() => setNextPatient(null)}>Giữ hồ sơ hiện tại</button>
+          <button type="button" className={receptionButton} onClick={() => selectPatient(nextPatient)}>Chuyển hồ sơ</button>
+        </footer>
+      </>}
+    </Modal>
     <div hidden={bookingVisible} className="space-y-4">
       {patient && !creating && !lookupOnly && <aside className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
         <div className="min-w-0"><p className="text-xs font-semibold text-slate-600">Đăng ký đang mở tại quầy</p><strong className="break-words">{patient.fullName}</strong></div>
@@ -172,19 +199,19 @@ function CreateReceptionPatient({ initialNationalId, onCreated }: { initialNatio
     } catch (e) { setError(receptionError(e)); }
     finally { submitting.current = false; setBusy(false); }
   }
-  return <form onSubmit={submit} className="border-t pt-5"><fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><legend className="mb-3 font-bold">Thông tin bệnh nhân mới</legend>
+  return <form onSubmit={submit} className="border-t border-slate-200 pt-4"><fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
     {[['fullName', 'Họ và tên', 'text'], ['dob', 'Ngày sinh', 'date'], ['nationalId', 'Số CCCD', 'text'], ['phone', 'Số điện thoại', 'tel'], ['address', 'Địa chỉ', 'text'], ['insuranceNo', 'Số thẻ BHYT', 'text']].map(([name, label, type]) => <label key={name} className="text-sm font-semibold">{label}{name === 'dob' ? <BirthDateInput id="reception-patient-dob" name="dob" value={birthDate} onChange={setBirthDate} max={bookingToday()} className={`${receptionField} pr-11`} submitIso /> : <input name={name} type={type} defaultValue={name === 'nationalId' ? initialNationalId : undefined} required={['fullName', 'dob', 'nationalId'].includes(name)} maxLength={name === 'nationalId' ? 12 : name === 'insuranceNo' ? 20 : name === 'address' ? 300 : 255} max={type === 'date' ? bookingToday() : undefined} className={receptionField} />}</label>)}
     <fieldset>
       <legend className="mb-2 text-sm font-semibold">Giới tính</legend>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {([['MALE', 'Nam'], ['FEMALE', 'Nữ'], ['OTHER', 'Khác']] as const).map(([value, label]) => (
-          <label key={value} className="min-w-0 flex-1 cursor-pointer">
-            <input type="radio" name="gender" value={value} defaultChecked={value === 'MALE'} className="peer sr-only" required />
-            <span className="flex min-h-11 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue-600">{label}</span>
-          </label>
+          <RadioButton key={value} label={label} name="gender" value={value} defaultChecked={value === 'MALE'} disabled={busy} required />
         ))}
       </div>
     </fieldset>
-    <p className="text-sm text-slate-500 sm:col-span-2">Đối chiếu giấy tờ bệnh nhân trước khi lưu hồ sơ.</p><button type="submit" className={receptionButton}>{busy ? 'Đang tạo…' : 'Xác nhận tạo hồ sơ'}</button>
+    <p className="text-sm text-slate-500 sm:col-span-2">Đối chiếu giấy tờ bệnh nhân trước khi lưu hồ sơ.</p>
+    <div className="flex justify-end sm:col-span-2">
+      <button type="submit" className={`${receptionButton} min-h-11 w-full sm:w-auto`}>{busy ? 'Đang tạo…' : 'Xác nhận tạo hồ sơ'}</button>
+    </div>
   </fieldset>{error && <p role="alert" className="mt-3 text-sm text-rose-700">{error}</p>}</form>;
 }
