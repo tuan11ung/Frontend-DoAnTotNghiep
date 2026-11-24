@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
 import { bookingApi } from '@/src/features/booking/api/booking-api';
@@ -45,13 +46,13 @@ export function usePatientAppointments() {
           setRemote({ token: token!, profiles, hospitals, appointments: items.map(item => toPatientAppointment(item, profiles, hospitals)) });
           setFailure(null);
         }
-      } catch (error) { if (!controller.signal.aborted && generation === mutation.current) setFailure({ token: token!, message: error instanceof Error ? error.message : 'Không thể tải lịch khám.' }); }
+      } catch (error) { if (!controller.signal.aborted && generation === mutation.current) setFailure({ token: token!, message: error instanceof Error ? error.message : 'Không thể tải lịch khám.' }); throw error; }
       finally { running = false; }
     }
-    void load();
-    const timer = window.setInterval(() => void load(), 15000);
-    window.addEventListener('focus', load); document.addEventListener('visibilitychange', load);
-    return () => { controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
+    const stop = watchExamQueue({ kind: 'patient' }, () => load(), message => {
+      if (!controller.signal.aborted) setFailure({ token: token!, message });
+    });
+    return () => { controller.abort(); stop(); };
   }, [auth.isReady, auth.isAuthenticated, token, revision]);
   const data = remote?.token === token ? remote : null;
   const appointments = data?.appointments ?? [];
@@ -72,7 +73,7 @@ export function usePatientAppointments() {
       setRemote(current => current?.token === token ? { ...current, appointments: current.appointments.map(a => a.id === id ? appointment : a) } : current);
       return { success: true, appointment };
     } catch (error) { setRevision(v => v + 1); return { success: false, error: error instanceof Error ? error.message : 'Không thể hủy lịch.' }; }
-    finally { busy.current = false; }
+    finally { busy.current = false; setRevision(value => value + 1); }
   }
 
   return { auth, appointments, profiles: data?.profiles ?? [], loading: !ready || !auth.isReady || (auth.isAuthenticated && !data && failure?.token !== token),

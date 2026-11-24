@@ -1,4 +1,5 @@
 'use client';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { CareCostBreakdown } from '@/src/shared/components/CareCostBreakdown';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { EncounterDraftNotice } from './components/EncounterDraftNotice';
@@ -29,7 +30,7 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   const batchIdentity = useRef<{signature:string;key:string}|null>(null);
   const [basket,setBasket] = useState<PendingOrder[]>([]);
   const [serviceId, setServiceId] = useState(''); const [note, setNote] = useState(''); const [result, setResult] = useState<TechnicianOrderDetail | null>(null);
-  const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [revision, setRevision] = useState(0); const lock = useRef(false); const mutation = useRef(0);
+  const [error, setError] = useState(''); const [liveError, setLiveError] = useState(''); const [busy, setBusy] = useState(false); const [revision, setRevision] = useState(0); const lock = useRef(false); const mutation = useRef(0);
   const draftState = useEncounterDraft(encounterId, 'orders', 'v2', { serviceId, note, basket }, value => {
     if (typeof value.serviceId !== 'string' || (value.serviceId && !/^[1-9][0-9]*$/.test(value.serviceId)) || typeof value.note !== 'string' || value.note.length > 500) return false;
     if (value.basket != null && (!Array.isArray(value.basket) || !value.basket.every(item => item && typeof item === 'object' && Number.isSafeInteger(item.serviceId) && item.serviceId > 0 && typeof item.serviceName === 'string' && typeof item.clinicalNote === 'string' && item.clinicalNote.length <= 500))) return false;
@@ -43,14 +44,12 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
       running = true; const version = mutation.current;
       try {
         const items = await consultationApi.orders(encounterId, controller.signal, editable ? undefined : patientId);
-        if (!controller.signal.aborted && version === mutation.current) setOrders(items);
-      } catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải chỉ định.'); }
+        if (!controller.signal.aborted && version === mutation.current) { setOrders(items); setLiveError(''); }
+      } catch (e) { if (!controller.signal.aborted) setLiveError(e instanceof Error ? e.message : 'Không thể tải chỉ định.'); throw e; }
       finally { running = false; }
     }
-    void load();
-    const timer = window.setInterval(() => void load(), 10000);
-    window.addEventListener('focus', load); document.addEventListener('visibilitychange', load);
-    return () => { controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
+    const stop = watchExamQueue({ kind: 'cls' }, () => load(), setLiveError);
+    return () => { controller.abort(); stop(); };
   }, [encounterId, revision, editable, patientId]);
   useEffect(() => {
     if (!editable) return;
@@ -71,7 +70,7 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
   async function run(action: () => Promise<void>) {
     if (lock.current) return; lock.current = true; mutation.current++; setBusy(true); setError('');
     try { await action(); } catch (e) { setError(e instanceof Error ? e.message : 'Không thể xử lý chỉ định.'); }
-    finally { lock.current = false; setBusy(false); }
+    finally { lock.current = false; setBusy(false); setRevision(value => value + 1); }
   }
   function create(event: FormEvent) {
     event.preventDefault();
@@ -84,7 +83,7 @@ export function DoctorOrdersLive({ encounterId, editable, patientId }: { encount
     const requestId = batchIdentity.current.key;
     void run(async () => { await consultationApi.createOrders(encounterId, payload, requestId); batchIdentity.current=null; setBasket([]); clearEncounterDraft(encounterId, 'orders'); setNote(''); setServiceId(''); setRevision(v => v + 1); });
   }
-  return <div className="space-y-5"><EncounterDraftNotice state={draftState} onChoice={() => setError('')} />{error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
+  return <div className="space-y-5"><EncounterDraftNotice state={draftState} onChoice={() => setError('')} />{liveError && <p role="status" className="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{liveError}</p>}{error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
     {editable && <section className={clinicalCard}><h2 className="text-lg font-bold">Chỉ định cận lâm sàng</h2>
       <form onSubmit={event => { event.preventDefault(); setQuery(keyword.trim()); setPage(0); setServiceId(''); setCatalogueRevision(value => value + 1); }} className="flex flex-wrap items-end gap-3">
         <label className="min-w-52 flex-1 text-sm font-bold">Nhóm dịch vụ<select className={clinicalField} value={categoryId} disabled={busy} onChange={event => { setCategoryId(event.target.value); setKeyword(''); setQuery(''); setPage(0); setServiceId(''); }}><option value="">Tất cả nhóm dịch vụ</option>{categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>

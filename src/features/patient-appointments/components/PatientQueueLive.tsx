@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { RefreshCw, Users, X } from 'lucide-react';
 import type { PatientAppointment } from '@/src/shared/types/appointment';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { bookingRequest } from '@/src/features/booking/api/booking-api';
 
 type Ticket = { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'WAITING_PAYMENT'; own: boolean };
@@ -15,12 +16,11 @@ type Queue = {
   sessionState: 'UPCOMING' | 'ACTIVE' | 'ENDED' | 'CANCELLED';
 };
 
-function usePatientQueue(appointmentId: string, interval: number) {
+function usePatientQueue(appointmentId: string) {
   const [snapshot, setSnapshot] = useState<{ id: string; data: Queue | null; error: string }>({ id: appointmentId, data: null, error: '' });
   const [revision, setRevision] = useState(0);
   useEffect(() => {
     let disposed = false;
-    let timer: ReturnType<typeof setTimeout>;
     let controller: AbortController | undefined;
     let running = false;
     let finished = false;
@@ -40,21 +40,16 @@ function usePatientQueue(appointmentId: string, interval: number) {
           id: appointmentId, data: previous.id === appointmentId ? previous.data : null,
           error: error instanceof Error ? error.message : 'Không tải được hàng chờ.',
         }));
+        throw error;
       } finally {
         running = false;
-        if (!disposed && !finished) timer = setTimeout(load, interval);
       }
     }
-    function refresh() { clearTimeout(timer); void load(); }
-    timer = setTimeout(load, 0);
-    window.addEventListener('focus', refresh);
-    document.addEventListener('visibilitychange', refresh);
-    return () => {
-      disposed = true; clearTimeout(timer); controller?.abort();
-      window.removeEventListener('focus', refresh);
-      document.removeEventListener('visibilitychange', refresh);
-    };
-  }, [appointmentId, interval, revision]);
+    const stop = watchExamQueue({ kind: 'patient' }, () => load(), error => {
+      if (!disposed && !finished) setSnapshot(previous => ({ id: appointmentId, data: previous.id === appointmentId ? previous.data : null, error }));
+    });
+    return () => { disposed = true; controller?.abort(); stop(); };
+  }, [appointmentId, revision]);
   return { data: snapshot.id === appointmentId ? snapshot.data : null, error: snapshot.id === appointmentId ? snapshot.error : '', retry: () => setRevision(value => value + 1) };
 }
 
@@ -88,13 +83,13 @@ function QueueError({ error, retry, stale }: { error: string; retry: () => void;
 }
 
 export function PatientQueueSummaryLive({ appointment }: { appointment: PatientAppointment }) {
-  const { data, error, retry } = usePatientQueue(appointment.id, 15_000);
+  const { data, error, retry } = usePatientQueue(appointment.id);
   return <div className="space-y-2">{error && <QueueError error={error} retry={retry} stale={!!data} />}{data ? <QueueProgress data={data} /> : !error && <p role="status" className="text-xs text-slate-500">Đang tải hàng chờ…</p>}</div>;
 }
 
 export function PatientQueueDialogLive({ appointment, onClose }: { appointment: PatientAppointment; onClose: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
-  const { data, error, retry } = usePatientQueue(appointment.id, 5_000);
+  const { data, error, retry } = usePatientQueue(appointment.id);
   useEffect(() => {
     const opener = document.activeElement as HTMLElement | null;
     dialog.current?.showModal();
@@ -111,7 +106,7 @@ export function PatientQueueDialogLive({ appointment, onClose }: { appointment: 
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500"><span>Cập nhật {new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(data.updatedAt))}</span><button type="button" onClick={retry} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 font-semibold"><RefreshCw className="size-3.5" />Làm mới</button></div>
         <section aria-label="Danh sách tại phòng" className="overflow-hidden rounded-xl border border-slate-200"><h3 className="bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800">Thứ tự phục vụ dự kiến</h3><ol className="divide-y divide-slate-100">{data.tickets.map(ticket => <li key={ticket.number} data-own={ticket.own} className={`flex items-center gap-3 px-4 py-3 text-xs ${ticket.own ? 'bg-blue-50 text-blue-800' : 'text-slate-600'}`}><strong className="min-w-10 text-base tabular-nums">{ticketLabel(ticket.number)}</strong><span className="flex-1">{ticket.own ? 'Bạn / hồ sơ đang xem' : 'Bệnh nhân'}</span><span className="font-medium">{statusLabel(ticket.status)}</span></li>)}</ol>{!data.tickets.length && <p className="p-5 text-xs text-slate-500">Chưa có người đã check-in trong hàng chờ.</p>}</section>
         {!!data.continuations?.length && <section aria-label="Đang thực hiện hoặc chờ quay lại sau CLS" className="rounded-xl border border-slate-200 p-4"><h3 className="text-sm font-bold text-slate-800">Đang thực hiện / chờ quay lại sau CLS</h3><ul className="mt-3 space-y-2">{data.continuations.map(ticket => <li key={ticket.number} className={`flex flex-wrap items-center justify-between gap-2 text-xs ${ticket.own ? 'font-bold text-blue-700' : 'text-slate-600'}`}><span>{ticketLabel(ticket.number)} · {ticket.own ? 'Bạn / hồ sơ đang xem' : 'Bệnh nhân'}</span><span>{ticket.status === 'WAITING_CLS' ? 'Đang thực hiện / chờ kết quả' : 'Chờ bác sĩ tiếp tục khám'}</span></li>)}</ul></section>}
-        <p className="text-xs leading-relaxed text-slate-500">Tự cập nhật mỗi 5 giây khi mở màn hình. Danh sách chỉ tính người đã check-in, gồm người đang khám. Thứ tự có thể thay đổi khi có người check-in hoặc được điều phối; người đã được gọi được giữ lượt. Thông tin cá nhân của người khác được ẩn.</p>
+        <p className="text-xs leading-relaxed text-slate-500">Cập nhật trực tiếp khi hàng chờ thay đổi. Danh sách chỉ tính người đã check-in, gồm người đang khám. Thứ tự có thể thay đổi khi có người check-in hoặc được điều phối; người đã được gọi được giữ lượt. Thông tin cá nhân của người khác được ẩn.</p>
       </>}
     </div>
   </dialog>;
