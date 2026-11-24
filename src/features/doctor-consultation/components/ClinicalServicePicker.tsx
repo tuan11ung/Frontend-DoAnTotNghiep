@@ -1,12 +1,10 @@
 'use client';
 
 import { Search, X } from 'lucide-react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { DropdownOption, DropdownResults } from '@/src/shared/components/DropdownOptions';
-import { DataTablePagination } from '@/src/shared/components/pagination';
-import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import type { TechnicianMedicalService } from '@/src/features/technician-queue/technician-api.types';
-import { consultationApi } from '../api/consultation-api';
+import { consultationApi, type ClinicalServiceCursorResponse } from '../api/consultation-api';
 
 interface ClinicalServicePickerProps {
   categoryId: string;
@@ -21,30 +19,14 @@ export function ClinicalServicePicker({ categoryId, selectedIds, disabled, onSel
   const results = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const [retry, setRetry] = useState(0);
-  const [response, setResponse] = useState<{
-    key: string; data: ApiPage<TechnicianMedicalService> | null; error: string;
-  } | null>(null);
-  const query = keyword.trim();
-  const requestKey = JSON.stringify([query, categoryId, page, pageSize, retry]);
-  const current = response?.key === requestKey ? response : null;
-  const loading = !current;
+  const [query, setQuery] = useState('');
+  const searchTerm = keyword.trim();
 
   useEffect(() => {
-    if (!open || disabled) return;
-    const controller = new AbortController();
-    const timer = setTimeout(() => {
-      consultationApi.services(query, page, controller.signal, categoryId ? Number(categoryId) : undefined, pageSize)
-        .then(data => { if (!controller.signal.aborted) setResponse({ key: requestKey, data, error: '' }); })
-        .catch(error => {
-          if (!controller.signal.aborted) setResponse({ key: requestKey, data: null,
-            error: error instanceof Error ? error.message : 'Không thể tải dịch vụ CLS.' });
-        });
-    }, query ? 300 : 0);
-    return () => { clearTimeout(timer); controller.abort(); };
-  }, [open, disabled, query, page, pageSize, categoryId, requestKey]);
+    if (query === searchTerm) return;
+    const timer = setTimeout(() => setQuery(searchTerm), 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, query]);
 
   return <div className="relative min-w-0" onBlur={event => {
     if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
@@ -66,37 +48,90 @@ export function ClinicalServicePicker({ categoryId, selectedIds, disabled, onSel
         aria-controls={open && !disabled ? id + '-results' : undefined}
         placeholder="Nhập tên hoặc mã dịch vụ, ví dụ Glucose, LAB-…"
         onFocus={() => setOpen(true)} onClick={() => setOpen(true)}
-        onChange={event => { setKeyword(event.target.value); setPage(0); setOpen(true); }}
+        onChange={event => { setKeyword(event.target.value); setOpen(true); }}
         onKeyDown={event => { if (event.key === 'Enter' && !event.nativeEvent.isComposing) event.preventDefault(); }}
         className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-11 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100 [&::-webkit-search-cancel-button]:appearance-none" />
       {keyword && <button type="button" disabled={disabled} aria-label="Xóa từ khóa tìm dịch vụ"
         className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-slate-500 hover:bg-slate-100"
-        onClick={() => { setKeyword(''); setPage(0); input.current?.focus(); setOpen(true); }}>
+        onClick={() => { setKeyword(''); setQuery(''); input.current?.focus(); setOpen(true); }}>
         <X aria-hidden="true" className="size-4" />
       </button>}
     </div>
-    {open && !disabled && <DropdownResults ref={results} placement="overlay" id={id + '-results'}
-      role="region" aria-label="Kết quả tìm dịch vụ CLS" aria-busy={loading}>
-      {loading ? <p role="status" className="p-4 text-sm text-slate-500">Đang tìm dịch vụ…</p>
-        : current?.error ? <div className="space-y-2 p-4 text-sm">
-          <p role="alert" className="text-rose-700">{current.error}</p>
-          <button type="button" onClick={() => setRetry(value => value + 1)} className="font-semibold text-blue-700">Thử lại</button>
-        </div>
-        : current?.data && <>
-          {current.data.content.length ? <ul className="divide-y divide-slate-100">{current.data.content.map(service => {
-            const selected = selectedIds.includes(service.id);
-            return <li key={service.id}><DropdownOption data-service-option label={service.name} description={service.code}
-              selected={selected} status={selected ? 'Đã chọn trong đợt này' : undefined}
-              disabled={selected || selectedIds.length >= 100}
-              trailing={selected ? undefined : <span className="shrink-0 text-xs font-semibold text-blue-700">+ Thêm</span>}
-              onClick={() => { onSelect(service); input.current?.focus(); }} /></li>;
-          })}</ul> : <p role="status" className="p-4 text-sm text-slate-500">Không có dịch vụ phù hợp. Hãy đổi nhóm hoặc từ khóa.</p>}
-          <div className="border-t border-slate-100 p-2"><DataTablePagination
-            pageIndex={current.data.page} pageSize={current.data.size} totalRecords={current.data.totalElements}
-            recordLabel="dịch vụ" pageSizeLabel="Số dịch vụ" pageSizeAriaLabel="Số dịch vụ mỗi trang"
-            ariaLabel="Phân trang kết quả tìm dịch vụ CLS"
-            onPageChange={setPage} onPageSizeChange={size => { setPageSize(size); setPage(0); }} /></div>
-        </>}
-    </DropdownResults>}
+    {open && !disabled && (query !== searchTerm
+      ? <DropdownResults placement="overlay" id={id + '-results'} role="region" aria-label="Kết quả tìm dịch vụ CLS" aria-busy="true">
+        <p role="status" className="p-4 text-sm text-slate-500">Đang tìm dịch vụ…</p>
+      </DropdownResults>
+      : <ClinicalServiceResults key={JSON.stringify([query, categoryId])} query={query} categoryId={categoryId}
+        selectedIds={selectedIds} rootRef={results} id={id + '-results'}
+        onSelect={service => { onSelect(service); input.current?.focus(); }} />)}
   </div>;
+}
+
+function ClinicalServiceResults({ query, categoryId, selectedIds, rootRef, id, onSelect }: {
+  query: string; categoryId: string; selectedIds: number[]; rootRef: RefObject<HTMLDivElement | null>;
+  id: string; onSelect: (service: TechnicianMedicalService) => void;
+}) {
+  const [catalogue, setCatalogue] = useState<ClinicalServiceCursorResponse | null>(null);
+  const [afterId, setAfterId] = useState<number>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [retry, setRetry] = useState(0);
+  const sentinel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    Promise.resolve().then(async () => {
+      if (controller.signal.aborted) return;
+      setLoading(true); setError('');
+      try {
+        const data = await consultationApi.servicesCursor(query, afterId, controller.signal, categoryId ? Number(categoryId) : undefined);
+        if (controller.signal.aborted) return;
+        if (!Array.isArray(data.content) || typeof data.hasMore !== 'boolean'
+            || data.hasMore && (!Number.isSafeInteger(data.nextCursor) || (data.nextCursor ?? 0) <= (afterId ?? 0)
+              || data.nextCursor !== data.content.at(-1)?.id)) {
+          throw new Error('Không thể tải tiếp dịch vụ. Vui lòng tìm kiếm lại.');
+        }
+        setCatalogue(previous => ({ ...data, content: afterId == null ? data.content
+          : Array.from(new Map([...(previous?.content ?? []), ...data.content].map(service => [service.id, service])).values()) }));
+      } catch (cause) {
+        if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : 'Không thể tải dịch vụ CLS.');
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    });
+    return () => controller.abort();
+  }, [query, categoryId, afterId, retry]);
+
+  const loadMore = useCallback(() => {
+    if (loading || error || !catalogue?.hasMore || catalogue.nextCursor == null) return;
+    setLoading(true); setAfterId(catalogue.nextCursor);
+  }, [loading, error, catalogue]);
+
+  useEffect(() => {
+    if (loading || error || !catalogue?.hasMore || !rootRef.current || !sentinel.current) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) loadMore();
+    }, { root: rootRef.current, rootMargin: '0px 0px 100px 0px' });
+    observer.observe(sentinel.current);
+    return () => observer.disconnect();
+  }, [loading, error, catalogue?.hasMore, loadMore, rootRef]);
+
+  return <DropdownResults ref={rootRef} placement="overlay" id={id} role="region"
+    aria-label="Kết quả tìm dịch vụ CLS" aria-busy={loading}>
+    <ul className="divide-y divide-slate-100">{catalogue?.content.map(service => {
+      const selected = selectedIds.includes(service.id);
+      return <li key={service.id}><DropdownOption data-service-option label={service.name} description={service.code}
+        selected={selected} status={selected ? 'Đã chọn trong đợt này' : undefined}
+        disabled={selected || selectedIds.length >= 100} onClick={() => onSelect(service)} /></li>;
+    })}</ul>
+    {!loading && !error && !catalogue?.content.length && <p role="status" className="p-4 text-sm text-slate-500">Không có dịch vụ phù hợp. Hãy đổi nhóm hoặc từ khóa.</p>}
+    {error && <div className="space-y-2 p-4 text-sm"><p role="alert" className="text-rose-700">{error}</p>
+      <button type="button" onClick={() => setRetry(value => value + 1)} className="font-semibold text-blue-700">Thử lại</button>
+    </div>}
+    <div ref={sentinel} className="p-3 text-center text-xs text-slate-500">
+      {loading ? <p role="status">{catalogue?.content.length ? 'Đang tải thêm dịch vụ…' : 'Đang tìm dịch vụ…'}</p>
+        : catalogue?.hasMore && !error ? <button type="button" className="font-semibold text-blue-700" onClick={loadMore}>Tải thêm dịch vụ</button>
+          : !!catalogue?.content.length && !error && `Đã hiển thị ${catalogue.content.length} dịch vụ`}
+    </div>
+  </DropdownResults>;
 }

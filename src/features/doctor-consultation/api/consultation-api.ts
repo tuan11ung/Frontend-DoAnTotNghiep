@@ -30,6 +30,7 @@ export interface AllergyInput { id?: number; patientId: number; ingredientId?: n
 export interface ConditionInput { id?: number; patientId: number; icd10Id?: number | null; name: string; diagnosedYear: number | null; recovered: boolean; note?: string | null }
 export interface Icd10Choice { id: number; code: string; name: string }
 export interface ClinicalServiceCategory { id: number; parentId?: number | null; code: string; name: string }
+export interface ClinicalServiceCursorResponse { content: TechnicianMedicalService[]; nextCursor?: number | null; hasMore: boolean }
 export interface PrescriptionDraft {
   note: string;
   medicines: { hospitalMedicineId: number; quantity: number; dosage: string; usageInstruction: string; durationDays: number }[];
@@ -71,5 +72,6 @@ export const consultationApi = {
     throw new Error('Không thể tải đầy đủ nhóm dịch vụ CLS.');
   },
   services: (keyword: string, page: number, signal?: AbortSignal, serviceCategoryId?: number, size = 20) => clinicalRequest<ApiPage<TechnicianMedicalService>>('medical-services/search', { keyword, serviceCategoryId, pageable: { page, size } }, signal),
+  servicesCursor: (keyword: string, afterId?: number, signal?: AbortSignal, serviceCategoryId?: number) => clinicalRequest<ClinicalServiceCursorResponse>('medical-services/search-cursor', { keyword, serviceCategoryId, afterId, size: 20 }, signal),
   history: (patientId: number, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<EncounterSummary>>('encounters/history/search', { patientId, pageable: { page, size: 20 } }, signal),
 };
