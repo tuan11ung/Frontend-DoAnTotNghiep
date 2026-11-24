@@ -1,10 +1,11 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
-import type { CSSProperties, HTMLAttributes } from 'react';
+import { useImperativeHandle, useLayoutEffect, useRef } from 'react';
+import type { CSSProperties, HTMLAttributes, Ref } from 'react';
 
 export interface ScrollableTableProps extends Omit<HTMLAttributes<HTMLDivElement>, 'role' | 'tabIndex' | 'aria-label'> {
   label: string;
+  ref?: Ref<HTMLDivElement>;
   /** Use "none" when a surrounding flex layout already limits the table height. */
   maxHeight?: CSSProperties['maxHeight'];
   /** Cap the viewport after this many body rows, including fractional rows. */
@@ -14,8 +15,10 @@ export interface ScrollableTableProps extends Omit<HTMLAttributes<HTMLDivElement
 }
 
 /** Keeps both scroll directions inside the table, with its footer outside. */
-export function ScrollableTable({ label, maxHeight = 'min(60dvh, 40rem)', visibleRows, stickyHeader = true, className = '', style, children, ...props }: ScrollableTableProps) {
+export function ScrollableTable({ ref, label, maxHeight = 'min(60dvh, 40rem)', visibleRows, stickyHeader = true, className = '', style, children, ...props }: ScrollableTableProps) {
   const region = useRef<HTMLDivElement>(null);
+  // Expose the same scroll viewport externally while retaining it for row measurement.
+  useImperativeHandle(ref, () => region.current!, []);
   useLayoutEffect(() => {
     const container = region.current;
     const table = container?.querySelector('table');

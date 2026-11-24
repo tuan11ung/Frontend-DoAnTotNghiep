@@ -16,6 +16,7 @@ export interface ReceptionSlot extends CareCost {
   timeSlotId: number; staffId: number; doctorName: string; rankName?: string; roomId: number; roomName: string;
   roomLocation?: string; specialtyId: number; specialtyName: string; serviceType: 'BHYT' | 'SERVICE';
   appointmentDate: string; startTime: string; endTime: string; price?: number | null; remainingCapacity: number; held?: boolean;
+  maxPatients?: number; onlineQuota?: number; onlineBooked?: number; offlineBooked?: number; bookable?: boolean;
 }
 export interface ReceptionAppointment extends CareCost {
   appointmentId: number; appointmentCode: string; status: string; patientId: number; patientName: string;
@@ -32,6 +33,7 @@ export interface ReceptionInvoice { id: number; invoiceCode: string; encounterId
 export interface ReceptionInvoiceDetail { originalTotalAmount?: number; insuranceDiscountAmount?: number; insuranceDiscountPercent?: number; consultationPayment?: { invoiceId: number | null; invoiceCode: string | null; status: 'PAID' | 'UNPAID' | 'FEE_PENDING' }; refunds?: import('@/src/features/patient-payments/payment.types').PaymentRefund[]; lines?: {orderedServiceId?:number; name:string; amount:number; originalAmount?:number; insuranceDiscountAmount?:number; insuranceDiscountPercent?:number; cancelled?:boolean}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode?: string | null; appointmentCode?: string; hospitalName: string }; transactions: { id: number; amount: number; methodLabel: string; statusLabel: string; status?: 'PENDING' | 'SUCCESS' | 'FAILED'; transactionRef?: string; paidDate?: string; createdAt?: string }[] }
 
 export const receptionApi = {
+  bookingWindow: (signal?: AbortSignal) => clinicalRequest<{ today: string; latestDate: string }>('reception/booking-window', {}, signal),
   patientsPage: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page, size: 20 } }, signal),
   patients: async (keyword: string, signal?: AbortSignal) => (await clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page: 0, size: 20 } }, signal)).content,
   createPatient: (input: object) => clinicalRequest<ReceptionPatientCreated>('reception/patients/create', input),

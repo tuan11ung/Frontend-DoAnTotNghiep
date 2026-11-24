@@ -6,9 +6,9 @@
 }
 
 .toast-region {
-  position: fixed; inset: auto 1rem 1rem auto; z-index: 9999;
+  position: fixed; inset: 6rem 1rem auto auto; z-index: 9999;
   display: flex; flex-direction: column; gap: .75rem;
-  width: min(26rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem);
+  width: min(26rem, calc(100vw - 2rem)); max-height: calc(100dvh - 7rem);
   overflow-y: auto; pointer-events: none;
 }
 .app-toast { animation: toast-feedback 4s ease both; flex-shrink: 0; }
