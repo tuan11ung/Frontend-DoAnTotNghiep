@@ -101,6 +101,11 @@ export function DoctorHealthHistory({
         e.preventDefault();
         if (!editor || !editable || lock.current) return;
         const form = new FormData(e.currentTarget), name = String(form.get('name') || '').trim();
+        const note = String(form.get('note') || '').trim();
+        if (note.length > 200) {
+            setError('Ghi chú không được vượt quá 200 ký tự.');
+            return;
+        }
         if (!name) {
             setError('Nhập tên trước khi lưu.');
             return;
@@ -123,6 +128,7 @@ export function DoctorHealthHistory({
                     name,
                     type,
                     reaction: reaction || null,
+                    note: note || null,
                     ingredientId: type === 'DRUG' ? selection?.id ?? editor.entry?.ingredientId : null
                 });
                 if (saved.patientId !== patientId) throw Error('Phản hồi không thuộc bệnh nhân đang khám.');
@@ -134,7 +140,8 @@ export function DoctorHealthHistory({
                     name,
                     icd10Id: selection?.id ?? editor.entry?.icd10Id,
                     diagnosedYear: yearValue,
-                    recovered: form.get('recovered') === 'on'
+                    recovered: form.get('recovered') === 'on',
+                    note: note || null
                 });
                 if (saved.patientId !== patientId) throw Error('Phản hồi không thuộc bệnh nhân đang khám.');
                 onCondition(saved);
@@ -190,6 +197,10 @@ export function DoctorHealthHistory({
                                 onClick={() => setSelection(undefined)}>Bỏ chọn
                         </button>
                     </p>}</div>}
+                <label className="text-sm sm:col-span-2">Ghi chú (tối đa 200 ký tự)
+                    <textarea name="note" maxLength={200} rows={3} defaultValue={entry?.note ?? ''}
+                              className={clinicalField}/>
+                </label>
                 <p className="text-xs text-slate-600 sm:col-span-2">Chỉ xác minh sau khi đối chiếu với người bệnh hoặc
                     tài liệu y tế.</p>
                 <div className="flex gap-3 sm:col-span-2">
@@ -235,6 +246,7 @@ export function DoctorHealthHistory({
                                 <span className="ml-2 rounded bg-white px-1.5 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200">{types[a.type] || a.type}</span>
                             </p>
                             <p className="text-slate-600">{a.reaction || 'Chưa cung cấp biểu hiện'}</p>
+                            {a.note && <p className="whitespace-pre-wrap break-words text-slate-600">Ghi chú: {a.note}</p>}
                             <div className="flex flex-wrap items-center gap-2">{badge(a.verified, a.source)}</div>
                         </div>
                         <button type="button" disabled={locked} className={clinicalGhostButton}
@@ -256,6 +268,7 @@ export function DoctorHealthHistory({
                                     {c.recovered ? 'Đã khỏi' : 'Đang theo dõi'}</span>
                             </p>
                             <p className="text-slate-600">{c.diagnosedYear ? 'Phát hiện năm ' + c.diagnosedYear : 'Chưa có năm phát hiện'}</p>
+                            {c.note && <p className="whitespace-pre-wrap break-words text-slate-600">Ghi chú: {c.note}</p>}
                             <div className="flex flex-wrap items-center gap-2">{badge(c.verified, c.source)}</div>
                         </div>
                         <button type="button" disabled={locked} className={clinicalGhostButton}

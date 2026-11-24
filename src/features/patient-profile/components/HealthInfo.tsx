@@ -22,14 +22,16 @@ export function HealthInfo({ data, actions }: { data: ProfileData; actions: Prof
     if (!editor || busy) return;
     const form = new FormData(event.currentTarget);
     const name = String(form.get('healthName') ?? '').trim();
+    const note = String(form.get('healthNote') ?? '').trim();
+    if (note.length > 200) { setError('Ghi chú không được vượt quá 200 ký tự.'); return; }
     if (!name || name.length > 255) { setError('Vui lòng nhập tên hợp lệ, tối đa 255 ký tự.'); return; }
     const yearText = String(form.get('diagnosedYear') ?? '');
     const year = yearText ? Number(yearText) : null;
     if (editor.kind === 'conditions' && year !== null && (!Number.isInteger(year) || year < 1900 || year > businessNow().getFullYear())) { setError('Năm phát hiện phải từ 1900 đến năm hiện tại.'); return; }
     setBusy(true); setError(''); setSuccess('');
     try {
-      if (editor.kind === 'allergies') await actions.saveAllergy({ id: editor.entry?.id, name, type: String(form.get('allergyType')) as Allergy['type'], reaction: String(form.get('reaction') ?? '').trim() || null });
-      else await actions.saveCondition({ id: editor.entry?.id, name, diagnosedYear: year, recovered: form.get('recovered') === 'on' });
+      if (editor.kind === 'allergies') await actions.saveAllergy({ id: editor.entry?.id, name, type: String(form.get('allergyType')) as Allergy['type'], reaction: String(form.get('reaction') ?? '').trim() || null, note: note || null });
+      else await actions.saveCondition({ id: editor.entry?.id, name, diagnosedYear: year, recovered: form.get('recovered') === 'on', note: note || null });
       setEditor(null); setSuccess('Đã lưu khai báo sức khỏe.');
     } catch (e) { setError(e instanceof Error ? e.message : 'Không thể lưu khai báo.'); }
     finally { setBusy(false); }
@@ -52,6 +54,7 @@ export function HealthInfo({ data, actions }: { data: ProfileData; actions: Prof
       <div className="min-w-0 flex-1"><p className="break-words text-sm font-semibold text-slate-800">{entry.name}</p>
         {'reaction' in entry && <p className="mt-1 text-xs leading-relaxed text-slate-500">Biểu hiện: {entry.reaction || 'Chưa khai báo'}</p>}
         {'recovered' in entry && <p className="mt-1 text-xs text-slate-500">{entry.diagnosedYear ? `Phát hiện năm ${entry.diagnosedYear} · ` : ''}{entry.recovered ? 'Đã khỏi / ổn định theo khai báo' : 'Đang theo dõi'}</p>}
+        {entry.note && <p className="mt-1 whitespace-pre-wrap break-words text-xs leading-relaxed text-slate-600">Ghi chú: {entry.note}</p>}
         <span className={`mt-2 inline-flex items-center gap-1 text-[11px] font-medium ${editable ? 'text-slate-500' : 'text-emerald-700'}`}>{editable ? 'Tự khai báo' : <><ShieldCheck className="size-3.5" />{entry.verified ? 'Đã được xác minh' : 'Ghi nhận bởi bác sĩ'}</>}</span>
       </div>
       {editable ? <div className="flex gap-1"><button type="button" disabled={busy} aria-label={`Sửa ${entry.name}`} className="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={() => open(kind === 'allergies' ? { kind, entry: entry as Allergy } : { kind, entry: entry as Condition })}><Pencil className="size-4" /></button><button type="button" disabled={busy} aria-label={`Xóa ${entry.name}`} className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-2 focus-visible:outline-rose-600" onClick={() => { setDeleting({ kind, entry }); setEditor(null); setError(''); setSuccess(''); }}><Trash2 className="size-4" /></button></div>
@@ -61,6 +64,7 @@ export function HealthInfo({ data, actions }: { data: ProfileData; actions: Prof
   const editorForm = editor && <form key={`${editor.kind}-${editor.entry?.id ?? 'new'}-${editor.kind === 'allergies' ? editor.type : ''}`} onSubmit={save} aria-label="Khai báo sức khỏe" className="mt-3 space-y-4 rounded-xl border border-blue-200 bg-blue-50/40 p-4"><h3 className="font-semibold text-slate-800">{editor.entry ? 'Chỉnh sửa' : 'Thêm'} {editor.kind === 'allergies' ? 'dị ứng' : 'bệnh mạn tính'}</h3><fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><Field label={editor.kind === 'allergies' ? 'Tên thuốc / thực phẩm gây dị ứng *' : 'Tên bệnh *'} id="healthName"><input autoFocus id="healthName" name="healthName" required maxLength={255} defaultValue={editor.entry?.name ?? ''} className={inputClass} /></Field></div>
         {editor.kind === 'allergies' ? <><Field label="Loại dị ứng" id="allergyType"><select id="allergyType" name="allergyType" className={inputClass} defaultValue={editor.entry?.type ?? editor.type ?? 'DRUG'}><option value="DRUG">Thuốc</option><option value="FOOD">Thực phẩm</option><option value="OTHER">Khác</option></select></Field><Field label="Biểu hiện dị ứng" id="reaction"><input id="reaction" name="reaction" maxLength={255} defaultValue={editor.entry?.reaction ?? ''} placeholder="Ví dụ: nổi mẩn, ngứa…" className={inputClass} /></Field></>
           : <><Field label="Năm phát hiện" id="diagnosedYear"><input id="diagnosedYear" name="diagnosedYear" type="number" min={1900} max={businessNow().getFullYear()} defaultValue={editor.entry?.diagnosedYear ?? ''} placeholder="Ví dụ: 2023" className={inputClass} /></Field><label className="flex items-center gap-2 self-center text-sm text-slate-700"><input type="checkbox" name="recovered" defaultChecked={editor.entry?.recovered ?? false} className="size-4 accent-blue-600" />Đã khỏi</label></>}
+        <div className="sm:col-span-2"><Field label="Ghi chú (tối đa 200 ký tự)" id="healthNote"><textarea id="healthNote" name="healthNote" maxLength={200} rows={3} defaultValue={editor.entry?.note ?? ''} className={inputClass} /></Field></div>
       </fieldset><div className="flex flex-wrap justify-end gap-2"><button type="button" disabled={busy} className={secondaryClass} onClick={() => { setEditor(null); setError(''); }}>Hủy</button><button type="submit" disabled={busy} className={primaryClass}>{busy ? 'Đang lưu…' : 'Lưu khai báo'}</button></div></form>;
   return <section id="health" aria-labelledby="health-heading" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white shadow-sm">
     <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5 sm:px-6"><span className="rounded-xl bg-rose-50 p-2.5 text-rose-500"><HeartPulse className="size-5" /></span><div><h2 id="health-heading" className="font-bold text-slate-900">Thông tin sức khỏe</h2><p className="mt-1 text-xs text-slate-500">Các thông tin y tế quan trọng như tiền sử dị ứng, tiền sử bệnh mãn tính.</p></div></div>

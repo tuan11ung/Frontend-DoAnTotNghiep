@@ -28,7 +28,8 @@ export function isProfile(value: unknown): value is PersonalProfile {
 }
 function isHealth(value: unknown, patientId: number): value is Record<string, unknown> {
   return isObject(value) && Number.isSafeInteger(value.id) && Number(value.id) > 0 && value.patientId === patientId
-    && typeof value.name === 'string' && ['PATIENT', 'DOCTOR'].includes(String(value.source)) && typeof value.verified === 'boolean';
+    && typeof value.name === 'string' && (value.note === undefined || optionalText(value.note))
+    && ['PATIENT', 'DOCTOR'].includes(String(value.source)) && typeof value.verified === 'boolean';
 }
 export function isAllergy(value: unknown, patientId: number): value is Allergy {
   return isHealth(value, patientId) && ['DRUG', 'FOOD', 'OTHER'].includes(String(value.type)) && optionalText(value.reaction);
@@ -53,14 +54,14 @@ function readProfile(value: unknown): PersonalProfile {
 
 function readAllergy(value: unknown, patientId: number): Allergy {
   if (!isObject(value)) throw invalid();
-  const allergy = { ...value, reaction: value.reaction ?? null };
+  const allergy = { ...value, reaction: value.reaction ?? null, note: value.note ?? null };
   if (!isAllergy(allergy, patientId)) throw invalid();
   return allergy;
 }
 
 function readCondition(value: unknown, patientId: number): Condition {
   if (!isObject(value)) throw invalid();
-  const condition = { ...value, diagnosedYear: value.diagnosedYear ?? null };
+  const condition = { ...value, diagnosedYear: value.diagnosedYear ?? null, note: value.note ?? null };
   if (!isCondition(condition, patientId)) throw invalid();
   return condition;
 }

@@ -20,6 +20,7 @@ export interface HealthEntry {
   id: number;
   patientId: number;
   name: string;
+  note?: string | null;
   source: 'PATIENT' | 'DOCTOR';
   verified: boolean;
 }
@@ -31,8 +32,8 @@ export interface Condition extends HealthEntry {
   diagnosedYear: number | null;
   recovered: boolean;
 }
-export type AllergyInput = Pick<Allergy, 'name' | 'type' | 'reaction'> & { id?: number };
-export type ConditionInput = Pick<Condition, 'name' | 'diagnosedYear' | 'recovered'> & { id?: number };
+export type AllergyInput = Pick<Allergy, 'name' | 'type' | 'reaction' | 'note'> & { id?: number };
+export type ConditionInput = Pick<Condition, 'name' | 'diagnosedYear' | 'recovered' | 'note'> & { id?: number };
 export interface ProfileData {
   profile: PersonalProfile;
   allergies: Allergy[];

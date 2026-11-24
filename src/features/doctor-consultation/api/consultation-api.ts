@@ -24,10 +24,10 @@ export interface EncounterDetail extends EncounterSummary {
   symptoms?: string; clinicalNotes?: string; notable: boolean; notableReason?: string; diagnoses: EncounterDiagnosis[];
 }
 export interface ClinicalPatient { id: number; fullName: string; dob: string; gender: string; patientCode: string; maskedNationalId?: string; maskedPhone?: string; address?: string; insuranceNo?: string }
-export interface ClinicalAllergy { id: number; patientId?: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null; verified?: boolean; source?: string }
-export interface ClinicalCondition { id: number; patientId?: number; icd10Id?: number | null; name: string; diagnosedYear?: number | null; recovered: boolean; verified?: boolean; source?: string }
-export interface AllergyInput { id?: number; patientId: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null }
-export interface ConditionInput { id?: number; patientId: number; icd10Id?: number | null; name: string; diagnosedYear: number | null; recovered: boolean }
+export interface ClinicalAllergy { id: number; patientId?: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null; note?: string | null; verified?: boolean; source?: string }
+export interface ClinicalCondition { id: number; patientId?: number; icd10Id?: number | null; name: string; diagnosedYear?: number | null; note?: string | null; recovered: boolean; verified?: boolean; source?: string }
+export interface AllergyInput { id?: number; patientId: number; ingredientId?: number | null; name: string; type: string; reaction?: string | null; note?: string | null }
+export interface ConditionInput { id?: number; patientId: number; icd10Id?: number | null; name: string; diagnosedYear: number | null; recovered: boolean; note?: string | null }
 export interface Icd10Choice { id: number; code: string; name: string }
 export interface ClinicalServiceCategory { id: number; parentId?: number | null; code: string; name: string }
 export interface PrescriptionDraft {
