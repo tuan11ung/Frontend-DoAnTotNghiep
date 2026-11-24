@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -41,6 +41,7 @@ export function PatientAppointmentsPage() {
   const queueAppointment = appointments.find((appointment) => appointment.id === queueAppointmentId) || null;
   const [cancelTarget, setCancelTarget] = useState<PatientAppointment | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -50,11 +51,11 @@ export function PatientAppointmentsPage() {
   const handleConfirmCancel = async (id: string, reason: string) => {
     const res = await cancelAppointment(id, reason);
     if (res.success) {
-      showToast(`Đã hủy lịch hẹn ${res.appointment?.code} thành công.`);
-    } else {
-      showToast(res.error || 'Có lỗi xảy ra khi hủy lịch.');
+      showToast('Đã hủy lịch khám thành công.');
+      requestAnimationFrame(() => headingRef.current?.focus({ preventScroll: true }));
+      return;
     }
-    return res.success;
+    return res.error || 'Chưa thể hủy lịch khám. Vui lòng thử lại.';
   };
 
   const today = vietnamDate();
@@ -139,7 +140,7 @@ export function PatientAppointmentsPage() {
               <CalendarDays className="w-3.5 h-3.5" />
               <span>Theo dõi lịch khám liên viện 24/7</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 ref={headingRef} tabIndex={-1} className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Lịch khám của tôi
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">

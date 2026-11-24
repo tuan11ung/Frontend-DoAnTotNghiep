@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
-import { bookingApi } from '@/src/features/booking/api/booking-api';
+import { bookingApi, BookingApiError } from '@/src/features/booking/api/booking-api';
 import type { BookingHospital, BookingPatientProfile } from '@/src/features/booking/models/types/bhyt.types';
 import { cancelPatientAppointment, searchPatientAppointments, toPatientAppointment } from '../api/patient-appointments-api';
 import type { PatientAppointment } from '../models/types/appointment.types';
@@ -30,6 +31,7 @@ export function usePatientAppointments() {
   const [remote, setRemote] = useState<{ token: string; appointments: PatientAppointment[]; profiles: BookingPatientProfile[]; hospitals: BookingHospital[] } | null>(null);
   const [failure, setFailure] = useState<{ token: string; message: string } | null>(null);
   const busy = useRef(false);
+  const needsVerification = useRef(new Set<string>());
   const mutation = useRef(0);
   useEffect(() => {
     if (!auth.isReady || !auth.isAuthenticated || !token) return;
@@ -45,13 +47,13 @@ export function usePatientAppointments() {
           setRemote({ token: token!, profiles, hospitals, appointments: items.map(item => toPatientAppointment(item, profiles, hospitals)) });
           setFailure(null);
         }
-      } catch (error) { if (!controller.signal.aborted && generation === mutation.current) setFailure({ token: token!, message: error instanceof Error ? error.message : 'Không thể tải lịch khám.' }); }
+      } catch (error) { if (!controller.signal.aborted && generation === mutation.current) setFailure({ token: token!, message: error instanceof Error ? error.message : 'Không thể tải lịch khám.' }); throw error; }
       finally { running = false; }
     }
-    void load();
-    const timer = window.setInterval(() => void load(), 15000);
-    window.addEventListener('focus', load); document.addEventListener('visibilitychange', load);
-    return () => { controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
+    const stop = watchExamQueue({ kind: 'patient' }, () => load(), message => {
+      if (!controller.signal.aborted) setFailure({ token: token!, message });
+    });
+    return () => { controller.abort(); stop(); };
   }, [auth.isReady, auth.isAuthenticated, token, revision]);
   const data = remote?.token === token ? remote : null;
   const appointments = data?.appointments ?? [];
@@ -62,17 +64,38 @@ export function usePatientAppointments() {
     mutation.current++;
     try {
 
-      if (!token || !data) throw new Error('Vui lòng đăng nhập và tải lại lịch khám.');
-      const target = data.appointments.find(appointment => appointment.id === id);
+      if (!token || !data) return { success: false, error: 'Vui lòng đăng nhập và tải lại lịch khám.' };
+      let target = data.appointments.find(appointment => appointment.id === id);
+      if (needsVerification.current.has(id)) {
+        const items = await searchPatientAppointments(AbortSignal.timeout(30000));
+        const item = items.find(row => String(row.appointmentId) === id);
+        target = item && toPatientAppointment(item, data.profiles, data.hospitals);
+        if (target?.status === 'CANCELLED') {
+          const cancelled = target;
+          setRemote(current => current?.token === token ? { ...current, appointments: current.appointments.map(a => a.id === id ? cancelled : a) } : current);
+          needsVerification.current.delete(id);
+          return { success: true, appointment: cancelled };
+        }
+      }
       if (!target || !canCancelAppointment(target)) {
-        throw new Error('Lịch khám đã quá hạn hủy hoặc không còn ở trạng thái được phép hủy.');
+        return { success: false, error: 'Lịch khám đã quá hạn hủy hoặc không còn ở trạng thái được phép hủy.' };
       }
       const result = await cancelPatientAppointment(Number(id), reason);
       const appointment = toPatientAppointment(result, data.profiles, data.hospitals);
+      needsVerification.current.delete(id);
       setRemote(current => current?.token === token ? { ...current, appointments: current.appointments.map(a => a.id === id ? appointment : a) } : current);
       return { success: true, appointment };
-    } catch (error) { setRevision(v => v + 1); return { success: false, error: error instanceof Error ? error.message : 'Không thể hủy lịch.' }; }
-    finally { busy.current = false; }
+    } catch (error) {
+      needsVerification.current.add(id);
+      if (error instanceof BookingApiError && [401, 403].includes(error.status)) {
+        return { success: false, error: 'Tài khoản hiện tại chưa được phép hủy lịch này. Vui lòng kiểm tra lại phiên đăng nhập.' };
+      }
+      if (error instanceof BookingApiError && [400, 404, 409, 422].includes(error.status)) {
+        return { success: false, error: 'Cơ sở chưa chấp nhận yêu cầu hủy. Vui lòng kiểm tra trạng thái và thời hạn hủy lịch.' };
+      }
+      return { success: false, error: 'Chưa xác nhận được kết quả. Khi bạn thử lại, hệ thống sẽ kiểm tra trạng thái lịch trước khi gửi.' };
+    }
+    finally { busy.current = false; setRevision(value => value + 1); }
   }
 
   return { auth, appointments, profiles: data?.profiles ?? [], loading: !ready || !auth.isReady || (auth.isAuthenticated && !data && failure?.token !== token),

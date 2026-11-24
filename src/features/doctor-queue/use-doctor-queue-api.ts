@@ -6,7 +6,7 @@ import { countQueuePatients, filterQueuePatients } from '@/src/features/clinical
 import type { PatientTag, QueueFilterStatus, QueuePatient, QueueShift, QueueStatus } from '@/src/features/clinical-queue/types';
 import { doctorQueueApi, type DoctorQueuePatientResponse, type DoctorQueueRoomResponse } from './api/doctor-queue-api';
 
-const POLLING_INTERVAL_MS = 15_000;
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 
 function formatTime(value: string | null | undefined) {
   if (!value) return '—';
@@ -93,19 +93,22 @@ export function useDoctorQueueApi() {
   const [selectedReturnId, setSelectedReturnId] = useState('');
   const [notice, setNotice] = useState('');
   const selectedScheduleRef = useRef('');
+  const requestVersion = useRef(0);
 
-  const loadQueue = useCallback(async (room: DoctorQueueRoomResponse, signal?: AbortSignal, showRefresh = false) => {
+  const loadQueue = useCallback(async (room: DoctorQueueRoomResponse, signal?: AbortSignal, showRefresh = false, retryFailure = false) => {
+    const version = ++requestVersion.current;
     if (showRefresh) setRefreshing(true);
     try {
       const nextRecords = await doctorQueueApi.getQueue(room.roomId, room.scheduleId, signal);
-      if (selectedScheduleRef.current === String(room.scheduleId)) {
+      if (!signal?.aborted && version === requestVersion.current && selectedScheduleRef.current === String(room.scheduleId)) {
         setRecords(nextRecords);
         setError('');
       }
     } catch (loadError) {
-      if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) setError(errorMessage(loadError));
+      if (!signal?.aborted && version === requestVersion.current && !(loadError instanceof DOMException && loadError.name === 'AbortError')) setError(errorMessage(loadError));
+      if (retryFailure) throw loadError;
     } finally {
-      setLoading(false);
+      if (!signal?.aborted && version === requestVersion.current) setLoading(false);
       if (showRefresh) setRefreshing(false);
     }
   }, []);
@@ -148,8 +151,8 @@ export function useDoctorQueueApi() {
 
   useEffect(() => {
     if (!selectedRoom) return;
-    const interval = window.setInterval(() => void loadQueue(selectedRoom), POLLING_INTERVAL_MS);
-    return () => window.clearInterval(interval);
+    return watchExamQueue({ kind: 'clinic', workScheduleId: selectedRoom.scheduleId },
+      signal => loadQueue(selectedRoom, signal, false, true), setError);
   }, [loadQueue, selectedRoom]);
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { clinicalRequest } from '@/src/shared/lib/clinical-api';
 
 interface Workload {
@@ -21,19 +22,18 @@ export function SessionWorkload({ scheduleId }: { scheduleId: number }) {
       try {
         const next = await clinicalRequest<Workload>('work-schedules/workload', { id: scheduleId }, controller.signal);
         if (!controller.signal.aborted && version === generation.current) { setData(next); setError(''); }
-      } catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không tải được số lượt còn lại.'); }
+      } catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không tải được số lượt còn lại.'); throw e; }
       finally { running = false; }
     }
-    void load(); const timer = window.setInterval(() => void load(), 10000);
-    window.addEventListener('focus', load); document.addEventListener('visibilitychange', load);
-    return () => { controller.abort(); window.clearInterval(timer); window.removeEventListener('focus', load); document.removeEventListener('visibilitychange', load); };
+    const stop = watchExamQueue({ kind: 'clinic', workScheduleId: scheduleId }, () => load(), setError);
+    return () => { controller.abort(); stop(); };
   }, [scheduleId, revision]);
   async function toggle() {
     if (!data || mutating.current) return;
     mutating.current = true; generation.current++; setBusy(true); setError('');
     try { setData(await clinicalRequest<Workload>('work-schedules/intake', { scheduleId, acceptingNewPatients: !data.acceptingNewPatients })); }
     catch (e) { setError(e instanceof Error ? e.message : 'Không thay đổi được tiếp nhận.'); }
-    finally { mutating.current = false; setBusy(false); }
+    finally { mutating.current = false; setBusy(false); setRevision(value => value + 1); }
   }
   return <section aria-label="Khối lượng còn lại trong ca" className="space-y-3 rounded-xl border border-blue-200 bg-white p-4">
     <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-bold">Các lượt còn lại trong ca</h2><button type="button" disabled={busy} className="text-sm font-semibold text-blue-700" onClick={() => setRevision(v => v + 1)}>Cập nhật số lượng</button></div>

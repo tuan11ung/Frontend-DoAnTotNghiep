@@ -8,6 +8,7 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   'aria-label': string;
+  'aria-describedby'?: string;
   size?: 'sm' | 'md' | 'lg' | '2xl' | '3xl';
   panelClassName?: string;
   closeOnBackdrop?: boolean;
@@ -28,7 +29,7 @@ let previousOverflow = '';
 
 /** Native modal semantics provide focus containment and restore focus on close. */
 export function Modal({
-  open, onClose, children, 'aria-label': label, size = '2xl',
+  open, onClose, children, 'aria-label': label, 'aria-describedby': descriptionId, size = '2xl',
   panelClassName, closeOnBackdrop = false, closeOnEscape = true, dismissible = true,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -55,6 +56,7 @@ export function Modal({
     <dialog
       ref={dialogRef}
       aria-label={label}
+      aria-describedby={descriptionId}
       aria-modal="true"
       className="fixed inset-0 m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-4 text-inherit outline-none open:flex open:items-center open:justify-center backdrop:bg-slate-900/60 animate-in fade-in"
       onCancel={(event) => {

@@ -10,9 +10,10 @@ export function ReceptionDataProvider({ demo, children }: { demo: boolean; child
     demo, api: demo ? receptionPreviewApi : receptionApi,
     href: (tab, extra) => {
       const params = new URLSearchParams(extra);
-      if (tab) params.set('tab', tab);
+      const path = !demo && tab === 'checkout' ? '/reception/payments' : '/reception';
+      if (tab && path === '/reception') params.set('tab', tab);
       if (demo) params.set('demo', '1');
-      return '/reception' + (params.size ? '?' + params : '');
+      return path + (params.size ? '?' + params : '');
     },
   }), [demo]);
   return <Context.Provider value={value}>{children}</Context.Provider>;

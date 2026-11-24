@@ -1,5 +1,6 @@
 'use client';
 
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { businessNow } from '@/src/shared/lib/business-time';
 
 
@@ -70,15 +71,15 @@ export function useTechnicianQueue() {
         setSnapshot({ key: filterKey, data, error: '', version: refreshVersion, loadedAt: businessNow().toISOString() });
       } catch (error) {
         if (!controller.signal.aborted) setSnapshot(previous => ({ key: filterKey, data: previous.key === filterKey ? previous.data : null, error: technicianErrorMessage(error), version: refreshVersion, loadedAt: previous.key === filterKey ? previous.loadedAt : '' }));
+        throw error;
       } finally {
         inFlight = false;
       }
     }
-    void load();
-    const timer = window.setInterval(() => void load(), 15_000);
-    const onVisible = () => { if (!document.hidden) void load(); };
-    document.addEventListener('visibilitychange', onVisible);
-    return () => { controller.abort(); window.clearInterval(timer); document.removeEventListener('visibilitychange', onVisible); };
+    const stop = watchExamQueue({ kind: 'cls' }, () => load(), error => {
+      if (!controller.signal.aborted) setSnapshot(previous => ({ key: filterKey, data: previous.key === filterKey ? previous.data : null, error, version: refreshVersion, loadedAt: previous.key === filterKey ? previous.loadedAt : '' }));
+    });
+    return () => { controller.abort(); stop(); };
   }, [filters, filterKey, refreshVersion, invalidDates]);
 
   const current = snapshot.key === filterKey;

@@ -9,7 +9,8 @@ import { NotificationIcon, NotificationItem } from './components/NotificationIte
 import { notificationDetailHref, notificationHref, notificationLabel, notificationTime } from './utils/notification-navigation';
 
 export function NotificationsPage() {
-  const { isReady, isAuthenticated, items, unreadCount, loading, refreshing, loadingMore, hasMore, error, actionError, markingAll, feed } = usePatientNotifications();
+  const { isReady, isAuthenticated, items, unreadCount, loading, refreshing, loadingMore, hasMore, error, actionError, connectionError, markingAll, feed } = usePatientNotifications();
+  useEffect(() => { void feed?.refresh(); }, [feed]);
   const [unreadOnly, setUnreadOnly] = useState(false);
   const params = useSearchParams();
   const selectedId = params.get('id');
@@ -33,6 +34,7 @@ export function NotificationsPage() {
   return <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8"><nav aria-label="Đường dẫn" className="mb-6 flex items-center gap-2 text-xs text-slate-400"><Link href="/" className="inline-flex items-center gap-1 hover:text-blue-600"><Home className="size-3.5" />Trang chủ</Link><ChevronRight className="size-3.5" /><span>Thông báo</span></nav>
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-600">MedConnect · Cổng bệnh nhân</p><h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Thông báo của bạn</h1><p className="mt-2 text-sm text-slate-500">Theo dõi cập nhật về ca khám và hồ sơ tại một nơi.</p></div><button type="button" disabled={refreshing} onClick={() => void feed?.refresh()} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-blue-50 disabled:opacity-50"><RefreshCw className={`size-3.5 ${refreshing ? 'animate-spin' : ''}`} />Làm mới</button></div>
 
+    {connectionError && <p role="status" className="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-800">{connectionError}</p>}
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
       <section aria-label="Tất cả thông báo" className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 p-4"><div className="flex gap-1">{[{ label: 'Tất cả', value: false }, { label: `Chưa đọc${unreadCount ? ` (${unreadCount})` : ''}`, value: true }].map(tab => <button key={String(tab.value)} type="button" aria-pressed={unreadOnly === tab.value} onClick={() => setUnreadOnly(tab.value)} className={`rounded-lg px-3 py-2 text-xs font-semibold focus-visible:outline-2 focus-visible:outline-blue-600 ${unreadOnly === tab.value ? 'bg-blue-50 text-blue-700' : 'text-slate-500 hover:bg-slate-50'}`}>{tab.label}</button>)}</div><button type="button" disabled={markingAll || !unreadCount || loading} onClick={() => void feed?.markAllRead()} className="inline-flex items-center gap-1.5 rounded-lg px-2 py-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 disabled:opacity-40"><CheckCheck className="size-4" />{markingAll ? 'Đang cập nhật…' : 'Đánh dấu đã đọc tất cả'}</button></div>
         {loading && <p role="status" className="flex items-center justify-center gap-2 p-10 text-sm text-slate-400"><LoaderCircle className="size-4 animate-spin" />Đang tải thông báo…</p>}

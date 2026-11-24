@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { publicApi, publicRequest, type PublicHospital } from '../public-data/public-api';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { QueueClock } from './components/QueueClock';
 interface Room { scheduleId: number; roomId: number; code: string; name: string; location?: string; doctorName: string; specialtyName?: string; session: string; startTime: string; endTime: string }
 interface Display { tickets: { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS'; calledAt?: string }[]; updatedAt: string; date: string }
@@ -23,14 +24,15 @@ export function QueueDisplayLive() {
   const validRooms = rooms?.hospitalId === hospitalId ? rooms.items : null;
   const room = validRooms?.find(r => r.scheduleId === scheduleId);
   useEffect(() => {
-    if (!room) return; const controller = new AbortController(); let timer: ReturnType<typeof setTimeout>;
+    if (!room) return; const controller = new AbortController();
     async function refresh() {
       setRefreshing(true);
       try { const data = await publicRequest<Display>('directory/queue/display', { hospitalId, scheduleId }, controller.signal); if (!controller.signal.aborted) { setDisplay({ scheduleId, data }); setError(''); } }
-      catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Mất kết nối bảng gọi số.'); }
-      finally { if (!controller.signal.aborted) { setRefreshing(false); timer = setTimeout(() => void refresh(), 10000); } }
+      catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Mất kết nối bảng gọi số.'); throw e; }
+      finally { if (!controller.signal.aborted) setRefreshing(false); }
     }
-    void refresh(); return () => { controller.abort(); clearTimeout(timer); };
+    const stop = watchExamQueue({ kind: 'public', hospitalId, scheduleId }, () => refresh(), setError);
+    return () => { controller.abort(); stop(); };
   }, [hospitalId, scheduleId, room, revision]);
   const current = display?.scheduleId === scheduleId && room ? display.data : null;
   const called = current?.tickets.filter(t => t.status === 'CALLED' || t.status === 'IN_PROGRESS' || (t.status === 'WAITING' && t.calledAt));
@@ -40,6 +42,6 @@ export function QueueDisplayLive() {
     {error && <div role="alert" className="space-y-2 rounded-xl bg-amber-50 p-4 text-amber-900"><p>{error} Dữ liệu bên dưới có thể chưa được cập nhật.</p><button type="button" className="font-bold" onClick={() => setRevision(v => v + 1)}>Kết nối lại</button></div>}
     {hospitals === null && !error && <p role="status">Đang tải cơ sở…</p>}{hospitals?.length === 0 && <p>Chưa có cơ sở đang hoạt động.</p>}{validRooms?.length === 0 && <p className="rounded-xl border bg-white p-6">Không có ca khám được công bố hôm nay tại cơ sở này.</p>}
     {room && <><section className="rounded-2xl border bg-white p-5"><h2 className="text-lg font-bold">{room.code} · {room.specialtyName}</h2><p className="mt-2 text-sm text-slate-600">Bác sĩ {room.doctorName} · {room.location || 'Liên hệ quầy để được hướng dẫn'} · {room.startTime.slice(0, 5)}–{room.endTime.slice(0, 5)}</p></section><div className="grid gap-5 lg:grid-cols-2"><section aria-live="polite" className="rounded-2xl bg-blue-800 p-7 text-white"><h2 className="text-xl font-bold">Đang mời / đang khám</h2>{!current ? <p className="mt-6">Đang tải…</p> : called?.length ? <div className="mt-6 flex flex-wrap gap-6">{called.map(t => <div key={t.number} className="rounded-xl bg-white/10 p-5 text-center"><p className="text-6xl font-extrabold tabular-nums">{t.number}</p><p className="mt-3 text-sm">{t.status === 'IN_PROGRESS' ? 'Đang khám' : 'Mời vào phòng'}</p></div>)}</div> : <p className="mt-6">Chưa có số được gọi.</p>}</section><section className="rounded-2xl border bg-white p-7"><h2 className="text-xl font-bold">Các số đang chờ ({waiting?.length ?? 0})</h2><div className="mt-6 flex flex-wrap gap-3">{waiting?.map(t => <span key={t.number} className="rounded-xl bg-slate-100 px-5 py-4 text-3xl font-bold tabular-nums">{t.number}</span>)}</div>{current && !waiting?.length && <p className="mt-6 text-slate-500">Chưa có người đang chờ.</p>}</section></div></>}
-    <footer className="text-sm text-slate-500">{current ? `Cập nhật: ${new Date(current.updatedAt).toLocaleTimeString('vi-VN')} · ` : ''}{refreshing ? 'Đang cập nhật…' : 'Tự cập nhật mỗi 10 giây'} · Vui lòng theo dõi số thứ tự và hướng dẫn của nhân viên.</footer>
+    <footer className="text-sm text-slate-500">{current ? `Cập nhật: ${new Date(current.updatedAt).toLocaleTimeString('vi-VN')} · ` : ''}{refreshing ? 'Đang cập nhật…' : 'Nhận cập nhật trực tiếp từ phòng khám'} · Vui lòng theo dõi số thứ tự và hướng dẫn của nhân viên.</footer>
   </div></main>;
 }

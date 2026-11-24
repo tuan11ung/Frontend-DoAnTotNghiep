@@ -13,11 +13,11 @@ import { RECEPTION_PREVIEW_ENABLED } from './api/reception-preview-api';
 import { ReceptionSidebar, RECEPTION_SECTIONS as sections, type ReceptionSection } from './components/ReceptionSidebar';
 import './reception.css';
 
-export function ReceptionLiveScreen() {
+export function ReceptionLiveScreen({ section }: { section?: ReceptionSection }) {
   const params = useSearchParams();
   const { demo } = useReceptionData();
   const [revision, setRevision] = useState(0);
-  const requestedTab = params.get('tab');
+  const requestedTab = section ?? params.get('tab');
   const tab: ReceptionSection = requestedTab === 'patients' ? 'registration' : sections.find(section => section.id === requestedTab)?.id ?? 'registration';
   return <div className="reception-portal min-h-screen bg-slate-50 text-slate-800 lg:pl-[280px]">
     <ReceptionSidebar activeSection={tab} />
@@ -28,7 +28,7 @@ export function ReceptionLiveScreen() {
       {demo && <details className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"><summary className="cursor-pointer text-sm font-semibold text-amber-900">Công cụ dữ liệu demo</summary><div className="mt-4"><ReceptionDemoControls onReset={() => setRevision(v => v + 1)} /></div></details>}
       {tab === 'registration' && <ReceptionRegistration key={tab + revision} lookupOnly={false} />}
       {(tab === 'checkin' || tab === 'pending-specialty') && <ReceptionAppointments key={tab + revision} pending={tab === 'pending-specialty'} />}
-      {tab === 'checkout' && <ReceptionBilling key={revision} />}
+      {tab === 'checkout' && <ReceptionBilling key={`${revision}:${params.get("keyword") ?? ""}`} />}
     </main></div>
   </div>;
 }

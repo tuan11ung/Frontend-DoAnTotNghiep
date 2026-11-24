@@ -1,4 +1,5 @@
 'use client';
+import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
@@ -29,12 +30,11 @@ export function PatientClsOrders({patientId,encounterId}:{patientId:number;encou
         if(controller.signal.aborted)return;
         if(page>0&&page>=result.data.totalPages){setPage(Math.max(0,result.data.totalPages-1));return;}
         setSnapshot({key,data:result.data});setError('');
-      }catch(e){if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Không thể tải chỉ định.');}
+      }catch(e){if(!controller.signal.aborted)setError(e instanceof Error?e.message:'Không thể tải chỉ định.');throw e;}
       finally{running=false;}
     }
-    void load();const timer=window.setInterval(()=>void load(),15000);
-    const focus=()=>void load();window.addEventListener('focus',focus);
-    return()=>{controller.abort();window.clearInterval(timer);window.removeEventListener('focus',focus);};
+    const stop=watchExamQueue({kind:'patient'},()=>load(),setError);
+    return()=>{controller.abort();stop();};
   },[patientId,encounterId,page,pageSize,revision,key]);
   return <section className="mx-auto my-5 w-full max-w-7xl overflow-hidden rounded-2xl border border-blue-100 bg-white">
     <div className="flex flex-wrap items-center justify-between gap-3 p-5"><div><h2 className="font-bold text-blue-900">Chỉ định CLS và nơi thực hiện</h2><p className="mt-1 text-sm text-slate-600">Thanh toán từng đợt chỉ định trước khi đến phòng CLS. Phòng thực hiện được phân sau khi thanh toán; kết quả hiển thị sau khi được công bố.</p></div><button type="button" className="text-sm font-bold text-blue-700" onClick={()=>setRevision(v=>v+1)}>Làm mới chỉ định</button></div>

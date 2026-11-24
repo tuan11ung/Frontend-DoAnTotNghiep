@@ -3,7 +3,10 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: process.env.DEV_ALLOWED_ORIGINS?.split(",").map(origin => origin.trim()).filter(Boolean),
-  /* config options here */
+  async rewrites() {
+    const backend = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
+    return { beforeFiles: [{ source: '/api/notifications/ws', destination: `${backend}/api/v1/ws` }] };
+  },
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
