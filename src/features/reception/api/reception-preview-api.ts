@@ -67,7 +67,7 @@ async function run<T>(operation: (s: State) => T, mutate = false, signal?: Abort
   if (mutate && navigator.locks) return navigator.locks.request(RECEPTION_PREVIEW_KEY, action);
   return action();
 }
-const pageOf = <T,>(items: T[], page: number): ApiPage<T> => ({ content: items.slice(page * 20, page * 20 + 20), page, size: 20, totalElements: items.length, totalPages: Math.ceil(items.length / 20), first: page === 0, last: (page + 1) * 20 >= items.length });
+const pageOf = <T,>(items: T[], page: number, size = 20): ApiPage<T> => ({ content: items.slice(page * size, page * size + size), page, size, totalElements: items.length, totalPages: Math.ceil(items.length / size), first: page === 0, last: (page + 1) * size >= items.length });
 function findAppointment(s: State, reference: string) {
   const key = reference.trim();
   const a = s.appointments.find(a => a.appointmentCode === key || a.qrToken === key);
@@ -148,7 +148,12 @@ export const receptionPreviewApi: typeof receptionApi = {
     const e = { id: ++s.nextId, code: 'LK-' + s.nextId, appointmentId: a.appointmentId, completed: false }; s.encounters.push(e);
     return { encounterId: e.id, encounterCode: e.code };
   }, true),
-  invoices: (keyword, page) => run(s => pageOf(s.invoices.filter(d => normalize([d.invoice.invoiceCode, d.context?.encounterCode, d.context?.patientName, d.context?.patientCode, s.patients.find(p=>p.id===d.context?.patientId)?.nationalId, s.appointments.find(a=>a.appointmentId===s.encounters.find(e=>e.id===d.invoice.encounterId)?.appointmentId)?.qrToken].join(' ')).includes(normalize(keyword))).map(d => d.invoice), page)),
+  invoices: (keyword, page, options) => run(s => pageOf(s.invoices.filter(d =>
+    (!options?.status || d.invoice.status === options.status) && normalize([
+      d.invoice.invoiceCode, d.context?.appointmentCode, d.context?.encounterCode, d.context?.patientName, d.context?.patientCode,
+      s.patients.find(p => p.id === d.context?.patientId)?.nationalId,
+      s.appointments.find(a => a.appointmentId === s.encounters.find(e => e.id === d.invoice.encounterId)?.appointmentId)?.qrToken,
+    ].join(' ')).includes(normalize(keyword))).map(d => d.invoice), page, options?.size), false, options?.signal),
   invoice: id => run(s => { const d = s.invoices.find(item => item.invoice.id === id); if (!d) throw new Error('Không tìm thấy hóa đơn.'); return d; }),
   payCash: id => run(s=>settle(s,id,'Tiền mặt'),true),
 };
