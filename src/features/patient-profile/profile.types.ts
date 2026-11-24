@@ -3,6 +3,7 @@ export interface PersonalProfile {
   id: number;
   patientCode: string;
   fullName: string;
+  email?: string | null;
   dob: string;
   gender: Gender;
   address: string | null;

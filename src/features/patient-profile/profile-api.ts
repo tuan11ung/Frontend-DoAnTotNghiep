@@ -71,16 +71,28 @@ export async function loadProfile(token: string, signal: AbortSignal, patientId?
   const own = profiles.filter((p: unknown) => isObject(p) && (patientId === undefined ? p.relationship === 'SELF' : p.id === patientId));
   if (own.length !== 1) throw invalid();
   const profile = readProfile(own[0]);
-  const [allergies, conditions] = await Promise.all([
+  const [allergies, conditions, email] = await Promise.all([
     accountRequest('allergies/list', token, { patientId: profile.id }, signal),
     accountRequest('conditions/list', token, { patientId: profile.id }, signal),
+    profile.relationship === 'SELF' ? loadAccountEmail(token, signal) : Promise.resolve(null),
   ]);
   if (!Array.isArray(allergies) || !Array.isArray(conditions)) throw invalid();
   return {
-    profile,
+    profile: { ...profile, email },
     allergies: allergies.map(value => readAllergy(value, profile.id)),
     conditions: conditions.map(value => readCondition(value, profile.id)),
   };
+}
+async function loadAccountEmail(token: string, signal: AbortSignal): Promise<string | null> {
+  const response = await authenticatedFetch('/api/auth/me', {
+    method: 'POST', cache: 'no-store', signal,
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: '{}',
+  });
+  const result: unknown = await response.json().catch(() => null);
+  if (!response.ok || !isObject(result) || result.success !== true || !isObject(result.data)
+    || (result.data.email != null && typeof result.data.email !== 'string')) throw invalid();
+  return result.data.email ?? null;
 }
 export async function updateProfile(token: string, patientId: number, input: ProfileInput) {
   const value = readProfile(await accountRequest('profiles/update', token, { patientId, ...input }));
