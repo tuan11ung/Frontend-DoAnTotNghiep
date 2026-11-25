@@ -1,41 +1,77 @@
-import { CalendarDays, ChevronLeft, ChevronRight, RefreshCw, Save, Send } from 'lucide-react';
-import { addScheduleDays, scheduleDateLabel } from '../schedule-utils';
+import { useState } from 'react';
+import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { DropdownOption } from '@/src/shared/components/DropdownOptions';
+import { addScheduleDays, getScheduleMonday, scheduleDateLabel } from '../schedule-utils';
 import type { ScheduleSpecialty } from '../types';
+import { ScheduleDropdown } from './ScheduleDropdown';
 
-const BUTTON_CLASS = 'inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-60';
+function shiftMonth(month: string, offset: number) {
+  const date = new Date(`${month}-01T12:00:00Z`);
+  date.setUTCMonth(date.getUTCMonth() + offset);
+  return date.toISOString().slice(0, 7);
+}
+
+function weekRange(start: string) {
+  const end = addScheduleDays(start, 6);
+  const startLabel = scheduleDateLabel(start);
+  const shortStart = start.slice(0, 7) === end.slice(0, 7)
+    ? startLabel.slice(0, 2)
+    : start.slice(0, 4) === end.slice(0, 4) ? startLabel.slice(0, 5) : startLabel;
+  return `${shortStart} – ${scheduleDateLabel(end)}`;
+}
+
+function WeekOptions({ initialWeek, onSelect }: { initialWeek: string; onSelect: (date: string) => void }) {
+  const [month, setMonth] = useState(initialWeek.slice(0, 7));
+  const firstDay = `${month}-01`;
+  const monday = getScheduleMonday(firstDay);
+  const firstWeek = monday < firstDay ? addScheduleDays(monday, 7) : monday;
+  const weeks = Array.from({ length: 5 }, (_, index) => addScheduleDays(firstWeek, index * 7))
+    .filter(date => date.startsWith(month));
+  const monthButton = 'grid size-9 shrink-0 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600';
+
+  return <>
+    <div className="mb-1 flex items-center justify-between gap-2 border-b border-slate-100 p-1">
+      <button aria-label="Tháng trước" className={monthButton} onClick={() => setMonth(value => shiftMonth(value, -1))} type="button"><ChevronLeft aria-hidden="true" className="size-4" /></button>
+      <p aria-live="polite" className="text-sm font-semibold text-slate-800">Tháng {Number(month.slice(5))}/{month.slice(0, 4)}</p>
+      <button aria-label="Tháng sau" className={monthButton} onClick={() => setMonth(value => shiftMonth(value, 1))} type="button"><ChevronRight aria-hidden="true" className="size-4" /></button>
+    </div>
+    {weeks.map(date => <DropdownOption key={date} label={`Tuần ${Math.ceil(Number(date.slice(8, 10)) / 7)}`}
+      description={weekRange(date)} onClick={() => onSelect(date)} selected={date === initialWeek} />)}
+  </>;
+}
+
 interface ScheduleToolbarProps {
   weekStart: string;
+  today: string;
   specialties: ScheduleSpecialty[];
   specialtyId: number | null;
-  loading: boolean;
-  busy: boolean;
-  canSave: boolean;
-  canPublish: boolean;
-  onWeek: (offset: number) => void;
+  disabled: boolean;
+  onWeek: (date: string) => void;
   onSpecialty: (id: number) => void;
-  onReload: () => void;
-  onSave: () => void;
-  onPublish: () => void;
 }
-export function ScheduleToolbar({ weekStart, specialties, specialtyId, loading, busy, canSave, canPublish, onWeek, onSpecialty, onReload, onSave, onPublish }: ScheduleToolbarProps) {
-  const weekEnd = addScheduleDays(weekStart, 6);
-  const startYear = weekStart.slice(0, 4);
-  const endYear = weekEnd.slice(0, 4);
+
+export function ScheduleToolbar({ weekStart, today, specialties, specialtyId, disabled, onWeek, onSpecialty }: ScheduleToolbarProps) {
+  const specialty = specialties.find(item => item.id === specialtyId);
+  const currentWeek = getScheduleMonday(today);
+  const weekDisabled = disabled || specialtyId === null;
+  const controlClass = 'inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:enabled:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:opacity-50';
   return (
-    <div className="flex shrink-0 flex-wrap items-center justify-between gap-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-1 shadow-sm">
-          <button aria-label="Tuần trước" className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40" disabled={busy || loading || specialtyId === null} onClick={() => onWeek(-7)} type="button"><ChevronLeft aria-hidden="true" className="h-4 w-4" /></button>
-          <span className="inline-flex items-center gap-2 whitespace-nowrap px-1 text-sm font-bold text-slate-800"><CalendarDays aria-hidden="true" className="hidden h-4 w-4 text-medblue-600 sm:block" />{scheduleDateLabel(weekStart)}{startYear !== endYear ? `/${startYear}` : ''} – {scheduleDateLabel(weekEnd)}/{endYear}</span>
-          <button aria-label="Tuần sau" className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-40" disabled={busy || loading || specialtyId === null} onClick={() => onWeek(7)} type="button"><ChevronRight aria-hidden="true" className="h-4 w-4" /></button>
+    <div className="flex shrink-0 flex-wrap items-start justify-between gap-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+        <button aria-label="Tuần trước" className={controlClass} disabled={weekDisabled} onClick={() => onWeek(addScheduleDays(weekStart, -7))} type="button"><ChevronLeft aria-hidden="true" className="size-4" /></button>
+        <div className="min-w-0 flex-1 sm:flex-none">
+          <ScheduleDropdown disabled={weekDisabled} icon={<CalendarDays aria-hidden="true" className="size-4 shrink-0 text-medblue-600" />} label="Chọn tuần" value={weekRange(weekStart)}>
+            {close => <WeekOptions initialWeek={weekStart} onSelect={date => { close(); onWeek(date); }} />}
+          </ScheduleDropdown>
         </div>
-        <label className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm shadow-sm" htmlFor="schedule-specialty"><span className="text-slate-500">Chuyên khoa:</span><select className="min-w-24 max-w-52 bg-transparent py-1 font-bold text-slate-800 focus-visible:outline-2 focus-visible:outline-medblue-500" disabled={busy || loading || !specialties.length} id="schedule-specialty" onChange={(event) => onSpecialty(Number(event.target.value))} value={specialtyId ?? ''}><option disabled value="">Chọn chuyên khoa</option>{specialties.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
+        <button aria-label="Tuần tiếp theo" className={controlClass} disabled={weekDisabled} onClick={() => onWeek(addScheduleDays(weekStart, 7))} type="button"><ChevronRight aria-hidden="true" className="size-4" /></button>
+        <button className={controlClass} disabled={weekDisabled || weekStart === currentWeek} onClick={() => onWeek(currentWeek)} type="button">Tuần này</button>
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <button className={BUTTON_CLASS} disabled={busy || loading} onClick={onReload} type="button"><RefreshCw aria-hidden="true" className="h-4 w-4" />Tải lại</button>
-        <button className={BUTTON_CLASS} disabled={busy || loading || !canSave} onClick={onSave} type="button"><Save aria-hidden="true" className="h-4 w-4" />Lưu nháp</button>
-        <button className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-medblue-600 bg-medblue-600 px-4 text-sm font-bold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-60" disabled={busy || loading || !canPublish} onClick={onPublish} type="button"><Send aria-hidden="true" className="h-4 w-4" />{busy ? 'Đang xử lý…' : 'Công bố'}</button>
-      </div>
+      <ScheduleDropdown disabled={disabled || !specialties.length} label="Chuyên khoa" value={specialty?.name ?? 'Chọn chuyên khoa'}>
+        {close => specialties.map(item => (
+          <DropdownOption key={item.id} label={item.name} onClick={() => { close(); onSpecialty(item.id); }} selected={item.id === specialtyId} />
+        ))}
+      </ScheduleDropdown>
     </div>
   );
 }

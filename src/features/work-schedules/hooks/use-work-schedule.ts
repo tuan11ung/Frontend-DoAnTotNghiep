@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AdminApiError } from '../../facility-admin/api/admin-api-client';
 import { workScheduleApi } from '../api/work-schedule-api';
-import { addScheduleDays, buildDraftChanges, cellKey, displayedCell, getScheduleMonday, getScheduleToday, scheduleDateLabel } from '../utils/schedule-utils';
+import { buildDraftChanges, cellKey, displayedCell, getScheduleMonday, getScheduleToday, scheduleDateLabel } from '../utils/schedule-utils';
 import type { DoctorAssignmentOption, DraftEdits, ScheduleSpecialty, SelectedScheduleCell, WorkScheduleWeek } from '../models/types/work-schedule.types';
 
 function errorMessage(error: unknown, week: WorkScheduleWeek | null): string {
@@ -117,9 +117,9 @@ export function useWorkSchedule() {
   function prepareLoad() {
     closePopover(); setWeek(null); setEdits({}); setError(''); setNotice(''); setLoading(true); setNeedsReload(false);
   }
-  function changeWeek(offset: number) {
-    if (writing.current || !allowDiscard()) return;
-    prepareLoad(); setWeekStart(addScheduleDays(weekStart, offset));
+  function changeWeek(date: string) {
+    if (writing.current || date === weekStart || !allowDiscard()) return;
+    prepareLoad(); setWeekStart(date);
   }
   function changeSpecialty(id: number) {
     if (writing.current || id === specialtyId || !allowDiscard()) return;
@@ -174,7 +174,10 @@ export function useWorkSchedule() {
         else next[key] = { staffId: doctorId, doctorName };
         return next;
       });
-      setError(''); setNotice('Đã cập nhật bản nháp trên màn hình. Chọn Lưu nháp hoặc Công bố để lưu.'); closePopover(); return;
+      setError('');
+      setNotice('');
+      closePopover();
+      return;
     }
     if (dirtyCount || selectedBase.scheduleId === null || selectedBase.staffId === null) return;
     if (!window.confirm(doctorId === null ? 'Bỏ phân công ca đã công bố ngay? Lịch hẹn đã hủy sẽ được giữ để tra cứu.' : `Đổi sang ${doctorName} cho ca đã công bố ngay? Các khung giờ được giữ nguyên.`)) return;
@@ -184,7 +187,7 @@ export function useWorkSchedule() {
       if (doctorId === null) await workScheduleApi.delete(snapshot);
       else await workScheduleApi.changeDoctor({ ...snapshot, staffId: doctorId });
       const data = await workScheduleApi.week({ weekStart, specialtyId });
-      setWeek(data); setNotice(doctorId === null ? 'Đã bỏ phân công và cập nhật lịch.' : 'Đã đổi bác sĩ. Các khung giờ được giữ nguyên.');
+      setWeek(data);
     } catch (failure) { mutationFailure(failure); }
     finally { writing.current = false; setBusy(false); }
   }

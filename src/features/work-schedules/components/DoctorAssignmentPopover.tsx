@@ -2,15 +2,20 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, LockKeyhole, Stethoscope, Trash2, X } from 'lucide-react';
-import type { DoctorAssignmentOption } from '../types';
+import { LockKeyhole, Stethoscope, Trash2, X } from 'lucide-react';
+import { DropdownOption, DropdownResults } from '@/src/shared/components/DropdownOptions';
+import type { DoctorAssignmentOption, WorkScheduleWeek } from '../types';
 
 interface DoctorAssignmentPopoverProps {
   trigger: HTMLButtonElement;
-  title: string;
+  roomName: string;
+  dateAndShift: string;
+  doctorName: string | null;
+  status?: string;
+  rooms: WorkScheduleWeek['rooms'];
   options: DoctorAssignmentOption[];
   selectedDoctorId: number | null;
-  subtitle: string;
+  published: boolean;
   loading: boolean;
   error: string;
   onRetry: () => void;
@@ -29,9 +34,12 @@ function getPopoverPosition(trigger: HTMLButtonElement) {
   return { left, width, maxHeight, ...(below ? { top: rect.bottom + 8 } : { bottom: window.innerHeight - rect.top + 8 }) };
 }
 
-export function DoctorAssignmentPopover({ trigger, title, subtitle, loading, error, onRetry, options, selectedDoctorId, onSelect, onClose }: DoctorAssignmentPopoverProps) {
+export function DoctorAssignmentPopover({ trigger, roomName, dateAndShift, doctorName, status, rooms, loading, error, onRetry, options, selectedDoctorId, onSelect, onClose, published }: DoctorAssignmentPopoverProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(() => getPopoverPosition(trigger));
+  const priority = (doctor: DoctorAssignmentOption) => doctor.id === selectedDoctorId ? 0 : doctor.disabled ? 2 : 1;
+  const orderedOptions = [...options].sort((first, second) => priority(first) - priority(second));
+  const roomsByCode = new Map(rooms.map(room => [room.code, room.name]));
 
   useEffect(() => {
     panelRef.current?.querySelector<HTMLButtonElement>('button:not(:disabled)')?.focus();
@@ -76,23 +84,26 @@ export function DoctorAssignmentPopover({ trigger, title, subtitle, loading, err
     <div aria-labelledby="doctor-assignment-title" className="fixed z-[60] flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_12px_40px_-8px_rgba(15,23,42,0.25)]" id="doctor-assignment-popover" onKeyDown={handleTab} ref={panelRef} role="dialog" style={position}>
       <div className="flex shrink-0 items-start gap-2 border-b border-slate-100 px-4 py-3.5">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-slate-800" id="doctor-assignment-title">{title}</p>
-          <p className="mt-1 text-xs leading-5 text-slate-500">{subtitle}</p>
+          <h3 className="text-sm font-bold text-slate-900" id="doctor-assignment-title">{selectedDoctorId === null ? 'Phân công bác sĩ' : 'Đổi bác sĩ'}</h3>
+          <p className="mt-1 text-sm font-medium text-slate-800 [overflow-wrap:anywhere]">{roomName}</p>
+          <p className="mt-0.5 text-xs leading-5 text-slate-600">{dateAndShift}</p>
+          {(status || doctorName) && <p className="mt-1 text-xs leading-5 text-slate-600 [overflow-wrap:anywhere]">{[doctorName, status].filter(Boolean).join(' · ')}</p>}
+          {published && <p className="mt-1 text-xs leading-5 font-medium text-amber-800">Đổi bác sĩ hoặc bỏ phân công sẽ áp dụng ngay sau khi xác nhận.</p>}
         </div>
         <button aria-label="Đóng danh sách bác sĩ" className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-medblue-500" onClick={onClose} type="button"><X aria-hidden="true" className="h-4 w-4" /></button>
       </div>
-      <div className="min-h-0 overflow-y-auto p-2">
+      <DropdownResults className="min-h-0 rounded-none border-0 p-2 shadow-none" maxHeight="none">
         {loading && <p className="px-3 py-4 text-sm text-slate-500" role="status">Đang tải danh sách bác sĩ…</p>}
         {error && <div className="space-y-2 px-3 py-3 text-sm text-rose-700" role="alert"><p>{error}</p><button className="rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold" onClick={onRetry} type="button">Thử lại</button></div>}
         {!loading && !error && !options.length && <p className="px-3 py-4 text-sm text-slate-500">Chưa có bác sĩ phù hợp trong chuyên khoa.</p>}
-        {!loading && !error && options.map((doctor) => (
-          <button aria-label={`${doctor.name}${doctor.assignedRoom ? `, đã ở ${doctor.assignedRoom}` : doctor.disabled ? ', đang bận' : ''}`} className={`flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2.5 py-2.5 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-medblue-500 disabled:cursor-not-allowed ${doctor.disabled ? 'text-slate-400' : doctor.id === selectedDoctorId ? 'bg-medblue-50 text-medblue-700' : 'text-slate-700 hover:bg-slate-50'}`} data-doctor-option disabled={doctor.disabled} key={doctor.id} onClick={() => onSelect(doctor.id)} type="button">
-            <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${doctor.assignedRoom ? 'bg-slate-100 text-slate-400' : 'bg-medblue-50 text-medblue-600'}`}><Stethoscope aria-hidden="true" className="h-3.5 w-3.5" /></span>
-            <span className="flex-1 font-semibold">{doctor.name}</span>
-            {doctor.assignedRoom ? <span className="inline-flex items-center gap-1 text-[11px]"><LockKeyhole aria-hidden="true" className="h-3 w-3" />đã ở {doctor.assignedRoom}</span> : doctor.id === selectedDoctorId ? <Check aria-hidden="true" className="h-4 w-4" /> : null}
-          </button>
+        {!loading && !error && orderedOptions.map((doctor) => (
+          <DropdownOption key={doctor.id} className="min-h-11 px-2.5 py-2" data-doctor-option disabled={doctor.disabled}
+            label={<span className="flex items-center gap-2"><Stethoscope aria-hidden="true" className="size-4 shrink-0 text-medblue-600" />{doctor.name}</span>}
+            description={doctor.assignedRoom ? `Đã phân công tại ${roomsByCode.get(doctor.assignedRoom) ?? doctor.assignedRoom}` : doctor.disabled ? 'Không khả dụng' : undefined}
+            trailing={doctor.assignedRoom ? <LockKeyhole aria-hidden="true" className="size-4 shrink-0 text-slate-500" /> : undefined}
+            selected={doctor.id === selectedDoctorId} onClick={() => onSelect(doctor.id)} />
         ))}
-      </div>
+      </DropdownResults>
       {selectedDoctorId !== null && <div className="shrink-0 border-t border-slate-100 p-2"><button className="flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-left text-xs font-semibold text-rose-600 hover:bg-rose-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 disabled:opacity-50" disabled={loading || Boolean(error)} onClick={() => onSelect(null)} type="button"><Trash2 aria-hidden="true" className="h-3.5 w-3.5" />Bỏ phân công ca này</button></div>}
     </div>,
     document.body,
