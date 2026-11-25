@@ -90,7 +90,6 @@ export interface TechnicianServiceDetail {
 
 export interface TechnicianQueueFilters {
   status: OrderedServiceStatus | 'ALL' | 'ACTIVE';
-  roomId: string;
   pageSize: number;
   serviceId: string;
   fromDate: string;

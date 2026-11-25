@@ -28,13 +28,16 @@ function TechnicianQueueLive() {
   const state = useTechnicianQueue();
   const [selected, setSelected] = useState<OrderedService | null>(null);
   const queueRef = useRef<HTMLElement>(null);
-  const filtered = Boolean(state.filters.roomId || state.filters.serviceId || state.filters.fromDate || state.filters.toDate);
+  const filtered = Boolean(state.filters.serviceId || state.filters.fromDate || state.filters.toDate);
   function closeResult() { setSelected(null); state.refresh(); requestAnimationFrame(() => queueRef.current?.focus()); }
   return <>
     <section aria-label="Hàng chờ phòng CLS" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" ref={queueRef} tabIndex={-1}>
-      <div className="flex flex-wrap items-center justify-between gap-3 p-5"><div><h2 className="text-lg font-bold">Bệnh nhân tại phòng CLS</h2><p className="mt-1 text-sm text-slate-500">Danh sách gồm các dịch vụ đã thanh toán và được phân phòng. Chọn bệnh nhân để thực hiện; mỗi dòng nhóm theo lượt khám và phòng.</p></div><button type="button" className={buttonClass} onClick={state.refresh}>Làm mới</button></div>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-5"><div><h2 className="text-lg font-bold">Bệnh nhân tại phòng CLS</h2><p className="mt-1 text-sm text-slate-500">Chỉ hiển thị các chỉ định đã thanh toán tại phòng bạn phụ trách. Chọn bệnh nhân để thực hiện và nhập kết quả.</p>
+        {state.rooms.length > 0 && <div aria-label="Phòng CLS phụ trách" className="mt-3 flex flex-wrap gap-2">{state.rooms.map(room =>
+          <span key={room.id} className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">{room.name}{room.location && ` · ${room.location}`}{!room.active && ' · Đã ngừng hoạt động'}</span>)}</div>}
+        {!state.loading && !state.error && state.rooms.length === 0 && <p role="status" className="mt-3 text-sm text-amber-800">Bạn chưa được phân công phụ trách phòng CLS. Vui lòng liên hệ quản trị cơ sở để kiểm tra phân công.</p>}
+      </div><button type="button" className={buttonClass} onClick={state.refresh}>Làm mới</button></div>
       <div className="flex flex-wrap items-end gap-3 border-y bg-slate-50 p-4">
-        <label className="min-w-0 text-xs font-bold">Phòng CLS<select className={inputClass+' mt-1 block w-full max-w-xs'} value={state.filters.roomId} onChange={event => state.changeFilters({roomId:event.target.value})}><option value="">Tất cả phòng</option>{state.rooms.map(room => <option key={room.id} value={room.id}>{room.name} · {room.load} lượt cần thực hiện{room.active ? '' : ' · Đã ngừng hoạt động'}</option>)}</select></label>
         <label className="text-xs font-bold">Trạng thái<select className={inputClass+' mt-1 block'} value={state.filters.status} onChange={event => state.changeFilters({status:event.target.value as typeof state.filters.status})}><option value="ACTIVE">Đang xử lý</option><option value="ALL">Tất cả trạng thái</option>{Object.entries(TECHNICIAN_STATUS_LABELS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
         <TechnicianServiceSelect services={state.services} value={state.filters.serviceId} onChange={value=>state.changeFilters({serviceId:value})} loading={state.catalogLoading} />
         <label className="text-xs font-bold">Từ ngày<input className={inputClass+' mt-1 block'} type="date" value={state.filters.fromDate} onChange={event=>state.changeFilters({fromDate:event.target.value})}/></label>

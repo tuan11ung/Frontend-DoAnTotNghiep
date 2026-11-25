@@ -103,7 +103,9 @@ async function request<T>(path: string, body: unknown, validate: (value: unknown
   if (response.status === 401) clearStoredAuthSession();
   if (!response.ok || !object(result) || result.success !== true) {
     const message = response.status === 401 ? 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'
-      : response.status === 403 ? 'Bạn không có quyền thực hiện thao tác này tại cơ sở hiện tại.'
+      : response.status === 403 ? object(result) && result.strCode === 'PARACLINICAL_ROOM_ACCESS_DENIED'
+        ? 'Bạn chỉ được xử lý chỉ định tại phòng CLS được phân công.'
+        : 'Bạn không có quyền thực hiện thao tác này tại phòng hoặc cơ sở hiện tại.'
         : object(result) && typeof result.message === 'string' && result.message ? result.message : 'Không thể xử lý yêu cầu. Vui lòng thử lại.';
     throw new TechnicianApiError(message, response.status, object(result) && typeof result.strCode === 'string' ? result.strCode : undefined);
   }
@@ -120,7 +122,6 @@ export const technicianApi = {
     pageable: { page: filters.page, size: 20, sortBy: 'orderedDate', sortDirection: 'ASC' },
   }, (value): value is TechnicianPage<OrderedService> => isPage(value, isOrder), signal),
   searchRoomQueue: (filters: TechnicianQueueFilters, signal?: AbortSignal) => request('ordered-services/search-room-queue', {
-    roomId: filters.roomId ? Number(filters.roomId) : null,
     serviceId: filters.serviceId ? Number(filters.serviceId) : null,
     statuses: filters.status === 'ALL' ? ORDER_STATUSES : filters.status === 'ACTIVE' ? ['ORDERED', 'IN_PROGRESS', 'WAITING_RESULT'] : [filters.status],
     fromDate: filters.fromDate || null, toDate: filters.toDate || null,
