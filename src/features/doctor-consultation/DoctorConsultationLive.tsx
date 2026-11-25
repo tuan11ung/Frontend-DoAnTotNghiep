@@ -7,7 +7,6 @@ import {ToastMessage} from '@/src/shared/components/ToastMessage';
 import {type FormEvent, useCallback, useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
 import {clearEncounterDraft, useEncounterDraft} from '@/src/shared/lib/encounter-draft';
-import {ClinicalApiError} from '@/src/shared/lib/clinical-api';
 import {
     type ClinicalAllergy,
     type ClinicalCondition,
@@ -37,33 +36,6 @@ export function DoctorConsultationLive({encounterId, patientId}: { encounterId: 
     } | null>(null);
     const [error, setError] = useState('');
     const [revision, setRevision] = useState(0);
-    useEffect(() => {
-        const controller = new AbortController();
-
-        async function verify() {
-            if (!Number.isSafeInteger(patientId) || patientId <= 0 || !Number.isSafeInteger(encounterId) || encounterId <= 0) return;
-            try {
-                const current = await consultationApi.detail(encounterId, patientId, controller.signal);
-                if (!controller.signal.aborted && current.status !== 'IN_PROGRESS') {
-                    setData(null);
-                    setError('Lượt khám đã đóng. Quyền xem hồ sơ điều trị không còn mở.');
-                }
-            } catch (e) {
-                if (!controller.signal.aborted && e instanceof ClinicalApiError && [401, 403, 404, 409].includes(e.status)) {
-                    setData(null);
-                    setError('Quyền truy cập hồ sơ đã đóng hoặc phiên đăng nhập hết hạn.');
-                }
-            }
-        }
-
-        const timer = setInterval(() => void verify(), 15000);
-        window.addEventListener('focus', verify);
-        return () => {
-            controller.abort();
-            clearInterval(timer);
-            window.removeEventListener('focus', verify);
-        };
-    }, [encounterId, patientId]);
     useEffect(() => {
         if (!Number.isSafeInteger(encounterId) || encounterId <= 0 || !Number.isSafeInteger(patientId) || patientId <= 0) return;
         const controller = new AbortController();
