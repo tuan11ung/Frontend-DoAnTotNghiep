@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, type FormEvent, type ChangeEvent } from 'react';
-import { BirthDateInput } from '@/src/shared/components/BirthDateInput';
+import { DateInput } from '@/src/shared/components/DateInput';
 import { AuthContinuationLink } from './AuthContinuation';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import {
@@ -199,7 +199,7 @@ export function RegisterFormStep({
               <span>Ngày sinh</span>
               <span className="text-rose-500 font-bold">*</span>
             </label>
-            <BirthDateInput id="reg-dob" name="dob" value={values.dob} onChange={value => handleChange('dob', value)} max={latestDob}
+            <DateInput purpose="birth-date" id="reg-dob" name="dob" value={values.dob} onChange={value => handleChange('dob', value)} max={latestDob}
               invalid={Boolean(errors.dob)} describedBy={errors.dob ? 'reg-dob-error' : undefined}
               className={`w-full h-11 pl-3 pr-11 rounded-lg bg-slate-50 border text-sm font-mono text-slate-900 outline-none transition placeholder:text-slate-400 focus:bg-white focus:ring-2 ${errors.dob ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-100' : 'border-slate-200 focus:border-blue-500 focus:ring-blue-100'}`}
             />

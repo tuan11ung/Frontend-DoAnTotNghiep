@@ -13,7 +13,7 @@ import { ReceptionBooking } from './ReceptionBooking';
 import { type ReceptionPatient, type ReceptionPatientCreated } from '../api/reception-api';
 import { bookingToday } from '@/src/features/booking/utils/booking-dates';
 import { useReceptionData } from '../ReceptionDataProvider';
-import { BirthDateInput } from '@/src/shared/components/BirthDateInput';
+import { DateInput } from '@/src/shared/components/DateInput';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
 
@@ -200,7 +200,7 @@ function CreateReceptionPatient({ initialNationalId, onCreated }: { initialNatio
     finally { submitting.current = false; setBusy(false); }
   }
   return <form onSubmit={submit} className="border-t border-slate-200 pt-4"><fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
-    {[['fullName', 'Họ và tên', 'text'], ['dob', 'Ngày sinh', 'date'], ['nationalId', 'Số CCCD', 'text'], ['phone', 'Số điện thoại', 'tel'], ['address', 'Địa chỉ', 'text'], ['insuranceNo', 'Số thẻ BHYT', 'text']].map(([name, label, type]) => <label key={name} className="text-sm font-semibold">{label}{name === 'dob' ? <BirthDateInput id="reception-patient-dob" name="dob" value={birthDate} onChange={setBirthDate} max={bookingToday()} className={`${receptionField} pr-11`} submitIso /> : <input name={name} type={type} defaultValue={name === 'nationalId' ? initialNationalId : undefined} required={['fullName', 'dob', 'nationalId'].includes(name)} maxLength={name === 'nationalId' ? 12 : name === 'insuranceNo' ? 20 : name === 'address' ? 300 : 255} max={type === 'date' ? bookingToday() : undefined} className={receptionField} />}</label>)}
+    {[['fullName', 'Họ và tên', 'text'], ['dob', 'Ngày sinh', 'date'], ['nationalId', 'Số CCCD', 'text'], ['phone', 'Số điện thoại', 'tel'], ['address', 'Địa chỉ', 'text'], ['insuranceNo', 'Số thẻ BHYT', 'text']].map(([name, label, type]) => <label key={name} className="text-sm font-semibold">{label}{name === 'dob' ? <DateInput purpose="birth-date" id="reception-patient-dob" name="dob" value={birthDate} onChange={setBirthDate} max={bookingToday()} className={`${receptionField} pr-11`} submitIso /> : <input name={name} type={type} defaultValue={name === 'nationalId' ? initialNationalId : undefined} required={['fullName', 'dob', 'nationalId'].includes(name)} maxLength={name === 'nationalId' ? 12 : name === 'insuranceNo' ? 20 : name === 'address' ? 300 : 255} max={type === 'date' ? bookingToday() : undefined} className={receptionField} />}</label>)}
     <fieldset>
       <legend className="mb-2 text-sm font-semibold">Giới tính</legend>
       <div className="flex flex-wrap gap-2">

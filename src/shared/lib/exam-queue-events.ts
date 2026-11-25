@@ -71,7 +71,10 @@ function subscribe(scope: ExamQueueScope, listener: Listener) {
         }
         while (!active.signal.aborted) {
           const chunk = await reader.read();
-          if (chunk.done) break;
+          if (chunk.done) {
+            if (scope.kind === 'public' && !active.signal.aborted && !disposed) fail(CONNECTION_ERROR);
+            break;
+          }
           keepAlive();
           buffer += decoder.decode(chunk.value, { stream: true });
           if (buffer.length > 65536) throw new Error(CONNECTION_ERROR);

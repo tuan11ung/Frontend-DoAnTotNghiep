@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Building2, CalendarDays, ChevronLeft, ChevronRight, Clock3, FileText, Home, Mail, MapPin, Phone, Search, ShieldCheck, Stethoscope } from 'lucide-react';
+import { getGoogleMapsSearchHref } from '@/src/shared/lib/google-maps';
 import type { PublicHospitalProfile } from './models/types/public-hospital.types';
 import { hospitalLevelLabels } from './data/public-hospital-data';
 
@@ -24,7 +25,7 @@ export function HospitalDetailPage({ hospital }: { hospital: PublicHospitalProfi
   const services = hospital.services.filter(service => (category === 'ALL' || category === service.category) && `${service.name} ${service.code}`.toLocaleLowerCase('vi-VN').includes(query.trim().toLocaleLowerCase('vi-VN')));
   const totalPages = Math.max(1, Math.ceil(services.length / 10));
   const currentPage = Math.min(page, totalPages);
-  const mapHref = hospital.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${hospital.name}, ${hospital.address}`)}` : null;
+  const mapHref = getGoogleMapsSearchHref(hospital.address, hospital.name);
   return <div data-hospital-detail className="flex-1 bg-slate-50 pb-12">
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <nav aria-label="Đường dẫn" className="mb-5 flex flex-wrap items-center gap-2 text-xs text-slate-500"><Link href="/" className="inline-flex items-center gap-1 hover:text-blue-600"><Home className="size-3.5" />Trang chủ</Link><ChevronRight className="size-3" /><Link href="/hospitals" className="hover:text-blue-600">Bệnh viện</Link><ChevronRight className="size-3" /><span aria-current="page">{hospital.name}</span></nav>

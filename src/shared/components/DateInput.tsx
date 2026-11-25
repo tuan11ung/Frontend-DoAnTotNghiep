@@ -9,27 +9,30 @@ export function dateInputIso(value: string) {
     ? value.split('/').reverse().join('-') : '';
 }
 
-interface BirthDateInputProps {
+interface DateInputProps {
   id: string;
   name?: string;
   value: string;
   onChange: (value: string) => void;
-  max: string;
+  max?: string;
+  required?: boolean;
+  purpose?: 'date' | 'birth-date';
   className: string;
   invalid?: boolean;
   describedBy?: string;
   submitIso?: boolean;
 }
 
-export function BirthDateInput({ id, name, value, onChange, max, className, invalid, describedBy, submitIso = false }: BirthDateInputProps) {
+export function DateInput({ id, name, value, onChange, max, className, invalid, describedBy, submitIso = false, required = true, purpose = 'date' }: DateInputProps) {
   const [showDateInput, setShowDateInput] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
-  const dob = dateInputIso(value);
+  const iso = dateInputIso(value);
+  const field = purpose === 'birth-date' ? 'ngày sinh' : 'ngày';
   useEffect(() => {
-    textInputRef.current?.setCustomValidity(value && !dob ? 'Vui lòng nhập ngày sinh hợp lệ theo định dạng DD/MM/YYYY.' : dob > max ? 'Ngày sinh vượt quá ngày cho phép.' : '');
-  }, [value, dob, max]);
-  function handleDobChange(text: string) {
+    textInputRef.current?.setCustomValidity(value && !iso ? `Vui lòng nhập ${field} hợp lệ theo định dạng DD/MM/YYYY.` : max && iso > max ? `${field === 'ngày sinh' ? 'Ngày sinh' : 'Ngày'} vượt quá ngày cho phép.` : '');
+  }, [value, iso, max, field]);
+  function handleDateChange(text: string) {
     if (/^\d{4}-\d{2}-\d{2}$/.test(text)) { onChange(text.split('-').reverse().join('/')); return; }
     const digits = text.replace(/\D/g, '').slice(0, 8);
     onChange([digits.slice(0, 2), digits.slice(2, 4), digits.slice(4)].filter(Boolean).join('/'));
@@ -53,37 +56,37 @@ export function BirthDateInput({ id, name, value, onChange, max, className, inva
                 ref={textInputRef}
                 id={id}
                 name={submitIso ? undefined : name}
-                autoComplete="bday"
+                autoComplete={purpose === 'birth-date' ? 'bday' : 'off'}
                 className={className}
                 placeholder="DD/MM/YYYY"
-                required
+                required={required}
                 type="text"
                 inputMode="numeric"
                 aria-invalid={Boolean(invalid)}
                 aria-describedby={describedBy}
                 value={value}
-                onChange={event => handleDobChange(event.target.value)}
+                onChange={event => handleDateChange(event.target.value)}
               />
               <input
                 ref={dateInputRef}
                 className={showDateInput ? 'absolute left-0 top-full z-10 mt-1 w-full rounded-lg border border-slate-200 bg-white p-2 text-sm' : 'sr-only absolute right-3'}
                 type="date"
                 max={max}
-                value={dob}
+                value={iso}
                 tabIndex={showDateInput ? 0 : -1}
                 aria-hidden={!showDateInput}
-                aria-label="Chọn ngày sinh"
+                aria-label={`Chọn ${field}`}
                 onChange={(e) => onChange(e.target.value ? formatDisplayDate(e.target.value) : '')}
               />
               <button
                 type="button"
                 className="absolute right-1 grid size-9 cursor-pointer place-items-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-blue-500"
-                aria-label={showDateInput ? 'Ẩn lịch chọn ngày sinh' : 'Mở lịch chọn ngày sinh'}
+                aria-label={`${showDateInput ? 'Ẩn' : 'Mở'} lịch chọn ${field}`}
                 onClick={openDatePicker}
               >
                 <Calendar className="size-5" aria-hidden="true" />
               </button>
-              {submitIso && <input type="hidden" name={name} value={dob} />}
+              {submitIso && <input type="hidden" name={name} value={iso} />}
             </div>
   );
 }

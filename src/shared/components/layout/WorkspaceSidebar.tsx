@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { ChevronRight, CircleUserRound, HeartPulse, LogOut, Menu, X } from 'lucide-react';
+import { CircleUserRound, HeartPulse, LogOut, Menu, X } from 'lucide-react';
 
 export type WorkspaceNavigationItem<S extends string> = {
   id: S;
@@ -79,7 +79,6 @@ function SidebarContent<S extends string>({ activeSection, title, navigationLabe
                 const content = <>
                   <Icon aria-hidden="true" className={`h-[18px] w-[18px] ${isActive ? 'text-blue-700' : 'text-emerald-100/65'}`} />
                   <span className="flex-1">{item.label}</span>
-                  <ChevronRight aria-hidden="true" className={`h-4 w-4 ${isActive ? 'text-slate-400' : 'text-white/25'}`} />
                 </>;
                 return item.href !== undefined ? (
                   <Link key={item.id} href={item.href} aria-current={isActive ? 'page' : undefined} className={className} onClick={onCloseMobile}>{content}</Link>

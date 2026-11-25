@@ -2,6 +2,7 @@
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
 
 import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
+import { WorkspaceHeader } from '@/src/shared/components/layout/WorkspaceHeader';
 
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
 
@@ -144,11 +145,9 @@ function HospitalAdminPreview() {
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
       <SystemAdminSidebar activeSection="hospitals" mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={unavailable} onOpenMobile={() => setMobileOpen(true)} onSelect={unavailable} />
       <div className="flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]">
-        <header className="border-b border-slate-200 bg-white px-4 py-5 pl-20 sm:px-6 sm:pl-20 lg:px-8">
-          <p className="text-xs font-bold uppercase tracking-wide text-blue-700">Quản trị hệ thống · Xem trước</p>
-          <h1 className="mt-1 text-xl font-extrabold text-slate-950">Cơ sở y tế</h1>
-        </header>
+        <WorkspaceHeader workspace="Quản trị hệ thống · Xem trước" section={SECTION_TITLES.hospitals} />
         <main className="mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col overflow-hidden p-4 sm:p-6 lg:p-8">
+          <h1 className="sr-only">{SECTION_TITLES.hospitals}</h1>
           <p className="mb-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">Dữ liệu mẫu. Chọn “Cấp tài khoản quản trị” tại bệnh viện đang hoạt động để xem form và thử thao tác.</p>
           <SystemResourceView section="hospitals" items={PREVIEW_HOSPITALS} loading={false} page={0} size={20} totalElements={PREVIEW_HOSPITALS.length} totalPages={1}
             onCreateHospitalAdmin={(item) => { if (item.status === 'ACTIVE') { setNotice(''); setHospital(item); } }}
@@ -480,18 +479,14 @@ function SystemAdminLiveScreen() {
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
       <SystemAdminSidebar activeSection={activeSection} mobileOpen={mobileOpen} onCloseMobile={() => setMobileOpen(false)} onLogout={() => void logout()} onOpenMobile={() => setMobileOpen(true)} onSelect={setActiveSection} />
       <div className={activeSection === 'overview' ? 'min-h-screen lg:pl-[280px]' : 'flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]'}>
-        <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200 bg-white/95 backdrop-blur">
-          <div className="flex min-h-20 items-center justify-between gap-4 px-4 pl-20 sm:px-6 sm:pl-20 lg:px-8">
-            <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-700">Quản trị hệ thống</p><h1 className="mt-1 text-xl font-extrabold tracking-tight text-slate-950">{SECTION_TITLES[activeSection]}</h1></div>
-            <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-2 text-xs font-semibold text-slate-500 md:flex"><CalendarDays className="h-4 w-4" /><span className="capitalize">{today}</span></div>
-              <button aria-label="Thông báo" className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50" type="button"><Bell className="h-4 w-4" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" /></button>
-              <ClinicalAccountMenu />
-            </div>
-          </div>
-        </header>
+        <WorkspaceHeader workspace="Quản trị hệ thống" section={SECTION_TITLES[activeSection]}>
+          <div className="hidden shrink-0 items-center gap-2 text-xs font-semibold text-slate-500 md:flex"><CalendarDays aria-hidden="true" className="size-4" /><span>{today}</span></div>
+          <button aria-label="Thông báo" className="relative grid size-10 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50" type="button"><Bell aria-hidden="true" className="size-5" /><span className="absolute right-2 top-2 size-2 rounded-full bg-rose-500 ring-2 ring-white" /></button>
+          <ClinicalAccountMenu />
+        </WorkspaceHeader>
 
         <main className={`mx-auto w-full max-w-[1600px] p-4 sm:p-6 lg:p-8 ${activeSection === 'overview' ? '' : 'flex min-h-0 flex-1 flex-col overflow-hidden'}`}>
+          {activeSection !== 'overview' && <h1 className="sr-only">{SECTION_TITLES[activeSection]}</h1>}
           {error && <div className="mb-5 flex items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700" role="alert"><span className="flex-1">{error}</span><button aria-label="Đóng thông báo lỗi" onClick={() => setError('')} type="button"><X className="h-4 w-4" /></button></div>}
           {activeSection === 'overview' && loadingSection === 'overview' && !overviewLoaded ? <div className="flex min-h-[55vh] items-center justify-center"><RefreshCw className="h-7 w-7 animate-spin text-blue-700" /></div> : null}
           {activeSection === 'overview' && (overviewLoaded || loadingSection !== 'overview') && <SystemOverview onNavigate={setActiveSection} stats={stats} />}

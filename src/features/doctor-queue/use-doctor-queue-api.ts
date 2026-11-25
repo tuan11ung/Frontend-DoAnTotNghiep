@@ -82,18 +82,22 @@ export function useDoctorQueueApi() {
   const [selectedScheduleId, setSelectedScheduleId] = useState('');
   const [records, setRecords] = useState<DoctorQueuePatientResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadedScheduleId, setLoadedScheduleId] = useState('');
+  const [queueError, setQueueError] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [calling, setCalling] = useState(false);
   const [continuing, setContinuing] = useState(false);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState<QueueFilterStatus>('waiting');
   const [query, setQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [tagFilter, setTagFilter] = useState<PatientTag | ''>('');
   const [callingRecord, setCallingRecord] = useState<DoctorQueuePatientResponse | null>(null);
   const [selectedReturnId, setSelectedReturnId] = useState('');
   const [notice, setNotice] = useState('');
   const selectedScheduleRef = useRef('');
   const requestVersion = useRef(0);
+  const callingLock = useRef(false);
 
   const loadQueue = useCallback(async (room: DoctorQueueRoomResponse, signal?: AbortSignal, showRefresh = false, retryFailure = false) => {
     const version = ++requestVersion.current;
@@ -102,14 +106,17 @@ export function useDoctorQueueApi() {
       const nextRecords = await doctorQueueApi.getQueue(room.roomId, room.scheduleId, signal);
       if (!signal?.aborted && version === requestVersion.current && selectedScheduleRef.current === String(room.scheduleId)) {
         setRecords(nextRecords);
-        setError('');
+        setLoadedScheduleId(String(room.scheduleId));
+        setQueueError('');
       }
     } catch (loadError) {
-      if (!signal?.aborted && version === requestVersion.current && !(loadError instanceof DOMException && loadError.name === 'AbortError')) setError(errorMessage(loadError));
-      if (retryFailure) throw loadError;
+      if (!signal?.aborted && version === requestVersion.current && !(loadError instanceof DOMException && loadError.name === 'AbortError')) {
+        setQueueError(errorMessage(loadError));
+        if (retryFailure) throw loadError;
+      }
     } finally {
       if (!signal?.aborted && version === requestVersion.current) setLoading(false);
-      if (showRefresh) setRefreshing(false);
+      if (showRefresh && selectedScheduleRef.current === String(room.scheduleId)) setRefreshing(false);
     }
   }, []);
 
@@ -118,6 +125,7 @@ export function useDoctorQueueApi() {
     setError('');
     try {
       const nextRooms = await doctorQueueApi.getRooms(signal);
+      if (signal?.aborted) return;
       setRooms(nextRooms);
       const firstRoom = nextRooms[0];
       if (!firstRoom) {
@@ -129,14 +137,13 @@ export function useDoctorQueueApi() {
       }
       selectedScheduleRef.current = String(firstRoom.scheduleId);
       setSelectedScheduleId(String(firstRoom.scheduleId));
-      await loadQueue(firstRoom, signal);
     } catch (loadError) {
       if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
         setError(errorMessage(loadError));
         setLoading(false);
       }
     }
-  }, [loadQueue]);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -152,7 +159,7 @@ export function useDoctorQueueApi() {
   useEffect(() => {
     if (!selectedRoom) return;
     return watchExamQueue({ kind: 'clinic', workScheduleId: selectedRoom.scheduleId },
-      signal => loadQueue(selectedRoom, signal, false, true), setError);
+      signal => loadQueue(selectedRoom, signal, false, true), setQueueError);
   }, [loadQueue, selectedRoom]);
 
   useEffect(() => {
@@ -171,29 +178,35 @@ export function useDoctorQueueApi() {
   const returnQueueActive = statusFilter === 'return-ready';
   const nextRecord = records.find((record) => record.nextToCall && record.encounterCode);
   const nextPatient = nextRecord ? mapPatient(nextRecord) : undefined;
-  const currentPatient = patients.find((patient) => patient.status === 'in-room');
+  const currentPatients = patients.filter((patient) => patient.status === 'in-room');
+  const currentPatient = currentPatients[0];
   const callingPatient = callingRecord ? mapPatient(callingRecord) : null;
   const selectedReturnPatient = records.find((record) => (
     record.encounterCode === selectedReturnId && record.clsQueueStatus === 'RETURN_READY'
   ));
   const visiblePatients = filterQueuePatients(patients, statusFilter, query, tagFilter, true);
 
-  async function changeShift(id: string) {
+  function changeShift(id: string) {
     const room = rooms.find((item) => String(item.scheduleId) === id);
-    if (!room || currentPatient || callingRecord) return;
+    if (!room || selectedScheduleRef.current === id || currentPatient || callingRecord || callingLock.current || continuing) return;
     selectedScheduleRef.current = id;
     setSelectedScheduleId(id);
     setStatusFilter('waiting');
     setQuery('');
+    setSearchInput('');
     setTagFilter('');
     setSelectedReturnId('');
     setRecords([]);
+    setLoadedScheduleId('');
+    setQueueError('');
+    setError('');
+    setRefreshing(false);
     setLoading(true);
-    await loadQueue(room);
   }
 
   async function callNextPatient() {
-    if (!nextPatient || currentPatient || callingRecord) return;
+    if (!nextPatient || currentPatient || callingRecord || callingLock.current) return;
+    callingLock.current = true;
     setSelectedReturnId('');
     setCalling(true);
     try {
@@ -204,6 +217,7 @@ export function useDoctorQueueApi() {
     } catch (callError) {
       setError(errorMessage(callError));
     } finally {
+      callingLock.current = false;
       setCalling(false);
     }
   }
@@ -260,6 +274,7 @@ export function useDoctorQueueApi() {
     setStatusFilter(status);
     if (status === 'return-ready') {
       setQuery('');
+      setSearchInput('');
       setTagFilter('');
       return;
     }
@@ -268,15 +283,19 @@ export function useDoctorQueueApi() {
 
   return {
     shifts, shift, patients, counts, nextPatient, currentPatient, callingPatient,
-    currentEncounterHref: (() => { const record = records.find(item => item.encounterCode === currentPatient?.id); return record?.encounterId ? `/doctor/encounters/${record.encounterId}?patientId=${record.patientId}` : null; })(),
+    currentEncounters: currentPatients.map(patient => {
+      const record = records.find(item => item.encounterCode === patient.id);
+      return { patient, href: record?.encounterId ? `/doctor/encounters/${record.encounterId}?patientId=${record.patientId}` : null };
+    }),
     initialCallCount: callingRecord?.callCount ?? 1, returnQueueActive,
     selectedReturnId, selectedReturnPatient, setSelectedReturnId, continueDiagnosis,
-    visiblePatients, statusFilter, setStatusFilter: changeStatusFilter, query, setQuery, tagFilter, setTagFilter,
+    visiblePatients, statusFilter, setStatusFilter: changeStatusFilter, query, setQuery, searchInput, setSearchInput, tagFilter, setTagFilter,
     filtered: Boolean(query.trim() || tagFilter),
-    resetFilters: () => { setQuery(''); setTagFilter(''); },
+    resetFilters: () => { setQuery(''); setSearchInput(''); setTagFilter(''); },
     changeShift, callNextPatient, recallPatient, admitPatient, markAbsent,
     closeCall: () => setCallingRecord(null),
-    loading, refreshing, calling, continuing, error,
+    loading, refreshing, calling, continuing, error, queueError,
+    queueReady: Boolean(selectedScheduleId && selectedScheduleId === loadedScheduleId),
     retry: () => void loadRooms(),
     refresh: () => selectedRoom && void loadQueue(selectedRoom, undefined, true),
     notice, dismissNotice: () => setNotice(''),

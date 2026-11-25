@@ -8,7 +8,7 @@ import {WorkspaceHeader} from '@/src/shared/components/layout/WorkspaceHeader';
 
 import {useCallback, useEffect, useState} from 'react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
-import {Bell, CircleAlert, HelpCircle, LoaderCircle, RefreshCw, Search,} from 'lucide-react';
+import {Bell, CircleAlert, LoaderCircle, RefreshCw} from 'lucide-react';
 import {clearStoredAuthSession, getStoredAuthSession} from '../auth/auth-storage';
 import {WorkScheduleScreen} from '../work-schedules/WorkScheduleScreen';
 import {AdminApiError} from './api/admin-api-client';
@@ -288,22 +288,12 @@ export function FacilityAdminPage() {
             <div
                 className={containedList ? 'flex h-dvh min-h-0 flex-col overflow-hidden lg:pl-[280px]' : 'min-h-screen lg:pl-[280px]'}>
                 <WorkspaceHeader workspace="Quản trị cơ sở" section={currentContent.title}>
-                        <div className="relative ml-auto hidden w-full max-w-xs xl:block">
-                            <Search
-                                className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"/>
-                            <input
-                                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm outline-none placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
-                                placeholder="Tìm nhanh chức năng..." type="search"/>
-                        </div>
-                        <ClinicalAccountMenu/>
-                        <button aria-label="Trợ giúp"
-                                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
-                                type="button"><HelpCircle className="h-5 w-5"/></button>
                         <button aria-label="Thông báo"
                                 className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
                                 type="button"><Bell className="h-5 w-5"/><span
                             className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white"/>
                         </button>
+                        <ClinicalAccountMenu/>
                 </WorkspaceHeader>
 
                 <main
@@ -315,6 +305,7 @@ export function FacilityAdminPage() {
                                                services={services} specialties={specialties} staff={staff}/>}
                         {activeSection === 'facility' &&
                             <FacilityInfoView key={facility.id} facility={facility} onSave={saveFacility}
+                                              onSaveFailure={message => showToast({type: 'warning', message})}
                                               onUploadLogo={uploadLogo}/>}
                         {activeSection === 'articles' && <HospitalArticles specialties={specialties}/>}
                         {activeSection === 'clinical-settings' &&

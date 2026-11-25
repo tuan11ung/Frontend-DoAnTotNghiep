@@ -1,4 +1,4 @@
-import { Clock3, SearchX } from 'lucide-react';
+import { Clock3, SearchX, Users } from 'lucide-react';
 import type { QueuePatient } from '../types';
 import { PatientIdentity } from './PatientIdentity';
 import './queue-patient-list.css';
@@ -13,11 +13,73 @@ interface QueuePatientListProps {
   selectedId?: string;
   onSelect?: (patient: QueuePatient) => void;
   onResetFilters: () => void;
+  layout?: 'table';
+  filterKind?: 'search' | 'tag';
 }
 
-export function QueuePatientList({ patients, nextId, filtered, detailLabel, emptyTitle, emptyDescription, selectedId, onSelect, onResetFilters }: QueuePatientListProps) {
+export function QueuePatientList({ patients, nextId, filtered, detailLabel, emptyTitle, emptyDescription, selectedId, onSelect, onResetFilters, layout, filterKind }: QueuePatientListProps) {
   if (!patients.length) {
+    if (layout === 'table') {
+      const Icon = filterKind === 'search' ? SearchX : Users;
+      return (
+        <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
+          <span className="grid size-11 place-items-center rounded-xl bg-slate-100 text-slate-600">
+            <Icon aria-hidden="true" className="size-6" />
+          </span>
+          <h3 className="text-[15px] leading-snug font-semibold text-slate-800">
+            {filtered ? filterKind === 'search' ? 'Không tìm thấy bệnh nhân phù hợp' : 'Không có bệnh nhân phù hợp với bộ lọc' : emptyTitle}
+          </h3>
+          {(filtered || emptyDescription) && <p className="max-w-sm text-[13px] leading-5 text-slate-600">
+            {filtered ? filterKind === 'search' ? 'Thử nhập tên hoặc số thứ tự khác.' : 'Thử chọn nhãn khác hoặc xóa bộ lọc.' : emptyDescription}
+          </p>}
+          {filtered && <button className="min-h-10 rounded-lg px-3 text-sm font-bold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={onResetFilters} type="button">Xóa bộ lọc</button>}
+        </div>
+      );
+    }
     return <div className="flex flex-col items-center px-6 py-16 text-center"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400"><SearchX aria-hidden="true" className="h-7 w-7" /></span><h3 className="mt-4 text-sm font-bold text-slate-800">{filtered ? 'Không tìm thấy bệnh nhân phù hợp' : emptyTitle || 'Chưa có bệnh nhân trong danh sách này'}</h3><p className="mt-2 max-w-sm text-xs leading-5 text-slate-500">{filtered ? 'Thử tìm theo tên, số thứ tự hoặc chọn nhãn khác.' : emptyDescription || 'Bệnh nhân sẽ xuất hiện tại đây sau khi check-in.'}</p>{filtered && <button className="mt-4 rounded-lg px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600" onClick={onResetFilters} type="button">Xóa bộ lọc</button>}</div>;
+  }
+
+  if (layout === 'table') {
+    return (
+      <div className="overflow-x-auto focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600" tabIndex={0} role="region" aria-label="Bảng bệnh nhân theo trạng thái đã chọn">
+        <table className="w-full min-w-[38rem] table-fixed text-left text-sm">
+          <caption className="sr-only">Bệnh nhân theo trạng thái đã chọn</caption>
+          <thead className="bg-slate-50 text-slate-600">
+            <tr>
+              <th scope="col" className="w-24 px-4 py-2.5 font-semibold">STT</th>
+              <th scope="col" className="w-[36%] px-3 py-2.5 font-semibold">Bệnh nhân</th>
+              <th scope="col" className="px-3 py-2.5 font-semibold">{detailLabel}</th>
+              <th scope="col" className="w-28 px-3 py-2.5 font-semibold">Check-in</th>
+              {onSelect && <th scope="col" className="w-24 px-3 py-2.5 text-right font-semibold">Thao tác</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {patients.map(patient => {
+              const next = patient.id === nextId;
+              const selected = patient.id === selectedId;
+              return (
+                <tr key={patient.id} onClick={onSelect ? () => onSelect(patient) : undefined}
+                  className={`${selected ? 'bg-emerald-50' : next ? 'bg-blue-50/80' : 'hover:bg-slate-50/70'} ${onSelect ? 'cursor-pointer' : ''}`}>
+                  <td className="px-4 py-2.5">
+                    <strong className={`text-base font-extrabold tabular-nums [overflow-wrap:anywhere] ${next ? 'text-blue-800' : 'text-slate-900'}`}>{String(patient.number).padStart(3, '0')}</strong>
+                    {next && <span className="block text-xs font-semibold text-blue-700">Tiếp theo</span>}
+                  </td>
+                  <td className="px-3 py-2.5 [overflow-wrap:anywhere]"><PatientIdentity patient={patient} compact /></td>
+                  <td className="px-3 py-2.5 text-slate-700 [overflow-wrap:anywhere]">{patient.detail}</td>
+                  <td className="px-3 py-2.5 text-slate-600 tabular-nums">{patient.checkIn}</td>
+                  {onSelect && <td className="px-3 py-2.5 text-right">
+                    <button type="button" aria-pressed={selected} aria-label={`Chọn ${patient.name}`}
+                      className="min-h-9 rounded-lg px-2 font-semibold text-emerald-800 hover:bg-emerald-100 focus-visible:outline-2 focus-visible:outline-emerald-700">
+                      {selected ? 'Đã chọn' : 'Chọn'}
+                    </button>
+                  </td>}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
   }
 
   return (

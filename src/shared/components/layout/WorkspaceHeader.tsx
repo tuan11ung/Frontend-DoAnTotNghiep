@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 export function WorkspaceHeader({ workspace, section, children }: {
   workspace: string;
   section: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return <header className="sticky top-0 z-20 shrink-0 border-b border-slate-200/90 bg-white/95 backdrop-blur">
     <div className="flex h-20 items-center gap-3 px-4 pl-18 sm:gap-4 sm:px-6 sm:pl-20 lg:px-8 xl:px-10">

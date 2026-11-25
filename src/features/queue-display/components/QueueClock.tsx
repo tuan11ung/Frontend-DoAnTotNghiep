@@ -11,7 +11,7 @@ const clockFormat = new Intl.DateTimeFormat('vi-VN', {
   timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
 });
 
-export function QueueClock() {
+export function QueueClock({ className }: { className?: string }) {
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function QueueClock() {
   }, []);
 
   return (
-    <div className="text-right" aria-label="Giờ Việt Nam">
+    <div className={className ?? 'text-right'} aria-label="Giờ Việt Nam">
       <time className="block text-2xl font-extrabold tracking-tight text-slate-900 tabular-nums sm:text-3xl" dateTime={now?.toISOString()}>
         {now ? clockFormat.format(now) : '--:--:--'}
       </time>

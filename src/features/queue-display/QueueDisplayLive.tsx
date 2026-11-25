@@ -1,47 +1,200 @@
 'use client';
+
 import { useEffect, useRef, useState } from 'react';
+import { Activity, Maximize, Minimize } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { publicApi, publicRequest, type PublicHospital } from '../public-data/public-api';
-import { watchExamQueue } from '@/src/shared/lib/exam-queue-events';
 import { QueueClock } from './components/QueueClock';
-interface Room { scheduleId: number; roomId: number; code: string; name: string; location?: string; doctorName: string; specialtyName?: string; session: string; startTime: string; endTime: string }
-interface Display { tickets: { number: number; status: 'WAITING' | 'CALLED' | 'IN_PROGRESS'; calledAt?: string }[]; updatedAt: string; date: string }
+import { PublicQueueBoard } from './components/PublicQueueBoard';
+import './public-queue.css';
+
+interface Room {
+  scheduleId: number;
+  code: string;
+  name: string;
+  location?: string;
+  doctorName: string;
+  specialtyName?: string;
+  session: string;
+  startTime: string;
+  endTime: string;
+}
+
+const control = 'mt-1 h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 disabled:opacity-60';
+const action = 'inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700';
+
+function sessionLabel(session: string) {
+  if (session === 'MORNING') return 'Ca sáng';
+  if (session === 'AFTERNOON') return 'Ca chiều';
+  return '';
+}
+
+function saveSelection(hospitalId: number, scheduleId: number) {
+  const url = new URL(window.location.href);
+  if (hospitalId) url.searchParams.set('facility', String(hospitalId));
+  else url.searchParams.delete('facility');
+  if (scheduleId) url.searchParams.set('schedule', String(scheduleId));
+  else url.searchParams.delete('schedule');
+  window.history.replaceState(null, '', url);
+}
+
 export function QueueDisplayLive() {
-  const params = useSearchParams(); const [hospitals, setHospitals] = useState<PublicHospital[] | null>(null);
-  const [hospitalId, setHospitalId] = useState(Number(params.get('facility')) || 0); const [scheduleId, setScheduleId] = useState(Number(params.get('schedule')) || 0);
-  const [rooms, setRooms] = useState<{ hospitalId: number; items: Room[] } | null>(null); const [display, setDisplay] = useState<{ scheduleId: number; data: Display } | null>(null);
-  const [error, setError] = useState(''); const [revision, setRevision] = useState(0); const [refreshing, setRefreshing] = useState(false); const element = useRef<HTMLElement>(null);
+  const params = useSearchParams();
+  const [hospitals, setHospitals] = useState<PublicHospital[] | null>(null);
+  const [hospitalId, setHospitalId] = useState(Number(params.get('facility')) || 0);
+  const [scheduleId, setScheduleId] = useState(Number(params.get('schedule')) || 0);
+  const [rooms, setRooms] = useState<{ hospitalId: number; items: Room[] } | null>(null);
+  const [error, setError] = useState('');
+  const [revision, setRevision] = useState(0);
+  const [presenting, setPresenting] = useState(false);
+  const element = useRef<HTMLElement>(null);
+  const startButton = useRef<HTMLButtonElement>(null);
+  const stopButton = useRef<HTMLButtonElement>(null);
+  const restoreFocus = useRef(false);
+
   useEffect(() => {
     const controller = new AbortController();
-    (async () => { const items: PublicHospital[] = []; for (let page = 0; page < 100; page++) { const data = await publicApi.hospitals('', page, 100, controller.signal); items.push(...data.content); if (data.last) break; } if (!controller.signal.aborted) { setHospitals(items); setHospitalId(id => items.some(h => h.id === id) ? id : items[0]?.id ?? 0); } })().catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải cơ sở.'); });
+    async function load() {
+      const items: PublicHospital[] = [];
+      for (let page = 0; page < 100; page++) {
+        const data = await publicApi.hospitals('', page, 100, controller.signal);
+        items.push(...data.content);
+        if (data.last) break;
+      }
+      if (controller.signal.aborted) return;
+      setHospitals(items);
+      setHospitalId(id => items.some(hospital => hospital.id === id) ? id : items[0]?.id ?? 0);
+    }
+    void load().catch(() => { if (!controller.signal.aborted) setError('Không thể tải danh sách cơ sở.'); });
     return () => controller.abort();
   }, [revision]);
+
   useEffect(() => {
-    if (!hospitalId) return; const controller = new AbortController();
-    publicRequest<Room[]>('directory/queue/rooms', { hospitalId }, controller.signal).then(items => { if (!controller.signal.aborted) { setRooms({ hospitalId, items }); setScheduleId(id => items.some(r => r.scheduleId === id) ? id : items[0]?.scheduleId ?? 0); setError(''); } }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không tải được phòng.'); });
+    if (!hospitalId) return;
+    const controller = new AbortController();
+    publicRequest<Room[]>('directory/queue/rooms', { hospitalId }, controller.signal).then(items => {
+      if (controller.signal.aborted) return;
+      setRooms({ hospitalId, items });
+      setScheduleId(id => items.some(room => room.scheduleId === id) ? id : items[0]?.scheduleId ?? 0);
+    }).catch(() => { if (!controller.signal.aborted) setError('Không thể tải phòng và ca khám.'); });
     return () => controller.abort();
   }, [hospitalId, revision]);
-  const validRooms = rooms?.hospitalId === hospitalId ? rooms.items : null;
-  const room = validRooms?.find(r => r.scheduleId === scheduleId);
+
   useEffect(() => {
-    if (!room) return; const controller = new AbortController();
-    async function refresh() {
-      setRefreshing(true);
-      try { const data = await publicRequest<Display>('directory/queue/display', { hospitalId, scheduleId }, controller.signal); if (!controller.signal.aborted) { setDisplay({ scheduleId, data }); setError(''); } }
-      catch (e) { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Mất kết nối bảng gọi số.'); throw e; }
-      finally { if (!controller.signal.aborted) setRefreshing(false); }
+    if (presenting) stopButton.current?.focus({ preventScroll: true });
+    else if (restoreFocus.current) {
+      startButton.current?.focus({ preventScroll: true });
+      restoreFocus.current = false;
     }
-    const stop = watchExamQueue({ kind: 'public', hospitalId, scheduleId }, () => refresh(), setError);
-    return () => { controller.abort(); stop(); };
-  }, [hospitalId, scheduleId, room, revision]);
-  const current = display?.scheduleId === scheduleId && room ? display.data : null;
-  const called = current?.tickets.filter(t => t.status === 'CALLED' || t.status === 'IN_PROGRESS' || (t.status === 'WAITING' && t.calledAt));
-  const waiting = current?.tickets.filter(t => t.status === 'WAITING' && !t.calledAt);
-  return <main ref={element} className="min-h-svh bg-slate-50 p-4 sm:p-8"><div className="mx-auto max-w-7xl space-y-6"><header className="flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-bold text-blue-700">MedConnect · Bảng gọi số</p><h1 className="mt-2 text-2xl font-extrabold">{room?.name || 'Hàng chờ phòng khám'}</h1></div><QueueClock/></header>
-    <div className="flex flex-wrap items-end gap-4"><label className="min-w-0 flex-1 text-sm font-bold">Cơ sở<select className="mt-2 w-full rounded-lg border bg-white p-3" value={hospitalId} onChange={e => { setHospitalId(Number(e.target.value)); setScheduleId(0); setDisplay(null); }}><option value={0}>Chọn cơ sở</option>{hospitals?.map(h => <option key={h.id} value={h.id}>{h.name}</option>)}</select></label><label className="min-w-0 flex-1 text-sm font-bold">Phòng và ca hôm nay<select className="mt-2 w-full rounded-lg border bg-white p-3" value={scheduleId} onChange={e => { setScheduleId(Number(e.target.value)); setDisplay(null); const next = new URLSearchParams({ facility: String(hospitalId), schedule: e.target.value }); window.history.replaceState(null, '', `?${next}`); }}><option value={0}>Chọn phòng</option>{validRooms?.map(r => <option key={r.scheduleId} value={r.scheduleId}>{r.code} · {r.name} · {r.session === 'MORNING' ? 'Sáng' : 'Chiều'}</option>)}</select></label><button type="button" className="rounded-lg border bg-white p-3 text-sm font-bold" onClick={() => { const action = document.fullscreenElement ? document.exitFullscreen() : element.current?.requestFullscreen(); action?.catch(() => setError('Không thể mở toàn màn hình trên trình duyệt này.')); }}>Toàn màn hình</button></div>
-    {error && <div role="alert" className="space-y-2 rounded-xl bg-amber-50 p-4 text-amber-900"><p>{error} Dữ liệu bên dưới có thể chưa được cập nhật.</p><button type="button" className="font-bold" onClick={() => setRevision(v => v + 1)}>Kết nối lại</button></div>}
-    {hospitals === null && !error && <p role="status">Đang tải cơ sở…</p>}{hospitals?.length === 0 && <p>Chưa có cơ sở đang hoạt động.</p>}{validRooms?.length === 0 && <p className="rounded-xl border bg-white p-6">Không có ca khám được công bố hôm nay tại cơ sở này.</p>}
-    {room && <><section className="rounded-2xl border bg-white p-5"><h2 className="text-lg font-bold">{room.code} · {room.specialtyName}</h2><p className="mt-2 text-sm text-slate-600">Bác sĩ {room.doctorName} · {room.location || 'Liên hệ quầy để được hướng dẫn'} · {room.startTime.slice(0, 5)}–{room.endTime.slice(0, 5)}</p></section><div className="grid gap-5 lg:grid-cols-2"><section aria-live="polite" className="rounded-2xl bg-blue-800 p-7 text-white"><h2 className="text-xl font-bold">Đang mời / đang khám</h2>{!current ? <p className="mt-6">Đang tải…</p> : called?.length ? <div className="mt-6 flex flex-wrap gap-6">{called.map(t => <div key={t.number} className="rounded-xl bg-white/10 p-5 text-center"><p className="text-6xl font-extrabold tabular-nums">{t.number}</p><p className="mt-3 text-sm">{t.status === 'IN_PROGRESS' ? 'Đang khám' : 'Mời vào phòng'}</p></div>)}</div> : <p className="mt-6">Chưa có số được gọi.</p>}</section><section className="rounded-2xl border bg-white p-7"><h2 className="text-xl font-bold">Các số đang chờ ({waiting?.length ?? 0})</h2><div className="mt-6 flex flex-wrap gap-3">{waiting?.map(t => <span key={t.number} className="rounded-xl bg-slate-100 px-5 py-4 text-3xl font-bold tabular-nums">{t.number}</span>)}</div>{current && !waiting?.length && <p className="mt-6 text-slate-500">Chưa có người đang chờ.</p>}</section></div></>}
-    <footer className="text-sm text-slate-500">{current ? `Cập nhật: ${new Date(current.updatedAt).toLocaleTimeString('vi-VN')} · ` : ''}{refreshing ? 'Đang cập nhật…' : 'Nhận cập nhật trực tiếp từ phòng khám'} · Vui lòng theo dõi số thứ tự và hướng dẫn của nhân viên.</footer>
-  </div></main>;
+  }, [presenting]);
+
+  useEffect(() => {
+    if (!presenting) return;
+    function fullscreenChanged() {
+      if (document.fullscreenElement !== element.current) setPresenting(false);
+    }
+    function escape(event: KeyboardEvent) {
+      if (event.key === 'Escape' && !document.fullscreenElement) setPresenting(false);
+    }
+    document.addEventListener('fullscreenchange', fullscreenChanged);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('fullscreenchange', fullscreenChanged);
+      document.removeEventListener('keydown', escape);
+    };
+  }, [presenting]);
+
+  const hospital = hospitals?.find(item => item.id === hospitalId);
+  const validRooms = rooms?.hospitalId === hospitalId ? rooms.items : null;
+  const room = validRooms?.find(item => item.scheduleId === scheduleId);
+  const hours = room ? [room.startTime?.slice(0, 5), room.endTime?.slice(0, 5)].filter(Boolean).join('–') : '';
+  const shiftLabel = room ? [sessionLabel(room.session), hours].filter(Boolean).join(' · ') : '';
+  const roomDetails = [room?.specialtyName, room?.location, room?.doctorName && `Bác sĩ ${room.doctorName}`, shiftLabel].filter(Boolean);
+
+  function startPresentation() {
+    restoreFocus.current = true;
+    setPresenting(true);
+    // Browser rejection still leaves a usable presentation and an exit control.
+    void element.current?.requestFullscreen?.().catch(() => {});
+  }
+
+  async function stopPresentation() {
+    if (document.fullscreenElement === element.current) {
+      try { await document.exitFullscreen(); } catch { return; }
+    }
+    setPresenting(false);
+  }
+
+  return (
+    <main ref={element} className="public-queue" data-presentation={presenting ? 'true' : undefined}>
+      <header className="flex shrink-0 items-start justify-between gap-3 sm:gap-6">
+        <div className="min-w-0 [overflow-wrap:anywhere]">
+          <p className="public-queue-brand"><Activity className="size-[1em] shrink-0" aria-hidden="true" /> MedConnect</p>
+          {hospital && <p className="public-queue-hospital">{hospital.name}</p>}
+          <h1 className="public-queue-room">{room?.name || 'Hàng chờ phòng khám'}</h1>
+          {roomDetails.length > 0 && <p className="public-queue-metadata">{roomDetails.join(' · ')}</p>}
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          <QueueClock className="public-queue-clock" />
+          {presenting && (
+            <button ref={stopButton} type="button" onClick={() => void stopPresentation()} className={`${action} border border-slate-200 bg-white text-slate-700 hover:bg-slate-100`}>
+              <Minimize className="size-4" aria-hidden="true" /> <span>Thoát trình chiếu</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {!presenting && (
+        <div className="flex shrink-0 flex-wrap items-end gap-3 rounded-xl bg-white p-3 sm:gap-4 sm:px-4" aria-label="Cấu hình bảng gọi số">
+          <label className="min-w-0 flex-[1_1_14rem] text-sm font-semibold text-slate-700">
+            Cơ sở y tế
+            <select className={control} value={hospitalId} disabled={!hospitals?.length} onChange={event => {
+              const id = Number(event.target.value);
+              setHospitalId(id);
+              setScheduleId(0);
+              setRooms(null);
+              setError('');
+              saveSelection(id, 0);
+            }}>
+              <option value={0}>Chọn cơ sở</option>
+              {hospitals?.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
+            </select>
+          </label>
+          <label className="min-w-0 flex-[1_1_14rem] text-sm font-semibold text-slate-700">
+            Phòng và ca hôm nay
+            <select className={control} value={scheduleId} disabled={!validRooms?.length} onChange={event => {
+              const id = Number(event.target.value);
+              setScheduleId(id);
+              saveSelection(hospitalId, id);
+            }}>
+              <option value={0}>Chọn phòng và ca</option>
+              {validRooms?.map(item => <option key={item.scheduleId} value={item.scheduleId}>{[item.code, item.name, sessionLabel(item.session)].filter(Boolean).join(' · ')}</option>)}
+            </select>
+          </label>
+          <button ref={startButton} type="button" disabled={!room} onClick={startPresentation} className={`${action} bg-blue-700 text-white enabled:hover:bg-blue-800 disabled:opacity-50`}>
+            <Maximize className="size-4" aria-hidden="true" /> Bật trình chiếu
+          </button>
+        </div>
+      )}
+
+      {error && <div role="alert" className="flex shrink-0 flex-wrap items-center justify-between gap-2 rounded-xl bg-amber-50 p-4 text-amber-950">
+        <p>{error}</p>
+        <button className={`${action} border border-amber-200 bg-white`} type="button" onClick={() => { setError(''); setRevision(value => value + 1); }}>Thử lại</button>
+      </div>}
+
+      {room ? (
+        <PublicQueueBoard key={`${hospitalId}:${room.scheduleId}`} hospitalId={hospitalId} scheduleId={room.scheduleId} presenting={presenting} />
+      ) : (
+        <section className="grid flex-1 place-items-center rounded-2xl bg-white p-6 text-center text-xl font-semibold text-slate-700" role="status">
+          {error ? 'Chưa tải được cấu hình bảng gọi số.'
+            : hospitals === null ? 'Đang tải cơ sở…'
+            : hospitals.length === 0 ? 'Chưa có cơ sở đang hoạt động.'
+            : !hospitalId ? 'Chọn cơ sở y tế để xem hàng chờ.'
+            : validRooms === null ? 'Đang tải phòng và ca khám…'
+            : validRooms.length === 0 ? 'Không có ca khám được công bố hôm nay tại cơ sở này.'
+            : 'Vui lòng chọn phòng và ca khám.'}
+        </section>
+      )}
+    </main>
+  );
 }
