@@ -15,6 +15,7 @@ export interface ClinicalService {
     description?: string;
     conclusion?: string;
     images?: EncounterImage[];
+    files?: import('@/src/shared/components/ClinicalMediaPreview').ClinicalMediaFile[];
   };
 }
 

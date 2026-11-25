@@ -8,7 +8,8 @@ export function resultService(order: OrderedService, detail?: TechnicianOrderDet
     report: detail ? { code: order.serviceCode, issuedAt: order.completedDate ?? order.orderedDate,
       description: detail.findings ?? undefined, conclusion: detail.conclusion ?? undefined,
       rows: detail.values.map(v => ({ name: v.parameterName, unit: v.unit ?? undefined, value: String(v.valueText ?? v.value ?? ''), reference: [v.referenceLow, v.referenceHigh].map(item => item ?? '—').join('–') })),
-      images: detail.media.filter(m => ['JPEG', 'PNG'].includes(m.type) && /^https?:\/\//i.test(m.url)).map(m => ({ id: String(m.id), src: m.url, title: m.name })),
+      files: detail.media.filter(m => m.available === false || ['PDF','MP4'].includes(m.type) && /^https?:\/\//i.test(m.url)),
+      images: detail.media.filter(m => m.available !== false && ['JPEG', 'PNG'].includes(m.type) && /^https?:\/\//i.test(m.url)).map(m => ({ id: String(m.id), src: m.url, title: m.name })),
     } : undefined,
   };
 }

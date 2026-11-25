@@ -70,9 +70,10 @@ export interface TechnicianLabValue {
 export interface TechnicianResultMedia {
   id: number;
   name: string;
-  type: 'JPEG' | 'PNG' | 'MP4';
+  type: 'JPEG' | 'PNG' | 'MP4' | 'PDF';
   sizeBytes: number;
   url: string;
+  available?: boolean;
 }
 
 export interface TechnicianOrderDetail {
@@ -89,7 +90,7 @@ export interface TechnicianServiceDetail {
 }
 
 export interface TechnicianQueueFilters {
-  status: OrderedServiceStatus | 'ALL' | 'ACTIVE';
+  status: OrderedServiceStatus | 'ALL' | 'ACTIVE' | 'CALLED' | 'ABSENT';
   pageSize: number;
   serviceId: string;
   fromDate: string;
@@ -105,4 +106,5 @@ export interface TechnicianResultSave {
 }
 
 export interface TechnicianRoom { id: number; code: string; name: string; location?: string | null; roomType: string; active: boolean; load: number }
-export interface TechnicianOrderGroup { encounterId: number; roomId?: number | null; roomName?: string | null; roomLocation?: string | null; patientId: number; patientCode: string; patientFullName: string; orders: OrderedService[] }
+export type TechnicianQueueStatus = 'WAITING' | 'CALLED' | 'ABSENT' | 'IN_PROGRESS' | 'WAITING_RESULT' | 'COMPLETED' | 'CANCELLED';
+export interface TechnicianOrderGroup { queueStatus: TechnicianQueueStatus; queuePosition?: number | null; canCall: boolean; encounterId: number; roomId?: number | null; roomName?: string | null; roomLocation?: string | null; patientId: number; patientCode: string; patientFullName: string; orders: OrderedService[] }

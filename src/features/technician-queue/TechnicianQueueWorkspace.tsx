@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { useTechnicianAccess, useTechnicianQueue } from './hooks/use-technician-queue';
-import { type OrderedService } from './technician-api.types';
+import { useRouter } from 'next/navigation';
+import { technicianApi, type TechnicianQueueAction } from './api/technician-api';
+import { type TechnicianOrderGroup } from './technician-api.types';
 import { DataTablePagination } from '@/src/shared/components/pagination';
-import { TECHNICIAN_STATUS_LABELS, TechnicianOrderList } from './components/TechnicianOrderList';
-import { TechnicianResultDialog } from './components/TechnicianResultDialog';
+import { TECHNICIAN_QUEUE_LABELS, TechnicianOrderList } from './components/TechnicianOrderList';
 import { TechnicianServiceSelect } from './components/TechnicianServiceSelect';
 
 const inputClass = 'h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-700 outline-none focus-visible:border-blue-500 focus-visible:ring-2 focus-visible:ring-blue-100';
@@ -26,28 +27,38 @@ function QueueLoading() {
 
 function TechnicianQueueLive() {
   const state = useTechnicianQueue();
-  const [selected, setSelected] = useState<OrderedService | null>(null);
+  const router=useRouter();
+  const [pending,setPending]=useState(false);
+  const [actionError,setActionError]=useState('');
+  const actionLock=useRef(false);
   const queueRef = useRef<HTMLElement>(null);
   const filtered = Boolean(state.filters.serviceId || state.filters.fromDate || state.filters.toDate);
-  function closeResult() { setSelected(null); state.refresh(); requestAnimationFrame(() => queueRef.current?.focus()); }
+  function open(group: TechnicianOrderGroup) { router.push(`/technician/patients/${group.encounterId}?roomId=${group.roomId}`); }
+  async function action(group: TechnicianOrderGroup, kind: TechnicianQueueAction) {
+    if(actionLock.current || !group.roomId)return;
+    actionLock.current=true;setPending(true);setActionError('');
+    try { const result=await technicianApi.patientAction(kind,group.encounterId,group.roomId); if(kind==='receive')open(result); else state.refresh(); }
+    catch(cause){setActionError(cause instanceof Error?cause.message:'Không thể cập nhật hàng chờ.');state.refresh();}
+    finally{actionLock.current=false;setPending(false);}
+  }
   return <>
     <section aria-label="Hàng chờ phòng CLS" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" ref={queueRef} tabIndex={-1}>
-      <div className="flex flex-wrap items-center justify-between gap-3 p-5"><div><h2 className="text-lg font-bold">Bệnh nhân tại phòng CLS</h2><p className="mt-1 text-sm text-slate-500">Chỉ hiển thị các chỉ định đã thanh toán tại phòng bạn phụ trách. Chọn bệnh nhân để thực hiện và nhập kết quả.</p>
+      <div className="flex flex-wrap items-center justify-between gap-3 p-5"><div><h2 className="text-lg font-bold">Bệnh nhân tại phòng CLS</h2><p className="mt-1 text-sm text-slate-500">Chỉ hiển thị các chỉ định đã thanh toán tại phòng bạn phụ trách. Gọi bệnh nhân theo lượt; tiếp nhận để mở trang thực hiện dịch vụ.</p>
         {state.rooms.length > 0 && <div aria-label="Phòng CLS phụ trách" className="mt-3 flex flex-wrap gap-2">{state.rooms.map(room =>
           <span key={room.id} className="rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">{room.name}{room.location && ` · ${room.location}`}{!room.active && ' · Đã ngừng hoạt động'}</span>)}</div>}
         {!state.loading && !state.error && state.rooms.length === 0 && <p role="status" className="mt-3 text-sm text-amber-800">Bạn chưa được phân công phụ trách phòng CLS. Vui lòng liên hệ quản trị cơ sở để kiểm tra phân công.</p>}
       </div><button type="button" className={buttonClass} onClick={state.refresh}>Làm mới</button></div>
       <div className="flex flex-wrap items-end gap-3 border-y bg-slate-50 p-4">
-        <label className="text-xs font-bold">Trạng thái<select className={inputClass+' mt-1 block'} value={state.filters.status} onChange={event => state.changeFilters({status:event.target.value as typeof state.filters.status})}><option value="ACTIVE">Đang xử lý</option><option value="ALL">Tất cả trạng thái</option>{Object.entries(TECHNICIAN_STATUS_LABELS).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
+        <label className="text-xs font-bold">Trạng thái<select className={inputClass+' mt-1 block'} value={state.filters.status} onChange={event => state.changeFilters({status:event.target.value as typeof state.filters.status})}><option value="ACTIVE">Đang xử lý</option><option value="ALL">Tất cả trạng thái</option>{Object.entries(TECHNICIAN_QUEUE_LABELS).map(([value,label])=><option key={value} value={value==='WAITING'?'ORDERED':value}>{label}</option>)}</select></label>
         <TechnicianServiceSelect services={state.services} value={state.filters.serviceId} onChange={value=>state.changeFilters({serviceId:value})} loading={state.catalogLoading} />
         <label className="text-xs font-bold">Từ ngày<input className={inputClass+' mt-1 block'} type="date" value={state.filters.fromDate} onChange={event=>state.changeFilters({fromDate:event.target.value})}/></label>
         <label className="text-xs font-bold">Đến ngày<input className={inputClass+' mt-1 block'} type="date" value={state.filters.toDate} onChange={event=>state.changeFilters({toDate:event.target.value})}/></label>
       </div>
+      {actionError && <p role="alert" className="p-4 text-sm text-rose-700">{actionError}</p>}
       {state.error && <p role="alert" className="p-4 text-sm text-rose-700">{state.error}</p>}
       {state.catalogError && <p role="alert" className="p-4 text-sm text-rose-700">{state.catalogError}<button type="button" onClick={state.retryCatalog} className="ml-2 underline">Tải lại danh mục</button></p>}
-      {state.loading ? <QueueLoading/> : <TechnicianOrderList groups={state.data?.content ?? []} filtered={filtered} onSelect={setSelected} onReset={state.resetFilters}/>}
-      <DataTablePagination pageIndex={state.filters.page} pageSize={state.filters.pageSize} totalRecords={state.data?.totalElements ?? 0} disabled={state.loading || state.refreshing} ariaLabel="Phân trang bệnh nhân CLS" recordLabel="nhóm bệnh nhân/phòng" onPageChange={page=>state.changeFilters({page})} onPageSizeChange={pageSize=>state.changeFilters({pageSize})}/>
+      {state.loading ? <QueueLoading/> : <TechnicianOrderList groups={state.data?.content ?? []} filtered={filtered} pending={pending} onAction={(group,kind) => void action(group,kind)} onOpen={open} onReset={state.resetFilters}/>}
+      <DataTablePagination pageIndex={state.filters.page} pageSize={state.filters.pageSize} totalRecords={state.data?.totalElements ?? 0} disabled={state.loading || state.refreshing} ariaLabel="Phân trang bệnh nhân CLS" recordLabel="bệnh nhân" onPageChange={page=>state.changeFilters({page})} onPageSizeChange={pageSize=>state.changeFilters({pageSize})}/>
     </section>
-    {selected && <TechnicianResultDialog orderId={selected.id} onClose={closeResult} onChanged={state.refresh}/>}
   </>;
 }

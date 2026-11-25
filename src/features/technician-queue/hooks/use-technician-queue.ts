@@ -29,7 +29,7 @@ export function technicianErrorMessage(error: unknown) {
 }
 
 function defaultQueueFilters(): TechnicianQueueFilters {
-  return { status: 'ACTIVE', pageSize: 20, serviceId: '', fromDate: '', toDate: '', page: 0 };
+  return { status: 'ACTIVE', pageSize: 10, serviceId: '', fromDate: '', toDate: '', page: 0 };
 }
 
 export function useTechnicianQueue() {
