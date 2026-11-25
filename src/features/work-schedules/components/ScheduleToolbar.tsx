@@ -13,11 +13,10 @@ function shiftMonth(month: string, offset: number) {
 
 function weekRange(start: string) {
   const end = addScheduleDays(start, 6);
-  const startLabel = scheduleDateLabel(start);
-  const shortStart = start.slice(0, 7) === end.slice(0, 7)
-    ? startLabel.slice(0, 2)
-    : start.slice(0, 4) === end.slice(0, 4) ? startLabel.slice(0, 5) : startLabel;
-  return `${shortStart} – ${scheduleDateLabel(end)}`;
+  const sameYear = start.slice(0, 4) === end.slice(0, 4);
+  const startLabel = scheduleDateLabel(start).slice(0, sameYear ? 5 : undefined);
+  const endLabel = scheduleDateLabel(end).slice(0, sameYear ? 5 : undefined);
+  return `Tuần ${Math.ceil(Number(start.slice(8, 10)) / 7)} (${startLabel} – ${endLabel})`;
 }
 
 function WeekOptions({ initialWeek, onSelect }: { initialWeek: string; onSelect: (date: string) => void }) {
@@ -35,8 +34,14 @@ function WeekOptions({ initialWeek, onSelect }: { initialWeek: string; onSelect:
       <p aria-live="polite" className="text-sm font-semibold text-slate-800">Tháng {Number(month.slice(5))}/{month.slice(0, 4)}</p>
       <button aria-label="Tháng sau" className={monthButton} onClick={() => setMonth(value => shiftMonth(value, 1))} type="button"><ChevronRight aria-hidden="true" className="size-4" /></button>
     </div>
-    {weeks.map(date => <DropdownOption key={date} label={`Tuần ${Math.ceil(Number(date.slice(8, 10)) / 7)}`}
-      description={weekRange(date)} onClick={() => onSelect(date)} selected={date === initialWeek} />)}
+    {weeks.map(date => {
+      const end = addScheduleDays(date, 6);
+      const sameYear = date.slice(0, 4) === end.slice(0, 4);
+      const range = `${scheduleDateLabel(date).slice(0, sameYear ? 5 : undefined)} – ${scheduleDateLabel(end).slice(0, sameYear ? 5 : undefined)}`;
+      return <DropdownOption key={date}
+        label={<span className="flex items-center gap-3 whitespace-nowrap"><span>Tuần {Math.ceil(Number(date.slice(8, 10)) / 7)}</span><span className="font-normal text-slate-600">{range}</span></span>}
+        onClick={() => onSelect(date)} selected={date === initialWeek} />;
+    })}
   </>;
 }
 
@@ -59,8 +64,8 @@ export function ScheduleToolbar({ weekStart, today, specialties, specialtyId, di
     <div className="flex shrink-0 flex-wrap items-start justify-between gap-3">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <button aria-label="Tuần trước" className={controlClass} disabled={weekDisabled} onClick={() => onWeek(addScheduleDays(weekStart, -7))} type="button"><ChevronLeft aria-hidden="true" className="size-4" /></button>
-        <div className="min-w-0 flex-1 sm:flex-none">
-          <ScheduleDropdown disabled={weekDisabled} icon={<CalendarDays aria-hidden="true" className="size-4 shrink-0 text-medblue-600" />} label="Chọn tuần" value={weekRange(weekStart)}>
+        <div className="w-[225px] min-w-0 max-w-full flex-none">
+          <ScheduleDropdown centered disabled={weekDisabled} icon={<CalendarDays aria-hidden="true" className="size-4 shrink-0 text-medblue-600" />} label="Chọn tuần" value={weekRange(weekStart)}>
             {close => <WeekOptions initialWeek={weekStart} onSelect={date => { close(); onWeek(date); }} />}
           </ScheduleDropdown>
         </div>

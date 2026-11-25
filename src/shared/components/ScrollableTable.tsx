@@ -51,7 +51,7 @@ export function ScrollableTable({ ref, label, maxHeight = 'min(60dvh, 40rem)', v
       {...props}
       ref={region}
       aria-label={label}
-      className={`min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 ${stickyHeader ? '[&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-slate-50' : ''} ${className}`}
+      className={`min-h-0 min-w-0 flex-1 overflow-auto overscroll-contain focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600 [&_thead]:bg-slate-800 [&_thead]:font-bold [&_thead]:text-white [&_thead_th]:bg-slate-800! [&_thead_td]:bg-slate-800! [&_thead_*]:text-white! [&_thead_th]:font-bold! [&_thead_td]:font-bold! ${stickyHeader ? '[&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10' : ''} ${className}`}
       role="region"
       style={{ maxHeight: visibleRows ? 'var(--table-row-limit, none)' : maxHeight, ...style }}
       tabIndex={0}

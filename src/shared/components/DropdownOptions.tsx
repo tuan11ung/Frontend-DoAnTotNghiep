@@ -16,7 +16,7 @@ export function DropdownResults({
 }: DropdownResultsProps) {
   return <div {...props} ref={ref}
     className={twMerge(
-      'overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1 shadow-lg',
+      'overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-1 shadow-sm',
       placement === 'overlay' && 'absolute inset-x-0 top-full z-30 mt-1', className,
     )}
     style={{ maxHeight, ...style }} />;

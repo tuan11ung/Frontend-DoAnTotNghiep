@@ -79,7 +79,7 @@ export function SearchableDropdown({
         aria-controls={open ? id + '-options' : undefined}
         aria-expanded={open}
         aria-labelledby={id + '-label ' + id + '-value'}
-        className={fieldClass + ' flex items-center justify-between gap-2 text-left'}
+        className={fieldClass + ' shadow-sm flex items-center justify-between gap-2 text-left'}
         onClick={() => open ? close() : setOpen(true)}
         ref={trigger}
         type="button"
@@ -88,7 +88,7 @@ export function SearchableDropdown({
         <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0" />
       </button>
       {open && (
-        <div className="mt-1 rounded-lg border border-slate-200 bg-white p-2 shadow-lg" id={id + '-options'}>
+        <div className="mt-1 rounded-lg border border-slate-200 bg-white p-2 shadow-sm" id={id + '-options'}>
           <input
             disabled={disabled}
             aria-label={searchPlaceholder}
