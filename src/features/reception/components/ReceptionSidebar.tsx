@@ -9,6 +9,7 @@ import { useDoctorAccess } from '@/src/features/doctor-queue/hooks/use-doctor-ac
 import { publicRequest, type PublicHospital } from '@/src/features/public-data/public-api';
 
 export const RECEPTION_SECTIONS = [
+  { id: 'appointments', label: 'Danh sách lịch hẹn', group: 'Tiếp nhận khám', icon: CalendarCheck },
   { id: 'registration', label: 'Đăng ký tại quầy', group: 'Tiếp nhận khám', icon: ClipboardPlus },
   { id: 'checkin', label: 'Check-in lịch hẹn', group: 'Tiếp nhận khám', icon: CalendarCheck },
   { id: 'pending-specialty', label: 'Phân chuyên khoa', group: 'Tiếp nhận khám', icon: GitBranch },

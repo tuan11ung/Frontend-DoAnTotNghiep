@@ -67,6 +67,7 @@ const ENDPOINTS: Record<string, string> = {
   'reception/patients/search': '/clinic/reception/patients/search',
   'reception/patients/create': '/clinic/reception/patients/create',
   'reception/appointments/detail': '/clinic/reception/appointments/detail',
+  'reception/appointments/search': '/clinic/reception/appointments/search',
   'reception/appointments/assign-specialty': '/clinic/reception/appointments/assign-specialty',
   'reception/appointments/change-specialty/slots': '/clinic/reception/appointments/change-specialty/slots',
   'reception/appointments/change-specialty': '/clinic/reception/appointments/change-specialty',

@@ -32,7 +32,21 @@ export interface PendingAppointment { appointmentId: number; appointmentCode: st
 export interface ReceptionInvoice { patientName?: string; patientCode?: string; createdAt?: string | null; id: number; invoiceCode: string; encounterId?: number | null; appointmentId?: number; appointmentCode?: string; encounterCode?: string; totalAmount: number; status: 'UNPAID' | 'PAID' | 'CANCELLED'; statusLabel: string; kind?: 'CONSULTATION_ADJUST' | 'CONSULTATION' | 'PARACLINICAL' | 'LEGACY'; kindLabel?: string }
 export interface ReceptionInvoiceDetail { originalTotalAmount?: number; insuranceDiscountAmount?: number; insuranceDiscountPercent?: number; consultationPayment?: { invoiceId: number | null; invoiceCode: string | null; status: 'PAID' | 'UNPAID' | 'FEE_PENDING' }; refunds?: import('@/src/features/patient-payments/payment.types').PaymentRefund[]; lines?: {orderedServiceId?:number; name:string; amount:number; originalAmount?:number; insuranceDiscountAmount?:number; insuranceDiscountPercent?:number; cancelled?:boolean}[]; deduction?:number; invoice: ReceptionInvoice; consultationAmount: number; paraclinicalAmount: number; context?: { patientId: number; patientName: string; patientCode: string; maskedNationalId?: string; encounterCode?: string | null; appointmentCode?: string; hospitalName: string }; transactions: { id: number; amount: number; method?: 'CASH' | 'VNPAY' | 'MOMO'; methodLabel: string; statusLabel: string; status?: 'PENDING' | 'SUCCESS' | 'FAILED'; transactionRef?: string; paidDate?: string; createdAt?: string }[] }
 
+export interface ReceptionAppointmentListItem {
+  appointmentId: number; appointmentCode: string; patientId: number; patientName: string | null;
+  appointmentDate: string; startTime: string; endTime: string | null;
+  session: 'MORNING' | 'AFTERNOON'; status: 'PENDING_SPECIALTY' | 'BOOKED' | 'CHECKED_IN' | 'CANCELLED' | 'ABSENT' | 'COMPLETED';
+  specialtyName: string | null; doctorName: string | null; roomName: string | null; roomLocation: string | null;
+  serviceType: string | null; queueNumber: number | null;
+}
+export interface ReceptionAppointmentSearch {
+  appointmentDate: string; keyword?: string; status?: ReceptionAppointmentListItem['status'];
+  session?: ReceptionAppointmentListItem['session']; pageable: { page: number; size: number };
+}
+
 export const receptionApi = {
+  appointments: (request: ReceptionAppointmentSearch, signal?: AbortSignal) =>
+    clinicalRequest<ApiPage<ReceptionAppointmentListItem>>('reception/appointments/search', request, signal),
   bookingWindow: (signal?: AbortSignal) => clinicalRequest<{ today: string; latestDate: string }>('reception/booking-window', {}, signal),
   patientsPage: (keyword: string, page: number, signal?: AbortSignal) => clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page, size: 20 } }, signal),
   patients: async (keyword: string, signal?: AbortSignal) => (await clinicalRequest<ApiPage<ReceptionPatient>>('reception/patients/search', { keyword, pageable: { page: 0, size: 20 } }, signal)).content,

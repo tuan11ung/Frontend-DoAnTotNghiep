@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { ClinicalAccountMenu } from '@/src/shared/components/layout/ClinicalAccountMenu';
 import { WorkspaceHeader } from '@/src/shared/components/layout/WorkspaceHeader';
 import { ReceptionAppointments } from './components/ReceptionAppointments';
+import { ReceptionAppointmentList } from './components/ReceptionAppointmentList';
 import { ReceptionRegistration } from './components/ReceptionRegistration';
 import { ReceptionBilling } from './components/ReceptionBilling';
 import { ReceptionDemoControls } from './components/ReceptionDemoControls';
@@ -44,6 +45,7 @@ export function ReceptionLiveScreen({ section }: { section?: ReceptionSection })
       <p className="mb-6 text-sm text-slate-500">{tab === 'checkout' ? 'Tra cứu hóa đơn, đối chiếu thông tin bệnh nhân và thực hiện thu tiền khám, dịch vụ cận lâm sàng.' : tab === 'checkin' ? 'Tra cứu và tiếp nhận bệnh nhân đã đặt lịch khám trước.' : demo ? 'Bệnh viện Demo · Dữ liệu thử nghiệm' : 'Quản lý tiếp nhận và hỗ trợ người bệnh tại cơ sở.'}</p>
       {demo && <details className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"><summary className="cursor-pointer text-sm font-semibold text-amber-900">Công cụ dữ liệu demo</summary><div className="mt-4"><ReceptionDemoControls onReset={() => setRevision(v => v + 1)} /></div></details>}
       {tab === 'registration' && <ReceptionRegistration key={tab + revision} lookupOnly={false} />}
+      {tab === 'appointments' && <ReceptionAppointmentList key={tab + revision} />}
       {(tab === 'checkin' || tab === 'pending-specialty') && <ReceptionAppointments key={tab + revision} pending={tab === 'pending-specialty'} />}
       {tab === 'checkout' && <ReceptionBilling key={`${revision}:${params.get("keyword") ?? ""}`} />}
     </main></div>

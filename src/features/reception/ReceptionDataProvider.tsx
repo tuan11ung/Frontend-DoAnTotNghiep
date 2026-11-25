@@ -10,7 +10,7 @@ export function ReceptionDataProvider({ demo, children }: { demo: boolean; child
     demo, api: demo ? receptionPreviewApi : receptionApi,
     href: (tab, extra) => {
       const params = new URLSearchParams(extra);
-      const path = !demo && tab === 'checkout' ? '/reception/payments' : '/reception';
+      const path = !demo && tab === 'checkout' ? '/reception/payments' : !demo && tab === 'appointments' ? '/reception/appointments' : '/reception';
       if (tab && path === '/reception') params.set('tab', tab);
       if (demo) params.set('demo', '1');
       return path + (params.size ? '?' + params : '');

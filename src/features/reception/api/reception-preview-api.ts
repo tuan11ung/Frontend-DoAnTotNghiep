@@ -1,4 +1,4 @@
-import type { receptionApi, ReceptionAppointment, ReceptionInvoiceDetail, ReceptionPatient, ReceptionSlot } from './reception-api';
+import type { receptionApi, ReceptionAppointment, ReceptionAppointmentListItem, ReceptionInvoiceDetail, ReceptionPatient, ReceptionSlot } from './reception-api';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import { bookingToday, bookingLastDate } from '@/src/features/booking/utils/booking-dates';
 
@@ -79,6 +79,22 @@ function allocate(s: State, a: ReceptionAppointment, slot: ReceptionSlot) {
   slot.remainingCapacity--; Object.assign(a, slotDetails(slot));
 }
 export const receptionPreviewApi: typeof receptionApi = {
+  appointments: (request, signal) => run(s => {
+    const items: ReceptionAppointmentListItem[] = s.appointments.map(a => ({
+      appointmentId: a.appointmentId, appointmentCode: a.appointmentCode, patientId: a.patientId, patientName: a.patientName,
+      appointmentDate: a.appointmentDate, startTime: a.startTime, endTime: a.endTime ?? null,
+      session: Number(a.startTime.slice(0, 2)) < 12 ? 'MORNING' : 'AFTERNOON',
+      status: a.status as ReceptionAppointmentListItem['status'], specialtyName: a.specialtyName ?? null,
+      doctorName: a.doctorName ?? null, roomName: a.roomName ?? null, roomLocation: a.roomLocation ?? null,
+      serviceType: a.serviceType ?? null, queueNumber: a.queueNumber ?? null,
+    }));
+    const keyword = request.keyword?.trim().toLocaleLowerCase('vi') ?? '';
+    const filtered = items.filter(a => a.appointmentDate === request.appointmentDate
+      && (!request.status || a.status === request.status) && (!request.session || a.session === request.session)
+      && (!keyword || a.appointmentCode.toLocaleLowerCase('vi').includes(keyword) || a.patientName?.toLocaleLowerCase('vi').includes(keyword)))
+      .sort((a, b) => a.startTime.localeCompare(b.startTime) || a.appointmentId - b.appointmentId);
+    return pageOf(filtered, request.pageable.page, request.pageable.size);
+  }, false, signal),
   patients: (keyword, signal) => run(s => s.patients.filter(p => normalize([p.fullName, p.patientCode, p.nationalId, p.phone].join(' ')).includes(normalize(keyword.trim()))), false, signal),
   patientsPage: (keyword, page, signal) => run(s => pageOf(s.patients.filter(p => normalize([p.fullName, p.patientCode, p.nationalId, p.phone].join(' ')).includes(normalize(keyword.trim()))), page), false, signal),
   createPatient: input => run(s => {

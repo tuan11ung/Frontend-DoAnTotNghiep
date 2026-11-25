@@ -25,7 +25,11 @@ function canSearchReference(value: string) {
   return value.length >= 4;
 }
 
-export function ReceptionAppointments({ pending }: { pending: boolean }) {
+export function ReceptionAppointments({ pending, initialReference, detailOnly = false, allowCheckIn = true, onUpdated, onBusyChange, onFinished }: {
+  pending: boolean; initialReference?: string; detailOnly?: boolean; allowCheckIn?: boolean;
+  onUpdated?: () => void; onBusyChange?: (busy: boolean) => void;
+  onFinished?: () => void;
+}) {
   const { api: receptionApi, demo, href } = useReceptionData();
   const [reference, setReference] = useState(''); const [appointment, setAppointment] = useState<ReceptionAppointment | null>(null);
   const [records, setRecords] = useState<ApiPage<PendingAppointment> | null>(null); const [page, setPage] = useState(0);
@@ -38,7 +42,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
   const currentReference = useRef('');
   const lastLookup = useRef('');
   const [appliedReference, setAppliedReference] = useState('');
-  const [lookingUp, setLookingUp] = useState(false);
+  const [lookingUp, setLookingUp] = useState(Boolean(initialReference));
   const [lookupFailure, setLookupFailure] = useState<{ notFound: boolean; message: string } | null>(null);
   const imageGeneration = useRef(0);
   const [imageVersion, setImageVersion] = useState(0);
@@ -111,6 +115,19 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
       }
     }
   }, [demo, receptionApi]);
+  useEffect(() => {
+    if (!initialReference) return;
+    const controller = new AbortController();
+    currentReference.current = initialReference;
+    lastLookup.current = initialReference;
+    receptionApi.appointment(initialReference, controller.signal).then(result => {
+      if (!controller.signal.aborted) setAppointment(result);
+    }).catch(cause => {
+      if (!controller.signal.aborted) setLookupFailure({ notFound: false, message: receptionError(cause) });
+    }).finally(() => { if (!controller.signal.aborted) setLookingUp(false); });
+    return () => controller.abort();
+  }, [initialReference, receptionApi]);
+  useEffect(() => { onBusyChange?.(busy); }, [busy, onBusyChange]);
   const searchReference = useCallback((value: string) => {
     if (canSearchReference(value)) void lookupCheckIn(value);
   }, [lookupCheckIn]);
@@ -129,6 +146,7 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
       } else {
         if (!appointment.qrToken) throw new Error('Lịch chưa có mã tiếp nhận hợp lệ.');
         const accepted = await receptionApi.checkIn(appointment.qrToken);
+        onUpdated?.();
         setAcceptedCode(accepted.encounterCode);setAcceptedPaymentStatus(accepted.consultationPaymentStatus);
         setAppointment(await receptionApi.appointment(appointment.appointmentCode));
         setNotice(`Đã check-in. Mã lượt khám: ${accepted.encounterCode}.`);
@@ -138,11 +156,11 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
       try { setAppointment(await receptionApi.appointment(appointment.appointmentCode)); } catch { /* Keep the reviewed details until a successful reload. */ }
     } finally { lock.current = false; setBusy(false); }
   }
-  if (acceptedCode && appointment) return <ReceptionCheckInResult settlement={acceptedSettlement} paymentStatus={acceptedPaymentStatus} code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { setAcceptedSettlement(undefined); setAcceptedCode(null); setAcceptedPaymentStatus(undefined); resetCheckInLookup(''); }} />;
+  if (acceptedCode && appointment) return <ReceptionCheckInResult settlement={acceptedSettlement} paymentStatus={acceptedPaymentStatus} code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { if (detailOnly) { onFinished?.(); return; } setAcceptedSettlement(undefined); setAcceptedCode(null); setAcceptedPaymentStatus(undefined); resetCheckInLookup(''); }} />;
   return <div className="space-y-5">
-    {changingSpecialty && appointment && <ReceptionSpecialtyChange key={appointment.appointmentId} appointment={appointment} onClose={() => setChangingSpecialty(false)} onChanged={result => { setChangingSpecialty(false); setAppointment(result.appointment); setAcceptedSettlement(result.settlement);setAcceptedCode(result.encounterCode);setAcceptedPaymentStatus(result.settlement?.paymentStatus); setError(''); }} />}
+    {changingSpecialty && appointment && <ReceptionSpecialtyChange key={appointment.appointmentId} appointment={appointment} onClose={() => setChangingSpecialty(false)} onChanged={result => { setChangingSpecialty(false); setAppointment(result.appointment); setAcceptedSettlement(result.settlement);setAcceptedCode(result.encounterCode);setAcceptedPaymentStatus(result.settlement?.paymentStatus); setError(''); onUpdated?.(); }} />}
     {scanning && <ReceptionQrScanner onClose={() => setScanning(false)} onScan={value => { setScanning(false); scanReference(value); }} />}
-    {pending ? <section className={receptionCard}><div className="flex justify-between"><h2 className="font-bold">Lịch hẹn chờ phân chuyên khoa</h2><button type="button" className="text-sm font-bold text-blue-700" disabled={busy} onClick={() => { setError(''); setRevision(v => v + 1); }}>Làm mới</button></div>
+    {!detailOnly && (pending ? <section className={receptionCard}><div className="flex justify-between"><h2 className="font-bold">Lịch hẹn chờ phân chuyên khoa</h2><button type="button" className="text-sm font-bold text-blue-700" disabled={busy} onClick={() => { setError(''); setRevision(v => v + 1); }}>Làm mới</button></div>
       {!records && !error && <p role="status">Đang tải lịch chờ…</p>}{records?.content.length === 0 && <p role="status" className="text-sm text-slate-500">Không có lịch hẹn chờ phân chuyên khoa.</p>}
       <ul className="divide-y">{records?.content.map(item => <li className="flex flex-wrap justify-between gap-3 py-4" key={item.appointmentId}><div><p className="font-bold">{item.patientName} · {item.appointmentCode}</p><p className="mt-1 text-sm text-slate-500">{formatDisplayDate(item.appointmentDate)} · {item.startTime.slice(0, 5)}–{item.endTime.slice(0, 5)}</p><p className="mt-2 whitespace-pre-wrap text-sm">{item.appointReason}</p></div><button disabled={busy} type="button" className="text-sm font-bold text-blue-700" aria-haspopup="dialog" onClick={() => void lookup(item.appointmentCode)}>Xem chi tiết và phân chuyên khoa</button></li>)}</ul>
       {records && <div className="flex items-center gap-4 text-sm"><button disabled={page === 0 || busy} type="button" onClick={() => setPage(v => v - 1)}>Trang trước</button><span>Trang {page + 1} / {Math.max(1, records.totalPages)}</span><button disabled={records.last || busy} type="button" onClick={() => setPage(v => v + 1)}>Trang sau</button></div>}
@@ -194,16 +212,18 @@ export function ReceptionAppointments({ pending }: { pending: boolean }) {
         </div>}
         {appointment && !lookingUp && <p role="status" className="sr-only">Đã tìm thấy lịch hẹn. Vui lòng đối chiếu thông tin bên dưới.</p>}
       </div>
-    </section>}
+    </section>)}
+    {detailOnly && lookingUp && <p role="status" className="text-sm text-slate-500">Đang tải chi tiết lịch hẹn…</p>}
+    {detailOnly && lookupFailure && <div role="alert" className="text-sm text-rose-700"><p>{lookupFailure.message}</p><button type="button" className="mt-2 font-semibold underline" onClick={() => void lookupCheckIn(initialReference ?? '', true)}>Thử lại</button></div>}
     {edit !== null && appointment && <ReceptionDialog title="Chỉnh sửa thông tin lịch hẹn" onClose={()=>setEdit(null)}><form className="space-y-3" onSubmit={async e=>{e.preventDefault();setBusy(true);try{setAppointment(await editPreviewBooking(appointment.appointmentCode,edit));setNotice('Đã cập nhật lịch hẹn.');setError('');}catch(e){setError(receptionError(e));}finally{setBusy(false);setEdit(null);}}}><label>Lý do khám<textarea className={receptionField} required maxLength={500} value={edit} onChange={e=>setEdit(e.target.value)}/></label><button className={receptionButton} disabled={busy || !edit.trim()}>Lưu thay đổi</button></form></ReceptionDialog>}
     {error && !(pending && appointment) && <p role="alert" className="rounded-xl border border-rose-200 bg-white p-4 text-sm text-rose-700">{error}</p>}{<ToastMessage message={notice} onDismiss={()=>setNotice('')}/>}
     {appointment && <AppointmentDetailsContainer popup={pending} onClose={() => { if (busy) return; setAppointment(null); setSlots(null); setSlotId(''); setError(''); }}>
       {pending && error && <p role="alert" className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
       <section id="reception-appointment-details" aria-labelledby="reception-appointment-title" className={pending ? "space-y-5" : `${receptionCard} scroll-mt-6`}><div className="flex items-start justify-between gap-4"><h2 id="reception-appointment-title" className="text-lg font-bold">Lịch {appointment.appointmentCode}</h2></div><dl className="grid gap-4 text-sm sm:grid-cols-2">{[['Người khám', appointment.patientName], ['CCCD', appointment.maskedNationalId], ['Điện thoại', appointment.maskedPhone], ['Trạng thái', appointment.status === 'PENDING_SPECIALTY' ? 'Chờ phân chuyên khoa' : appointment.status === 'BOOKED' ? 'Đã đặt lịch' : appointment.status === 'CHECKED_IN' ? 'Đã check-in' : appointment.status === 'CANCELLED' ? 'Đã hủy' : appointment.status], ['Cơ sở', appointment.hospitalName], ['Chuyên khoa', appointment.specialtyName], ['Bác sĩ', [appointment.rankName, appointment.doctorName].filter(Boolean).join(' ')], ['Phòng', [appointment.roomName, appointment.roomLocation].filter(Boolean).join(' · ')], ['Ngày và giờ', `${formatDisplayDate(appointment.appointmentDate)} · ${appointment.startTime.slice(0, 5)}–${appointment.endTime?.slice(0, 5) ?? ''}`], ['Số thứ tự', appointment.queueNumber], ['Giá khám', appointment.price == null ? 'Chưa xác định' : money(appointment.price)], ['Email xác nhận', appointment.emailStatus === 'SENT' ? 'Đã gửi' : appointment.emailStatus === 'QUEUED' ? 'Đang chờ gửi / gửi lại' : undefined]].map(([label, value]) => <div key={String(label)}><dt className="text-slate-500">{label}</dt><dd className="mt-1 break-words font-semibold">{value ?? 'Chưa cập nhật'}</dd></div>)}</dl><p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-sm">Lý do khám: {appointment.appointReason}</p>
-      {!pending && demo && appointment.status==='BOOKED' && <button type="button" className="font-semibold text-blue-700" onClick={()=>setEdit(appointment.appointReason)}>Chỉnh sửa thông tin</button>}
-      {!pending && appointment.canChangeSpecialty && <button type="button" disabled={busy} className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900" onClick={() => setChangingSpecialty(true)}>Đặt sai chuyên khoa: đổi và tiếp nhận offline</button>}
+      {!pending && allowCheckIn && demo && appointment.status==='BOOKED' && <button type="button" className="font-semibold text-blue-700" onClick={()=>setEdit(appointment.appointReason)}>Chỉnh sửa thông tin</button>}
+      {!pending && allowCheckIn && appointment.canChangeSpecialty && <button type="button" disabled={busy} className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900" onClick={() => setChangingSpecialty(true)}>Đặt sai chuyên khoa: đổi và tiếp nhận offline</button>}
       <form onSubmit={act} className="space-y-4">{pending && appointment.status === 'PENDING_SPECIALTY' && <><label className="block text-sm font-bold">Phân chuyên khoa và phòng theo khung giờ đã đăng ký<select className={receptionField} required value={slotId} disabled={busy} onChange={e => setSlotId(e.target.value)}><option value="">Chọn chuyên khoa, bác sĩ và phòng</option>{slots?.map(s => <option key={s.timeSlotId} value={s.timeSlotId}>{s.specialtyName} · {s.rankName} {s.doctorName} · {s.roomName} · {s.held ? 'Chỗ đã giữ cho lịch này' : `Còn ${s.remainingCapacity} chỗ`}</option>)}</select></label>{slots?.length === 0 && <p className="text-sm text-amber-800">Chưa có phòng phù hợp còn chỗ trong khung giờ này. Cần liên hệ người đặt để thống nhất phương án khác.</p>}<button type="submit" className={receptionButton} disabled={busy || !slotId}>Xác nhận phân chuyên khoa và gửi email</button></>}
-      {!pending && <><p className="text-sm text-slate-500">Đối chiếu giấy tờ và thông tin lịch khám trước khi xác nhận tiếp nhận.</p><button className={receptionButton} type="submit" disabled={busy || !['BOOKED', 'ABSENT'].includes(appointment.status)}>{busy ? 'Đang tiếp nhận…' : appointment.status === 'ABSENT' ? 'Check-in lại sau khi lỡ lượt' : 'Xác nhận check-in'}</button></>}
+      {!pending && allowCheckIn && <><p className="text-sm text-slate-500">Đối chiếu giấy tờ và thông tin lịch khám trước khi xác nhận tiếp nhận.</p><button className={receptionButton} type="submit" disabled={busy || !['BOOKED', 'ABSENT'].includes(appointment.status)}>{busy ? 'Đang tiếp nhận…' : appointment.status === 'ABSENT' ? 'Check-in lại sau khi lỡ lượt' : 'Xác nhận check-in'}</button></>}
       </form></section></AppointmentDetailsContainer>}
   </div>;
 }
