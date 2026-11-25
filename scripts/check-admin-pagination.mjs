@@ -70,7 +70,7 @@ console.log('PASS all three server endpoints forward page/size, filters and abor
 let state, cursor, effects;
 const { ResourceListView } = load('src/features/facility-admin/components/ResourceListView.tsx', id => {
   if (id === 'react/jsx-runtime') return runtime;
-  if (id === 'react') return { useState: initial => { const index = cursor++; if (!(index in state)) state[index] = initial; return [state[index], next => { state[index] = typeof next === 'function' ? next(state[index]) : next; }]; }, useMemo: fn => fn(), useEffect: fn => effects.push(fn) };
+  if (id === 'react') return { useState: initial => { const index = cursor++; if (!(index in state)) state[index] = initial; return [state[index], next => { state[index] = typeof next === 'function' ? next(state[index]) : next; }]; }, useCallback: fn => fn, useMemo: fn => fn(), useEffect: fn => effects.push(fn) };
   if (id.endsWith('pagination-model')) return { paginationModel };
   if (id.endsWith('/pagination')) return { DataTablePagination: 'DataTablePagination' };
   if (id.endsWith('/resource-search')) return { searchResourcePage };

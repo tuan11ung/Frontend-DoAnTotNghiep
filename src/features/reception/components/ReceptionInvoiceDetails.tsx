@@ -1,6 +1,6 @@
-import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
+import { useState } from 'react';
 import { money, paymentDate } from '@/src/features/patient-payments/payment.types';
-import { Banknote, CreditCard, ReceiptText, Wallet } from 'lucide-react';
+import { Banknote, Copy, CreditCard, ReceiptText, Wallet } from 'lucide-react';
 import type { ReceptionInvoiceDetail } from '../api/reception-api';
 
 const transactionStyle = {
@@ -42,73 +42,112 @@ export function ReceptionInvoiceDetails({ detail, demo }: { detail: ReceptionInv
   if (reduction != null && reduction > 0) totals.push([reductionLabel, reduction]);
   const paidAmount = amountConfirmed ? invoice.totalAmount : awaitingPayment ? 0 : undefined;
   const due = paidInFull ? 0 : awaitingPayment ? invoice.totalAmount : undefined;
+  const highlight = paidInFull ? 'paid' : invoice.status === 'UNPAID' ? 'due' : null;
 
   return <>
-    <section className="space-y-2 text-sm">
-      <h3 className="font-semibold">Thông tin bệnh nhân</h3>
-      <dl className="grid gap-x-4 gap-y-2 rounded-lg bg-slate-50 px-3 py-2 sm:grid-cols-2">{patientFields.map(([label, value]) => <div key={label}>
+    <section aria-label="Thông tin đối chiếu bệnh nhân" className="border-b border-slate-100 pb-3 text-sm">
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 lg:grid-cols-4">{patientFields.map(([label, value]) => <div key={label} className="min-w-0">
         <dt className="text-xs text-slate-600">{label}</dt>
         <dd className="mt-1 font-medium">{value || 'Chưa cập nhật'}</dd>
       </div>)}</dl>
     </section>
-    <section className="space-y-2">
-      <h3 className="font-semibold">Chi tiết dịch vụ</h3>
-      <ScrollableTable label="Chi tiết dịch vụ" className="rounded-lg border border-slate-200" maxHeight="none" stickyHeader={false}>
+    <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-6">
+      <section className="min-w-0 rounded-xl bg-slate-50 p-4 lg:col-start-2 lg:row-start-1">
+        <h3 className="font-semibold">Tổng hợp thanh toán</h3>
+        <dl className="mt-2 space-y-2 text-sm">
+          {highlight && <div className="mb-3 border-b border-slate-200 pb-3">
+            <dt className="text-slate-600">{highlight === 'paid' ? 'Đã thanh toán' : 'Còn phải thu'}</dt>
+            <dd className={`mt-0.5 whitespace-nowrap tabular-nums ${(highlight === 'paid' ? paidAmount : due) == null
+              ? 'font-medium text-slate-700'
+              : `text-2xl font-bold ${highlight === 'paid' ? 'text-emerald-700' : 'text-blue-800'}`}`}>
+              {formatAmount(highlight === 'paid' ? paidAmount : due, 'Chưa xác định')}
+            </dd>
+          </div>}
+          {totals.map(([label, value]) => <div key={label} className="flex justify-between gap-2">
+            <dt className="text-slate-600">{label}</dt><dd className="shrink-0 text-right whitespace-nowrap tabular-nums">{formatAmount(value, 'Chưa có dữ liệu')}</dd>
+          </div>)}
+          <div className="flex justify-between gap-2 border-t border-slate-200 pt-2 font-semibold">
+            <dt>Bệnh nhân chi trả</dt><dd className="shrink-0 text-right whitespace-nowrap tabular-nums">{formatAmount(invoice.totalAmount, 'Chưa có dữ liệu')}</dd>
+          </div>
+          {invoice.status !== 'CANCELLED' && highlight !== 'paid' && <div className="flex justify-between gap-2">
+            <dt>Đã thanh toán</dt><dd className="shrink-0 text-right font-medium whitespace-nowrap tabular-nums">{formatAmount(paidAmount, 'Chưa xác định')}</dd>
+          </div>}
+          {invoice.status !== 'CANCELLED' && highlight !== 'due' && <div className="flex justify-between gap-2">
+            <dt>Còn phải thu</dt><dd className="shrink-0 text-right font-medium whitespace-nowrap tabular-nums">{formatAmount(due, 'Chưa xác định')}</dd>
+          </div>}
+        </dl>
+      </section>
+      <div className="min-w-0 space-y-4 lg:col-start-1 lg:row-start-1">
+        <section aria-label="Chi tiết dịch vụ" className="space-y-2">
+          <h3 className="font-semibold">Chi tiết dịch vụ</h3>
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50"><tr>
-            <th scope="col" className="px-3 py-2">Tên dịch vụ</th>
-            <th scope="col" className="px-3 py-2 text-right">{demo ? 'Chi phí dịch vụ' : 'Bệnh nhân chi trả'}</th>
+            <th scope="col" className="rounded-l-md px-2.5 py-2 text-xs font-semibold">Tên dịch vụ</th>
+            <th scope="col" className="rounded-r-md px-2.5 py-2 text-right text-xs font-semibold">{demo ? 'Chi phí dịch vụ' : 'Bệnh nhân chi trả'}</th>
           </tr></thead>
           <tbody className="divide-y divide-slate-100">
             {lines.map((line, index) => <tr key={index}>
-              <td className="px-3 py-2">{line.name}{line.cancelled && <span className="mt-1 block text-xs text-slate-600">Đã hủy</span>}</td>
-              <td className="px-3 py-2 text-right font-medium whitespace-nowrap tabular-nums">{line.amount == null ? '—' : money(line.amount)}</td>
+              <td className="px-2.5 py-2.5 align-top [overflow-wrap:anywhere]">{line.name}{line.cancelled && <span className="mt-1 block text-xs text-slate-600">Đã hủy</span>}</td>
+              <td className="px-2.5 py-2.5 text-right align-top font-medium whitespace-nowrap tabular-nums">{formatAmount(line.amount, '—')}</td>
             </tr>)}
             {!lines.length && <tr><td colSpan={2} className="px-3 py-3 text-slate-600">Chưa có chi tiết dịch vụ.</td></tr>}
           </tbody>
         </table>
-      </ScrollableTable>
-    </section>
-    <section className="space-y-2">
-      <h3 className="font-semibold">Tổng hợp thanh toán</h3>
-      <dl className="space-y-1.5 rounded-lg border border-slate-200 px-3 py-2.5 text-sm">
-        {totals.map(([label, value]) => <div key={label} className="flex justify-between gap-3">
-          <dt className="text-slate-600">{label}</dt><dd className="text-right whitespace-nowrap tabular-nums">{value == null ? 'Chưa có dữ liệu' : money(value)}</dd>
-        </div>)}
-        <div className="flex justify-between gap-3 border-t border-slate-200 pt-2 text-base font-semibold">
-          <dt>Bệnh nhân chi trả</dt><dd className="text-right whitespace-nowrap tabular-nums">{invoice.totalAmount == null ? 'Chưa có dữ liệu' : money(invoice.totalAmount)}</dd>
-        </div>
-        {invoice.status !== 'CANCELLED' && <>
-          <div className="flex justify-between gap-3"><dt>Đã thanh toán</dt><dd className="text-right font-medium whitespace-nowrap tabular-nums">{paidAmount == null ? 'Chưa xác định' : money(paidAmount)}</dd></div>
-          <div className="flex items-baseline justify-between gap-3 border-t border-slate-200 pt-2">
-            <dt className="font-semibold">Còn phải thu</dt>
-            <dd className={`text-right whitespace-nowrap tabular-nums ${due == null ? 'font-medium text-slate-600' : `text-xl font-bold sm:text-2xl ${paidInFull ? 'text-emerald-700' : 'text-blue-800'}`}`}>{due == null ? 'Chưa xác định' : money(due)}</dd>
-          </div>
-        </>}
-      </dl>
-    </section>
+        </section>
+        <ReceptionTransactionHistory transactions={transactions} />
+      </div>
+    </div>
   </>;
 }
 
-export function ReceptionTransactionHistory({ transactions }: { transactions: ReceptionInvoiceDetail['transactions'] }) {
+function formatAmount(amount: number | null | undefined, fallback: string) {
+  return amount == null ? fallback : money(amount);
+}
+
+function TransactionReference({ code }: { code: string }) {
+  const [feedback, setFeedback] = useState('');
+  return (
+    <div className="text-xs text-slate-600">
+      <div className="flex min-w-0 items-start gap-1.5">
+        <span className="shrink-0">Mã GD</span>
+        <code className="min-w-0 [overflow-wrap:anywhere]">{code}</code>
+        <button type="button" aria-label={`Sao chép mã giao dịch ${code}`} title="Sao chép mã giao dịch"
+          className="-mt-1.5 grid size-7 shrink-0 place-items-center rounded text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(code);
+              setFeedback('Đã sao chép mã giao dịch.');
+            } catch {
+              setFeedback('Không thể sao chép. Bạn có thể chọn mã và sao chép thủ công.');
+            }
+          }}>
+          <Copy aria-hidden="true" className="size-3.5" />
+        </button>
+      </div>
+      <p role="status">{feedback}</p>
+    </div>
+  );
+}
+
+function ReceptionTransactionHistory({ transactions }: { transactions: ReceptionInvoiceDetail['transactions'] }) {
   return <section className="space-y-2">
     <h3 className="font-semibold">Lịch sử giao dịch</h3>
     {!transactions.length ? <p className="text-sm text-slate-600">Chưa có giao dịch thanh toán.</p> : (
-      <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200">
+      <ul className="divide-y divide-slate-100">
         {transactions.map(transaction => {
           const MethodIcon = transaction.method ? transactionIcons[transaction.method] ?? ReceiptText : ReceiptText;
-          return <li key={transaction.id} className="space-y-1 px-3 py-2 text-sm">
+          return <li key={transaction.id} className="space-y-0.5 py-2 text-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-2">
                 <MethodIcon aria-hidden="true" className="size-4 shrink-0 text-slate-500" />
                 <strong>{transaction.methodLabel}</strong>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${(transaction.status && transactionStyle[transaction.status]) || 'bg-slate-100 text-slate-700'}`}>{transaction.statusLabel}</span>
               </div>
-              <strong className="ml-auto text-base font-semibold whitespace-nowrap tabular-nums">{transaction.amount == null ? '—' : money(transaction.amount)}</strong>
+              <strong className="ml-auto font-semibold whitespace-nowrap tabular-nums">{formatAmount(transaction.amount, '—')}</strong>
             </div>
-            {transaction.paidDate ? <p className="text-slate-700">Thanh toán lúc {paymentDate(transaction.paidDate)}</p> :
-              transaction.createdAt && <p className="text-slate-700">Tạo lúc {paymentDate(transaction.createdAt)}</p>}
-            {transaction.transactionRef && <p className="text-xs text-slate-600">Mã giao dịch {transaction.transactionRef}</p>}
+            {transaction.paidDate ? <p className="text-xs text-slate-600">Thanh toán lúc {paymentDate(transaction.paidDate)}</p> :
+              transaction.createdAt && <p className="text-xs text-slate-600">Tạo lúc {paymentDate(transaction.createdAt)}</p>}
+            {transaction.transactionRef && <TransactionReference code={transaction.transactionRef} />}
           </li>;
         })}
       </ul>

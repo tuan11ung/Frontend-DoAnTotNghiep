@@ -2,11 +2,10 @@
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
+import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import {
   Users,
   UserPlus,
-  Home,
-  ChevronRight,
   Sparkles,
 } from 'lucide-react';
 import { patientFamilyApi, type FamilyProfiles } from './api/patient-family-api';
@@ -113,16 +112,7 @@ function FamilyContent({ token }: { token: string }) {
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-blue-600 flex items-center gap-1 transition-colors">
-              <Home className="w-3.5 h-3.5" />
-              <span>Trang chủ</span>
-            </Link>
-            <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-slate-400">Cổng bệnh nhân</span>
-            <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-blue-700 font-bold">Quản lý gia đình</span>
-          </nav>
+          <PatientBreadcrumb current="Quản lý gia đình" />
         </div>
       </div>
 

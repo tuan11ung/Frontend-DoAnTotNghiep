@@ -65,6 +65,7 @@ const NAVIGATION_GROUPS: Array<{ label: string; items: NavigationItem[] }> = [
 
 export function SystemAdminSidebar({ onSelect, ...props }: SystemAdminSidebarProps) {
   return <WorkspaceSidebar<SystemSection> {...props}
+    showBrandHeader
     title="Quản trị toàn hệ thống" navigationLabel="Điều hướng quản trị hệ thống"
     groups={NAVIGATION_GROUPS.map(group => ({ ...group, items: group.items.map(item => ({ ...item, onSelect })) }))}
     context={{ title: 'Trung tâm vận hành', description: <span className="flex items-center gap-1.5"><Activity className="h-3 w-3" /> Nền tảng đang hoạt động</span>, avatar: <ShieldCheck className="h-5 w-5" /> }}

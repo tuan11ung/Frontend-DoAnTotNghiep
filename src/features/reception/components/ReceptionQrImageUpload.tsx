@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { ImageUp } from 'lucide-react';
+import { ImageUp, Info } from 'lucide-react';
+import { receptionQrButton } from './reception-ui';
+
+const QR_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const MAX_QR_IMAGE_MB = 10;
 
 export function ReceptionQrImageUpload({ disabled, onReadStart, onScan }: { disabled: boolean; onReadStart: () => void; onScan: (value: string) => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,12 +22,12 @@ export function ReceptionQrImageUpload({ disabled, onReadStart, onScan }: { disa
     event.target.value = '';
     if (!file || disabled || active.current) return;
     setError('');
-    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+    if (!QR_IMAGE_TYPES.includes(file.type)) {
       setError('Vui lòng chọn ảnh PNG, JPEG hoặc WebP.');
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Ảnh quá lớn. Vui lòng chọn ảnh không quá 10 MB.');
+    if (file.size > MAX_QR_IMAGE_MB * 1024 * 1024) {
+      setError(`Ảnh quá lớn. Vui lòng chọn ảnh không quá ${MAX_QR_IMAGE_MB} MB.`);
       return;
     }
     active.current = true;
@@ -56,13 +60,19 @@ export function ReceptionQrImageUpload({ disabled, onReadStart, onScan }: { disa
   }
 
   return <div>
-    <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" aria-label="Chọn ảnh QR lịch hẹn" className="hidden" onChange={event => void readImage(event)} disabled={disabled || reading} />
-    <button type="button" aria-describedby="reception-qr-image-help" className="flex w-full items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left hover:border-blue-200 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:opacity-50" disabled={disabled || reading} onClick={() => inputRef.current?.click()}>
-      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-blue-50 text-blue-700"><ImageUp aria-hidden="true" className="size-5" /></span>
-      <span><span className="block text-sm font-semibold">{reading ? 'Đang đọc ảnh QR…' : 'Tải ảnh QR từ máy'}</span><span className="block text-xs text-slate-600">Chọn ảnh chứa mã QR.</span></span>
+    <input ref={inputRef} type="file" accept={QR_IMAGE_TYPES.join(',')} aria-label="Chọn ảnh QR lịch hẹn" className="hidden" onChange={event => void readImage(event)} disabled={disabled || reading} />
+    <button type="button" aria-describedby="reception-qr-image-help" className={`${receptionQrButton} border-slate-300 bg-white text-slate-800 hover:bg-slate-50`} disabled={disabled || reading} onClick={() => inputRef.current?.click()}>
+      <ImageUp aria-hidden="true" className="size-4 shrink-0" />
+      {reading ? 'Đang đọc ảnh QR…' : 'Chọn ảnh QR'}
     </button>
-    <p id="reception-qr-image-help" className="mt-2 text-xs text-slate-600">PNG, JPEG hoặc WebP, tối đa 10 MB. Ảnh được đọc trên trình duyệt, không tải lên máy chủ.</p>
-    {reading && <p role="status" className="mt-2 text-sm text-slate-600">Đang tìm mã QR trong ảnh…</p>}
+    <details className="mt-1.5 text-xs text-slate-600">
+      <summary aria-label="Cách xử lý ảnh QR" className="inline-flex min-h-6 cursor-pointer list-none items-center gap-1.5 rounded hover:text-blue-800 focus-visible:outline-2 focus-visible:outline-blue-600 [&::-webkit-details-marker]:hidden">
+        <span id="reception-qr-image-help">PNG, JPEG, WebP · Tối đa {MAX_QR_IMAGE_MB} MB</span>
+        <Info aria-hidden="true" className="size-3.5 shrink-0" />
+      </summary>
+      <p className="mt-1 leading-5">Ảnh được xử lý trực tiếp trên trình duyệt và không tải lên máy chủ.</p>
+    </details>
+    {reading && <p role="status" className="sr-only">Đang tìm mã QR trong ảnh…</p>}
     {error && <p role="alert" className="mt-2 text-sm text-rose-700">{error}</p>}
   </div>;
 }

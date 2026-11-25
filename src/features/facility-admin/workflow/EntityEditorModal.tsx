@@ -2,7 +2,9 @@
 
 import { useState, type FormEvent } from 'react';
 import { BadgeDollarSign, Building2, DoorOpen, Save, Stethoscope, UserPlus, X } from 'lucide-react';
+import { Modal } from '@/src/shared/components/Modal';
 import { SearchableDropdown } from '@/src/shared/components/SearchableDropdown';
+import { ToggleSwitch } from '@/src/shared/components/ToggleSwitch';
 import { ROOM_TYPE_LABELS, SERVICE_ROOM_TYPE_LABELS, STAFF_ROLE_LABELS } from '../data/facility-admin-data';
 import type {
   AdminEntity,
@@ -27,6 +29,7 @@ interface EntityEditorModalProps {
   rankCatalog: RankCatalogItem[];
   serviceCategories: ServiceCategory[];
   onClose: () => void;
+  onRoomStatusChange: (id: number, active: boolean) => Promise<void>;
   onSave: (entity: AdminEntity) => Promise<void>;
 }
 
@@ -96,11 +99,15 @@ export function EntityEditorModal({
   rankCatalog,
   serviceCategories,
   onClose,
+  onRoomStatusChange,
   onSave,
 }: EntityEditorModalProps) {
   const [form, setForm] = useState<FormState>(() => initialForm(kind, entity));
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [changingRoomStatus, setChangingRoomStatus] = useState(false);
+  const isRoom = kind === 'room';
+  const busy = submitting || changingRoomStatus;
   const meta = META[kind];
   const ModalIcon = meta.icon;
   const isEditing = Boolean(entity);
@@ -118,6 +125,7 @@ export function EntityEditorModal({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (busy) return;
     const id = entity?.id ?? -1;
     const active = entity?.active ?? true;
 
@@ -137,7 +145,7 @@ export function EntityEditorModal({
         await onSave({
           id, active, code: String(form.code).trim().toUpperCase(), name: String(form.name).trim(),
           type: form.type as Room['type'], location: String(form.location).trim(),
-          slotMinutes: form.slotMinutes ? Number(form.slotMinutes) : null, maxPatients: null,
+          slotMinutes: form.slotMinutes ? Number(form.slotMinutes) : null, maxPatients: (entity as Room | undefined)?.maxPatients ?? null,
           specialtyId: form.specialtyId ? Number(form.specialtyId) : undefined,
           serviceType: form.type === 'EXAM' ? form.serviceType as Room['serviceType'] : undefined,
         });
@@ -190,17 +198,29 @@ export function EntityEditorModal({
     }
   };
 
-  return (
-    <div aria-modal="true" className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/55 p-0 sm:items-center sm:p-5" role="dialog">
-      <div className="max-h-[94vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl">
-        <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-slate-100 bg-white px-5 py-4 sm:px-6">
+  const handleRoomStatusChange = async (active: boolean) => {
+    if (!entity || busy) return;
+    setError('');
+    setChangingRoomStatus(true);
+    try {
+      await onRoomStatusChange(entity.id, active);
+    } catch (statusError) {
+      setError(statusError instanceof Error ? statusError.message : 'Không thể cập nhật trạng thái phòng.');
+    } finally {
+      setChangingRoomStatus(false);
+    }
+  };
+
+  const content = (
+    <>
+        <div className={`sticky top-0 z-10 flex shrink-0 items-center gap-3 border-b border-slate-100 bg-white px-5 py-4 sm:px-6 ${kind === 'specialty' && !isEditing ? 'rounded-t-2xl' : ''}`}>
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700 ring-1 ring-blue-100"><ModalIcon className="h-5 w-5" /></div>
-          <div className="flex-1"><h2 className="text-lg font-extrabold text-slate-950">{isEditing ? 'Cập nhật' : 'Thêm'} {meta.singular}</h2><p className="mt-0.5 text-xs text-slate-500">Các trường có dấu * là bắt buộc.</p></div>
-          <button aria-label="Đóng" className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700" onClick={onClose} type="button"><X className="h-5 w-5" /></button>
+          <div className="flex-1"><h2 className="text-lg font-extrabold text-slate-950">{isEditing ? 'Cập nhật' : 'Thêm'} {meta.singular}</h2>{(kind !== 'specialty' || isEditing) && <p className="mt-0.5 text-xs text-slate-500">Các trường có dấu * là bắt buộc.</p>}</div>
+          <button aria-label="Đóng" className="rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700" disabled={isRoom && busy} onClick={onClose} type="button"><X className="h-5 w-5" /></button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
+        <form className={isRoom ? 'flex min-h-0 flex-col' : undefined} onSubmit={handleSubmit}>
+          <div className={`grid gap-4 p-5 sm:grid-cols-2 sm:p-6 ${isRoom ? 'min-h-0 overflow-y-auto' : ''}`}>
             {(kind === 'department' || kind === 'room' || kind === 'service') && (
               <label><span className={labelClass}>Mã {meta.singular} <span className="text-rose-600">*</span></span><input className={`${inputClass} font-mono uppercase`} maxLength={20} onChange={(event) => update('code', event.target.value)} required value={String(form.code)} /></label>
             )}
@@ -233,11 +253,12 @@ export function EntityEditorModal({
                       searchText: item.name,
                     }))}
                     placeholder="Chọn chuyên khoa"
+                    placement="overlay"
                     searchPlaceholder="Nhập tên chuyên khoa"
                     value={String(form.specialtyId)}
                   />
                 )}
-                <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">Tên, mã và mô tả do Super Admin quản lý trong danh mục chung.</p>
+                {isEditing && <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">Tên, mã và mô tả do Super Admin quản lý trong danh mục chung.</p>}
               </>
             )}
 
@@ -249,6 +270,17 @@ export function EntityEditorModal({
                 <label><span className={labelClass}>Chuyên khoa{form.type === 'EXAM' && ' *'}</span><select name="specialtyId" className={inputClass} onChange={(event) => update('specialtyId', event.target.value)} required={form.type === 'EXAM'} value={String(form.specialtyId)}><option value="">Chọn chuyên khoa</option>{specialties.filter((item) => item.active || item.specialtyId === Number(form.specialtyId)).map((item) => <option disabled={!item.active} key={item.specialtyId} value={item.specialtyId}>{item.name}{!item.active && ' (tạm ngừng)'}</option>)}</select></label>
                 {form.type === 'EXAM' && <label><span className={labelClass}>Loại khám *</span><select name="serviceType" className={inputClass} onChange={(event) => update('serviceType', event.target.value)} required value={String(form.serviceType)}><option value="BHYT">Bảo hiểm y tế</option><option value="SERVICE">Dịch vụ</option></select></label>}
                 <p className="sm:col-span-2 text-xs leading-5 text-slate-500">Sức chứa mỗi khung dùng cấu hình chung của bệnh viện. Để trống thời lượng để dùng khung giờ mặc định của bệnh viện.</p>
+                {entity && (
+                  <div className="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 sm:col-span-2">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Trạng thái hoạt động</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {entity.active ? 'Đang hoạt động' : 'Tạm ngừng'}. Thay đổi áp dụng ngay.
+                      </p>
+                    </div>
+                    <ToggleSwitch checked={entity.active} disabled={busy} label="Bật hoặc tắt hoạt động của phòng" onChange={handleRoomStatusChange} />
+                  </div>
+                )}
               </>
             )}
 
@@ -281,11 +313,26 @@ export function EntityEditorModal({
 
             {error && <p className="sm:col-span-2 rounded-lg bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700" role="alert">{error}</p>}
           </div>
-          <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-100 bg-white px-5 py-4 sm:px-6">
-            <button className="h-10 rounded-lg border border-slate-200 px-4 text-sm font-bold text-slate-600 hover:bg-slate-50" onClick={onClose} type="button">Hủy</button>
-            <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-700 px-5 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting} type="submit"><Save className="h-4 w-4" /> {submitting ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : `Thêm ${meta.singular}`}</button>
+          <div className={`sticky bottom-0 flex shrink-0 justify-end gap-3 border-t border-slate-100 bg-white px-5 py-4 sm:px-6 ${kind === 'specialty' && !isEditing ? 'rounded-b-2xl' : ''}`}>
+            <button className="h-10 rounded-lg border border-slate-200 px-4 text-sm font-bold text-slate-600 hover:bg-slate-50" disabled={isRoom && busy} onClick={onClose} type="button">Hủy</button>
+            <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-blue-700 px-5 text-sm font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60" disabled={busy} type="submit"><Save className="h-4 w-4" /> {submitting ? 'Đang lưu...' : isEditing ? 'Lưu thay đổi' : `Thêm ${meta.singular}`}</button>
           </div>
         </form>
+    </>
+  );
+
+  if (isRoom) {
+    return (
+      <Modal open onClose={onClose} dismissible={!busy} aria-label={isEditing ? 'Cập nhật phòng' : 'Thêm phòng'}>
+        {content}
+      </Modal>
+    );
+  }
+
+  return (
+    <div aria-modal="true" className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/55 p-0 sm:items-center sm:p-5" role="dialog">
+      <div className={`max-h-[94vh] w-full max-w-2xl bg-white shadow-2xl ${kind === 'specialty' && !isEditing ? 'overflow-visible rounded-2xl' : 'overflow-y-auto rounded-t-2xl sm:rounded-2xl'}`}>
+        {content}
       </div>
     </div>
   );

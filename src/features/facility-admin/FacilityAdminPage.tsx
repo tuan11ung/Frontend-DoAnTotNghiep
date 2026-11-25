@@ -1,6 +1,7 @@
 'use client';
 import {HospitalArticles} from './components/HospitalArticles';
-import {ClinicalSettings} from './components/ClinicalSettings';
+import {LabParameters, RankPrices} from './components/ClinicalSettings';
+import {FacilityMedicines} from './components/FacilityMedicines';
 import {ToastMessage} from '@/src/shared/components/ToastMessage';
 
 import {ClinicalAccountMenu} from '@/src/shared/components/layout/ClinicalAccountMenu';
@@ -39,7 +40,9 @@ import type {
 
 const SECTION_CONTENT: Record<AdminSection, { title: string }> = {
     articles: { title: 'Bài viết của cơ sở' },
-    'clinical-settings': { title: 'Giá khám, xét nghiệm và thuốc' },
+    'rank-prices': { title: 'Giá khám theo trình độ' },
+    'lab-parameters': { title: 'Chỉ số xét nghiệm' },
+    medicines: { title: 'Thuốc của cơ sở' },
     overview: { title: 'Tổng quan cơ sở' },
     facility: { title: 'Thông tin cơ sở y tế' },
     'work-schedules': { title: 'Phân công lịch làm việc' },
@@ -68,9 +71,11 @@ export function FacilityAdminPage() {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const sectionParam = searchParams.get('section');
+    const requestedSection = sectionParam === 'clinical-settings' ? 'rank-prices' : sectionParam;
     const activeSection: AdminSection = pathname === '/admin/facility/work-schedules'
         ? 'work-schedules'
-        : (Object.keys(SECTION_CONTENT) as AdminSection[]).find((section) => section !== 'work-schedules' && section === searchParams.get('section')) ?? 'overview';
+        : (Object.keys(SECTION_CONTENT) as AdminSection[]).find((section) => section !== 'work-schedules' && section === requestedSection) ?? 'overview';
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
     const [facility, setFacility] = useState<FacilityInfo>(INITIAL_FACILITY);
     const departments: Department[] = [];
@@ -182,6 +187,11 @@ export function FacilityAdminPage() {
         showToast({type: 'success', message: `Đã ${isEditing ? 'cập nhật' : 'thêm mới'} dữ liệu thành công.`});
     };
 
+    const changeRoomStatus = async (id: number, active: boolean) => {
+        const saved = await facilityAdminApi.changeRoomStatus(id, active);
+        setRooms((items) => replaceOrAppend(items, saved));
+    };
+
     const toggleEntity = async (kind: EntityKind, id: number) => {
         try {
             if (kind === 'specialty') {
@@ -192,8 +202,7 @@ export function FacilityAdminPage() {
             } else if (kind === 'room') {
                 const target = rooms.find((item) => item.id === id);
                 if (!target) return;
-                const saved = await facilityAdminApi.changeRoomStatus(id, !target.active);
-                setRooms((items) => replaceOrAppend(items, saved));
+                await changeRoomStatus(id, !target.active);
             } else if (kind === 'staff') {
                 const target = staff.find((item) => item.id === id);
                 if (!target) return;
@@ -271,7 +280,8 @@ export function FacilityAdminPage() {
 
     const currentContent = SECTION_CONTENT[activeSection];
     const currentKind = SECTION_TO_KIND[activeSection];
-    const containedList = Boolean(currentKind) || ['clinical-settings', 'articles'].includes(activeSection);
+    const isClinicalSection = ['rank-prices', 'lab-parameters', 'medicines'].includes(activeSection);
+    const containedList = Boolean(currentKind) || isClinicalSection || activeSection === 'articles';
 
     return (
         <div className="min-h-screen bg-[#f4f7f7] text-slate-800">
@@ -308,12 +318,15 @@ export function FacilityAdminPage() {
                                               onSaveFailure={message => showToast({type: 'warning', message})}
                                               onUploadLogo={uploadLogo}/>}
                         {activeSection === 'articles' && <HospitalArticles specialties={specialties}/>}
-                        {activeSection === 'clinical-settings' &&
-                            <ClinicalSettings ranks={rankCatalog} services={services}/>}
+                        {isClinicalSection && activeSection !== 'medicines' && <h1 className="mb-4 shrink-0 text-2xl font-bold text-slate-900">{currentContent.title}</h1>}
+                        {activeSection === 'rank-prices' && <RankPrices ranks={rankCatalog}/>}
+                        {activeSection === 'lab-parameters' && <LabParameters services={services}/>}
+                        {activeSection === 'medicines' && <FacilityMedicines/>}
                         {activeSection === 'work-schedules' && <WorkScheduleScreen/>}
                         {currentKind && (
                             <ResourceListView
                                 key={currentKind}
+                                defaultSlotMinutes={facility.slotMinutes}
                                 departments={departments}
                                 specialties={specialties}
                                 items={getItems(currentKind)}
@@ -334,6 +347,7 @@ export function FacilityAdminPage() {
                     entity={getEditingEntity()}
                     kind={editor.kind}
                     onClose={() => setEditor(null)}
+                    onRoomStatusChange={changeRoomStatus}
                     onSave={saveEntity}
                     rankCatalog={rankCatalog}
                     serviceCategories={serviceCategories}

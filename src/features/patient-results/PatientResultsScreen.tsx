@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {ChevronDown, ChevronRight, FileHeart, FileSearch, Home, Info, ShieldCheck, UserRound} from 'lucide-react';
+import {ChevronDown, FileHeart, FileSearch, Info, ShieldCheck, UserRound} from 'lucide-react';
 import type {PatientResultsData} from './models/types/patient-results.types';
 import {EncounterDetail} from './components/EncounterDetail';
 import {EncounterList} from './components/EncounterList';
 import {ServiceResultViewer} from './components/ServiceResultViewer';
-import {ServiceStatusBadge} from './components/ServiceStatusBadge';
 import {patientResultsHref} from './utils/result-format';
 
 function MissingResult({title, description, href, label}: {
@@ -42,14 +42,9 @@ export function PatientResultsScreen({data}: { data: PatientResultsData }) {
 
     return <div className="min-h-[70vh] bg-slate-50">
         <div className="border-b border-slate-200 bg-white">
-            <nav aria-label="Đường dẫn trang"
-                 className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 py-3.5 text-xs text-slate-500 sm:px-6 lg:px-8">
-                <Link href="/" className="inline-flex items-center gap-1.5 hover:text-blue-600"><Home
-                    className="size-3.5"/>Trang chủ</Link><ChevronRight
-                className="size-3"/><span>Cổng bệnh nhân</span><ChevronRight className="size-3"/><Link
-                href={patientResultsHref(patient.id)} className="hover:text-blue-600">Kết quả khám
-                bệnh</Link>{encounterId !== null && <><ChevronRight className="size-3"/><span
-                className="font-semibold text-medblue-700">{'Chi tiết ca khám'}</span></>}</nav>
+            <PatientBreadcrumb current={encounterId !== null ? "Chi tiết ca khám" : "Kết quả khám bệnh"}
+                parent={encounterId !== null ? { label: "Kết quả khám bệnh", href: patientResultsHref(patient.id) } : undefined}
+                className="mx-auto max-w-7xl px-4 py-3.5 sm:px-6 lg:px-8" />
         </div>
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
             {serviceId === null && encounterId === null && <>

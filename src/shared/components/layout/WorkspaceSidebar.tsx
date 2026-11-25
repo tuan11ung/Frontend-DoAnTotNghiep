@@ -9,6 +9,7 @@ export type WorkspaceNavigationItem<S extends string> = {
   id: S;
   label: string;
   icon: LucideIcon;
+  children?: readonly WorkspaceNavigationItem<S>[];
 } & ({ href: string; onSelect?: never } | { href?: never; onSelect: (section: S) => void });
 
 export interface WorkspaceNavigationGroup<S extends string> {
@@ -19,22 +20,49 @@ export interface WorkspaceNavigationGroup<S extends string> {
 export interface WorkspaceSidebarProps<S extends string> {
   activeSection: S;
   title: string;
+  showBrandHeader?: boolean;
   navigationLabel: string;
   groups: readonly WorkspaceNavigationGroup<S>[];
-  context: { title: string; description: ReactNode; avatar: ReactNode };
-  account: ReactNode;
+  context: { title: string; description?: ReactNode; avatar?: ReactNode };
+  account?: ReactNode;
   accountAvatar?: ReactNode;
-  roleLabel: string;
+  roleLabel?: string;
   mobileOpen: boolean;
   onCloseMobile: () => void;
   onOpenMobile: () => void;
   onLogout?: () => void;
 }
 
-function SidebarContent<S extends string>({ activeSection, title, navigationLabel, groups, context, account, accountAvatar, roleLabel, onCloseMobile, onLogout }: WorkspaceSidebarProps<S>) {
+function SidebarContent<S extends string>({ activeSection, title, showBrandHeader = false, navigationLabel, groups, context, account, accountAvatar, roleLabel, onCloseMobile, onLogout }: WorkspaceSidebarProps<S>) {
+  function renderNavigationItem(item: WorkspaceNavigationItem<S>) {
+    const Icon = item.icon;
+    const isActive = activeSection === item.id;
+    const className = `group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-sm font-semibold transition-colors ${isActive ? 'bg-white text-[#0b5754] shadow-sm' : 'text-emerald-50/75 hover:bg-white/8 hover:text-white'}`;
+    const content = <>
+      <Icon aria-hidden="true" className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'text-blue-700' : 'text-emerald-100/65'}`} />
+      <span className="flex-1">{item.label}</span>
+    </>;
+    return item.href !== undefined ? (
+      <Link href={item.href} aria-current={isActive ? 'page' : undefined} className={className} onClick={onCloseMobile}>{content}</Link>
+    ) : (
+      <button type="button" aria-current={isActive ? 'page' : undefined} className={className} onClick={() => { item.onSelect(item.id); onCloseMobile(); }}>{content}</button>
+    );
+  }
+
+  const closeMobileButton = (
+    <button
+      aria-label="Đóng menu"
+      className="ml-auto shrink-0 rounded-lg p-2 text-emerald-50/80 hover:bg-white/10 lg:hidden"
+      onClick={onCloseMobile}
+      type="button"
+    >
+      <X className="h-5 w-5" />
+    </button>
+  );
+
   return (
     <div className="flex h-full flex-col bg-[#102d2c] text-white">
-      <div className="flex h-20 items-center gap-3 border-b border-white/10 px-5">
+      {showBrandHeader && <div className="flex h-20 items-center gap-3 border-b border-white/10 px-5">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm">
           <HeartPulse aria-hidden="true" className="h-6 w-6" />
         </div>
@@ -42,25 +70,19 @@ function SidebarContent<S extends string>({ activeSection, title, navigationLabe
           <p className="truncate text-base font-extrabold tracking-tight">MedConnect</p>
           <p className="truncate text-xs text-emerald-100/70">{title}</p>
         </div>
-        <button
-          aria-label="Đóng menu"
-          className="ml-auto rounded-lg p-2 text-emerald-50/80 hover:bg-white/10 lg:hidden"
-          onClick={onCloseMobile}
-          type="button"
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
+        {closeMobileButton}
+      </div>}
 
       <div className="border-b border-white/10 px-4 py-4">
         <div className="flex items-center gap-3 rounded-xl bg-white/7 px-3 py-3 ring-1 ring-white/10">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-200 text-sm font-extrabold text-emerald-950">
+          {context.avatar != null && <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-200 text-sm font-extrabold text-emerald-950">
             {context.avatar}
-          </div>
+          </div>}
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold">{context.title}</p>
-            <p className="mt-0.5 text-xs text-emerald-100/65">{context.description}</p>
+            <p className={`text-sm font-bold ${context.avatar == null ? 'wrap-anywhere' : 'truncate'}`}>{context.title}</p>
+            {context.description != null && <p className="mt-0.5 text-xs text-emerald-100/65">{context.description}</p>}
           </div>
+          {!showBrandHeader && closeMobileButton}
         </div>
       </div>
 
@@ -71,28 +93,19 @@ function SidebarContent<S extends string>({ activeSection, title, navigationLabe
               {group.label}
             </p>
             <div className="space-y-1">
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeSection === item.id;
-
-                const className = `group flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-sm font-semibold transition-colors ${isActive ? 'bg-white text-[#0b5754] shadow-sm' : 'text-emerald-50/75 hover:bg-white/8 hover:text-white'}`;
-                const content = <>
-                  <Icon aria-hidden="true" className={`h-[18px] w-[18px] ${isActive ? 'text-blue-700' : 'text-emerald-100/65'}`} />
-                  <span className="flex-1">{item.label}</span>
-                </>;
-                return item.href !== undefined ? (
-                  <Link key={item.id} href={item.href} aria-current={isActive ? 'page' : undefined} className={className} onClick={onCloseMobile}>{content}</Link>
-                ) : (
-                  <button key={item.id} type="button" aria-current={isActive ? 'page' : undefined} className={className} onClick={() => { item.onSelect(item.id); onCloseMobile(); }}>{content}</button>
-                );
-              })}
+              {group.items.map(item => <div key={item.id}>
+                {renderNavigationItem(item)}
+                {!!item.children?.length && <ul aria-label={item.label} className="ml-5 mt-1 space-y-1 border-l border-white/15 pl-2">
+                  {item.children.map(child => <li key={child.id}>{renderNavigationItem(child)}</li>)}
+                </ul>}
+              </div>)}
             </div>
           </div>
         ))}
       </nav>
 
-      <div className="border-t border-white/10 p-3">
-        <div className="mb-2 flex items-center gap-3 rounded-lg px-3 py-2.5">
+      {(account != null || onLogout) && <div className="border-t border-white/10 p-3">
+        {account != null && <div className="mb-2 flex items-center gap-3 rounded-lg px-3 py-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
             {accountAvatar ?? <CircleUserRound className="h-5 w-5 text-emerald-100" />}
           </div>
@@ -100,12 +113,12 @@ function SidebarContent<S extends string>({ activeSection, title, navigationLabe
             <p className="truncate text-sm font-semibold">{account}</p>
             <p className="truncate text-xs text-emerald-100/55">{roleLabel}</p>
           </div>
-        </div>
+        </div>}
         {onLogout && <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-emerald-50/70 hover:bg-white/8 hover:text-white" onClick={onLogout} type="button">
           <LogOut className="h-[18px] w-[18px]" />
           Đăng xuất
         </button>}
-      </div>
+      </div>}
     </div>
   );
 }

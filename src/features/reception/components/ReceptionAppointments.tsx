@@ -1,7 +1,7 @@
 'use client';
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { AutoSearchBar } from '@/src/shared/components/AutoSearchBar';
-import { ScanLine } from 'lucide-react';
+import { LoaderCircle, ScanLine } from 'lucide-react';
 
 import Link from 'next/link';
 import { editPreviewBooking } from '../api/reception-preview-api';
@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import { type SpecialtyTransferQuote, type PendingAppointment, type ReceptionAppointment, type ReceptionSlot } from '../api/reception-api';
 import { useReceptionData } from '../ReceptionDataProvider';
 import { ClinicalApiError, type ApiPage } from '@/src/shared/lib/clinical-api';
-import { receptionButton, receptionCard, receptionError, receptionField } from './ReceptionRegistration';
+import { receptionButton, receptionCard, receptionError, receptionField, receptionQrButton } from './reception-ui';
 import { money } from '@/src/features/patient-payments/payment.types';
 import { ReceptionCheckInResult } from './ReceptionCheckInResult';
 import type { CarePaymentStatus } from '@/src/shared/components/CarePaymentBadge';
@@ -50,6 +50,7 @@ export function ReceptionAppointments({ pending, initialReference, detailOnly = 
   const [acceptedCode, setAcceptedCode] = useState<string | null>(null);
   const [acceptedPaymentStatus,setAcceptedPaymentStatus]=useState<CarePaymentStatus>();
   const [scanning, setScanning] = useState(false);
+  const cameraButton = useRef<HTMLButtonElement>(null);
   useEffect(() => () => lookupController.current?.abort(), []);
   useEffect(() => {
     if (!pending) return;
@@ -103,7 +104,7 @@ export function ReceptionAppointments({ pending, initialReference, detailOnly = 
       if (controller.signal.aborted) return;
       const notFound = cause instanceof ClinicalApiError ? cause.status === 404 :
         demo && cause instanceof Error && cause.message.startsWith('Không tìm thấy lịch hẹn');
-      const message = notFound ? 'Không tìm thấy lịch hẹn phù hợp. Kiểm tra lại mã lịch hẹn hoặc dùng mã QR.' :
+      const message = notFound ? 'Vui lòng kiểm tra lại mã lịch hẹn hoặc sử dụng mã QR của bệnh nhân.' :
         cause instanceof TypeError ? 'Không thể kết nối để tra cứu lịch hẹn. Vui lòng thử lại.' :
         cause instanceof ClinicalApiError && (cause.status === 401 || cause.status === 403) ? 'Phiên đăng nhập đã hết hạn hoặc tài khoản chưa có quyền tra cứu.' :
         'Tra cứu lịch hẹn thất bại. Vui lòng thử lại.';
@@ -135,6 +136,10 @@ export function ReceptionAppointments({ pending, initialReference, detailOnly = 
     resetCheckInLookup(value);
     void lookupCheckIn(value.trim());
   }
+  function closeScanner() {
+    setScanning(false);
+    requestAnimationFrame(() => cameraButton.current?.focus());
+  }
   async function act(event: FormEvent) {
     event.preventDefault();
     if (lock.current || !appointment || (!pending && (lookupController.current || currentReference.current !== lastLookup.current))) return;
@@ -159,58 +164,62 @@ export function ReceptionAppointments({ pending, initialReference, detailOnly = 
   if (acceptedCode && appointment) return <ReceptionCheckInResult settlement={acceptedSettlement} paymentStatus={acceptedPaymentStatus} code={acceptedCode} queue={appointment.queueNumber} slot={{ specialtyName: appointment.specialtyName ?? '', roomName: appointment.roomName ?? '', roomLocation: appointment.roomLocation, doctorName: appointment.doctorName ?? '', rankName: appointment.rankName }} onNext={() => { if (detailOnly) { onFinished?.(); return; } setAcceptedSettlement(undefined); setAcceptedCode(null); setAcceptedPaymentStatus(undefined); resetCheckInLookup(''); }} />;
   return <div className="space-y-5">
     {changingSpecialty && appointment && <ReceptionSpecialtyChange key={appointment.appointmentId} appointment={appointment} onClose={() => setChangingSpecialty(false)} onChanged={result => { setChangingSpecialty(false); setAppointment(result.appointment); setAcceptedSettlement(result.settlement);setAcceptedCode(result.encounterCode);setAcceptedPaymentStatus(result.settlement?.paymentStatus); setError(''); onUpdated?.(); }} />}
-    {scanning && <ReceptionQrScanner onClose={() => setScanning(false)} onScan={value => { setScanning(false); scanReference(value); }} />}
+    {scanning && <ReceptionQrScanner onClose={closeScanner} onScan={value => { closeScanner(); scanReference(value); }} />}
     {!detailOnly && (pending ? <section className={receptionCard}><div className="flex justify-between"><h2 className="font-bold">Lịch hẹn chờ phân chuyên khoa</h2><button type="button" className="text-sm font-bold text-blue-700" disabled={busy} onClick={() => { setError(''); setRevision(v => v + 1); }}>Làm mới</button></div>
       {!records && !error && <p role="status">Đang tải lịch chờ…</p>}{records?.content.length === 0 && <p role="status" className="text-sm text-slate-500">Không có lịch hẹn chờ phân chuyên khoa.</p>}
       <ul className="divide-y">{records?.content.map(item => <li className="flex flex-wrap justify-between gap-3 py-4" key={item.appointmentId}><div><p className="font-bold">{item.patientName} · {item.appointmentCode}</p><p className="mt-1 text-sm text-slate-500">{formatDisplayDate(item.appointmentDate)} · {item.startTime.slice(0, 5)}–{item.endTime.slice(0, 5)}</p><p className="mt-2 whitespace-pre-wrap text-sm">{item.appointReason}</p></div><button disabled={busy} type="button" className="text-sm font-bold text-blue-700" aria-haspopup="dialog" onClick={() => void lookup(item.appointmentCode)}>Xem chi tiết và phân chuyên khoa</button></li>)}</ul>
       {records && <div className="flex items-center gap-4 text-sm"><button disabled={page === 0 || busy} type="button" onClick={() => setPage(v => v - 1)}>Trang trước</button><span>Trang {page + 1} / {Math.max(1, records.totalPages)}</span><button disabled={records.last || busy} type="button" onClick={() => setPage(v => v + 1)}>Trang sau</button></div>}
-    </section> : <section aria-labelledby="reception-checkin-search-title" className={receptionCard}>
-      <div>
-        <h2 id="reception-checkin-search-title" className="text-lg font-bold">Tra cứu lịch hẹn</h2>
-        <p className="mt-1 text-sm text-slate-600">Nhập mã lịch hẹn hoặc sử dụng mã QR của bệnh nhân.</p>
+    </section> : <section aria-labelledby="reception-checkin-code-label" className={`${receptionCard} w-full max-w-[820px]`}>
+      <div className="space-y-2">
+        <label id="reception-checkin-code-label" htmlFor="reception-checkin-code" className="block text-sm font-semibold">Mã lịch hẹn</label>
+        <AutoSearchBar
+          autoFocus
+          id="reception-checkin-code"
+          aria-label="Mã lịch hẹn"
+          aria-controls="reception-lookup-feedback"
+          aria-describedby="reception-lookup-feedback"
+          placeholder="Nhập hoặc dán mã lịch hẹn..."
+          maxLength={100}
+          value={reference}
+          appliedValue={appliedReference}
+          disabled={busy || scanning}
+          onValueChange={value => {
+            cancelImageRead();
+            if (value.trim() === reference.trim()) setReference(value);
+            else resetCheckInLookup(value);
+          }}
+          onSearch={searchReference}
+        />
+        <p id="reception-lookup-feedback" role="status" className="flex min-h-5 items-center gap-2 text-xs text-slate-600">
+          {lookingUp ? <><LoaderCircle aria-hidden="true" className="size-4 motion-safe:animate-spin" /> Đang tra cứu lịch hẹn…</> :
+            appointment ? <span className="sr-only">Đã tìm thấy lịch hẹn. Vui lòng đối chiếu thông tin bên dưới.</span> :
+            reference.trim() && !canSearchReference(reference.trim()) && !lookupFailure ? 'Nhập đầy đủ mã lịch hẹn để tra cứu.' :
+            'Hệ thống sẽ tự động tra cứu lịch hẹn.'}
+        </p>
+        {lookupFailure && (
+          <div role={lookupFailure.notFound ? 'status' : 'alert'} className={`rounded-lg p-3 text-sm ${lookupFailure.notFound ? 'bg-slate-50 text-slate-700' : 'bg-rose-50 text-rose-700'}`}>
+            {lookupFailure.notFound && <p className="mb-1 font-semibold">Không tìm thấy lịch hẹn</p>}
+            <p>{lookupFailure.message}</p>
+            {lookupFailure.notFound ? <Link className="mt-2 inline-block font-semibold text-blue-700 underline" href={href('registration')}>Tạo lần khám</Link> :
+              <button type="button" className="mt-2 font-semibold underline" onClick={() => void lookupCheckIn(reference.trim(), true)}>Thử lại</button>}
+          </div>
+        )}
       </div>
-      <AutoSearchBar
-        autoFocus
-        aria-label="Mã lịch hẹn"
-        aria-controls="reception-lookup-feedback"
-        placeholder="Nhập mã lịch hẹn…"
-        maxLength={100}
-        value={reference}
-        appliedValue={appliedReference}
-        disabled={busy || scanning}
-        onValueChange={value => {
-          cancelImageRead();
-          if (value.trim() === reference.trim()) setReference(value);
-          else resetCheckInLookup(value);
-        }}
-        onSearch={searchReference}
-      />
-      <div className="flex items-center gap-3 text-xs font-semibold text-slate-600">
-        <span aria-hidden="true" className="h-px flex-1 bg-slate-200" />
-        Hoặc sử dụng mã QR
-        <span aria-hidden="true" className="h-px flex-1 bg-slate-200" />
-      </div>
-      <div className="grid items-start gap-3 sm:grid-cols-2">
-        <button type="button" className="flex w-full items-center gap-3 rounded-lg border border-slate-200 bg-white p-3 text-left hover:border-blue-200 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:opacity-50" disabled={busy || scanning} onClick={() => {
-          cancelImageRead();
-          resetCheckInLookup('');
-          setScanning(true);
-        }}>
-          <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-blue-50 text-blue-700"><ScanLine aria-hidden="true" className="size-5" /></span>
-          <span><span className="block text-sm font-semibold">Quét bằng camera</span><span className="block text-xs text-slate-600">Quét mã QR trực tiếp.</span></span>
-        </button>
-        <ReceptionQrImageUpload key={imageVersion} disabled={busy || scanning} onReadStart={() => resetCheckInLookup('')} onScan={value => {
-          if (imageGeneration.current === imageVersion) scanReference(value);
-        }} />
-      </div>
-      <div id="reception-lookup-feedback" className="empty:hidden">
-        {lookingUp && <p role="status" className="text-sm text-slate-600">Đang tra cứu lịch hẹn…</p>}
-        {lookupFailure && <div role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
-          <p>{lookupFailure.message}</p>
-          {lookupFailure.notFound ? <Link className="mt-2 inline-block font-semibold text-blue-700 underline" href={href('registration')}>Tạo lần khám</Link> :
-            <button type="button" className="mt-2 font-semibold underline" onClick={() => void lookupCheckIn(reference.trim(), true)}>Thử lại</button>}
-        </div>}
-        {appointment && !lookingUp && <p role="status" className="sr-only">Đã tìm thấy lịch hẹn. Vui lòng đối chiếu thông tin bên dưới.</p>}
+      <div className="space-y-2">
+        <p className="text-sm text-slate-600">Hoặc sử dụng mã QR</p>
+        <div className="grid items-start gap-3 sm:grid-cols-2">
+          <button ref={cameraButton} type="button" aria-haspopup="dialog" className={`${receptionQrButton} border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100`} disabled={busy} onClick={() => {
+            cancelImageRead();
+            resetCheckInLookup('');
+            setScanning(true);
+          }}>
+            <ScanLine aria-hidden="true" className="size-4 shrink-0" />
+            Quét QR bằng camera
+          </button>
+          <ReceptionQrImageUpload key={imageVersion} disabled={busy || scanning} onReadStart={() => resetCheckInLookup('')} onScan={value => {
+            if (imageGeneration.current === imageVersion) scanReference(value);
+          }} />
+        </div>
       </div>
     </section>)}
     {detailOnly && lookingUp && <p role="status" className="text-sm text-slate-500">Đang tải chi tiết lịch hẹn…</p>}

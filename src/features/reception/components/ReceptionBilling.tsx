@@ -1,6 +1,7 @@
 'use client';
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { Modal } from '@/src/shared/components/Modal';
+import { PriceInput } from '@/src/shared/components/PriceInput';
 import { Info, Printer, RefreshCw, UserRound, X } from 'lucide-react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { type ReceptionInvoiceDetail } from '../api/reception-api';
@@ -9,7 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { requestPreviewPayment, RECEPTION_PREVIEW_KEY, type PreviewPayment } from '../api/reception-preview-api';
 import { useReceptionData } from '../ReceptionDataProvider';
 import { ReceptionInvoiceList } from './ReceptionInvoiceList';
-import { ReceptionInvoiceDetails, ReceptionTransactionHistory } from './ReceptionInvoiceDetails';
+import { ReceptionInvoiceDetails } from './ReceptionInvoiceDetails';
 import { ReceptionInvoiceStatus } from './ReceptionInvoiceStatus';
 import { money } from '@/src/features/patient-payments/payment.types';
 import { CarePaymentBadge } from '@/src/shared/components/CarePaymentBadge';
@@ -17,6 +18,7 @@ import { PaymentRefunds } from '@/src/features/patient-payments/components/Payme
 import { receptionButton, receptionError, receptionField } from './reception-ui';
 
 const secondaryButton = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600';
+const MAX_CASH_AMOUNT = 9999999999999;
 
 function paidGuidance({ invoice, consultationPayment }: ReceptionInvoiceDetail) {
   if (invoice.kind === 'PARACLINICAL') return 'Hướng dẫn bệnh nhân đến phòng thực hiện theo danh sách chỉ định.';
@@ -36,7 +38,7 @@ export function ReceptionBilling() {
   const listInvoiceId = useRef<number>(undefined);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(''); const [notice, setNotice] = useState(''); const [revision, setRevision] = useState(0);
-  const [given, setGiven] = useState(''); const [confirmed, setConfirmed] = useState(false); const [busy, setBusy] = useState(false); const lock = useRef(false);
+  const [given, setGiven] = useState<number | null>(null); const [confirmed, setConfirmed] = useState(false); const [busy, setBusy] = useState(false); const lock = useRef(false);
   const detailId=detail?.invoice.id;
   const totalAmount = detail?.invoice.totalAmount;
   const pendingPayment = detail?.transactions.some(transaction => transaction.status === 'PENDING') ?? false;
@@ -46,8 +48,7 @@ export function ReceptionBilling() {
   const patientName = detail?.context?.patientName || detail?.invoice.patientName;
   const patientCode = detail?.context?.patientCode || detail?.invoice.patientCode;
   const guidance = detail?.invoice.status === 'PAID' ? paidGuidance(detail) : null;
-  const cashAmount = Number(given);
-  const cashValid = given !== '' && Number.isSafeInteger(cashAmount) && cashAmount >= (detail?.invoice.totalAmount ?? 0);
+  const cashValid = given !== null && given <= MAX_CASH_AMOUNT && given >= (totalAmount ?? 0);
   useEffect(()=>{
     if(!demo)return;
     let active=true;
@@ -64,7 +65,7 @@ export function ReceptionBilling() {
     if (lock.current || busy) return;
     lock.current = true;
     setSelectedId(invoiceId);
-    setBusy(true); setError(''); setNotice(''); setGiven(''); setConfirmed(false); setMethod('Tiền mặt'); setRequest(null); setDetail(null);
+    setBusy(true); setError(''); setNotice(''); setGiven(null); setConfirmed(false); setMethod('Tiền mặt'); setRequest(null); setDetail(null);
     try { setDetail(await receptionApi.invoice(invoiceId)); } catch (e) { setError(receptionError(e)); } finally { lock.current = false; setBusy(false); }
   }
   function close() {
@@ -85,7 +86,7 @@ export function ReceptionBilling() {
     setRefreshing(true);
     setError('');
     setConfirmed(false);
-    setGiven('');
+    setGiven(null);
     try {
       setDetail(await receptionApi.invoice(detail.invoice.id));
       setRevision(value => value + 1);
@@ -105,7 +106,7 @@ export function ReceptionBilling() {
     try { const paid = await receptionApi.payCash(detail.invoice.id,detail.invoice.totalAmount); setDetail({ ...paid, context: detail.context }); setNotice('Đã ghi nhận thu tiền mặt thành công.'); setRevision(v => v + 1); }
     catch (e) {
       setConfirmed(false);
-      setGiven('');
+      setGiven(null);
       setError(receptionError(e));
       try { setDetail(await receptionApi.invoice(detail.invoice.id)); setRevision(value => value + 1); }
       catch { setDetail(null); }
@@ -131,7 +132,7 @@ export function ReceptionBilling() {
       listInvoiceId.current = invoiceId;
       void open(invoiceId);
     }} />
-    <Modal open={selectedId !== undefined} size="3xl" aria-label="Chi tiết hóa đơn" onClose={close} dismissible={!busy} panelClassName="max-h-[90dvh] max-w-[52rem]">
+    <Modal open={selectedId !== undefined} size="3xl" aria-label="Chi tiết hóa đơn" onClose={close} dismissible={!busy} panelClassName="max-h-[90dvh] max-w-[60rem]">
       <header className="shrink-0 space-y-2 border-b border-slate-200 px-4 py-2.5 sm:px-6">
         <div className="flex items-start gap-2">
           <div className="min-w-0 flex-1">
@@ -146,19 +147,19 @@ export function ReceptionBilling() {
             <X aria-hidden="true" className="size-5" />
           </button>
         </div>
-        {detail && <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t border-slate-100 pt-2">
+        {detail && <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
           <div className="flex min-w-0 flex-1 basis-36 items-start gap-2">
             <UserRound aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-slate-500" />
             <div className="min-w-0 text-sm [overflow-wrap:anywhere]">
-              <span className="font-semibold">{patientName || 'Chưa có tên bệnh nhân'}</span>
-              {patientCode && <span className="ml-2 text-xs text-slate-600">{patientCode}</span>}
+              <span className="block text-base font-semibold leading-5">{patientName || 'Chưa có tên bệnh nhân'}</span>
+              {patientCode && <span className="block text-xs text-slate-600">{patientCode}</span>}
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="sm:hidden"><ReceptionInvoiceStatus invoice={detail.invoice} /></div>
             {detail.invoice.status === 'UNPAID' && pendingPayment &&
               <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-800">Giao dịch chờ xác nhận</span>}
-            <button type="button" disabled={busy} onClick={() => void refresh()} className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-2 text-xs font-semibold text-blue-700 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600">
+            <button type="button" disabled={busy} onClick={() => void refresh()} className="inline-flex min-h-8 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:enabled:bg-slate-100 focus-visible:outline-2 focus-visible:outline-blue-600 disabled:opacity-60">
               <RefreshCw aria-hidden="true" className={`size-3.5 ${refreshing ? 'animate-spin' : ''}`} />
               {refreshing ? 'Đang làm mới…' : 'Làm mới trạng thái'}
             </button>
@@ -170,7 +171,7 @@ export function ReceptionBilling() {
         {error && <p role="alert" className="text-sm text-rose-700">{error}</p>}
         {error && !detail && selectedId !== undefined && <button type="button" className={receptionButton} onClick={() => void open(selectedId)}>Thử lại</button>}
         <ToastMessage message={notice} onDismiss={() => setNotice('')} />
-        {detail && <div className="space-y-3">
+        {detail && <div className="space-y-4">
           <ReceptionInvoiceDetails detail={detail} demo={demo} />
           {!demo && detail.invoice.kind !== 'PARACLINICAL' && detail.consultationPayment &&
             (currentConsultationId !== detail.invoice.id || detail.consultationPayment.status !== detail.invoice.status) && (
@@ -204,10 +205,13 @@ export function ReceptionBilling() {
                 </Link></p>}
               </div>}
               {method === 'Tiền mặt' && <form id="reception-cash-payment" onSubmit={pay} className="space-y-3">
-                <label className="block text-sm font-bold">Tiền mặt bệnh nhân đưa
-                  <input className={receptionField} type="number" inputMode="numeric" min={detail.invoice.totalAmount} max={9999999999999} step={1} required value={given} disabled={busy} onChange={event => setGiven(event.target.value)} />
-                </label>
-                <p className="text-sm">Tiền trả lại: <strong>{cashValid ? money(cashAmount - detail.invoice.totalAmount) : 'Chưa đủ tiền'}</strong></p>
+                <div>
+                  <label htmlFor="reception-cash-given" className="block text-sm font-bold">Tiền mặt bệnh nhân đưa</label>
+                  <PriceInput id="reception-cash-given" className={receptionField} aria-describedby="reception-cash-unit" min={detail.invoice.totalAmount} max={MAX_CASH_AMOUNT}
+                    required value={given} disabled={busy} onValueChange={setGiven} />
+                </div>
+                <p id="reception-cash-unit" className="text-xs text-slate-600">Nhập theo nghìn đồng. Ví dụ nhập 100 cho 100.000đ.</p>
+                <p className="text-sm">Tiền trả lại: <strong>{cashValid ? money(given - detail.invoice.totalAmount) : 'Chưa đủ tiền'}</strong></p>
                 <label className="flex gap-3 text-sm">
                   <input type="checkbox" checked={confirmed} disabled={busy} onChange={event => setConfirmed(event.target.checked)} />
                   Đã đối chiếu đúng bệnh nhân, hóa đơn và nhận đủ tiền mặt.
@@ -215,7 +219,6 @@ export function ReceptionBilling() {
               </form>}
             </section>
           )}
-          <ReceptionTransactionHistory transactions={detail.transactions} />
           {detail.invoice.status === 'UNPAID' && pendingPayment && <p role="status" className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
             Có giao dịch trực tuyến đang chờ xác nhận. Làm mới trạng thái để đối chiếu trước khi thu tiền mặt.
           </p>}

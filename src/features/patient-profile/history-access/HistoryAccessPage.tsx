@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { ChevronRight, Home, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
 import { accountRequest } from '../profile-api';
@@ -45,7 +46,7 @@ function HistoryAccessContent({ token }: { token: string }) {
   if (error) return <div className="mx-auto max-w-xl space-y-4 px-4 py-16 text-center"><h1 className="text-2xl font-bold text-slate-900">Quyền truy cập bệnh sử</h1><p role="alert" className="text-sm text-rose-700">{error}</p><button type="button" className={secondaryClass} onClick={() => { setError(''); setRevision(v => v + 1); }}>Thử lại</button></div>;
   if (!profile) return <Loading />;
   return <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-    <nav aria-label="Đường dẫn" className="mb-6 flex flex-wrap items-center gap-2 text-xs text-slate-500"><Link href="/" className="inline-flex items-center gap-1 hover:text-blue-700"><Home className="size-3.5" />Trang chủ</Link><ChevronRight aria-hidden="true" className="size-3.5" /><span aria-current="page">Quyền truy cập bệnh sử</span></nav>
+    <PatientBreadcrumb current="Quyền truy cập bệnh sử" className="mb-6" />
     <header className="mb-6"><h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Quyền truy cập bệnh sử</h1><p className="mt-2 text-sm leading-6 text-slate-600">Quản lý quyền xem bệnh sử và theo dõi nhật ký truy cập hồ sơ của <strong className="font-semibold text-slate-800">{profile.fullName}</strong>.</p></header>
     <MedicalHistoryAccess patientId={profile.id} />
   </div>;

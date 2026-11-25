@@ -202,7 +202,7 @@ export function FacilityInfoView({ facility, onSave, onSaveFailure, onUploadLogo
           </div>
         </div>
         <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[180px_1fr]">
-          <div>
+          <div className="flex flex-col items-center text-center">
             <div
               aria-label={draft.logoUrl ? `Logo ${draft.name}` : undefined}
               className="flex aspect-square w-32 items-center justify-center overflow-hidden rounded-2xl bg-cover bg-center text-3xl font-extrabold text-white shadow-lg shadow-blue-100"
@@ -232,10 +232,6 @@ export function FacilityInfoView({ facility, onSave, onSaveFailure, onUploadLogo
                 <dd className="text-sm text-slate-900">{facilityLevelLabels[draft.level] ?? 'Chưa cập nhật'}</dd>
               </div>
             </dl>
-            <label>
-              <span className={labelClass}>Tỉnh / Thành phố</span>
-              <input className={inputClass} maxLength={100} onChange={(event) => update('province', event.target.value)} value={draft.province} />
-            </label>
             <div className="sm:col-span-2">
               <label htmlFor="facility-address" className={labelClass}>Địa chỉ <span className="text-rose-600">*</span></label>
               <div className="relative">

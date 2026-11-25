@@ -6,7 +6,9 @@ export type AdminSection =
   | 'rooms'
   | 'staff'
   | 'services'
-  | 'clinical-settings'
+  | 'rank-prices'
+  | 'lab-parameters'
+  | 'medicines'
   | 'articles';
 
 export type EntityKind = 'department' | 'specialty' | 'room' | 'staff' | 'service';

@@ -2,13 +2,10 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import { useSearchParams } from 'next/navigation';
 import {
-  CalendarDays,
   CalendarClock,
-  Home,
-  ChevronRight,
-  Search,
   Users,
   Sparkles,
   AlertCircle,
@@ -32,7 +29,6 @@ export function PatientAppointmentsPage() {
   // Filters state
   const [currentTab, setCurrentTab] = useState<AppointmentFilterTab>(searchParams.get('tab') === 'ongoing' ? 'ONGOING' : 'UPCOMING');
   const [selectedProfile, setSelectedProfile] = useState<string>(initialTarget);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Workflow Dialogs
   const [qrAppointmentId, setQrAppointmentId] = useState<string | null>(null);
@@ -82,19 +78,9 @@ export function PatientAppointmentsPage() {
         }
       }
 
-      // 3. Search query
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchesCode = apt.code.toLowerCase().includes(query);
-        const matchesHospital = apt.hospitalName.toLowerCase().includes(query);
-        const matchesDoctor = apt.doctorName.toLowerCase().includes(query);
-        const matchesPatient = apt.patientName.toLowerCase().includes(query);
-        if (!matchesCode && !matchesHospital && !matchesDoctor && !matchesPatient) return false;
-      }
-
       return true;
     });
-  }, [appointments, currentTab, selectedProfile, searchQuery, today]);
+  }, [appointments, currentTab, selectedProfile, today]);
 
   // Counts use the same status rules as the filtered lists.
   const tabCounts = useMemo(() => {
@@ -119,16 +105,7 @@ export function PatientAppointmentsPage() {
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-medium text-slate-500">
-            <Link href="/" className="hover:text-blue-600 flex items-center gap-1 transition-colors">
-              <Home className="w-3.5 h-3.5" />
-              <span>Trang chủ</span>
-            </Link>
-            <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-slate-400">Cổng bệnh nhân</span>
-            <ChevronRight className="w-3 h-3 text-slate-400" />
-            <span className="text-blue-700 font-bold">Danh sách lịch khám</span>
-          </nav>
+          <PatientBreadcrumb current="Danh sách lịch khám" />
         </div>
       </div>
 
@@ -136,20 +113,12 @@ export function PatientAppointmentsPage() {
         {/* Banner Top */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200/80 rounded-full text-xs font-bold mb-2">
-              <CalendarDays className="w-3.5 h-3.5" />
-              <span>Theo dõi lịch khám liên viện 24/7</span>
-            </div>
             <h1 ref={headingRef} tabIndex={-1} className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Lịch khám của tôi
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Xem chi tiết vé khám điện tử, mã QR tiếp đón và quản lý hủy/đổi lịch khám cho bản thân & người nhà.
-            </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <button type="button" onClick={refresh} className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold">Làm mới</button>
             <Link
               href="/booking"
               className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-md text-xs sm:text-sm transition-all cursor-pointer transform hover:-translate-y-0.5"
@@ -160,58 +129,35 @@ export function PatientAppointmentsPage() {
           </div>
         </div>
 
-        {/* Thanh công cụ: Chọn hồ sơ & Tìm kiếm */}
         <section aria-label="Quản lý lịch khám" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex flex-col items-center justify-between gap-4 border-b border-slate-100 p-4 md:flex-row sm:p-5">
-          {/* Dropdown chọn Hồ sơ (Mục 8.1: Bản thân / từng người nhà) */}
-          <div className="flex items-center gap-2.5 w-full md:w-auto">
-            <Users className="w-4 h-4 text-blue-600 shrink-0" />
-            <label htmlFor="appointment-profile" className="text-xs font-bold text-slate-700 whitespace-nowrap">Hồ sơ khám:</label>
-            <select
-              id="appointment-profile"
-              value={selectedProfile}
-              onChange={(e) => setSelectedProfile(e.target.value)}
-              className="min-w-0 flex-1 px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all text-slate-800"
-            >
-              <option value="ALL">Toàn bộ gia đình</option>
-              <option value="SELF">Bản thân{profiles.find(p => p.relationship === 'SELF')?.fullName ? ` (${profiles.find(p => p.relationship === 'SELF')?.fullName})` : ''}</option>
-              {(profiles.filter(p => p.relationship !== 'SELF').map(p => ({ id: String(p.id), fullName: p.fullName, relationship: 'KHAC' }))).map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.fullName} ({m.relationship === 'ME' ? 'Mẹ' : m.relationship === 'CHA' ? 'Cha' : m.relationship === 'CON' ? 'Con' : 'Người thân'})
-                </option>
-              ))}
-            </select>
+          <div className="grid grid-cols-[minmax(0,1fr)] items-center gap-3 border-b border-slate-200 px-4 py-3 sm:px-5 lg:grid-cols-[minmax(0,1fr)_auto]">
+            <AppointmentFilterTabs
+              currentTab={currentTab}
+              onTabChange={setCurrentTab}
+              counts={tabCounts}
+            />
+            <div className="flex items-center gap-2.5 w-full shrink-0 sm:max-w-xs lg:w-72 lg:justify-self-end">
+              <Users className="w-4 h-4 text-blue-600 shrink-0" />
+              <label htmlFor="appointment-profile" className="text-xs font-bold text-slate-700 whitespace-nowrap">Hồ sơ khám:</label>
+              <select
+                id="appointment-profile"
+                value={selectedProfile}
+                onChange={(e) => setSelectedProfile(e.target.value)}
+                className="min-w-0 flex-1 px-3 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all text-slate-800"
+              >
+                <option value="ALL">Toàn bộ gia đình</option>
+                <option value="SELF">Bản thân{profiles.find(p => p.relationship === 'SELF')?.fullName ? ` (${profiles.find(p => p.relationship === 'SELF')?.fullName})` : ''}</option>
+                {(profiles.filter(p => p.relationship !== 'SELF').map(p => ({ id: String(p.id), fullName: p.fullName, relationship: 'KHAC' }))).map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.fullName} ({m.relationship === 'ME' ? 'Mẹ' : m.relationship === 'CHA' ? 'Cha' : m.relationship === 'CON' ? 'Con' : 'Người thân'})
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-
-          {/*/!* Search box *!/*/}
-          {/*<div className="relative w-full md:w-80">*/}
-          {/*  <label htmlFor="appointment-search" className="sr-only">Tìm lịch hẹn</label>*/}
-          {/*  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />*/}
-          {/*  <input*/}
-          {/*    type="text"*/}
-          {/*    id="appointment-search"*/}
-          {/*    placeholder="Tìm mã lịch, bệnh viện, bác sĩ..."*/}
-          {/*    value={searchQuery}*/}
-          {/*    onChange={(e) => setSearchQuery(e.target.value)}*/}
-          {/*    className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:outline-none transition-all"*/}
-          {/*  />*/}
-          {/*</div>*/}
-        </div>
 
         {(storageError || queueError) && <p role="alert" className="mx-4 mt-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900"><AlertCircle className="size-4 shrink-0" />{storageError || 'Chưa tải được hàng chờ. Vui lòng thử lại.'}</p>}
         {currentTab === 'UPCOMING' && tabCounts.ongoing > 0 && <div className="mx-4 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-xs text-emerald-900"><p><strong>{tabCounts.ongoing}</strong> lịch đã check-in đang diễn ra.</p><button type="button" onClick={() => setCurrentTab('ONGOING')} className="rounded-lg px-3 py-2 font-bold hover:bg-emerald-100">Xem số thứ tự & phòng khám →</button></div>}
-
-        {/* Appointment status tabs */}
-        <div className="border-b border-slate-200 bg-white">
-          <div className="px-6 pt-3">
-            <AppointmentFilterTabs
-              currentTab={currentTab}
-              onTabChange={(tab) => setCurrentTab(tab)}
-              counts={tabCounts}
-            />
-          </div>
-        </div>
-
         <div className="bg-slate-50/50 p-4 sm:p-5">
         {/* Danh sách thẻ lịch khám */}
         {loading ? (

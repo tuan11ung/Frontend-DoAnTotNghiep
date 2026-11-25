@@ -2,6 +2,7 @@
 
 import { ChevronDown } from 'lucide-react';
 import { useId, useRef, useState, type ReactNode } from 'react';
+import { DropdownOption, DropdownResults } from './DropdownOptions';
 
 export interface SearchableDropdownOption {
   value: string;
@@ -20,6 +21,7 @@ interface SearchableDropdownProps {
   emptyMessage?: string;
   className?: string;
   disabled?: boolean;
+  placement?: 'inline' | 'overlay';
   /** Optional remote results, retaining the dropdown's search and focus handling. */
   renderResults?: (query: string, close: () => void) => ReactNode;
 }
@@ -40,6 +42,7 @@ export function SearchableDropdown({
   emptyMessage = 'Không tìm thấy kết quả',
   className,
   disabled = false,
+  placement = 'inline',
   renderResults,
 }: SearchableDropdownProps) {
   const id = useId();
@@ -59,7 +62,7 @@ export function SearchableDropdown({
 
   return (
     <div
-      className={className}
+      className={placement === 'overlay' ? `relative ${className ?? ''}` : className}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) close();
       }}
@@ -88,7 +91,7 @@ export function SearchableDropdown({
         <ChevronDown aria-hidden="true" className="h-4 w-4 shrink-0" />
       </button>
       {open && (
-        <div className="mt-1 rounded-lg border border-slate-200 bg-white p-2 shadow-sm" id={id + '-options'}>
+        <div className={`mt-1 rounded-lg border border-slate-200 bg-white p-2 shadow-sm ${placement === 'overlay' ? 'absolute inset-x-0 top-full z-20 max-sm:bottom-full max-sm:top-auto max-sm:mb-1 max-sm:mt-0' : ''}`} id={id + '-options'}>
           <input
             disabled={disabled}
             aria-label={searchPlaceholder}
@@ -102,7 +105,18 @@ export function SearchableDropdown({
             type="search"
             value={query}
           />
-          {renderResults ? renderResults(query, () => { document.getElementById(id + '-trigger')?.focus(); close(); }) : matches.length > 0 ? (
+          {renderResults ? renderResults(query, () => { document.getElementById(id + '-trigger')?.focus(); close(); }) : matches.length > 0 ? placement === 'overlay' ? (
+            <DropdownResults className="mt-1 border-0 shadow-none" maxHeight="min(12rem, 24dvh)">
+              {matches.map(option => (
+                <DropdownOption key={option.value} label={option.label} selected={option.value === value}
+                  onClick={() => {
+                    trigger.current?.focus();
+                    close();
+                    onChange(option.value);
+                  }} />
+              ))}
+            </DropdownResults>
+          ) : (
             <ul className="mt-1 max-h-48 overflow-y-auto">
               {matches.map((option) => (
                 <li key={option.value}>

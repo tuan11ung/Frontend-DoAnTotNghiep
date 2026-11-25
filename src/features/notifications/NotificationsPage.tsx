@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import { useSearchParams } from 'next/navigation';
-import { ArrowLeft, ArrowUpRight, Bell, CheckCheck, ChevronRight, Home, LoaderCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Bell, CheckCheck, LoaderCircle, RefreshCw } from 'lucide-react';
 import { usePatientNotifications } from './hooks/use-patient-notifications';
 import { NotificationIcon, NotificationItem } from './components/NotificationItem';
 import { notificationDetailHref, notificationHref, notificationLabel, notificationTime } from './utils/notification-navigation';
@@ -31,7 +32,7 @@ export function NotificationsPage() {
   if (!isAuthenticated) return <div className="mx-auto max-w-xl px-4 py-20 text-center"><Bell className="mx-auto mb-4 size-12 text-blue-300" /><h1 className="text-2xl font-bold text-slate-900">Thông báo của bạn</h1><p className="mt-3 mb-6 text-sm text-slate-500">Đăng nhập để xem thông báo về lịch khám, kết quả và hồ sơ của bạn.</p><Link href="/patient/login" className="inline-flex rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">Đăng nhập</Link></div>;
   const visible = unreadOnly ? items.filter(item => !item.readAt) : items;
   const destination = selected ? notificationHref(selected) : null;
-  return <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8"><nav aria-label="Đường dẫn" className="mb-6 flex items-center gap-2 text-xs text-slate-400"><Link href="/" className="inline-flex items-center gap-1 hover:text-blue-600"><Home className="size-3.5" />Trang chủ</Link><ChevronRight className="size-3.5" /><span>Thông báo</span></nav>
+  return <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8"><PatientBreadcrumb current="Thông báo" className="mb-6" />
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4"><div><p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-blue-600">MedConnect · Cổng bệnh nhân</p><h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Thông báo của bạn</h1><p className="mt-2 text-sm text-slate-500">Theo dõi cập nhật về ca khám và hồ sơ tại một nơi.</p></div><button type="button" disabled={refreshing} onClick={() => void feed?.refresh()} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-blue-50 disabled:opacity-50"><RefreshCw className={`size-3.5 ${refreshing ? 'animate-spin' : ''}`} />Làm mới</button></div>
 
     {connectionError && <p role="status" className="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-800">{connectionError}</p>}

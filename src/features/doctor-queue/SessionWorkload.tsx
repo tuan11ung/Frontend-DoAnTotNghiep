@@ -93,7 +93,6 @@ export function SessionWorkload({ scheduleId, renderRoom, progress }: Props) {
     <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 sm:col-span-2">
       <div className="min-w-0">
         <p className={`text-sm font-semibold ${data && (!data.acceptingNewPatients || data.sessionEnded) ? 'text-amber-900' : data?.acceptingNewPatients ? 'text-emerald-800' : 'text-slate-700'}`}>{admissionLabel}</p>
-        {data?.sessionEnded && <p id="doctor-intake-cutoff" className="text-xs leading-5 text-slate-600">Vẫn có thể xử lý các lượt khám đã tiếp nhận.</p>}
       </div>
       {data && (
         <button type="button" disabled={busy || data.sessionEnded} aria-busy={busy} aria-describedby={data.sessionEnded ? 'doctor-intake-cutoff' : undefined}

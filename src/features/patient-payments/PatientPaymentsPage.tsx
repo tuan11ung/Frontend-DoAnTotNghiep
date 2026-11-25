@@ -2,8 +2,9 @@
 
 import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
+import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronRight, Filter, Home, RotateCw, Search, Wallet, Users } from 'lucide-react';
+import { Filter, RotateCw, Search, Wallet, Users } from 'lucide-react';
 import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
 import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
 import { usePayments } from './use-payments';
@@ -43,7 +44,7 @@ function PaymentsContent({ token, requestedProfile }: { token: string | null; re
   const receipt = transactions.find(t => t.id === receiptId && t.status === 'SUCCESS'); const receiptInvoice = invoices.find(i => i.id === receipt?.invoiceId);
   const closeInvoice = () => router.replace(paymentsHref(profile.id, { tab, encounter: encounterParam ?? undefined, appointment: appointmentParam ?? undefined }), { scroll: false });
   return <div data-payments-workspace className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8">
-    <nav aria-label="Đường dẫn" className="mb-5 flex items-center gap-2 text-xs text-slate-400"><Link href="/" className="inline-flex items-center gap-1 hover:text-blue-600"><Home className="size-3.5" />Trang chủ</Link><ChevronRight className="size-3.5" /><span>Hóa đơn &amp; lịch sử thanh toán</span></nav>
+    <PatientBreadcrumb current="Hóa đơn & lịch sử thanh toán" className="mb-5" />
     <div className="mb-5 flex flex-wrap items-end justify-between gap-4"><div><h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Hóa đơn &amp; lịch sử thanh toán</h1><p className="mt-2 text-sm text-slate-500">Tra cứu hóa đơn và lịch sử giao dịch. Thanh toán tại quầy hoặc qua VNPAY Sandbox khi khả dụng.</p></div><div className="w-full sm:w-72"><label htmlFor="payment-profile" className="mb-1.5 flex items-center gap-1.5 text-xs text-slate-500"><Users className="size-3.5" />Hồ sơ thanh toán</label><select id="payment-profile" value={profile.id} onChange={e => router.push(paymentsHref(e.target.value, { tab }))} className="w-full rounded border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{data.profiles.map(p => <option key={p.id} value={p.id}>{p.relationship}: {p.name}</option>)}</select></div></div>
     {appointmentParam && <p className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm">Hóa đơn của lịch hẹn {invoices.find(invoice=>invoice.appointmentCode)?.appointmentCode ?? `#${appointmentParam}`}. Khi đã trả tiền khám, bạn chỉ cần check-in và chờ gọi tại bệnh viện. <Link className="font-bold text-blue-700 underline" href={paymentsHref(profile.id,{tab})}>Xem tất cả lịch khám</Link></p>}
     {encounterParam && <p className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm">Các hóa đơn tiền khám và từng đợt CLS của lượt khám #{encounterParam}. <Link className="font-bold text-blue-700 underline" href={paymentsHref(profile.id,{tab})}>Xem tất cả lượt khám</Link></p>}

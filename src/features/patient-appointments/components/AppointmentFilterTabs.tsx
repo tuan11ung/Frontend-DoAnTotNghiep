@@ -26,7 +26,7 @@ export function AppointmentFilterTabs({
   ];
 
   return (
-    <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto pb-px">
+    <div className="flex min-w-0 items-center gap-2 overflow-x-auto pb-px">
       {tabs.map((tab) => {
         const isActive = currentTab === tab.key;
         return (
