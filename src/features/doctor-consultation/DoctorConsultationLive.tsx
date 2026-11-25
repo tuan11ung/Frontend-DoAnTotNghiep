@@ -1,8 +1,9 @@
 'use client';
 import {useConsultationTab} from './hooks/use-consultation-tab';
-import {X} from 'lucide-react';
+import {ArrowLeft, X} from 'lucide-react';
 import {ScrollableTable} from '@/src/shared/components/ScrollableTable';
 import {ToastMessage} from '@/src/shared/components/ToastMessage';
+import {SuccessResult} from '@/src/shared/components/SuccessResult';
 
 import {type FormEvent, useCallback, useEffect, useRef, useState} from 'react';
 import Link from 'next/link';
@@ -36,7 +37,9 @@ export function DoctorConsultationLive({encounterId, patientId}: { encounterId: 
     } | null>(null);
     const [error, setError] = useState('');
     const [revision, setRevision] = useState(0);
+    const [completedEncounterId, setCompletedEncounterId] = useState<number | null>(null);
     useEffect(() => {
+        if (completedEncounterId === encounterId) return;
         if (!Number.isSafeInteger(encounterId) || encounterId <= 0 || !Number.isSafeInteger(patientId) || patientId <= 0) return;
         const controller = new AbortController();
         Promise.all([consultationApi.detail(encounterId, patientId, controller.signal), consultationApi.patient(patientId, controller.signal), consultationApi.allergies(patientId, controller.signal), consultationApi.conditions(patientId, controller.signal)])
@@ -50,11 +53,17 @@ export function DoctorConsultationLive({encounterId, patientId}: { encounterId: 
                 if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải hồ sơ lượt khám.');
             });
         return () => controller.abort();
-    }, [encounterId, patientId, revision]);
+    }, [encounterId, patientId, revision, completedEncounterId]);
     if (!Number.isSafeInteger(patientId) || patientId <= 0 || !Number.isSafeInteger(encounterId) || encounterId <= 0) return <section
         className="p-8"><h1 className="text-xl font-bold">Chưa xác định được lượt khám</h1><p className="my-4">Mở hồ sơ
         từ bệnh nhân đang khám trong hàng chờ.</p><Link href="/doctor/queue" className="font-bold text-blue-700">Về hàng
         chờ</Link></section>;
+    if (completedEncounterId === encounterId) return <main className="flex min-h-[70dvh] items-center justify-center bg-slate-50 px-4 py-12" aria-live="polite">
+        <SuccessResult headingLevel={1} title="Hoàn tất ca khám thành công!"
+                       description="Thông tin đã được lưu. Bệnh án đã khóa chỉnh sửa và quyền truy cập hồ sơ điều trị đã đóng."
+                       actionLabel="Trở về hàng chờ" actionHref="/doctor/queue"
+                       actionIcon={<ArrowLeft aria-hidden="true" className="size-4" />} />
+    </main>;
     if (error) return <section className="p-8"><p role="alert" className="text-rose-700">{error}</p>
         <button className={`${clinicalButton} mt-4`} type="button" onClick={() => {
             setError('');
@@ -66,7 +75,8 @@ export function DoctorConsultationLive({encounterId, patientId}: { encounterId: 
     return <ConsultationWorkspace key={data.encounter.encounterId} initial={data.encounter} patient={data.patient}
                                   allergies={data.allergies} conditions={data.conditions} onClosed={() => {
         setData(null);
-        setError('Đã hoàn tất lượt khám. Bệnh án khóa chỉnh sửa và quyền truy cập hồ sơ điều trị đã đóng.');
+        setError('');
+        setCompletedEncounterId(encounterId);
     }}/>;
 }
 
@@ -185,7 +195,7 @@ function ConsultationWorkspace({
             clearEncounterDraft(encounter.encounterId, 'orders');
             onClosed();
             return result;
-        }, 'Đã hoàn tất lượt khám. Hóa đơn được tạo để thanh toán tại quầy.');
+        }, 'Đã hoàn tất lượt khám.');
     }
 
     return <main className="min-h-screen bg-slate-50 px-4 py-6 sm:px-7">
