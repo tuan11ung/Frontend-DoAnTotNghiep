@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { paymentsHref } from '@/src/features/patient-payments/payment.types';
 import type { VisitQueueRoom } from '@/src/features/appointment-tracking/types';
-import { canCancelAppointment, isAppointmentExpired } from '@/src/features/appointment-tracking/utils/appointment-tracking';
+import { appointmentStatusDisplay, canCancelAppointment, isAppointmentExpired } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { AppointmentQueueSummary } from './AppointmentQueueSummary';
 import { AppointmentRoomLoad } from './AppointmentRoomLoad';
 import { AppointmentScheduleDetails } from './AppointmentScheduleDetails';
@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import {
   PatientAppointment,
-  APPOINTMENT_STATUS_LABELS,
 } from '../models/types/appointment.types';
 
 interface AppointmentCardProps {
@@ -62,15 +61,7 @@ export function AppointmentCard({
     };
   }, [actionsOpen]);
   const isExpired = isAppointmentExpired(appointment);
-  const statusConfig = isExpired ? {
-    label: 'Đã quá hạn',
-    colorClass: 'text-slate-700',
-    bgClass: 'bg-slate-100 border-slate-200',
-  } : APPOINTMENT_STATUS_LABELS[appointment.status] || {
-    label: appointment.status,
-    colorClass: 'text-slate-700',
-    bgClass: 'bg-slate-100 border-slate-200',
-  };
+  const statusConfig = appointmentStatusDisplay(appointment);
 
   const isBooked = ['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status);
   const canCancel = isBooked && canCancelAppointment(appointment);

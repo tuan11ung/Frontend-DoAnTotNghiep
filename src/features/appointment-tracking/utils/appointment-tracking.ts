@@ -1,6 +1,6 @@
 import { businessNow, businessNowMs } from '@/src/shared/lib/business-time';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
-import type { PatientAppointment } from '@/src/shared/types/appointment';
+import { APPOINTMENT_STATUS_LABELS, type PatientAppointment } from '@/src/shared/types/appointment';
 import type { VisitQueueRoom } from '../types';
 
 export function appointmentTimeRange(appointment: PatientAppointment) {
@@ -64,6 +64,14 @@ export function isAppointmentExpired(appointment: PatientAppointment, today = vi
   return ['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status)
     && /^\d{4}-\d{2}-\d{2}$/.test(appointment.workDate)
     && appointment.workDate < today;
+}
+
+export function appointmentStatusDisplay(appointment: PatientAppointment, today = vietnamDate()) {
+  if (isAppointmentExpired(appointment, today)) {
+    if (appointment.status === 'BOOKED') return APPOINTMENT_STATUS_LABELS.NO_SHOW;
+    return { label: 'Quá hạn phân chuyên khoa', colorClass: 'text-slate-700', bgClass: 'bg-slate-100 border-slate-200' };
+  }
+  return APPOINTMENT_STATUS_LABELS[appointment.status];
 }
 
 export function canCancelAppointment(appointment: PatientAppointment, now = businessNowMs()) {

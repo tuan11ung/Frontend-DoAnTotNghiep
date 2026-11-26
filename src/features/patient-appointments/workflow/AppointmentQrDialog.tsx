@@ -8,12 +8,13 @@ import {
   appointmentDate,
   appointmentDoctorLabel,
   appointmentTimeRange,
+  appointmentStatusDisplay,
   isAppointmentExpired,
 } from '@/src/features/appointment-tracking/utils/appointment-tracking';
 import { DISPLAY_TIME_ZONE } from '@/src/shared/utils/date-format';
 import { AppointmentQrCode } from '../components/AppointmentQrCode';
 import { AppointmentTicketNumber } from '../components/AppointmentTicketNumber';
-import { APPOINTMENT_STATUS_LABELS, type PatientAppointment } from '../models/types/appointment.types';
+import type { PatientAppointment } from '../models/types/appointment.types';
 
 interface AppointmentQrDialogProps {
   isOpen: boolean;
@@ -60,7 +61,7 @@ export function AppointmentQrDialog({ isOpen, appointment, onClose, queueRoom, q
 
   if (!isOpen || !appointment) return null;
 
-  const status = APPOINTMENT_STATUS_LABELS[appointment.status];
+  const status = appointmentStatusDisplay(appointment);
   const isPending = appointment.status === 'PENDING_SPECIALTY';
   const showQr = Boolean(appointment.qrCodeData) && ['BOOKED', 'CHECKED_IN', 'IN_PROGRESS'].includes(appointment.status);
   const canPresentQr = appointment.status === 'BOOKED' && !isAppointmentExpired(appointment);
