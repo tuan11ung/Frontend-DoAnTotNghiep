@@ -1,6 +1,6 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
-const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 const endpoints = new Set([
   'history-access/list', 'history-access/change',
   'profiles/list', 'profiles/detail', 'profiles/update', 'family-members/create', 'family-members/remove',
@@ -16,7 +16,7 @@ export async function POST(request: Request, { params }: RouteContext<'/api/pati
   if (!authorization?.startsWith('Bearer ') || !authorization.slice(7).trim()) return NextResponse.json({ success: false, message: 'Vui lòng đăng nhập.' }, { status: 401, headers });
   try {
     const body = await request.text();
-    const backend = await fetch(`${BACKEND_API_URL}/api/v1/patient/${endpoint}`, {
+    const backend = await fetch(`${await resolveBackendOrigin()}/api/v1/patient/${endpoint}`, {
       method: 'POST', headers: { Authorization: authorization, Accept: 'application/json', 'Content-Type': 'application/json' },
       body: body || '{}', cache: 'no-store', signal: AbortSignal.timeout(15000),
     });

@@ -1,6 +1,6 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
-const backend = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 const headers = { 'Cache-Control': 'no-store' };
 
 export async function GET(request: Request) {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ RspCode: '97', Message: 'Invalid parameters' }, { headers });
   }
   try {
-    const response = await fetch(`${backend}/api/v1/webhooks/payment/vnpay/ipn${url.search}`, {
+    const response = await fetch(`${await resolveBackendOrigin()}/api/v1/webhooks/payment/vnpay/ipn${url.search}`, {
       headers: { Accept: 'application/json' }, cache: 'no-store', signal: AbortSignal.timeout(20000), redirect: 'error',
     });
     const result: unknown = await response.json();

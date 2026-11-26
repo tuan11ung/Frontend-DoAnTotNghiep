@@ -1,3 +1,4 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
 const endpoints: Record<string, string> = {
@@ -13,7 +14,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ seg
   const authorization = request.headers.get('authorization');
   if (!authorization?.startsWith('Bearer ')) return NextResponse.json({ success: false, message: 'Vui lòng đăng nhập.' }, { status: 401 });
   try {
-    const response = await fetch(`${(process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '')}/api/v1${endpoint}`, {
+    const response = await fetch(`${await resolveBackendOrigin()}/api/v1${endpoint}`, {
       method: 'POST', headers: { Authorization: authorization, 'Content-Type': 'application/json' },
       body: await request.arrayBuffer(), cache: 'no-store', signal: AbortSignal.timeout(15_000),
     });

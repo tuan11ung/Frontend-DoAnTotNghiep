@@ -1,6 +1,6 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL ?? 'http://localhost:8081';
 
 const ENDPOINTS: Record<string, string> = {
   'articles/search': '/admin/articles/search',
@@ -68,7 +68,7 @@ export async function POST(
 
   try {
     const contentType = request.headers.get('content-type') ?? 'application/json';
-    const backendResponse = await fetch(`${BACKEND_API_URL}/api/v1${endpoint}`, {
+    const backendResponse = await fetch(`${await resolveBackendOrigin()}/api/v1${endpoint}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

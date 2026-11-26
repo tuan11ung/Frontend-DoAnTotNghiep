@@ -4,7 +4,7 @@ import type { ResultEncounter, ResultDetailHref } from '../models/types/patient-
 import { patientResultsHref } from '../utils/result-format';
 import { SERVICE_GROUPS } from './service-group-config';
 
-export function EncounterOverview({ encounter, href: customHref }: { encounter: ResultEncounter; href?: ResultDetailHref }) {
+export function EncounterOverview({ encounter, href: customHref, compact = false }: { encounter: ResultEncounter; href?: ResultDetailHref; compact?: boolean }) {
   const href: ResultDetailHref = customHref ?? (options => patientResultsHref(encounter.patientId, encounter.id, options));
   const counts = {
     RESULT_READY: encounter.services.filter((service) => service.status === 'RESULT_READY').length,
@@ -16,6 +16,28 @@ export function EncounterOverview({ encounter, href: customHref }: { encounter: 
     { status: 'AWAITING_RESULT', label: 'Đang chờ kết quả', count: counts.AWAITING_RESULT, Icon: RefreshCw, style: 'bg-amber-50 text-amber-700' },
     { status: 'NOT_STARTED', label: 'Chưa khám', count: counts.NOT_STARTED, Icon: Clock3, style: 'bg-sky-50 text-sky-700' },
   ];
+  if (compact) {
+    const total = encounter.services.length;
+    const ready = counts.RESULT_READY;
+    const cancelled = encounter.cancelledServiceCount ?? 0;
+    return <div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-semibold text-slate-900">Tiến độ cận lâm sàng</h3>
+        {(total > 0 || cancelled > 0) && <Link href={href({ tab: 'services' })} className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-blue-700 hover:underline">
+          Xem danh sách dịch vụ <ChevronRight aria-hidden="true" className="size-4" />
+        </Link>}
+      </div>
+      <p className="mt-2 text-sm leading-6 text-slate-700">{total ? <><strong>{ready}/{total}</strong> dịch vụ đã có kết quả</> : 'Chưa có chỉ định cận lâm sàng đang được thực hiện hoặc đã có kết quả.'}</p>
+      {total > 0 && ready < total && <>
+        <progress aria-label="Tiến độ có kết quả" value={ready} max={total} className="mt-3 block h-2 w-full rounded-full accent-blue-600" />
+        <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
+          {counts.AWAITING_RESULT > 0 && <li>{counts.AWAITING_RESULT} đang thực hiện hoặc chờ kết quả</li>}
+          {counts.NOT_STARTED > 0 && <li>{counts.NOT_STARTED} chưa thực hiện</li>}
+        </ul>
+      </>}
+      {cancelled > 0 && <p className="mt-3 text-sm text-slate-600">{cancelled} dịch vụ đã hủy, ngoài số dịch vụ tính tiến độ.</p>}
+    </div>;
+  }
   return <section aria-labelledby="overview-title" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
     <div className="mb-6 flex items-center gap-3"><span className="grid size-10 place-items-center rounded-xl bg-blue-50 text-blue-700"><ChartColumnIncreasing aria-hidden="true" className="size-5" /></span><h2 id="overview-title" className="text-base font-extrabold text-slate-900">Trạng thái tổng quan</h2><Link href={href({ tab: 'services' })} aria-label="Xem tất cả dịch vụ" className="ml-auto rounded-lg p-1 text-slate-400 hover:bg-blue-50 hover:text-blue-700"><ChevronRight className="size-5" /></Link></div>
     <div className="mb-2 flex justify-between gap-3 text-xs"><p className="font-semibold text-slate-600">Tiến độ hoàn thành chỉ định</p><strong className="text-blue-700">{counts.RESULT_READY}/{encounter.services.length}</strong></div>

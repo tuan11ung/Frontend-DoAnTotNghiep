@@ -1,25 +1,31 @@
 import Link from 'next/link';
 import { ArrowRight, Building2, CheckCircle2, ClipboardList, Clock3, FileCheck2, Stethoscope } from 'lucide-react';
 import type { ResultEncounter, ResultPatient } from '../models/types/patient-results.types';
-import { formatResultDate, patientResultsHref } from '../utils/result-format';
+import { availableEncounterText, formatResultDate, patientResultsHref } from '../utils/result-format';
+import { encounterStatuses, resultPanel, resultPrimary, statusBadge } from './patient-result-styles';
 
 export function EncounterCard({ encounter, patient, detail = false, readOnly = false }: { encounter: ResultEncounter; patient: ResultPatient; detail?: boolean; readOnly?: boolean }) {
   const completed = encounter.status === 'COMPLETED';
   const readyCount = encounter.services.filter((service) => service.status === 'RESULT_READY').length;
   const formattedDate = formatResultDate(encounter.visitDate);
   const href = patientResultsHref(encounter.patientId, encounter.id);
+  const status = encounterStatuses[encounter.status];
 
-  if (!readOnly) return <article data-encounter={encounter.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:p-6">
+  if (!readOnly) return <article data-encounter={encounter.id} className={`${resultPanel} p-4 sm:p-5`}>
     <div className="flex flex-wrap items-start justify-between gap-2">
-      <h2 className="min-w-0 text-lg leading-snug font-extrabold text-slate-900 sm:text-xl">{detail ? encounter.facilityName : <Link href={href} className="hover:text-blue-700">{encounter.facilityName}</Link>}</h2>
-      <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${completed ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-800'}`}>{completed ? 'Hoàn thành' : 'Đang thực hiện'}</span>
+      <h3 className="min-w-0 wrap-anywhere text-lg leading-snug font-bold text-slate-900">{availableEncounterText(encounter.facilityName) || 'Lần khám'}</h3>
+      <span className={`${statusBadge} ${status.tone}`}>{status.label}</span>
     </div>
-    <p className="mt-2 text-sm font-semibold text-blue-800">{encounter.specialty}</p>
-    <dl className="mt-3 space-y-1.5 text-xs leading-6 text-slate-500">
+    {availableEncounterText(encounter.specialty) && <p className="mt-2 text-sm text-slate-600">{encounter.specialty}</p>}
+    <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm leading-6 text-slate-600">
       <div><dt className="inline">Ngày khám: </dt><dd className="inline font-medium text-slate-700"><time dateTime={encounter.visitDate}>{formattedDate}</time></dd></div>
-      <div><dt className="inline">Bác sĩ: </dt><dd className="inline font-medium text-slate-700">{encounter.doctorName}</dd></div>
+      {availableEncounterText(encounter.doctorName) && <div><dt className="inline">Bác sĩ: </dt><dd className="inline font-medium text-slate-700">{encounter.doctorName}</dd></div>}
     </dl>
-    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4"><p className="inline-flex items-center gap-2 text-xs text-slate-500"><FileCheck2 className="size-4 text-blue-600" /><span><strong className="text-slate-800">{readyCount}/{encounter.services.length}</strong> dịch vụ đã có kết quả</span></p><div className="flex flex-wrap items-center gap-2">{!detail && <Link href={href} className="inline-flex items-center gap-1.5 rounded-lg bg-blue-700 px-3 py-2 text-xs font-bold text-white hover:bg-blue-800">Xem kết quả<ArrowRight className="size-3.5" /></Link>}</div></div>
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
+      <p className="text-sm text-slate-600">{encounter.services.length > 0 ? <><strong className="text-slate-800">{readyCount}/{encounter.services.length}</strong> dịch vụ đã có kết quả</> :
+        encounter.cancelledServiceCount ? `${encounter.cancelledServiceCount} dịch vụ đã hủy` : 'Chưa có chỉ định cận lâm sàng'}</p>
+      {!detail && <Link href={href} className={resultPrimary}>Xem chi tiết<ArrowRight aria-hidden="true" className="size-4" /></Link>}
+    </div>
   </article>;
 
   return (

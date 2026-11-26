@@ -14,8 +14,9 @@ export function InvoiceStatus({ invoice }: { invoice: Invoice }) {
 export function InvoiceTable({ invoices, profileId, encounterId, appointmentId, pageIndex, setPageIndex }: { pageIndex: number; setPageIndex: (index: number) => void; invoices: Invoice[]; profileId: string; encounterId?: string; appointmentId?: string }) {
   const [pageSize, setPageSize] = useState(10);
   const page = paginationModel(invoices.length, pageIndex, pageSize);
+  if (!invoices.length) return <p role="status" className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">Không có hóa đơn phù hợp.</p>;
   return <><ScrollableTable label="Danh sách hóa đơn" visibleRows={5.5}>
-    <table className="w-full min-w-[1050px] border-collapse text-left text-xs leading-6 text-slate-700">
+    <table className="w-full min-w-[820px] border-collapse text-left text-xs leading-6 text-slate-700">
       <caption className="sr-only">Hóa đơn khám bệnh của hồ sơ đang chọn</caption>
       <thead className="bg-slate-50 text-slate-800"><tr>{['TT', 'Mã HĐ', 'Lượt khám', 'Khoản thu', 'Trạng thái', 'Số tiền phải trả', 'Số tiền đã trả', 'Thao tác'].map((label, index) => <th key={label} scope="col" className={`border border-slate-200 px-3 py-3 font-semibold ${index === 5 || index === 6 ? 'text-right' : index === 0 || index === 7 ? 'text-center' : ''}`}>{label}</th>)}</tr></thead>
       <tbody>{invoices.slice(page.pageIndex * pageSize, page.to).map((invoice, index) => <tr key={invoice.id} data-invoice-id={invoice.id} className="hover:bg-blue-50/30">
@@ -26,8 +27,8 @@ export function InvoiceTable({ invoices, profileId, encounterId, appointmentId, 
         <td className="border border-slate-200 px-3 py-4"><InvoiceStatus invoice={invoice} /></td>
         <td className="border border-slate-200 px-3 py-4 text-right whitespace-nowrap font-medium">{money(invoice.status === 'CANCELLED' ? 0 : invoice.total)}</td>
         <td className="border border-slate-200 px-3 py-4 text-right whitespace-nowrap">{money(invoice.status === 'PAID' ? invoice.total : 0)}</td>
-        <td className="border border-slate-200 px-3 py-4 text-center"><Link href={paymentsHref(profileId, { invoice: invoice.id, encounter: encounterId, appointment: appointmentId })} aria-label={`Xem chi tiết hóa đơn ${invoice.code}`} aria-haspopup="dialog" className="inline-flex rounded p-2 text-emerald-600 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"><List className="size-4" /></Link></td>
-      </tr>)}{!invoices.length && <tr><td colSpan={8} className="border border-slate-200 px-4 py-14 text-center text-sm text-slate-500">Không có hóa đơn phù hợp.</td></tr>}</tbody>
+        <td className="border border-slate-200 px-3 py-4 text-center"><Link href={paymentsHref(profileId, { invoice: invoice.id, encounter: encounterId, appointment: appointmentId })} aria-label={`Xem chi tiết hóa đơn ${invoice.code}`} aria-haspopup="dialog" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-emerald-700 hover:bg-emerald-50 focus-visible:outline-2 focus-visible:outline-emerald-600"><List aria-hidden="true" className="size-4" /></Link></td>
+      </tr>)}</tbody>
     </table>
   </ScrollableTable>
     <DataTablePagination ariaLabel="Phân trang hóa đơn" recordLabel="hóa đơn" totalRecords={invoices.length}

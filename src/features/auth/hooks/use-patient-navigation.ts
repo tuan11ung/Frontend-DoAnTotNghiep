@@ -1,7 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
-import { AUTH_STORAGE_KEY, hasStoredPatientSession } from '../utils/auth-storage';
+import { AUTH_STORAGE_KEY, getStoredPatientToken, hasStoredPatientSession } from '../utils/auth-storage';
 
 type NavigationState = 'loading' | 'guest' | 'patient';
 
@@ -34,4 +34,8 @@ export function usePatientNavigation() {
     isReady: state !== 'loading',
     isAuthenticated: state === 'patient',
   };
+}
+
+export function usePatientToken() {
+  return useSyncExternalStore(subscribe, getStoredPatientToken, () => null);
 }

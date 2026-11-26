@@ -1,6 +1,6 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
-const BACKEND_API_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 
 const ENDPOINTS: Record<string, string> = {
   'emergency/doctor-options': '/clinic/emergency/doctor-options',
@@ -97,7 +97,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ segm
   const page = new URL(request.url).searchParams.get('page') ?? '0';
   if (!/^\d{1,6}$/.test(page)) return NextResponse.json({ success: false, message: 'Trang không hợp lệ.' }, { status: 400 });
   try {
-    const response = await fetch(`${BACKEND_API_URL}/api/v1/clinic/appointments/pending-specialty?page=${page}&size=20`, { headers: { Authorization: authorization }, cache: 'no-store', signal: AbortSignal.timeout(15_000) });
+    const response = await fetch(`${await resolveBackendOrigin()}/api/v1/clinic/appointments/pending-specialty?page=${page}&size=20`, { headers: { Authorization: authorization }, cache: 'no-store', signal: AbortSignal.timeout(15_000) });
     return new NextResponse(await response.text(), { status: response.status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   } catch { return NextResponse.json({ success: false, message: 'Không thể tải lịch chờ. Vui lòng thử lại.' }, { status: 502 }); }
 }
@@ -134,7 +134,7 @@ export async function POST(
   }
 
   try {
-    const backendResponse = await fetch(`${BACKEND_API_URL}/api/v1${endpoint}`, {
+    const backendResponse = await fetch(`${await resolveBackendOrigin()}/api/v1${endpoint}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

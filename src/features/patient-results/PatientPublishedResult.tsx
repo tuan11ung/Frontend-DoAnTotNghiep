@@ -1,22 +1,58 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { bookingApi } from '@/src/features/booking/api/booking-api';
+import type { BookingPatientProfile } from '@/src/features/booking/models/types/bhyt.types';
 import { ServiceResultViewer } from './components/ServiceResultViewer';
+import { resultPanel, resultSecondary } from './components/patient-result-styles';
 import { resultService } from './api/result-service';
-import type { ResultEncounter, ResultPatient } from './models/types/patient-results.types';
-import { loadPublishedResult } from './api/patient-results-api';
+import type { ResultEncounter } from './models/types/patient-results.types';
+import { loadPublishedResult, loadResultFacility } from './api/patient-results-api';
+import { patientResultsHref, resultPatient } from './utils/result-format';
 
-export function PatientPublishedResult({ profileId, serviceId, encounterId }: { profileId: string | null; serviceId: number; encounterId: number | null }) {
-  const [data, setData] = useState<Awaited<ReturnType<typeof loadPublishedResult>> | null>(null); const [error, setError] = useState(''); const [revision, setRevision] = useState(0);
+export function PatientPublishedResult({ profile, serviceId, encounterId, tracking, profileScope }: {
+  profile: BookingPatientProfile; serviceId: number; encounterId: number | null; tracking: boolean; profileScope: boolean;
+}) {
+  const [detail, setDetail] = useState<Awaited<ReturnType<typeof loadPublishedResult>> | null>(null);
+  const [facility, setFacility] = useState<string>();
+  const [error, setError] = useState('');
+  const [revision, setRevision] = useState(0);
+
   useEffect(() => {
     const controller = new AbortController();
-    bookingApi.profiles(controller.signal).then(profiles => loadPublishedResult(profiles, profileId, serviceId, encounterId, controller.signal)).then(value => { if (!controller.signal.aborted) { setData(value); setError(''); } }).catch(e => { if (!controller.signal.aborted) setError(e instanceof Error ? e.message : 'Không thể tải phiếu kết quả.'); });
+    loadPublishedResult(profile.id, serviceId, encounterId, controller.signal)
+      .then(result => {
+        if (controller.signal.aborted) return;
+        setDetail(result);
+        // An active encounter can publish a service before its visit summary is available to the patient.
+        loadResultFacility(profile.id, result.order.encounterId, controller.signal)
+          .then(name => { if (!controller.signal.aborted) setFacility(name); })
+          .catch(() => {});
+      })
+      .catch(cause => { if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : 'Không thể tải phiếu kết quả.'); });
     return () => controller.abort();
-  }, [profileId, serviceId, encounterId, revision]);
-  const patient:ResultPatient|null=data?{id:String(data.patient.id),name:data.patient.fullName,relationship:'Người bệnh',nationalId:data.patient.maskedNationalId || undefined,initials:data.patient.fullName.split(/\s+/).slice(-2).map(w=>w[0]).join(''),birthYear:Number(data.patient.dob?.slice(0,4) || 0)}:null;
-  const encounter:ResultEncounter|null=data?{source:'api',id:String(data.detail.order.encounterId),patientId:String(data.patient.id),code:'',facilityName:'Cơ sở cung cấp kết quả',specialty:'Chưa được cung cấp',doctorName:'Chưa được cung cấp',roomName:'Chưa được cung cấp',visitDate:data.detail.order.orderedDate,status:'IN_PROGRESS',services:[resultService(data.detail.order,data.detail)]}:null;
-  return <main className="mx-auto max-w-5xl space-y-5 px-4 py-8"><Link className="text-sm font-bold text-blue-700" href={`/patient/results?profile=${data?.patient.id ?? profileId ?? 'self'}`}>← Danh sách kết quả khám</Link><h1 className="text-2xl font-extrabold">Phiếu kết quả cận lâm sàng</h1>
-    {error ? <div role="alert" className="rounded-xl border border-rose-200 p-5 text-sm text-rose-700">{error}<button type="button" className="ml-3 font-bold" onClick={() => { setError(''); setRevision(v => v + 1); }}>Thử lại</button></div> : !data ? <p role="status">Đang tải kết quả đã công bố…</p> : <><section className="rounded-xl border bg-white p-4"><h2 className="font-bold">{data.patient.fullName}</h2><p className="mt-1 text-sm text-slate-500">{data.patient.patientCode} · CCCD: {data.patient.maskedNationalId ?? 'Chưa cập nhật'}</p><p className="mt-2 text-sm text-slate-500">Kết quả đã được cơ sở công bố{data.detail.order.completedDate ? ` · ${new Date(data.detail.order.completedDate).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}` : ''}.</p></section>{patient && encounter && <ServiceResultViewer service={encounter.services[0]} encounter={encounter} patient={patient} backHref={`/patient/results?profile=${patient.id}&encounter=${encounter.id}&tab=services`}/>}</>}
-  </main>;
+  }, [profile.id, serviceId, encounterId, revision]);
+
+  const profileId = String(profile.id);
+  if (error) return <section className={`${resultPanel} space-y-3 p-4 sm:p-5`}>
+    <p role="alert" className="text-sm text-rose-800">{error}</p>
+    <div className="flex flex-wrap gap-2">
+      <Link className={resultSecondary} href={patientResultsHref(profileId)}>Về danh sách lần khám</Link>
+      <button type="button" className={resultSecondary} onClick={() => { setError(''); setRevision(value => value + 1); }}>Thử lại</button>
+    </div>
+  </section>;
+  if (!detail) return <p role="status" className={`${resultPanel} p-4 text-sm text-slate-600`}>Đang tải phiếu kết quả…</p>;
+
+  const service = resultService(detail.order, detail);
+  const encounter: ResultEncounter = {
+    source: 'api', id: String(detail.order.encounterId), patientId: profileId,
+    code: '', facilityName: facility ?? '', specialty: '', doctorName: '', roomName: '', visitDate: '',
+    status: 'IN_PROGRESS', services: [service],
+  };
+  const backHref = patientResultsHref(profileId, tracking && profileScope ? undefined : encounter.id, {
+    tab: tracking ? undefined : 'services', view: tracking ? 'services' : undefined,
+  });
+
+  return <ServiceResultViewer service={service} encounter={encounter} patient={resultPatient(profile)} backHref={backHref}
+    orderDates={{ ordered: detail.order.orderedDate, completed: detail.order.completedDate }} />;
 }

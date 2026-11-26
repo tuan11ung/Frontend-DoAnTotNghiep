@@ -1,6 +1,4 @@
-const BACKEND_URL = (process.env.BACKEND_API_URL ?? 'http://localhost:8081')
-  .replace(/\/$/, '')
-  .replace(/\/api\/v1$/, '');
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 const ENDPOINTS = new Map([
   ['forgot-password', { path: '/api/v1/auth/forgot-password', requiresAuthentication: false }],
   ['reset-password', { path: '/api/v1/auth/reset-password', requiresAuthentication: false }],
@@ -38,7 +36,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ act
     }
   }
   try {
-    const response = await fetch(`${BACKEND_URL}${path}`, {
+    const response = await fetch(`${await resolveBackendOrigin()}${path}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json', 'Content-Type': 'application/json',

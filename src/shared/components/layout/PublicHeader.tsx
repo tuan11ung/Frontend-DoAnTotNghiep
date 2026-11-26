@@ -14,6 +14,7 @@ import { PatientAccountDropdown } from './PatientAccountDropdown';
 import { ClinicalAccountMenu } from './ClinicalAccountMenu';
 import { logoutAccount } from '@/src/features/auth/api/auth-api';
 import { useAccountIdentity } from '@/src/features/auth/hooks/use-account-identity';
+import { useDemoClockOffset } from '@/src/shared/components/BusinessTimeProvider';
 
 interface PublicHeaderProps {
   onSelectTab?: (tab: AppointmentTabType) => void;
@@ -28,6 +29,7 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchType = pathname === '/search' ? searchParams.get('type') : null;
+  const viewingResults = pathname === '/patient/results';
   const links = [
     { href: '/booking', label: mobile ? 'Đặt lịch khám' : 'Đặt lịch', Icon: CalendarClock, active: pathname === '/booking', tab: undefined },
     // Doctor booking temporarily hidden on desktop and mobile.
@@ -49,7 +51,7 @@ function NavLinksContent({ onSelectTab, mobile = false, onCloseMobile }: NavLink
               section.scrollIntoView({ behavior: 'smooth' });
             }
           }
-        }} className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${mobile ? 'w-full' : ''} ${active ? 'bg-blue-600 text-white shadow-sm' : href === '/booking' ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'}`}>
+        }} className={`flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${mobile ? 'w-full' : ''} ${active ? 'bg-blue-600 text-white shadow-sm' : href === '/booking' && !viewingResults ? 'bg-blue-50 text-blue-700 hover:bg-blue-100' : 'text-slate-600 hover:bg-slate-50 hover:text-blue-600'}`}>
           <Icon className="size-4" aria-hidden="true" />{label}
         </Link>
       ))}
@@ -63,6 +65,7 @@ function NavLinksFallback({ mobile = false }: { mobile?: boolean }) {
 
 export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
   const router = useRouter();
+  const demoClockOffset = useDemoClockOffset();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { state, isAuthenticated } = usePatientNavigation();
@@ -86,7 +89,7 @@ export function PublicHeader({ onSelectTab }: PublicHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-md" data-purpose="site-navigation-header">
+    <header className="sticky z-50 border-b border-slate-100 bg-white/95 shadow-sm backdrop-blur-md" style={{ top: demoClockOffset }} data-purpose="site-navigation-header">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
         <Link aria-label="MedConnect Trang chủ" className="group flex shrink-0 items-center gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 sm:gap-2.5" href="/" onClick={() => setMobileMenuOpen(false)}>
           <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-tr from-blue-600 to-sky-400 text-white shadow-md shadow-blue-500/20 transition-transform group-hover:scale-105 sm:size-10"><Activity className="size-5" /></span>

@@ -16,13 +16,19 @@ export function resultEncounter(detail: EncounterSummary): ResultEncounter {
 export function resultRecord(detail: EncounterDetail): EncounterRecord {
   return {
     reason: detail.appointReason, symptoms: detail.symptoms, examination: detail.clinicalNotes,
-    conclusion: detail.finalConclusion, dischargeDate: detail.checkedOutDate,
+    conclusion: detail.finalConclusion, admittedAt: detail.checkedInDate, dischargeDate: detail.checkedOutDate,
     diagnoses: detail.diagnoses.map(d=>({code:d.icd10Code || '',name:d.diagnosisText || d.icd10Name || '',primary:d.primary})),
   };
 }
 export interface ResultPrescription {
-  medicines: { id:number; medicineName:string; strength?:string; dosage:string; usageInstruction?:string; durationDays?:number; quantity:number }[];
+  encounterId?: number;
+  note?: string | null;
+  medicines: { id: number; medicineName: string; strength?: string; dosage: string; usageInstruction?: string; durationDays?: number; quantity: number; route?: string; form?: string }[];
 }
-export function resultPrescription(p:ResultPrescription) {
-  return p.medicines.map(m=>({id:String(m.id),name:m.medicineName,strength:m.strength,dose:m.dosage,usage:m.usageInstruction || '',days:m.durationDays==null?undefined:String(m.durationDays),quantity:String(m.quantity)}));
+export function resultPrescription(prescription: ResultPrescription) {
+  return prescription.medicines.map(medicine => ({
+    id: String(medicine.id), name: medicine.medicineName, strength: medicine.strength, dose: medicine.dosage,
+    usage: medicine.usageInstruction || '', days: medicine.durationDays == null ? undefined : String(medicine.durationDays),
+    quantity: medicine.quantity == null ? undefined : String(medicine.quantity), route: medicine.route, form: medicine.form,
+  }));
 }

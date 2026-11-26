@@ -1,6 +1,5 @@
 import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
-import type { BillingProfile, Invoice, PaymentData, PaymentTransaction } from './payment.types';
-import { accountRequest } from '@/src/features/patient-profile/profile-api';
+import type { Invoice, PaymentData, PaymentTransaction } from './payment.types';
 
 function object(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null; }
 function amount(value: unknown): value is number { return typeof value === 'number' && Number.isFinite(value) && value >= 0 && Number.isSafeInteger(value); }
@@ -13,14 +12,8 @@ async function request(token: string, path: 'search' | 'detail', body: object, s
   if (!response.ok || !object(value) || value.success !== true) throw new Error('Không thể tải hóa đơn. Vui lòng thử lại.');
   return value.data;
 }
-export async function loadPayments(token: string, requestedProfile: string | null, signal: AbortSignal): Promise<{ data: PaymentData; profileId: string }> {
-  const raw = await accountRequest('profiles/list', token, {}, signal);
-  if (!Array.isArray(raw) || !raw.every(p => object(p) && id(p.id) && typeof p.fullName === 'string' && typeof p.relationship === 'string')) throw invalid();
-  const profiles: BillingProfile[] = raw.map(p => ({ id: String(p.id), name: p.fullName, relationship: p.relationship === 'SELF' ? 'Bản thân' : 'Người thân' }));
-  const self = raw.filter(p => p.relationship === 'SELF');
-  if (self.length !== 1) throw invalid();
-  const profileId = requestedProfile ?? String(self[0].id);
-  if (!profiles.some(p => p.id === profileId)) throw new Error('Hồ sơ không tồn tại hoặc bạn không có quyền xem hóa đơn.');
+export async function loadPayments(token: string, profileId: string, signal: AbortSignal): Promise<Pick<PaymentData, 'invoices' | 'transactions'>> {
+  if (!id(Number(profileId))) throw invalid();
   const summaries: Record<string, unknown>[] = [];
   for (let page = 0; ; page++) {
     if (page >= 50) throw new Error('Có quá nhiều hóa đơn để tải cùng lúc. Vui lòng liên hệ cơ sở để tra cứu.');
@@ -69,5 +62,5 @@ export async function loadPayments(token: string, requestedProfile: string | nul
       });
     });
   }
-  return { data: { profiles, invoices, transactions }, profileId };
+  return { invoices, transactions };
 }

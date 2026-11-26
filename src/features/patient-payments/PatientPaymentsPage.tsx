@@ -1,40 +1,56 @@
 'use client';
 
-import { useState, useSyncExternalStore } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Filter, RotateCw, Search, Wallet, Users } from 'lucide-react';
-import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
-import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
+import { Filter, RotateCw, Search, Wallet } from 'lucide-react';
+import { usePatientNavigation, usePatientToken } from '@/src/features/auth/hooks/use-patient-navigation';
+import { usePatientPortalProfiles } from '@/src/features/patient-profile/hooks/use-patient-portal-profiles';
+import { PatientProfileSelector } from '@/src/shared/components/PatientProfileSelector';
 import { usePayments } from './use-payments';
-import { paymentsHref } from './payment.types';
+import { paymentsHref, type BillingProfile } from './payment.types';
 import { InvoiceDetail } from './components/InvoiceDetail';
 import { InvoiceTable } from './components/InvoiceTable';
 import { PaymentHistory } from './components/PaymentHistory';
 import { ReceiptDialog } from './components/ReceiptDialog';
 
-function subscribeAuth(callback: () => void) { const listener = (event: StorageEvent) => { if (event.key === AUTH_STORAGE_KEY || event.key === null) callback(); }; window.addEventListener('storage', listener); return () => window.removeEventListener('storage', listener); }
 export function PatientPaymentsPage() {
-  const auth = usePatientNavigation(); const params = useSearchParams();
-  const token = useSyncExternalStore(subscribeAuth, getStoredPatientToken, () => null);
+  const auth = usePatientNavigation();
+  const token = usePatientToken();
   if (!auth.isReady) return <Loading />;
-  if (!auth.isAuthenticated) return <div className="mx-auto max-w-xl px-4 py-20 text-center"><Wallet className="mx-auto mb-4 size-12 text-blue-300" /><h1 className="text-2xl font-bold text-slate-900">Hóa đơn &amp; lịch sử thanh toán</h1><p className="mt-3 mb-6 text-sm text-slate-500">Đăng nhập để xem hóa đơn và lịch sử thanh toán của bạn.</p><Link href="/patient/login" className="inline-flex rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-700">Đăng nhập</Link></div>;
-  return <PaymentsContent key={`${token}:${params.get('profile') ?? 'default'}`} token={token} requestedProfile={params.get('profile')} />;
+  if (!token) return <div className="mx-auto max-w-xl px-4 py-20 text-center"><Wallet className="mx-auto mb-4 size-12 text-blue-300" /><h1 className="text-2xl font-bold text-slate-900">Hóa đơn &amp; lịch sử thanh toán</h1><p className="mt-3 mb-6 text-sm text-slate-500">Đăng nhập để xem hóa đơn và lịch sử thanh toán của bạn.</p><Link href="/patient/login" className="inline-flex rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white hover:bg-blue-700">Đăng nhập</Link></div>;
+  return <PaymentsWorkspace key={token} token={token} />;
 }
-function Loading() { return <p role="status" className="mx-auto max-w-6xl px-4 py-12 text-sm text-slate-500">Đang tải hóa đơn và giao dịch…</p>; }
-const toolbarButton = 'inline-flex min-h-9 items-center justify-center gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600';
+function Loading() { return <p role="status" className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">Đang tải hóa đơn và giao dịch…</p>; }
+const toolbarButton = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-blue-600';
 
-function PaymentsContent({ token, requestedProfile }: { token: string | null; requestedProfile: string | null }) {
+function PaymentsWorkspace({ token }: { token: string }) {
+  const params = useSearchParams();
+  const router = useRouter();
+  const { selector } = usePatientPortalProfiles(params.get('profile'));
+  const profile = selector.profiles?.find(item => item.id === selector.selectedId);
+  const tab = params.get('tab') === 'history' ? 'history' : 'invoices';
+  return <div data-payments-workspace>
+    <div className="border-b border-slate-200 bg-white">
+      <PatientBreadcrumb current="Hóa đơn & lịch sử thanh toán" className="mx-auto w-full max-w-5xl px-4 py-3.5 sm:px-6" />
+    </div>
+    <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-6 sm:px-6 sm:py-8">
+      <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Hóa đơn &amp; lịch sử thanh toán</h1>
+      <PatientProfileSelector {...selector} onChange={id => router.push(paymentsHref(id, { tab }))} />
+      {profile && <PaymentsContent key={profile.id} token={token} profile={profile} />}
+    </div>
+  </div>;
+}
+
+function PaymentsContent({ token, profile }: { token: string; profile: BillingProfile }) {
   const router = useRouter(); const params = useSearchParams();
-  const { data, profileId, error, retry } = usePayments(token, requestedProfile);
+  const { data, error, retry } = usePayments(token, profile.id);
   const [filter, setFilter] = useState('ALL'); const [query, setQuery] = useState(''); const [showFilters, setShowFilters] = useState(false);
   const [invoicePage, setInvoicePage] = useState(0);
   const [receiptId, setReceiptId] = useState<string | null>(null);
-  if (error) return <div className="mx-auto max-w-xl space-y-4 px-4 py-20 text-center"><h1 className="text-2xl font-bold text-slate-900">Hóa đơn &amp; lịch sử thanh toán</h1><p role="alert" className="text-sm text-rose-600">{error}</p><button type="button" onClick={retry} className={toolbarButton}>Thử lại</button></div>;
+  if (error) return <div className="flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4"><p role="alert" className="text-sm text-rose-800">{error}</p><button type="button" onClick={retry} className={toolbarButton}>Thử lại</button></div>;
   if (!data) return <Loading />;
-  const profile = data.profiles.find(p => p.id === profileId);
-  if (!profile) return <div className="mx-auto max-w-xl space-y-4 px-4 py-20 text-center"><h1 className="text-xl font-bold">Không tìm thấy hồ sơ thanh toán</h1><p className="text-sm text-slate-500">Hồ sơ không tồn tại hoặc không thuộc tài khoản hiện tại.</p><Link href="/patient/payments" className="text-sm font-semibold text-blue-600">Về danh sách hóa đơn</Link></div>;
   const invoiceParam = params.get('invoice'); const encounterParam = params.get('encounter'); const appointmentParam = params.get('appointment');
   const invoices = data.invoices.filter(i => i.profileId === profile.id && (encounterParam === null || i.encounterId === encounterParam) && (appointmentParam === null || i.appointmentId === appointmentParam));
   const transactions = data.transactions.filter(t => t.profileId === profile.id && invoices.some(i => i.id === t.invoiceId));
@@ -43,9 +59,7 @@ function PaymentsContent({ token, requestedProfile }: { token: string | null; re
   const tab = params.get('tab') === 'history' ? 'history' : 'invoices';
   const receipt = transactions.find(t => t.id === receiptId && t.status === 'SUCCESS'); const receiptInvoice = invoices.find(i => i.id === receipt?.invoiceId);
   const closeInvoice = () => router.replace(paymentsHref(profile.id, { tab, encounter: encounterParam ?? undefined, appointment: appointmentParam ?? undefined }), { scroll: false });
-  return <div data-payments-workspace className="mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 sm:py-8">
-    <PatientBreadcrumb current="Hóa đơn & lịch sử thanh toán" className="mb-5" />
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-4"><div><h1 className="text-xl font-bold text-slate-900 sm:text-2xl">Hóa đơn &amp; lịch sử thanh toán</h1><p className="mt-2 text-sm text-slate-500">Tra cứu hóa đơn và lịch sử giao dịch. Thanh toán tại quầy hoặc qua VNPAY Sandbox khi khả dụng.</p></div><div className="w-full sm:w-72"><label htmlFor="payment-profile" className="mb-1.5 flex items-center gap-1.5 text-xs text-slate-500"><Users className="size-3.5" />Hồ sơ thanh toán</label><select id="payment-profile" value={profile.id} onChange={e => router.push(paymentsHref(e.target.value, { tab }))} className="w-full rounded border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100">{data.profiles.map(p => <option key={p.id} value={p.id}>{p.relationship}: {p.name}</option>)}</select></div></div>
+  return <div className="min-w-0">
     {appointmentParam && <p className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm">Hóa đơn của lịch hẹn {invoices.find(invoice=>invoice.appointmentCode)?.appointmentCode ?? `#${appointmentParam}`}. Khi đã trả tiền khám, bạn chỉ cần check-in và chờ gọi tại bệnh viện. <Link className="font-bold text-blue-700 underline" href={paymentsHref(profile.id,{tab})}>Xem tất cả lịch khám</Link></p>}
     {encounterParam && <p className="mb-4 rounded-lg border border-blue-100 bg-blue-50 p-3 text-sm">Các hóa đơn tiền khám và từng đợt CLS của lượt khám #{encounterParam}. <Link className="font-bold text-blue-700 underline" href={paymentsHref(profile.id,{tab})}>Xem tất cả lượt khám</Link></p>}
     <section className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 sm:p-5">

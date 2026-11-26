@@ -1,15 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { businessNow, synchronizeBusinessTime } from '@/src/shared/lib/business-time';
 
 type TimeResponse = { now: string; zone: string; demoEnabled: boolean };
+const DemoClockOffset = createContext(0);
+export const useDemoClockOffset = () => useContext(DemoClockOffset);
 
 export function BusinessTimeProvider({ children }: { children: React.ReactNode }) {
   const [time, setTime] = useState<TimeResponse | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [label, setLabel] = useState('');
+  const [bannerHeight, setBannerHeight] = useState(0);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -36,16 +40,24 @@ export function BusinessTimeProvider({ children }: { children: React.ReactNode }
     return () => window.clearInterval(timer);
   }, [time]);
 
+  useEffect(() => {
+    const banner = bannerRef.current;
+    if (!banner) return;
+    const observer = new ResizeObserver(() => setBannerHeight(banner.offsetHeight));
+    observer.observe(banner);
+    return () => observer.disconnect();
+  }, [time?.demoEnabled]);
+
   if (!time) return <div className="p-8 text-center" role="status">
     {error ? <><p>Không thể đồng bộ giờ hệ thống. Kiểm tra backend rồi thử lại.</p>
       <button className="mt-3 rounded border px-4 py-2" onClick={() => { setError(false); setAttempt(value => value + 1); }}>Thử lại</button></>
       : 'Đang đồng bộ giờ hệ thống…'}
   </div>;
 
-  return <>
-    {time.demoEnabled && <div className="sticky top-0 z-[100] bg-amber-100 px-4 py-2 text-center text-sm font-semibold text-amber-950">
+  return <DemoClockOffset.Provider value={time.demoEnabled ? bannerHeight : 0}>
+    {time.demoEnabled && <div ref={bannerRef} className="sticky top-0 z-[100] bg-amber-100 px-4 py-2 text-center text-sm font-semibold text-amber-950">
       Đang dùng giờ demo · {label || 'Đang đồng bộ…'}
     </div>}
     {children}
-  </>;
+  </DemoClockOffset.Provider>;
 }

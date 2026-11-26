@@ -1,6 +1,6 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
-const BACKEND_API_URL = process.env.BACKEND_API_URL ?? 'http://localhost:8081';
 
 const ENDPOINTS: Record<string, string> = {
   'hospitals/search': '/system/hospitals/search',
@@ -42,7 +42,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ s
     return NextResponse.json({ success: false, message: 'Phiên đăng nhập không hợp lệ.' }, { status: 401 });
   }
   try {
-    const response = await fetch(`${BACKEND_API_URL}/api/v1/system/ranks/${rank[1]}`, {
+    const response = await fetch(`${await resolveBackendOrigin()}/api/v1/system/ranks/${rank[1]}`, {
       method: 'DELETE', headers: { Authorization: authorization }, cache: 'no-store',
     });
     return new NextResponse(await response.arrayBuffer(), {
@@ -83,7 +83,7 @@ export async function POST(
   try {
     const contentType = request.headers.get('content-type') ?? 'application/json';
     const incomingUrl = new URL(request.url);
-    const backendUrl = new URL(`${BACKEND_API_URL}/api/v1${endpoint}`);
+    const backendUrl = new URL(`${await resolveBackendOrigin()}/api/v1${endpoint}`);
     backendUrl.search = incomingUrl.search;
     const backendResponse = await fetch(backendUrl, {
       method: 'POST',

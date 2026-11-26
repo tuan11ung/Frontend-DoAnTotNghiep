@@ -1,6 +1,6 @@
+import { resolveBackendOrigin } from '@/src/shared/lib/backend-origin';
 import { NextResponse } from 'next/server';
 
-const BACKEND = (process.env.BACKEND_API_URL ?? 'http://localhost:8081').replace(/\/$/, '');
 
 /** Forward SSE as a stream: never buffer it as JSON or put access tokens in the URL. */
 export async function GET(request: Request) {
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const cleanup = () => request.signal.removeEventListener('abort', abort);
   if (request.signal.aborted) controller.abort();
   try {
-    const upstream = await fetch(`${BACKEND}/api/v1${path}${params.size ? `?${params}` : ''}`, { headers, cache: 'no-store', signal: controller.signal });
+    const upstream = await fetch(`${await resolveBackendOrigin()}/api/v1${path}${params.size ? `?${params}` : ''}`, { headers, cache: 'no-store', signal: controller.signal });
     if (!upstream.ok || !upstream.body || !upstream.headers.get('content-type')?.includes('text/event-stream')) {
       controller.abort(); cleanup();
       return NextResponse.json({ message: upstream.status === 401 ? 'Phiên đăng nhập đã hết hạn.' : upstream.status === 403 ? 'Bạn không có quyền theo dõi hàng chờ này.' : 'Chưa kết nối được cập nhật hàng chờ.' }, { status: upstream.ok ? 502 : upstream.status });
