@@ -15,7 +15,6 @@ import {
   Menu,
   AlertCircle,
   FileText,
-  User,
   RotateCcw,
 } from 'lucide-react';
 import {
@@ -88,13 +87,6 @@ export function AppointmentCard({
             </span>
           </div>
           <p className="text-sm leading-6 text-slate-600">{appointment.hospitalAddress?.trim() || 'Chưa cập nhật địa chỉ'}</p>
-          <div className="flex items-start gap-2 text-sm leading-6 text-slate-700">
-            <User aria-hidden="true" className="mt-1 size-4 shrink-0 text-blue-600" />
-            <p>Khám cho: <strong className="font-semibold text-slate-900">
-              {appointment.patientName}{' '}
-              {appointment.patientRelationship ? `(${appointment.patientRelationship})` : '(Bản thân)'}
-            </strong></p>
-          </div>
         </div>
         <div ref={actionsRef} className="pointer-events-auto relative shrink-0" onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setActionsOpen(false); }}>
           <button ref={actionsButtonRef} type="button" aria-label="Thao tác lịch khám" aria-expanded={actionsOpen} aria-controls={`appointment-actions-${appointment.id}`} onClick={() => setActionsOpen(open => !open)} className="grid size-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-blue-50 focus-visible:outline-2 focus-visible:outline-blue-600"><Menu className="size-5" aria-hidden="true" /></button>
@@ -125,9 +117,9 @@ export function AppointmentCard({
       </div>
 
       <div className="pointer-events-none relative z-10 flex-1 space-y-4 p-4">
-        <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />
-
         <AppointmentScheduleDetails appointment={appointment} room={queueRoom} queueError={queueError} />
+
+        <AppointmentRoomLoad appointment={appointment} room={queueRoom} queueError={queueError} />
 
         {isCheckedIn && <AppointmentQueueSummary appointment={appointment} room={queueRoom} />}
 

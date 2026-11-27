@@ -23,7 +23,7 @@ export function FamilyHealthPage() {
 function FamilyHealthContent({ token, patientId }: { token: string | null; patientId: number }) {
   const actions = useProfile(token, patientId);
   return <main className="mx-auto max-w-4xl space-y-5 px-4 py-8">
-    <PatientBreadcrumb current="Tiền sử & dị ứng" parent={{ label: 'Hồ sơ gia đình', href: '/patient/family' }} />
+    <PatientBreadcrumb current="Tiền sử & dị ứng" parent={{ label: 'Hồ sơ gia đình', href: '/patient/profile?tab=family' }} />
     <h1 className="text-2xl font-bold">Tiền sử & dị ứng{actions.data ? ` · ${actions.data.profile.fullName}` : ''}</h1>
     {actions.error ? <div role="alert"><p>{actions.error}</p><button type="button" onClick={actions.retry}>Thử lại</button></div>
       : actions.data ? <><HealthInfo key={patientId} data={actions.data} actions={actions} /><MedicalHistoryAccess patientId={patientId} /></> : <p role="status">Đang tải thông tin sức khỏe…</p>}

@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
-import { PatientBreadcrumb } from '@/src/shared/components/layout/PatientBreadcrumb';
+import { useEffect, useState } from 'react';
 import {
   Users,
   UserPlus,
@@ -14,33 +12,7 @@ import { FamilyMemberCard } from './components/FamilyMemberCard';
 import { AddFamilyMemberDialog } from './workflow/AddFamilyMemberDialog';
 import { EditFamilyMemberDialog } from './workflow/EditFamilyMemberDialog';
 import { DeleteFamilyMemberDialog } from './workflow/DeleteFamilyMemberDialog';
-import { usePatientNavigation } from '@/src/features/auth/hooks/use-patient-navigation';
-import { AUTH_STORAGE_KEY, getStoredPatientToken } from '@/src/features/auth/utils/auth-storage';
-import { formatDisplayDate } from '@/src/shared/utils/date-format';
-
-function subscribeToSession(onChange: () => void) {
-  const listener = (event: StorageEvent) => {
-    if (event.key === null || event.key === AUTH_STORAGE_KEY) onChange();
-  };
-  window.addEventListener('storage', listener);
-  return () => window.removeEventListener('storage', listener);
-}
-
-export function PatientFamilyPage() {
-  const auth = usePatientNavigation();
-  const token = useSyncExternalStore(subscribeToSession, getStoredPatientToken, () => null);
-  if (!auth.isReady) return <p role="status" className="py-20 text-center text-sm">Đang tải hồ sơ gia đình…</p>;
-  if (!auth.isAuthenticated || !token) {
-    return <div className="py-20 text-center">
-      <h1 className="text-xl font-bold">Quản lý hồ sơ gia đình</h1>
-      <p className="my-3 text-sm text-slate-600">Đăng nhập để xem và quản lý hồ sơ người thân.</p>
-      <Link href="/patient/login" className="font-bold text-blue-700">Đăng nhập</Link>
-    </div>;
-  }
-  return <FamilyContent key={token} token={token} />;
-}
-
-function FamilyContent({ token }: { token: string }) {
+export function FamilyProfilesPanel({ token }: { token: string }) {
   const [profiles, setProfiles] = useState<FamilyProfiles | null>(null);
   const [loadError, setLoadError] = useState('');
   const [revision, setRevision] = useState(0);
@@ -68,7 +40,6 @@ function FamilyContent({ token }: { token: string }) {
 
   const members = profiles?.members ?? [];
   const loading = !profiles && !loadError;
-  const owner = profiles?.owner;
 
   async function handleAddMember(data: FamilyMemberFormData) {
     const created = await patientFamilyApi.createMember(token, data);
@@ -108,66 +79,24 @@ function FamilyContent({ token }: { token: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/60 pb-16">
-      {/* Breadcrumbs */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
-          <PatientBreadcrumb current="Quản lý gia đình" />
-        </div>
-      </div>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
-        {/* Tiêu đề trang & Nút thêm người thân */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <section aria-labelledby="family-profiles-heading" className="min-w-0 rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-6">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-              Quản lý hồ sơ gia đình
-            </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              Thêm và quản lý thông tin y tế của người thân để thuận tiện theo dõi và đặt lịch khám online
-            </p>
+            <h2 id="family-profiles-heading" className="text-lg font-bold text-slate-900">Hồ sơ gia đình</h2>
+            {profiles && <p className="mt-1 text-sm text-slate-600">{members.length} hồ sơ người thân</p>}
           </div>
           <button
             onClick={() => setIsAddOpen(true)}
             type="button"
             disabled={Boolean(loading || loadError)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md shadow-blue-500/20 transition-all cursor-pointer disabled:opacity-50 self-start sm:self-auto"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-blue-700 px-4 text-sm font-semibold text-white hover:bg-blue-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50"
           >
             <UserPlus className="w-4 h-4" />
             <span>Thêm người nhà</span>
           </button>
         </div>
 
-        {/* Chủ tài khoản Card (Bản thân) */}
-        {owner && <div className="mb-6 bg-white rounded-2xl border-2 border-blue-200/90 p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-700 to-blue-500 text-white font-extrabold text-xl flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
-              {owner.fullName.charAt(0)}
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-extrabold text-slate-900">
-                  {owner.fullName}
-                </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  Chủ tài khoản (Bản thân)
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-1 flex flex-wrap gap-x-4 gap-y-1">
-                <span>Ngày sinh: <strong>{formatDisplayDate(owner.dob)}</strong></span>
-                <span>BHYT: <strong className="text-emerald-700">{owner.insuranceNo || 'Chưa cập nhật'}</strong></span>
-              </p>
-            </div>
-          </div>
-        </div>}
-
-        {/* Danh sách thẻ người thân */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base sm:text-lg font-bold text-slate-800">
-            Hồ sơ người thân ({members.length})
-          </h2>
-        </div>
-
+      <div className="p-4 sm:p-6">
         {loading ? (
           <div role="status" className="py-20 text-center text-slate-400 text-sm">Đang tải sổ gia đình...</div>
         ) : loadError ? (
@@ -197,18 +126,19 @@ function FamilyContent({ token }: { token: string }) {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <ul className="space-y-2.5">
             {members.map((member) => (
-              <FamilyMemberCard
-                key={member.id}
-                member={member}
-                onEdit={() => void handleEditMember(member.id)}
-                onDelete={() => setDeletingMember(member)}
-              />
+              <li key={member.id}>
+                <FamilyMemberCard
+                  member={member}
+                  onEdit={() => void handleEditMember(member.id)}
+                  onDelete={() => setDeletingMember(member)}
+                />
+              </li>
             ))}
-          </div>
+          </ul>
         )}
-      </main>
+      </div>
 
       {/* Toast Notification */}
       {toastMessage && (
@@ -241,6 +171,6 @@ function FamilyContent({ token }: { token: string }) {
         onClose={() => setDeletingMember(null)}
         onConfirm={handleDeleteMember}
       />}
-    </div>
+    </section>
   );
 }

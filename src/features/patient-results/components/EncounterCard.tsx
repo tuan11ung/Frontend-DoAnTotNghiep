@@ -10,10 +10,12 @@ export function EncounterCard({ encounter, patient, detail = false, readOnly = f
   const formattedDate = formatResultDate(encounter.visitDate);
   const href = patientResultsHref(encounter.patientId, encounter.id);
   const status = encounterStatuses[encounter.status];
+  const facility = availableEncounterText(encounter.facilityName);
 
-  if (!readOnly) return <article data-encounter={encounter.id} className={`${resultPanel} p-4 sm:p-5`}>
+  if (!readOnly) return <article data-encounter={encounter.id}
+    className={`${resultPanel} p-4 sm:p-5 ${!detail ? 'relative cursor-pointer transition-colors hover:border-blue-300 hover:bg-blue-50/40 active:bg-blue-50' : ''}`}>
     <div className="flex flex-wrap items-start justify-between gap-2">
-      <h3 className="min-w-0 wrap-anywhere text-lg leading-snug font-bold text-slate-900">{availableEncounterText(encounter.facilityName) || 'Lần khám'}</h3>
+      <h3 className="min-w-0 wrap-anywhere text-lg leading-snug font-bold text-slate-900">{facility || 'Lần khám'}</h3>
       <span className={`${statusBadge} ${status.tone}`}>{status.label}</span>
     </div>
     {availableEncounterText(encounter.specialty) && <p className="mt-2 text-sm text-slate-600">{encounter.specialty}</p>}
@@ -24,7 +26,10 @@ export function EncounterCard({ encounter, patient, detail = false, readOnly = f
     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
       <p className="text-sm text-slate-600">{encounter.services.length > 0 ? <><strong className="text-slate-800">{readyCount}/{encounter.services.length}</strong> dịch vụ đã có kết quả</> :
         encounter.cancelledServiceCount ? `${encounter.cancelledServiceCount} dịch vụ đã hủy` : 'Chưa có chỉ định cận lâm sàng'}</p>
-      {!detail && <Link href={href} className={resultPrimary}>Xem chi tiết<ArrowRight aria-hidden="true" className="size-4" /></Link>}
+      {!detail && <Link href={href} aria-label={`Xem chi tiết lần khám${facility ? ` tại ${facility}` : ''} ngày ${formattedDate}`}
+        className={`${resultPrimary} cursor-pointer after:absolute after:inset-0 after:rounded-xl focus-visible:after:ring-2 focus-visible:after:ring-blue-600`}>
+        Xem chi tiết<ArrowRight aria-hidden="true" className="size-4" />
+      </Link>}
     </div>
   </article>;
 

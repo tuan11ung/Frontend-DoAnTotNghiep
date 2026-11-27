@@ -54,7 +54,7 @@ export function PatientProfileSelector({ profiles = [], selectedId, loading, err
           {profiles.map(profile => <option key={profile.id} value={profile.id}>{profile.relationship}: {profile.name}</option>)}
         </select>
       </>}
-      {showFamilyLink && <Link href="/patient/family" className="inline-flex min-h-8 items-center rounded-md text-sm font-semibold text-blue-700 hover:underline focus-visible:outline-2 focus-visible:outline-blue-600">
+      {showFamilyLink && <Link href="/patient/profile?tab=family" className="inline-flex min-h-8 items-center rounded-md text-sm font-semibold text-blue-700 hover:underline focus-visible:outline-2 focus-visible:outline-blue-600">
         Quản lý hồ sơ gia đình
       </Link>}
     </div> : null}

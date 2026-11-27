@@ -14,11 +14,16 @@ export function AppointmentScheduleDetails({ appointment, room, queueError }: { 
   const roomLabel = pending && (!roomName || roomName === 'Chưa phân phòng') ? 'Đang phân công' : roomName || 'Chưa cập nhật';
   const timeRange = appointmentTimeRange({ ...appointment, timeSlot: appointment.timeSlot?.trim() || 'Chưa cập nhật', timeSlotEnd: appointment.timeSlotEnd?.trim() });
   return <section data-appointment-schedule aria-label="Thông tin lịch khám" className="min-w-0 rounded-xl bg-slate-50 p-4 [overflow-wrap:anywhere]">
-    <dl className="grid gap-4 @min-[24rem]:grid-cols-2">
-      <div data-schedule-row="date"><dt className="text-sm text-slate-600">Ngày khám</dt><dd className={valueClass}>{formatDisplayDate(appointment.workDate)}</dd></div>
-      <div data-schedule-row="time" className="@min-[24rem]:border-l @min-[24rem]:border-slate-200 @min-[24rem]:pl-4"><dt className="text-sm text-slate-600">Khung giờ</dt><dd className={valueClass}>{timeRange}</dd></div>
+    <h4 className="text-sm font-bold text-slate-800">Thông tin lịch khám</h4>
+    <dl className="mt-3">
+      <dt className="text-sm text-slate-600">Người khám</dt>
+      <dd className={valueClass}>{appointment.patientName} ({appointment.patientRelationship || 'Bản thân'})</dd>
     </dl>
-    <div className="mt-4 grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,2fr)] items-start gap-4 border-t border-slate-200 pt-4 @min-[24rem]:grid-cols-2">
+    <dl className="mt-4 grid min-w-0 grid-cols-2 gap-4 border-t border-slate-200 pt-4">
+      <div data-schedule-row="date"><dt className="text-sm text-slate-600">Ngày khám</dt><dd className={valueClass}>{formatDisplayDate(appointment.workDate)}</dd></div>
+      <div data-schedule-row="time" className="min-w-0 border-l border-slate-200 pl-4"><dt className="text-sm text-slate-600">Khung giờ</dt><dd className={valueClass}>{timeRange}</dd></div>
+    </dl>
+    <div className="mt-4 grid min-w-0 grid-cols-2 items-start gap-4 border-t border-slate-200 pt-4">
       <AppointmentTicketNumber appointment={appointment} room={room} queueError={queueError} variant="card" />
       <dl className="min-w-0 border-l border-slate-200 pl-4"><div data-schedule-row="room"><dt className="text-sm text-slate-600">Phòng khám</dt><dd className={valueClass}>{roomLabel}</dd>{appointment.roomLocation?.trim() && <dd className="mt-1 text-sm leading-6 text-slate-600">{appointment.roomLocation}</dd>}</div></dl>
     </div>

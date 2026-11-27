@@ -1,17 +1,8 @@
 'use client';
 
-import { formatDisplayDate } from '@/src/shared/utils/date-format';
-
-import React from 'react';
 import Link from 'next/link';
-import {
-  User,
-  Calendar,
-  Phone,
-  Edit2,
-  Trash2,
-  HeartHandshake,
-} from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
+import { formatDisplayDate } from '@/src/shared/utils/date-format';
 import { RELATIONSHIP_LABELS, type FamilyMemberSummary } from '../models/types/family.types';
 
 interface FamilyMemberCardProps {
@@ -22,99 +13,58 @@ interface FamilyMemberCardProps {
 
 export function FamilyMemberCard({ member, onEdit, onDelete }: FamilyMemberCardProps) {
   const relationshipText = RELATIONSHIP_LABELS[member.relationship] || 'Người thân';
+  const genderText = member.gender === 'MALE' ? 'Nam' : member.gender === 'FEMALE' ? 'Nữ' : 'Khác';
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 hover:border-blue-300 hover:shadow-lg transition-all p-5 flex flex-col justify-between group">
-      {/* Header card */}
-      <div className="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg shrink-0 ${
-            member.gender === 'FEMALE'
-              ? 'bg-rose-50 text-rose-600 border border-rose-100'
-              : 'bg-blue-50 text-blue-600 border border-blue-100'
-          }`}>
-            {member.fullName.charAt(0)}
-          </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-bold text-slate-900 text-base group-hover:text-blue-700 transition-colors">
-                {member.fullName}
-              </h3>
-              <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-blue-100/80 text-blue-700 border border-blue-200">
-                {relationshipText}
-              </span>
-            </div>
-          </div>
+    <article className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 pt-1">
+          <h3 className="font-semibold text-slate-900 wrap-anywhere">{member.fullName}</h3>
+          <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+            {relationshipText}
+          </span>
         </div>
-
-        <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-          {onEdit && <button
-            onClick={onEdit}
-            type="button"
-            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
-            title="Chỉnh sửa thông tin"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>}
+        <div className="flex shrink-0 items-center gap-1">
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              type="button"
+              className="grid size-10 cursor-pointer place-items-center rounded-lg text-slate-500 hover:bg-blue-50 hover:text-blue-700"
+              title="Chỉnh sửa thông tin"
+              aria-label="Chỉnh sửa thông tin"
+            >
+              <Edit2 className="size-4" aria-hidden="true" />
+            </button>
+          )}
           <button
             onClick={onDelete}
             type="button"
-            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+            className="grid size-10 cursor-pointer place-items-center rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-700"
             title="Gỡ hồ sơ"
+            aria-label="Gỡ hồ sơ"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="size-4" aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      {/* Thông tin chi tiết */}
-      <div className="pt-4 space-y-2.5 text-xs text-slate-600">
-        <div className="flex items-center gap-2">
-          <User className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>Giới tính:</span>
-          <span className="font-semibold text-slate-800 ml-auto">
-            {member.gender === 'MALE' ? 'Nam' : member.gender === 'FEMALE' ? 'Nữ' : 'Khác'}
-          </span>
-        </div>
-
-        {member.dob && (
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-            <span>Ngày sinh:</span>
-            <span className="font-semibold text-slate-800 ml-auto">
-              {formatDisplayDate(member.dob)}
-            </span>
-          </div>
-        )}
-
-        {member.bhytNumber && (
-          <div className="flex items-center gap-2">
-            <HeartHandshake className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>Mã BHYT:</span>
-            <span className="font-semibold text-emerald-700 ml-auto">
-              {member.bhytNumber}
-            </span>
-          </div>
-        )}
-
-        {member.phone && (
-          <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-            <span>Số điện thoại:</span>
-            <span className="font-semibold text-slate-800 ml-auto">
-              {member.phone}
-            </span>
-          </div>
-        )}
-
-        {member.note && (
-          <div className="mt-2 p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/60 text-amber-800 text-[11px] leading-relaxed">
-            <span className="font-semibold">Tiền sử / Ghi chú: </span>
-            {member.note}
-          </div>
-        )}
+      <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-600 wrap-anywhere">
+        <span>Giới tính: <span className="text-slate-900">{genderText}</span></span>
+        {member.dob && <span>Ngày sinh: <span className="text-slate-900">{formatDisplayDate(member.dob)}</span></span>}
+        {member.bhytNumber && <span>Mã BHYT: <span className="text-slate-900">{member.bhytNumber}</span></span>}
+        {member.phone && <span>Số điện thoại: <span className="text-slate-900">{member.phone}</span></span>}
       </div>
-      <Link href={`/patient/family/${member.id}/health`} className="mt-4 rounded-lg border border-blue-200 px-4 py-2.5 text-center text-sm font-semibold text-blue-700 hover:bg-blue-50">Tiền sử & dị ứng</Link>
-    </div>
+      {member.note && (
+        <p className="mt-2 text-sm text-slate-600 wrap-anywhere">
+          <span className="font-medium">Tiền sử / Ghi chú: </span>{member.note}
+        </p>
+      )}
+      <Link
+        href={`/patient/family/${member.id}/health`}
+        className="mt-1 inline-flex min-h-10 items-center text-sm font-semibold text-blue-700 hover:underline"
+      >
+        Tiền sử &amp; dị ứng
+      </Link>
+    </article>
   );
 }
