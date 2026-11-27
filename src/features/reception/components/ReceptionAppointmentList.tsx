@@ -8,6 +8,7 @@ import { ScrollableTable } from '@/src/shared/components/ScrollableTable';
 import { DataTablePagination } from '@/src/shared/components/pagination';
 import { ToastMessage } from '@/src/shared/components/ToastMessage';
 import { formatDisplayDate } from '@/src/shared/utils/date-format';
+import { appointmentStatusConfig } from '@/src/shared/types/appointment';
 import { bookingToday } from '@/src/features/booking/utils/booking-dates';
 import type { ApiPage } from '@/src/shared/lib/clinical-api';
 import type { ReceptionAppointmentListItem } from '../api/reception-api';
@@ -23,11 +24,6 @@ const statuses = [
   { value: 'CANCELLED', label: 'Đã hủy' }, { value: 'ABSENT', label: 'Vắng mặt' }, { value: 'COMPLETED', label: 'Hoàn thành' },
 ] as const;
 const sessions = [{ value: '', label: 'Tất cả ca' }, { value: 'MORNING', label: 'Buổi sáng' }, { value: 'AFTERNOON', label: 'Buổi chiều' }] as const;
-const badge: Record<ReceptionAppointmentListItem['status'], string> = {
-  BOOKED: 'bg-blue-50 text-blue-700', PENDING_SPECIALTY: 'bg-amber-50 text-amber-800',
-  CHECKED_IN: 'bg-emerald-50 text-emerald-700', CANCELLED: 'bg-slate-100 text-slate-600',
-  ABSENT: 'bg-rose-50 text-rose-700', COMPLETED: 'bg-teal-50 text-teal-700',
-};
 type Result = { key: string; data?: ApiPage<ReceptionAppointmentListItem>; error?: string };
 
 export function ReceptionAppointmentList() {
@@ -96,6 +92,7 @@ export function ReceptionAppointmentList() {
             {date && !loading && !current?.error && !data?.content.length && <tr><td colSpan={8} className="p-10 text-center text-slate-500"><span role="status">Không có lịch hẹn phù hợp với ngày và bộ lọc đã chọn.</span></td></tr>}
             {data?.content.map(a => {
               const canCheckIn = a.appointmentDate === bookingToday() && ['BOOKED', 'ABSENT'].includes(a.status);
+              const statusConfig = appointmentStatusConfig(a.status, a.displayStatus);
               return <tr key={a.appointmentId} className="hover:bg-slate-50">
                 <td className="px-4 py-4 font-semibold text-slate-900">{a.appointmentCode}<span className="mt-1 block text-xs font-normal text-slate-500">{a.serviceType === 'BHYT' ? 'BHYT' : a.serviceType === 'SERVICE' ? 'Dịch vụ' : ''}</span></td>
                 <td className="min-w-40 max-w-56 px-4 py-4 font-semibold [overflow-wrap:anywhere]">{a.patientName ?? 'Chưa có thông tin'}</td>
@@ -103,7 +100,7 @@ export function ReceptionAppointmentList() {
                 <td className="min-w-36 px-4 py-4">{a.specialtyName ?? 'Chưa phân khoa'}</td>
                 <td className="min-w-36 px-4 py-4">{a.doctorName ?? 'Chưa phân công'}</td>
                 <td className="min-w-32 px-4 py-4">{a.roomName ?? 'Chưa phân phòng'}<p className="mt-1 text-xs text-slate-500">{a.roomLocation}</p></td>
-                <td className="px-4 py-4"><span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${badge[a.status] ?? 'bg-slate-100 text-slate-600'}`}>{statuses.find(s => s.value === a.status)?.label ?? a.status}</span></td>
+                <td className="px-4 py-4"><span className={`inline-block whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold ${statusConfig.bgClass} ${statusConfig.colorClass}`}>{statusConfig.label}</span></td>
 
                 <td className="px-4 py-4"><div className="flex items-center gap-2">
                   <button type="button" aria-haspopup="dialog" aria-label={`Xem chi tiết lịch ${a.appointmentCode}`} onClick={event => { returnFocus.current = event.currentTarget; setSelected({ code: a.appointmentCode, checkIn: false }); }} className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-lg border border-blue-200 px-3 font-semibold text-blue-700 hover:bg-blue-50"><Eye aria-hidden="true" className="size-4" />Xem chi tiết</button>

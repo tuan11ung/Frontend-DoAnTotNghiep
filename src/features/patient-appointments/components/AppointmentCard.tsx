@@ -65,8 +65,8 @@ export function AppointmentCard({
 
   const isBooked = ['BOOKED', 'PENDING_SPECIALTY'].includes(appointment.status);
   const canCancel = isBooked && canCancelAppointment(appointment);
-  const canViewInvoice = appointment.source === 'api' && ['BOOKED', 'CHECKED_IN'].includes(appointment.status) && !isExpired;
   const isCheckedIn = appointment.status === 'CHECKED_IN' || appointment.status === 'IN_PROGRESS';
+  const canViewInvoice = appointment.source === 'api' && (appointment.status === 'BOOKED' || isCheckedIn) && !isExpired;
   const isCompleted = appointment.status === 'COMPLETED';
   const isCancelled = appointment.status === 'CANCELLED';
   const canViewQueue = !isExpired && (isCheckedIn || (appointment.source === 'api' && ['BOOKED', 'NO_SHOW'].includes(appointment.status)));

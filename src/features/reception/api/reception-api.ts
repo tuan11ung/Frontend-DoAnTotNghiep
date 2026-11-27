@@ -1,4 +1,5 @@
 import type { CareCost } from '@/src/shared/components/CareCostBreakdown';
+import type { AppointmentApiStatus } from '@/src/shared/types/appointment';
 import { authenticatedFetch } from '@/src/shared/lib/authenticated-fetch';
 import { clinicalRequest, type ApiPage } from '@/src/shared/lib/clinical-api';
 import { getStoredAuthSession } from '@/src/features/auth/auth-storage';
@@ -20,6 +21,7 @@ export interface ReceptionSlot extends CareCost {
 }
 export interface ReceptionAppointment extends CareCost {
   appointmentId: number; appointmentCode: string; status: string; patientId: number; patientName: string;
+  displayStatus?: AppointmentApiStatus | null;
   maskedNationalId?: string; maskedPhone?: string; hospitalName: string; hospitalAddress?: string;
   roomName?: string; roomLocation?: string; specialtyName?: string; doctorName?: string; rankName?: string;
   serviceType?: string; appointmentDate: string; startTime: string; endTime?: string; price?: number | null;
@@ -36,6 +38,7 @@ export interface ReceptionAppointmentListItem {
   appointmentId: number; appointmentCode: string; patientId: number; patientName: string | null;
   appointmentDate: string; startTime: string; endTime: string | null;
   session: 'MORNING' | 'AFTERNOON'; status: 'PENDING_SPECIALTY' | 'BOOKED' | 'CHECKED_IN' | 'CANCELLED' | 'ABSENT' | 'COMPLETED';
+  displayStatus?: AppointmentApiStatus | null;
   specialtyName: string | null; doctorName: string | null; roomName: string | null; roomLocation: string | null;
   serviceType: string | null; queueNumber: number | null;
 }

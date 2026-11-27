@@ -7,6 +7,8 @@ export type AppointmentStatus =
   | 'CANCELLED'
   | 'NO_SHOW';
 
+export type AppointmentApiStatus = Exclude<AppointmentStatus, 'NO_SHOW'> | 'ABSENT';
+
 export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, { label: string; colorClass: string; bgClass: string }> = {
   PENDING_SPECIALTY: {
     label: 'Chờ phân chuyên khoa',
@@ -29,7 +31,7 @@ export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, { label: strin
     bgClass: 'bg-amber-50 border-amber-200',
   },
   COMPLETED: {
-    label: 'Đã hoàn tất',
+    label: 'Hoàn thành',
     colorClass: 'text-emerald-800',
     bgClass: 'bg-emerald-100/70 border-emerald-300',
   },
@@ -44,6 +46,21 @@ export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, { label: strin
     bgClass: 'bg-slate-100 border-slate-300',
   },
 };
+
+export function normalizeAppointmentStatus(status: string): AppointmentStatus | undefined {
+  const key = status === 'ABSENT' ? 'NO_SHOW' : status;
+  return Object.hasOwn(APPOINTMENT_STATUS_LABELS, key) ? key as AppointmentStatus : undefined;
+}
+
+export function appointmentStatusConfig(status: string, displayStatus?: AppointmentApiStatus | null) {
+  const key = (displayStatus && normalizeAppointmentStatus(displayStatus)) || normalizeAppointmentStatus(status);
+  if (key) return APPOINTMENT_STATUS_LABELS[key];
+  return {
+    label: status,
+    colorClass: 'text-slate-700',
+    bgClass: 'bg-slate-100 border-slate-200',
+  };
+}
 
 export interface PatientAppointment {
   id: string;

@@ -1,20 +1,21 @@
 import { bookingRequest } from '../../booking/api/booking-api';
 import type { BookingHospital, BookingPatientProfile } from '../../booking/models/types/bhyt.types';
-import { APPOINTMENT_STATUS_LABELS, type PatientAppointment, type AppointmentStatus } from '@/src/shared/types/appointment';
+import { normalizeAppointmentStatus, type AppointmentApiStatus, type PatientAppointment } from '@/src/shared/types/appointment';
 
 export interface AppointmentResponse {
   appointmentId: number; appointmentCode: string; patientId: number; patientName: string;
   hospitalId: number; hospitalName: string; appointmentDate: string; startTime: string; endTime: string;
   doctorName?: string; rankName?: string; roomName?: string | null; roomLocation?: string | null;
   patientGender?: PatientAppointment['patientGender']; patientMaskedNationalId?: string; patientMaskedPhone?: string;
-  queueNumber?: number; price?: number; status: AppointmentStatus | 'ABSENT'; appointReason: string;
+  queueNumber?: number; price?: number; status: AppointmentApiStatus; appointReason: string;
+  displayStatus?: AppointmentApiStatus | null;
   qrToken?: string; bookedDate?: string; cancelledDate?: string; cancelReason?: string;
 }
 
 export function toPatientAppointment(item: AppointmentResponse, profiles: BookingPatientProfile[], hospitals: BookingHospital[]): PatientAppointment {
-  const status = item.status === 'ABSENT' ? 'NO_SHOW' : item.status;
+  const status = normalizeAppointmentStatus(item.displayStatus ?? '') ?? normalizeAppointmentStatus(item.status);
   if (!Number.isSafeInteger(item.appointmentId) || !Number.isSafeInteger(item.patientId)
-    || typeof item.appointmentCode !== 'string' || !Object.hasOwn(APPOINTMENT_STATUS_LABELS, status)
+    || typeof item.appointmentCode !== 'string' || !status
     || typeof item.appointmentDate !== 'string' || typeof item.startTime !== 'string' || typeof item.endTime !== 'string') {
     throw new Error('Dữ liệu lịch khám không hợp lệ. Vui lòng tải lại.');
   }
